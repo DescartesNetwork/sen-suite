@@ -7,6 +7,7 @@ import Message from '@/components/message/page'
 import Sidebar from '@/app/sidebar'
 
 import '@/styles/global.scss'
+import WalletProvider from '@/providers/wallet.provider'
 
 export const metadata: Metadata = {
   title: 'Sentre',
@@ -24,17 +25,21 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           crossOrigin="anonymous"
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@100;200;300;400;500;600;700;800;900&display=swap"
+          href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap"
           rel="stylesheet"
         />
       </head>
       <body>
         <UiProvider>
-          <main className="flex w-full">
-            <Sidebar />
-            <div className="flex flex-col flex-auto pr-2 py-2">{children}</div>
-          </main>
-          <Message />
+          <WalletProvider>
+            <main className="flex w-full">
+              <Sidebar />
+              <div className="flex flex-col flex-auto pr-2 py-2">
+                {children}
+              </div>
+            </main>
+            <Message />
+          </WalletProvider>
         </UiProvider>
       </body>
     </html>

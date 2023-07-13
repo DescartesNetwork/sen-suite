@@ -3,16 +3,11 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-import {
-  Home,
-  MessagesSquare,
-  PanelLeftClose,
-  PanelLeftOpen,
-  Twitter,
-} from 'lucide-react'
+import { CandlestickChart, Droplets, Home, Leaf, Rocket } from 'lucide-react'
 import Brand from '@/components/brand'
 import Island from '@/components/island'
-import ThemeSwitch from './themeSwitch'
+import WalletButton from './walletButton'
+import Panel from './panel'
 
 import './index.scss'
 
@@ -22,15 +17,35 @@ const routes = [
     name: 'Home',
     Logo: Home,
   },
+  {
+    route: '/swap',
+    name: 'Swap',
+    Logo: CandlestickChart,
+  },
+  {
+    route: '/farming',
+    name: 'Farming',
+    Logo: Leaf,
+  },
+  {
+    route: '/airdrop',
+    name: 'Airdrop',
+    Logo: Droplets,
+  },
+  {
+    route: '/launchpad',
+    name: 'Launchpad',
+    Logo: Rocket,
+  },
 ]
 
 export default function Sidebar() {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(true)
   const pathname = usePathname()
 
   return (
-    <aside className={`sidebar ${!open ? '' : 'open'}`}>
-      <ul className="menu menu-lg rounded-box flex flex-col h-full">
+    <aside className={`sidebar ${!open ? '' : 'open'} flex flex-col`}>
+      <ul className="menu menu-lg rounded-box flex-auto">
         <li className="mb-8">
           <a href="/">
             <Brand
@@ -47,51 +62,19 @@ export default function Sidebar() {
               className={pathname.startsWith(route) ? 'focus' : ''}
             >
               <p>
-                <Logo className="h-4 w-4" />
+                <Logo className="menu-logo" />
               </p>
               <p className="menu-option font-semibold">{name}</p>
             </Link>
           </li>
         ))}
         <li className="flex-auto invisible"></li>
-        <li>
-          <a
-            href="https://twitter.com/SentreProtocol"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <Twitter className="h-4 w-4" />
-            <p className="menu-option">Twitter</p>
-          </a>
-        </li>
-        <li>
-          <a href="https://t.me/Sentre" target="_blank" rel="noreferrer">
-            <MessagesSquare className="h-4 w-4" />
-            <p className="menu-option">Telegram</p>
-          </a>
-        </li>
-        <span className="divider mx-4 my-0"></span>
-        <li>
-          <Island>
-            <ThemeSwitch />
-          </Island>
-        </li>
-        <li>
-          <label className="swap swap-rotate">
-            <input
-              type="checkbox"
-              onChange={() => setOpen(!open)}
-              checked={open}
-            />
-            <p className="swap-on">
-              <PanelLeftClose className="h-4 w-4" />
-            </p>
-            <p className="swap-off">
-              <PanelLeftOpen className="h-4 w-4" />
-            </p>
-          </label>
-        </li>
+        <Island>
+          <WalletButton />
+        </Island>
+        <span className="divider mx-4 mt-0 -mb-2"></span>
       </ul>
+      <Panel open={open} onOpen={setOpen} />
     </aside>
   )
 }

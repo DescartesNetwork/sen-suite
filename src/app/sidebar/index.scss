@@ -7,8 +7,11 @@
   }
   .menu {
     .menu-option {
-      @apply text-xs;
+      @apply text-sm;
       display: none;
+    }
+    .menu-logo {
+      @apply h-5 w-5;
     }
   }
 

@@ -2,7 +2,6 @@
 
 import { Moon, Sun } from 'lucide-react'
 
-import './index.scss'
 import { useTheme } from '@/providers/ui.provider'
 
 export default function ThemeSwitch() {
@@ -17,10 +16,10 @@ export default function ThemeSwitch() {
           checked={theme === 'dark'}
         />
         <p className="swap-on">
-          <Moon className="w-4 h-4" />
+          <Moon className="w-5 h-5" />
         </p>
         <p className="swap-off">
-          <Sun className="w-4 h-4" />
+          <Sun className="w-5 h-5" />
         </p>
       </label>
       <p className="menu-option capitalize">{`${theme} theme`}</p>

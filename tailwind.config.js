@@ -10,8 +10,10 @@ module.exports = {
   theme: {
     extend: {
       backgroundImage: {
-        'light-home': "url(/panel_light.jpg')",
-        'dark-home': "url('/panel_dark.jpg')",
+        'swap-light': "url('/swap-bg-light.png')",
+        'swap-dark': "url('/swap-bg-dark.png')",
+        'panel-light': "url('/panel-light.jpg')",
+        'panel-dark': "url('/panel-dark.jpg')",
       },
     },
   },
@@ -24,7 +26,7 @@ module.exports = {
           primary: '#f9575e',
           'primary-content': '#ffffff',
           secondary: '#5d6ccf',
-          'secondary-content': '#000000',
+          'secondary-content': '#ffffff',
         },
       },
       {
@@ -33,7 +35,7 @@ module.exports = {
           primary: '#f9575e',
           'primary-content': '#ffffff',
           secondary: '#5d6ccf',
-          'secondary-content': '#000000',
+          'secondary-content': '#ffffff',
         },
       },
     ],
