@@ -4,11 +4,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 import {
-  Box,
-  Gamepad,
-  Github,
-  Joystick,
-  Newspaper,
+  Home,
+  MessagesSquare,
   PanelLeftClose,
   PanelLeftOpen,
   Twitter,
@@ -21,24 +18,9 @@ import './index.scss'
 
 const routes = [
   {
-    route: '/snes',
-    name: 'SNES',
-    Logo: Gamepad,
-  },
-  {
-    route: '/gba',
-    name: 'GBA',
-    Logo: Joystick,
-  },
-  {
-    route: '/modelviewer',
-    name: 'Model Viewer',
-    Logo: Box,
-  },
-  {
-    route: '/news',
-    name: 'News',
-    Logo: Newspaper,
+    route: '/home',
+    name: 'Home',
+    Logo: Home,
   },
 ]
 
@@ -74,7 +56,7 @@ export default function Sidebar() {
         <li className="flex-auto invisible"></li>
         <li>
           <a
-            href="https://twitter.com/phan_sontu"
+            href="https://twitter.com/SentreProtocol"
             target="_blank"
             rel="noreferrer"
           >
@@ -83,13 +65,9 @@ export default function Sidebar() {
           </a>
         </li>
         <li>
-          <a
-            href="https://github.com/tuphan-dn"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <Github className="h-4 w-4" />
-            <p className="menu-option">Github</p>
+          <a href="https://t.me/Sentre" target="_blank" rel="noreferrer">
+            <MessagesSquare className="h-4 w-4" />
+            <p className="menu-option">Telegram</p>
           </a>
         </li>
         <span className="divider mx-4 my-0"></span>
