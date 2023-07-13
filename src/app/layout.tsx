@@ -6,7 +6,7 @@ import UiProvider from '@/providers/ui.provider'
 import Message from '@/components/message/page'
 import Sidebar from '@/app/sidebar'
 
-import '@/styles/globals.css'
+import '@/styles/global.scss'
 
 export const metadata: Metadata = {
   title: 'Sentre',
@@ -24,7 +24,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           crossOrigin="anonymous"
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@100;200;300;400;500;600;700;800;900&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@100;200;300;400;500;600;700;800;900&display=swap"
           rel="stylesheet"
         />
       </head>

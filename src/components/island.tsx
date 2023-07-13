@@ -2,7 +2,7 @@
 import dynamic from 'next/dynamic'
 import { Fragment, ReactNode } from 'react'
 
-import Splash from 'components/splash'
+import Splash from '@/components/splash'
 
 const Island = dynamic(
   () =>

@@ -9,12 +9,7 @@ export function BrandLogo({ size = 32 }: BrandLogoProps) {
   return (
     <div className="avatar">
       <div className={'mask mask-squircle'} style={{ width: size }}>
-        <Image
-          src={`${process.env.basePath}/tuphan.png`}
-          alt="tuphan.dev"
-          width={size}
-          height={size}
-        />
+        <Image src="/logo192.png" alt="sentre" width={size} height={size} />
       </div>
     </div>
   )
@@ -36,11 +31,11 @@ export default function Brand({
   return (
     <div
       style={style}
-      className="flex shrink items-center gap-3 hover:cursor-pointer"
+      className="flex shrink items-center gap-1 hover:cursor-pointer"
       onClick={onClick}
     >
       <BrandLogo size={size} />
-      {named && <p>tuphan.dev</p>}
+      {named && <p>Sentre</p>}
     </div>
   )
 }
