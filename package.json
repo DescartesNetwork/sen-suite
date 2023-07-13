@@ -2,23 +2,46 @@
   "name": "sen-suite",
   "version": "0.1.0",
   "private": true,
+  "author": {
+    "name": "Tu Phan",
+    "email": "tuphan@descartes.network"
+  },
   "scripts": {
-    "dev": "next dev",
+    "dev": "concurrently --names DEV,LINT -c cyan,yellow 'yarn dev:watch' 'yarn lint:watch'",
+    "dev:watch": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "lint:watch": "nodemon --watch src --ext ts,tsx --exec 'next lint'"
   },
   "dependencies": {
+    "@mdx-js/react": "^2.3.0",
+    "@tailwindcss/container-queries": "^0.1.1",
+    "daisyui": "^3.2.1",
+    "dayjs": "^1.11.9",
+    "immer": "^10.0.2",
+    "lucide-react": "^0.259.0",
+    "next": "13.4.9",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-use": "^17.4.0",
+    "zustand": "^4.3.9"
+  },
+  "devDependencies": {
+    "@mdx-js/loader": "^2.3.0",
+    "@next/mdx": "^13.4.9",
     "@types/node": "20.4.2",
     "@types/react": "18.2.14",
     "@types/react-dom": "18.2.7",
     "autoprefixer": "10.4.14",
+    "concurrently": "^8.2.0",
     "eslint": "8.44.0",
     "eslint-config-next": "13.4.9",
-    "next": "13.4.9",
+    "nodemon": "^3.0.1",
     "postcss": "8.4.25",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
+    "rehype-slug": "^5.1.0",
+    "remark-gfm": "^3.0.1",
+    "sass": "^1.63.6",
     "tailwindcss": "3.3.2",
     "typescript": "5.1.6"
   }

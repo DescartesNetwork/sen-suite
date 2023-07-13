@@ -1,0 +1,27 @@
+.sidebar {
+  height: 100dvh;
+
+  @apply transition-all;
+  .swap {
+    @apply place-content-start;
+  }
+  .menu {
+    .menu-option {
+      @apply text-xs;
+      display: none;
+    }
+  }
+
+  &.open {
+    @apply min-w-[240px];
+    .swap {
+      @apply place-content-end;
+    }
+    .menu {
+      @apply min-w-[240px];
+    }
+    .menu-option {
+      display: block !important;
+    }
+  }
+}
