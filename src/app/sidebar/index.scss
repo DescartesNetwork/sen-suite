@@ -16,12 +16,11 @@
   }
 
   &.open {
-    @apply min-w-[240px];
     .swap {
       @apply place-content-end;
     }
     .menu {
-      @apply min-w-[240px];
+      @apply min-w-[150px] md:min-w-[240px];
     }
     .menu-option {
       display: block !important;

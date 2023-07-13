@@ -3,7 +3,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-import { CandlestickChart, Droplets, Home, Leaf, Rocket } from 'lucide-react'
+import { CandlestickChart, Droplets, Leaf, Rocket } from 'lucide-react'
 import Brand from '@/components/brand'
 import Island from '@/components/island'
 import WalletButton from './walletButton'
@@ -12,11 +12,6 @@ import Panel from './panel'
 import './index.scss'
 
 const routes = [
-  {
-    route: '/home',
-    name: 'Home',
-    Logo: Home,
-  },
   {
     route: '/swap',
     name: 'Swap',
@@ -45,7 +40,7 @@ export default function Sidebar() {
 
   return (
     <aside className={`sidebar ${!open ? '' : 'open'} flex flex-col`}>
-      <ul className="menu menu-lg rounded-box flex-auto">
+      <ul className="menu menu-md rounded-box flex-auto">
         <li className="mb-8">
           <a href="/">
             <Brand

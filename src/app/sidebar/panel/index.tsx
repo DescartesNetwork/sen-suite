@@ -16,7 +16,7 @@ export type PanelProps = {
 
 export default function Panel({ open, onOpen }: PanelProps) {
   return (
-    <ul className="menu menu-lg rounded-box">
+    <ul className="menu menu-md rounded-box">
       <li>
         <a
           href="https://twitter.com/SentreProtocol"
