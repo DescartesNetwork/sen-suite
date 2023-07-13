@@ -21,18 +21,18 @@ module.exports = {
       {
         light: {
           ...daisyui['[data-theme=light]'],
-          primary: '#2B86FF',
+          primary: '#f9575e',
           'primary-content': '#ffffff',
-          secondary: '#FFA42B',
+          secondary: '#5d6ccf',
           'secondary-content': '#000000',
         },
       },
       {
         dark: {
           ...daisyui['[data-theme=dark]'],
-          primary: '#2B86FF',
+          primary: '#f9575e',
           'primary-content': '#ffffff',
-          secondary: '#FFA42B',
+          secondary: '#5d6ccf',
           'secondary-content': '#000000',
         },
       },
