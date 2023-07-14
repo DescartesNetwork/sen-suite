@@ -2,12 +2,13 @@ import { ReactNode } from 'react'
 import type { Metadata } from 'next'
 
 import UiProvider from '@/providers/ui.provider'
+import WalletProvider from '@/providers/wallet.provider'
+import TokenProvider from '@/providers/token.provider'
 
 import Message from '@/components/message/page'
 import Sidebar from '@/app/sidebar'
 
 import '@/styles/global.scss'
-import WalletProvider from '@/providers/wallet.provider'
 
 export const metadata: Metadata = {
   title: 'Sentre',
@@ -36,15 +37,17 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       </head>
       <body>
         <UiProvider>
-          <WalletProvider>
-            <main className="flex w-full">
-              <Sidebar />
-              <div className="flex flex-col flex-auto pr-2 py-2">
-                {children}
-              </div>
-            </main>
-            <Message />
-          </WalletProvider>
+          <TokenProvider>
+            <WalletProvider>
+              <main className="flex w-full">
+                <Sidebar />
+                <div className="flex flex-col flex-auto pr-2 py-2">
+                  {children}
+                </div>
+              </main>
+              <Message />
+            </WalletProvider>
+          </TokenProvider>
         </UiProvider>
       </body>
     </html>

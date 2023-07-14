@@ -15,6 +15,16 @@ const nextConfig = {
   pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
   output: 'export',
   images: { unoptimized: true },
+  webpack(config, {}) {
+    // Fix Solana warning of "Module not found"
+    // https://github.com/pinojs/pino/issues/688#issuecomment-637763276
+    config.externals = config.externals.concat([
+      'pino-pretty',
+      'lokijs',
+      'encoding',
+    ])
+    return config
+  },
 }
 
 export default withMDX(nextConfig)

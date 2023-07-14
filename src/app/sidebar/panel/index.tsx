@@ -10,11 +10,11 @@ import Island from '@/components/island'
 import ThemeSwitch from './themeSwitch'
 
 export type PanelProps = {
-  open: boolean
-  onOpen: (open: boolean) => void
+  open?: boolean
+  onOpen?: (open: boolean) => void
 }
 
-export default function Panel({ open, onOpen }: PanelProps) {
+export default function Panel({ open = false, onOpen = () => {} }: PanelProps) {
   return (
     <ul className="menu menu-md rounded-box">
       <li>
