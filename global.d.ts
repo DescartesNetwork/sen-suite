@@ -1,14 +1,16 @@
 type Theme = 'light' | 'dark'
 
-declare namespace JSX {
-  interface IntrinsicElements {
-    'model-viewer': any
-  }
-}
+type ChainId = 101 | 102 | 103
 
-interface Window {
-  ethereum: any
-  desig: {
-    uid: IUID
+type TokenMetadata = {
+  address: string
+  chainId: ChainId
+  decimals: number
+  name: string
+  symbol: string
+  logoURI: string
+  tags: string[]
+  extensions: {
+    coingeckoId?: string
   }
 }
