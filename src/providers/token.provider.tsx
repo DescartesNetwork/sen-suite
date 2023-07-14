@@ -1,15 +1,22 @@
 'use client'
-import { Fragment, ReactNode } from 'react'
+import { Fragment, ReactNode, useCallback, useMemo } from 'react'
 import axios from 'axios'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
+import Fuse from 'fuse.js'
 
 import { env } from '@/configs/env'
 import { useMount, useUnmount } from 'react-use'
 
+/**
+ * Store
+ */
+
 export type TokenStore = {
   tokens: TokenMetadata[]
   setTokens: (tokens: TokenMetadata[]) => void
+  engine?: Fuse<TokenMetadata>
+  setEngine: (engine?: Fuse<TokenMetadata>) => void
 }
 
 export const useTokenStore = create<TokenStore>()(
@@ -17,6 +24,8 @@ export const useTokenStore = create<TokenStore>()(
     (set) => ({
       tokens: [],
       setTokens: (tokens: TokenMetadata[]) => set({ tokens }),
+      engine: undefined,
+      setEngine: (engine?: Fuse<TokenMetadata>) => set({ engine }),
     }),
     {
       name: 'tokens',
@@ -25,17 +34,61 @@ export const useTokenStore = create<TokenStore>()(
   ),
 )
 
+/**
+ * Provider
+ */
+
 export default function TokenProvider({ children }: { children: ReactNode }) {
-  const setTokens = useTokenStore(({ setTokens }) => setTokens)
+  const { setTokens, setEngine } = useTokenStore(
+    ({ setTokens, setEngine }) => ({ setTokens, setEngine }),
+  )
 
   useMount(async () => {
-    const { data } = await axios.get('https://token.jup.ag/all')
-    return setTokens(data)
+    const { data } = await axios.get<TokenMetadata[]>(
+      'https://token.jup.ag/all',
+    )
+    const fuse = new Fuse<TokenMetadata>(data, {
+      includeScore: true,
+      keys: ['name', 'symbol'],
+    })
+    setTokens(data)
+    setEngine(fuse)
   })
 
   useUnmount(() => {
-    return setTokens([])
+    setTokens([])
+    setEngine(undefined)
   })
 
   return <Fragment>{children}</Fragment>
+}
+
+/**
+ * Hooks
+ */
+
+export const useAllTokens = () => {
+  const tokens = useTokenStore(({ tokens }) => tokens)
+  return tokens
+}
+
+export const useTokenByAddress = (addr: string) => {
+  const tokens = useTokenStore(({ tokens }) => tokens)
+  const token = useMemo(
+    () => tokens.find(({ address }) => address === addr),
+    [tokens, addr],
+  )
+  return token
+}
+
+export const useSearchToken = () => {
+  const engine = useTokenStore(({ engine }) => engine)
+  const search = useCallback(
+    (text: string) => {
+      if (!engine) return []
+      return engine.search(text)
+    },
+    [engine],
+  )
+  return search
 }
