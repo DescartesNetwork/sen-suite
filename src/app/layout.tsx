@@ -13,6 +13,11 @@ import '@/styles/global.scss'
 export const metadata: Metadata = {
   title: 'Sentre',
   description: 'The suite for startups on Solana',
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+  },
 }
 
 export default function RootLayout({ children }: { children: ReactNode }) {
