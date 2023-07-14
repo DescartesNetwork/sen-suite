@@ -12,13 +12,17 @@ import WalletProvider from '@/providers/wallet.provider'
 export const metadata: Metadata = {
   title: 'Sentre',
   description: 'The suite for startups on Solana',
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+  },
 }
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" data-theme="light">
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
