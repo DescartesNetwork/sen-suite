@@ -8,6 +8,17 @@ import Fuse from 'fuse.js'
 import { env } from '@/configs/env'
 import { useMount, useUnmount } from 'react-use'
 
+const EMPTY_TOKEN_METADATA: TokenMetadata = {
+  address: '',
+  name: 'Unknown Token',
+  symbol: 'UNKNOWN',
+  logoURI: '',
+  decimals: 0,
+  chainId: 101,
+  extensions: {},
+  tags: [],
+}
+
 /**
  * Store
  */
@@ -75,7 +86,8 @@ export const useAllTokens = () => {
 export const useTokenByAddress = (addr: string) => {
   const tokens = useTokenStore(({ tokens }) => tokens)
   const token = useMemo(
-    () => tokens.find(({ address }) => address === addr),
+    () =>
+      tokens.find(({ address }) => address === addr) || EMPTY_TOKEN_METADATA,
     [tokens, addr],
   )
   return token
