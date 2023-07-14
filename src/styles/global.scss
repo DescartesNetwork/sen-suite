@@ -3,18 +3,7 @@
 @tailwind utilities;
 
 @import './typography.scss';
-
-@layer utilities {
-  @variants responsive {
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-  }
-}
+@import './scrollbar.scss';
 
 html {
   font-family: 'DM Sans', sans-serif;
