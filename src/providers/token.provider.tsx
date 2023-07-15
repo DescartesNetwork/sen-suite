@@ -4,6 +4,9 @@ import axios from 'axios'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import Fuse from 'fuse.js'
+import { keccak_256 } from '@noble/hashes/sha3'
+import BN from 'bn.js'
+import { v4 as uuid } from 'uuid'
 
 import { env } from '@/configs/env'
 import { useMount, useUnmount } from 'react-use'
@@ -81,6 +84,28 @@ export default function TokenProvider({ children }: { children: ReactNode }) {
 export const useAllTokens = () => {
   const tokens = useTokenStore(({ tokens }) => tokens)
   return tokens
+}
+
+export const useRandomTokens = ({
+  seed,
+  limit = 50,
+}: {
+  seed?: string
+  limit?: number
+} = {}) => {
+  const tokens = useTokenStore(({ tokens }) => tokens)
+  const _seed = useMemo(
+    () => keccak_256(new TextEncoder().encode(seed || uuid())),
+    [seed],
+  )
+  const _limit = useMemo(() => Math.max(1, limit), [limit])
+  const randTokens = useMemo(() => {
+    if (tokens.length < _limit) return tokens
+    const red = BN.red(new BN(tokens.length))
+    const index = new BN(_seed).toRed(red).toNumber()
+    return tokens.slice(index, index + _limit)
+  }, [tokens, _limit, _seed])
+  return randTokens
 }
 
 export const useTokenByAddress = (addr: string) => {
