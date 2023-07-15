@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react'
 
 import LazyLoad from 'react-lazy-load'
 import Clipboard from '@/components/clipboard'
-import { ArrowUpRightSquare, Dices, History } from 'lucide-react'
+import { ArrowUpRightSquare, Dices, History, SearchCheck } from 'lucide-react'
 import { TokenLogo, TokenName, TokenSymbol } from '../token'
 
 import { solscan } from '@/helpers/explorers'
@@ -80,9 +80,18 @@ export default function TokenList({ tokens }: TokenListProps) {
           </div>
         </div>
       ))}
-      <div className="sticky top-0 col-span-12 bg-base-100 z-10 py-2 flex gap-2 items-center">
-        <Dices className="w-4 h-4 opacity-60" />
-        <h5 className="flex-auto text-sm opacity-60">Explorer</h5>
+      <div className="sticky top-0 col-span-12 bg-base-100 z-10 py-2">
+        <label className="swap">
+          <input type="checkbox" checked={!tokens} />
+          <div className="swap-on flex gap-2 items-center">
+            <Dices className="w-4 h-4 opacity-60" />
+            <h5 className="flex-auto text-sm opacity-60">Explorer</h5>
+          </div>
+          <div className="swap-off flex gap-2 items-center">
+            <SearchCheck className="w-4 h-4 opacity-60" />
+            <h5 className="flex-auto text-sm opacity-60">Search Results</h5>
+          </div>
+        </label>
       </div>
       {(tokens || randTokens).map(({ name, symbol, address, logoURI }) => (
         <div key={address} className="col-span-12">

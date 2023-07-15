@@ -43,7 +43,7 @@ export default function TokenSelection({ open, onCancel }: TokenSelectionType) {
             type="search"
             name="search"
             placeholder="Search"
-            className="input input-sm w-full pl-10 bg-base-200"
+            className="input rounded-xl w-full pl-10 bg-base-200"
             value={text}
             onChange={(e) => setText(e.target.value)}
           />
