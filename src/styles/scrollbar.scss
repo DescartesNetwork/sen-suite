@@ -1,5 +1,5 @@
 @layer utilities {
-  @variants responsive {
+  @layer responsive {
     .no-scrollbar::-webkit-scrollbar {
       display: none;
     }
