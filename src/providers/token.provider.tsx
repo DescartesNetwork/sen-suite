@@ -7,20 +7,9 @@ import Fuse from 'fuse.js'
 import { keccak_256 } from '@noble/hashes/sha3'
 import BN from 'bn.js'
 import { v4 as uuid } from 'uuid'
-
-import { env } from '@/configs/env'
 import { useMount, useUnmount } from 'react-use'
 
-const EMPTY_TOKEN_METADATA: TokenMetadata = {
-  address: '',
-  name: 'Unknown Token',
-  symbol: 'UNKNOWN',
-  logoURI: '',
-  decimals: 0,
-  chainId: 101,
-  extensions: {},
-  tags: [],
-}
+import { env } from '@/configs/env'
 
 /**
  * Store
@@ -92,7 +81,7 @@ export const useRandomTokens = ({
 }: {
   seed?: string
   limit?: number
-} = {}) => {
+} = {}): TokenMetadata[] => {
   const tokens = useTokenStore(({ tokens }) => tokens)
   const _seed = useMemo(
     () => keccak_256(new TextEncoder().encode(seed || uuid())),
@@ -111,8 +100,7 @@ export const useRandomTokens = ({
 export const useTokenByAddress = (addr: string) => {
   const tokens = useTokenStore(({ tokens }) => tokens)
   const token = useMemo(
-    () =>
-      tokens.find(({ address }) => address === addr) || EMPTY_TOKEN_METADATA,
+    () => tokens.find(({ address }) => address === addr),
     [tokens, addr],
   )
   return token

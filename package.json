@@ -14,7 +14,12 @@
     "lint": "next lint",
     "lint:watch": "nodemon --watch src --ext ts,tsx --exec 'next lint'"
   },
+  "resolutions": {
+    "@solana/buffer-layout": "^4.0.1"
+  },
   "dependencies": {
+    "@coral-xyz/anchor": "^0.28.1-beta.1",
+    "@coral-xyz/spl-token": "^0.28.1-beta.1",
     "@mdx-js/react": "^2.3.0",
     "@solana/wallet-adapter-base": "^0.9.22",
     "@solana/wallet-adapter-react": "^0.15.32",

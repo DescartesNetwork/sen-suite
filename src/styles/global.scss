@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+@import '@solana/wallet-adapter-react-ui/styles.css';
 @import './typography.scss';
 @import './scrollbar.scss';
 

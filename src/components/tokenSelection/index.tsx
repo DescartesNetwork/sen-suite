@@ -2,13 +2,11 @@
 import { useEffect, useState } from 'react'
 
 import Modal from '@/components/modal'
-import Clipboard from '@/components/clipboard'
-import { ArrowUpRightSquare, Search } from 'lucide-react'
-import LazyLoad from 'react-lazy-load'
-
-import { useRandomTokens, useSearchToken } from '@/providers/token.provider'
-import { solscan } from '@/helpers/explorers'
+import { Search } from 'lucide-react'
 import Island from '../island'
+import TokenList from './tokenList'
+
+import { useSearchToken } from '@/providers/token.provider'
 
 export type TokenSelectionType = {
   open?: boolean
@@ -19,7 +17,6 @@ export default function TokenSelection({ open, onCancel }: TokenSelectionType) {
   const [text, setText] = useState('')
   const [tokens, setTokens] = useState<TokenMetadata[] | undefined>()
   const search = useSearchToken()
-  const randTokens = useRandomTokens()
 
   useEffect(() => {
     const data = !text.length
@@ -46,52 +43,16 @@ export default function TokenSelection({ open, onCancel }: TokenSelectionType) {
             type="search"
             name="search"
             placeholder="Search"
-            className="input input-sm w-full pl-10"
+            className="input input-sm w-full pl-10 bg-base-200"
             value={text}
             onChange={(e) => setText(e.target.value)}
           />
         </div>
-        <Island>
-          <div className="col-span-12 grid grid-cols-12 gap-2 max-h-96 overflow-y-auto overflow-x-hidden no-scrollbar">
-            {(tokens || randTokens).map(
-              ({ name, symbol, address, logoURI }) => (
-                <div key={address} className="col-span-12">
-                  <LazyLoad height={64}>
-                    <div className="group card w-full p-2 rounded-lgsm hover:bg-base-200 cursor-pointer">
-                      <div className="flex gap-2">
-                        <div className="avatar">
-                          <div className="w-12 h-12 rounded-full">
-                            <img src={logoURI} alt={name} />
-                          </div>
-                        </div>
-                        <div className="flex-auto">
-                          <p className="font-semibold">{symbol}</p>
-                          <p className="text-sm opacity-80">{name}</p>
-                        </div>
-                        <div className="invisible group-hover:visible">
-                          <Clipboard
-                            content={address}
-                            idleText="Copy Token Address"
-                          />
-                        </div>
-                        <div className="invisible group-hover:visible">
-                          <a
-                            className="btn btn-sm btn-ghost btn-square"
-                            href={solscan(address)}
-                            target="_blank"
-                            rel="noreferrer"
-                          >
-                            <ArrowUpRightSquare className="w-4 h-4" />
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  </LazyLoad>
-                </div>
-              ),
-            )}
-          </div>
-        </Island>
+        <div className="col-span-12">
+          <Island>
+            <TokenList tokens={tokens} />
+          </Island>
+        </div>
       </div>
     </Modal>
   )
