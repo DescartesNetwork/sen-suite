@@ -34,7 +34,7 @@ const conf: Record<Env, Conf> = {
    * Production configurations
    */
   production: {
-    rpc: 'https://api.mainnet-beta.solana.com',
+    rpc: 'https://solitary-autumn-water.solana-mainnet.quiknode.pro/05b03a0cfeb8a5ec38f4c55950eb9b9bad7c8b58/',
     network: WalletAdapterNetwork.Mainnet,
     balancerAddress: 'D3BBjqUdCYuP18fNvvMbPAZ8DpcRi4io2EsYHQawJDag',
   },
