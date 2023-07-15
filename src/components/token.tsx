@@ -1,5 +1,10 @@
-import { useTokenByAddress } from '@/providers/token.provider'
+'use client'
 import { Fragment } from 'react'
+
+import { Diamond } from 'lucide-react'
+
+import { useTokenByAddress } from '@/providers/token.provider'
+import { shortenAddress } from '@/helpers/utils'
 
 export type TokenLogoProps = {
   address: string
@@ -10,11 +15,14 @@ export function TokenLogo({
   address,
   className = 'w-12 h-12 rounded-full',
 }: TokenLogoProps) {
-  const { logoURI, name } = useTokenByAddress(address)
+  const { logoURI, name } = useTokenByAddress(address) || {
+    logoURI: '',
+    name: '',
+  }
   return (
-    <div className="avatar">
+    <div className="avatar placeholder">
       <div className={className}>
-        <img src={logoURI} alt={name} />
+        {logoURI ? <img src={logoURI} alt={name} /> : <Diamond />}
       </div>
     </div>
   )
@@ -25,7 +33,9 @@ export type TokenNameProps = {
 }
 
 export function TokenName({ address }: TokenNameProps) {
-  const { name } = useTokenByAddress(address)
+  const { name } = useTokenByAddress(address) || {
+    name: shortenAddress(address, 6),
+  }
   return <Fragment>{name}</Fragment>
 }
 
@@ -34,6 +44,8 @@ export type TokenSymbolProps = {
 }
 
 export function TokenSymbol({ address }: TokenSymbolProps) {
-  const { symbol } = useTokenByAddress(address)
+  const { symbol } = useTokenByAddress(address) || {
+    symbol: address.substring(0, 6),
+  }
   return <Fragment>{symbol}</Fragment>
 }
