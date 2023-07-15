@@ -13,7 +13,7 @@ export type TokenLogoProps = {
 
 export function TokenLogo({
   address,
-  className = 'w-12 h-12 rounded-full',
+  className = 'w-12 h-12 rounded-full bg-base-300',
 }: TokenLogoProps) {
   const { logoURI, name } = useTokenByAddress(address) || {
     logoURI: '',
@@ -22,7 +22,11 @@ export function TokenLogo({
   return (
     <div className="avatar placeholder">
       <div className={className}>
-        {logoURI ? <img src={logoURI} alt={name} /> : <Diamond />}
+        {logoURI ? (
+          <img src={logoURI} alt={name} />
+        ) : (
+          <Diamond className="text-base-content" />
+        )}
       </div>
     </div>
   )
