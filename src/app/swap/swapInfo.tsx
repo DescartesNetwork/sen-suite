@@ -1,3 +1,5 @@
+'use client'
+
 import { useSwapStore } from '@/hooks/swap.hook'
 
 function PriceImpact() {

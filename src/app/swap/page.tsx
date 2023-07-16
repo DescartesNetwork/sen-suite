@@ -1,4 +1,5 @@
 'use client'
+import { useCallback, useState } from 'react'
 
 import { ArrowUpDown } from 'lucide-react'
 import Ask from './ask'
@@ -7,9 +8,22 @@ import SwapSettings from './swapSettings'
 import SwapInfo from './swapInfo'
 
 import { useSwitch } from '@/hooks/swap.hook'
+import { asyncWait } from '@/helpers/utils'
 
 export default function Swap() {
+  const [loading, setLoading] = useState(false)
   const onSwitch = useSwitch()
+
+  const onSwap = useCallback(async () => {
+    try {
+      setLoading(true)
+      await asyncWait(5000)
+    } catch (er: any) {
+      console.log(er.message)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
 
   return (
     <div className="flex h-full rounded-3xl bg-swap-light dark:bg-swap-dark bg-center bg-cover transition-all p-4 items-center">
@@ -38,8 +52,13 @@ export default function Swap() {
               <SwapInfo />
             </div>
             <div className="col-span-12">
-              <button className="btn btn-primary w-full rounded-full">
+              <button
+                className="btn btn-primary w-full rounded-full"
+                disabled={loading}
+                onClick={onSwap}
+              >
                 Swap
+                {loading && <span className="loading loading-spinner" />}
               </button>
             </div>
           </div>
