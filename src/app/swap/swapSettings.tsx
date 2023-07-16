@@ -33,7 +33,7 @@ export default function SwapSettings() {
       </label>
       <div tabIndex={0} className="dropdown-content z-[1]">
         <div className="card bg-base-100 shadow-xl p-4 flex flex-col gap-2">
-          <p className="text-md font-bold">Slippage Tolerance</p>
+          <p className="text-sm font-bold">Slippage Tolerance</p>
           <div className="join">
             {[0.01, 0.05, 0.1, 1].map((value) => (
               <SlippageOptions

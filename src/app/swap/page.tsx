@@ -4,6 +4,7 @@ import { ArrowUpDown } from 'lucide-react'
 import Ask from './ask'
 import Bid from './bid'
 import SwapSettings from './swapSettings'
+import SwapInfo from './swapInfo'
 
 import { useSwitch } from '@/hooks/swap.hook'
 
@@ -34,14 +35,12 @@ export default function Swap() {
               <Ask />
             </div>
             <div className="col-span-12">
-              <div className="flex">
-                <div className="flex-auto">
-                  <p className="font-bold">Key</p>
-                </div>
-                <div>
-                  <p>Value</p>
-                </div>
-              </div>
+              <SwapInfo />
+            </div>
+            <div className="col-span-12">
+              <button className="btn btn-primary w-full rounded-full">
+                Swap
+              </button>
             </div>
           </div>
         </div>
