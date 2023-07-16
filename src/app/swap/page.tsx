@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowUpDown } from 'lucide-react'
+import { ArrowUpDown, Settings } from 'lucide-react'
 import Ask from './ask'
 import Bid from './bid'
 
@@ -14,6 +14,12 @@ export default function Swap() {
       <div className="flex flex-row w-full justify-center">
         <div className="max-w-[360px]">
           <div className="grid grid-cols-12 gap-2 card rounded-3xl bg-base-100 shadow-xl p-4">
+            <div className="col-span-12 flex flex-row gap-2 items-center pb-2">
+              <h5 className="flex-auto">Swap</h5>
+              <button className="btn btn-sm btn-ghost btn-circle">
+                <Settings className="h-5 w-5" />
+              </button>
+            </div>
             <div className="col-span-12">
               <Bid />
             </div>
