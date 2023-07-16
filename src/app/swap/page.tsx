@@ -11,7 +11,7 @@ export default function Swap() {
   const onSwitch = useSwitch()
 
   return (
-    <div className="h-full rounded-3xl bg-swap-light dark:bg-swap-dark bg-center bg-cover transition-all p-4">
+    <div className="flex h-full rounded-3xl bg-swap-light dark:bg-swap-dark bg-center bg-cover transition-all p-4 items-center">
       <div className="flex flex-row w-full justify-center">
         <div className="max-w-[360px]">
           <div className="grid grid-cols-12 gap-2 card rounded-3xl bg-base-100 shadow-xl p-4">
