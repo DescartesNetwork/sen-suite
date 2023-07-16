@@ -80,7 +80,7 @@ function LamportsProvider({ children }: { children: ReactNode }) {
       setLamports(lamports),
     )
     return () => connection.removeAccountChangeListener(watchId)
-  }, [publicKey, setLamports])
+  }, [publicKey, connection, setLamports])
 
   return <Fragment>{children}</Fragment>
 }
