@@ -64,7 +64,7 @@ export default function WalletInfo({
                   '0,0.[0000]',
                 )}
               </p>
-              <p className="flex-auto opacity-60">SOL</p>
+              <p className="text-info">◎</p>
             </div>
           </div>
         </li>

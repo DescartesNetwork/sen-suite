@@ -70,18 +70,17 @@ function LamportsProvider({ children }: { children: ReactNode }) {
   const { publicKey } = useWallet()
   const { connection } = useConnection()
 
-  const watch = useCallback(() => {
+  useEffect(() => {
     if (!publicKey) return () => {}
+    ;(async () => {
+      const lamports = await connection.getBalance(publicKey)
+      return setLamports(lamports)
+    })()
     const watchId = connection.onAccountChange(publicKey, ({ lamports }) =>
       setLamports(lamports),
     )
     return () => connection.removeAccountChangeListener(watchId)
-  }, [publicKey])
-
-  useEffect(() => {
-    const unwatch = watch()
-    return unwatch
-  })
+  }, [publicKey, setLamports])
 
   return <Fragment>{children}</Fragment>
 }
