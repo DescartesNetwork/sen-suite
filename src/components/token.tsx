@@ -1,16 +1,11 @@
 'use client'
 import { Fragment } from 'react'
-import { useWallet } from '@solana/wallet-adapter-react'
-import { utils } from '@coral-xyz/anchor'
-import { PublicKey } from '@solana/web3.js'
-import { BN } from 'bn.js'
 
 import { Diamond } from 'lucide-react'
 
 import { useTokenByAddress } from '@/providers/token.provider'
 import { shortenAddress, numeric } from '@/helpers/utils'
-import { useMyTokenAccountsSelector } from '@/providers/wallet.provider'
-import { undecimalize } from '@/helpers/decimals'
+import { useMyReadableBalanceByTokenAddress } from '@/providers/wallet.provider'
 
 export type TokenLogoProps = {
   tokenAddress: string
@@ -69,19 +64,7 @@ export function MyTokenBalance({
   tokenAddress,
   format = '0,0.[0000]',
 }: TokenBalanceProps) {
-  const { publicKey } = useWallet()
-  const { decimals } = useTokenByAddress(tokenAddress) || { decimals: 0 }
-  const balance = useMyTokenAccountsSelector<string>((tokenAccounts) => {
-    if (!publicKey || !tokenAddress) return '0'
-    const tokenAccount = utils.token.associatedAddress({
-      mint: new PublicKey(tokenAddress),
-      owner: publicKey,
-    })
-    const { amount } = tokenAccounts[tokenAccount.toBase58()] || {
-      amount: new BN(0),
-    }
-    return undecimalize(amount, decimals)
-  })
+  const balance = useMyReadableBalanceByTokenAddress(tokenAddress)
 
   return <Fragment>{numeric(balance).format(format)}</Fragment>
 }

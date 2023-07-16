@@ -6,7 +6,7 @@ import {
 } from '@solana/wallet-adapter-wallets'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
-import { AnchorProvider } from '@coral-xyz/anchor'
+import { AnchorProvider, utils } from '@coral-xyz/anchor'
 import { splTokenProgram } from '@coral-xyz/spl-token'
 import {
   AnchorWallet,
@@ -17,13 +17,16 @@ import {
   useWallet,
 } from '@solana/wallet-adapter-react'
 import { useAsync } from 'react-use'
-import { SystemProgram } from '@solana/web3.js'
+import { PublicKey, SystemProgram } from '@solana/web3.js'
 import isEqual from 'react-fast-compare'
+import { BN } from 'bn.js'
 
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui'
 
 import { env } from '@/configs/env'
 import solConfig from '@/configs/sol.config'
+import { useTokenByAddress } from '@/providers/token.provider'
+import { undecimalize } from '@/helpers/decimals'
 
 export type TokenAccount = Awaited<
   ReturnType<ReturnType<typeof splTokenProgram>['account']['account']['fetch']>
@@ -131,4 +134,26 @@ export const useMyTokenAccountsSelector = <T,>(
     isEqual,
   )
   return tokenAccounts
+}
+
+/**
+ * Get reaadable (undecimalized) token balance
+ * @param tokenAddress Token Address
+ * @returns Balance
+ */
+export const useMyReadableBalanceByTokenAddress = (tokenAddress: string) => {
+  const { publicKey } = useWallet()
+  const { decimals } = useTokenByAddress(tokenAddress) || { decimals: 0 }
+  const balance = useMyTokenAccountsSelector<string>((tokenAccounts) => {
+    if (!publicKey || !tokenAddress) return '0'
+    const tokenAccount = utils.token.associatedAddress({
+      mint: new PublicKey(tokenAddress),
+      owner: publicKey,
+    })
+    const { amount } = tokenAccounts[tokenAccount.toBase58()] || {
+      amount: new BN(0),
+    }
+    return undecimalize(amount, decimals)
+  })
+  return balance
 }

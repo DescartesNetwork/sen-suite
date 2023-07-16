@@ -1,8 +1,14 @@
 'use client'
 
+import { ArrowUpDown } from 'lucide-react'
+import Ask from './ask'
 import Bid from './bid'
 
+import { useSwitch } from '@/hooks/swap.hook'
+
 export default function Swap() {
+  const onSwitch = useSwitch()
+
   return (
     <div className="h-full rounded-3xl bg-swap-light dark:bg-swap-dark bg-center bg-cover transition-all p-4">
       <div className="flex flex-row w-full justify-center">
@@ -11,7 +17,17 @@ export default function Swap() {
             <div className="col-span-12">
               <Bid />
             </div>
-            <div className="col-span-12">{/* Ask */}</div>
+            <div className="col-span-12 flex flex-row justify-center -my-4">
+              <button
+                className="btn btn-sm btn-square btn-primary z-10"
+                onClick={onSwitch}
+              >
+                <ArrowUpDown className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="col-span-12">
+              <Ask />
+            </div>
             <div className="col-span-12">
               <div className="flex">
                 <div className="flex-auto">

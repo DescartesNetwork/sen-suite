@@ -2,10 +2,11 @@
 import { ChangeEvent, useCallback, useState } from 'react'
 
 import TokenSelection from '@/components/tokenSelection'
-
-import { useSwapStore } from '@/hooks/swap.hook'
 import { MyTokenBalance, TokenLogo, TokenSymbol } from '@/components/token'
 import { ChevronDown } from 'lucide-react'
+
+import { useSwapStore } from '@/hooks/swap.hook'
+import { useMyReadableBalanceByTokenAddress } from '@/providers/wallet.provider'
 
 export default function Bid() {
   const [open, setOpen] = useState(false)
@@ -13,6 +14,8 @@ export default function Bid() {
   const setBidTokenAddress = useSwapStore(
     ({ setBidTokenAddress }) => setBidTokenAddress,
   )
+  const bidAmount = useSwapStore(({ bidAmount }) => bidAmount)
+  const setBidAmount = useSwapStore(({ setBidAmount }) => setBidAmount)
 
   const onBidTokenAddress = useCallback(
     (tokenAddress: string) => {
@@ -23,13 +26,14 @@ export default function Bid() {
     },
     [bidTokenAddress, setBidTokenAddress, setOpen],
   )
+  const balance = useMyReadableBalanceByTokenAddress(bidTokenAddress)
 
   const onRange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       const percentage = Number(e.target.value) / 100
-      console.log(percentage, bidTokenAddress)
+      if (percentage > 0) setBidAmount(String(percentage * Number(balance)))
     },
-    [bidTokenAddress],
+    [balance, setBidAmount],
   )
 
   return (
@@ -52,6 +56,8 @@ export default function Bid() {
           type="number"
           placeholder="0"
           className="input input-ghost w-full max-w-sm rounded-full focus:outline-none text-right text-xl"
+          value={bidAmount}
+          onChange={(e) => setBidAmount(e.target.value)}
         />
       </div>
       <div className="col-span-12 flex flex-row gap-2 items-start justify-between">
