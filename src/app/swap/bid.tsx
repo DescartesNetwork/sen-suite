@@ -10,6 +10,7 @@ import { useMyReadableBalanceByTokenAddress } from '@/providers/wallet.provider'
 
 export default function Bid() {
   const [open, setOpen] = useState(false)
+  const [range, setRange] = useState('0')
   const bidTokenAddress = useSwapStore(({ bidTokenAddress }) => bidTokenAddress)
   const setBidTokenAddress = useSwapStore(
     ({ setBidTokenAddress }) => setBidTokenAddress,
@@ -26,12 +27,20 @@ export default function Bid() {
     },
     [bidTokenAddress, setBidTokenAddress, setOpen],
   )
-  const balance = useMyReadableBalanceByTokenAddress(bidTokenAddress)
+  const onBidAmount = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setBidAmount(e.target.value)
+      setRange('0')
+    },
+    [setBidAmount],
+  )
 
+  const balance = useMyReadableBalanceByTokenAddress(bidTokenAddress)
   const onRange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       const percentage = Number(e.target.value) / 100
       if (percentage > 0) setBidAmount(String(percentage * Number(balance)))
+      setRange(e.target.value)
     },
     [balance, setBidAmount],
   )
@@ -57,7 +66,7 @@ export default function Bid() {
           placeholder="0"
           className="input input-ghost w-full max-w-sm rounded-full focus:outline-none text-right text-xl"
           value={bidAmount}
-          onChange={(e) => setBidAmount(e.target.value)}
+          onChange={onBidAmount}
         />
       </div>
       <div className="col-span-12 flex flex-row gap-2 items-start justify-between">
@@ -67,14 +76,14 @@ export default function Bid() {
             <MyTokenBalance tokenAddress={bidTokenAddress} />
           </p>
         </div>
-        <div className="flex-auto max-w-[100px]">
+        <div className="flex-auto max-w-[112px]">
           <input
             type="range"
             min={0}
             max={100}
             step={50}
-            defaultValue={0}
             className="range range-xs range-primary"
+            value={range}
             onChange={onRange}
           />
           <div className="w-full flex flex-row justify-between px-1 text-[9px] opacity-60">
