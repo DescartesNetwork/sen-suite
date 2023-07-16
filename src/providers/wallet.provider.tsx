@@ -22,14 +22,13 @@ import isEqual from 'react-fast-compare'
 
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui'
 
-import configs from '@/configs'
+import { env } from '@/configs/env'
+import solConfig from '@/configs/sol.config'
 
 export type TokenAccount = Awaited<
   ReturnType<ReturnType<typeof splTokenProgram>['account']['account']['fetch']>
 >
-
-const { env, sol } = configs
-const supportedWallets = [new PhantomWalletAdapter(), new TorusWalletAdapter()]
+const SUPPORTED_WALLETS = [new PhantomWalletAdapter(), new TorusWalletAdapter()]
 
 /**
  * Store
@@ -45,7 +44,7 @@ export const useWalletStore = create<WalletStore>()(
     (set) => ({
       tokenAccounts: {},
       setTokenAccounts: (tokenAccounts: Record<string, TokenAccount>) =>
-        set({ tokenAccounts }),
+        set({ tokenAccounts }, false, 'setTokenAccounts'),
     }),
     {
       name: 'wallet',
@@ -85,8 +84,8 @@ function TokenAccountProvider({ children }: { children: ReactNode }) {
 
 export default function WalletProvider({ children }: { children: ReactNode }) {
   return (
-    <ConnectionProvider endpoint={sol.rpc}>
-      <SolanaWalletProvider wallets={supportedWallets} autoConnect>
+    <ConnectionProvider endpoint={solConfig.rpc}>
+      <SolanaWalletProvider wallets={SUPPORTED_WALLETS} autoConnect>
         <WalletModalProvider>
           <TokenAccountProvider>{children}</TokenAccountProvider>
         </WalletModalProvider>

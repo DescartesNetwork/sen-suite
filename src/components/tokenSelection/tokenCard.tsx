@@ -13,29 +13,37 @@ import { solscan } from '@/helpers/explorers'
 
 export type TokenCardProps = {
   tokenAddress: string
+  onClick?: () => void
+  active?: boolean
   showBalance?: boolean
 }
 
 export default function TokenCard({
   tokenAddress,
+  onClick = () => {},
+  active = false,
   showBalance = false,
 }: TokenCardProps) {
   return (
-    <div className="group card w-full p-2 hover:bg-base-200 cursor-pointer">
+    <div
+      className={
+        'group card w-full p-2 hover:bg-base-200 cursor-pointer' +
+        (active ? ' bg-accent' : '')
+      }
+      onClick={onClick}
+    >
       <div className="flex gap-2">
-        <TokenLogo address={tokenAddress} />
+        <TokenLogo tokenAddress={tokenAddress} />
         <div className="flex-auto">
           <p className="font-semibold">
-            <TokenSymbol address={tokenAddress} />
+            <TokenSymbol tokenAddress={tokenAddress} />
           </p>
           <p className="text-sm opacity-60">
-            <TokenName address={tokenAddress} />
+            <TokenName tokenAddress={tokenAddress} />
           </p>
         </div>
         <div className="invisible group-hover:visible">
           <Clipboard content={tokenAddress} idleText="Copy Token Address" />
-        </div>
-        <div className="invisible group-hover:visible">
           <a
             className="btn btn-sm btn-ghost btn-square"
             href={solscan(tokenAddress)}
@@ -51,11 +59,11 @@ export default function TokenCard({
               <div className="text-xs opacity-60">My Balance</div>
               <div className="divider divider-horizontal mx-0 my-1" />
               <div className="text-xs opacity-60">
-                <TokenSymbol address={tokenAddress} />
+                <TokenSymbol tokenAddress={tokenAddress} />
               </div>
             </div>
             <div className="text-sm">
-              <MyTokenBalance address={tokenAddress} />
+              <MyTokenBalance tokenAddress={tokenAddress} />
             </div>
           </div>
         )}

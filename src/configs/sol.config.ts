@@ -1,6 +1,6 @@
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base'
 
-import { Env } from './env'
+import { Env, env } from './env'
 
 /**
  * Contructor
@@ -43,4 +43,4 @@ const conf: Record<Env, Conf> = {
 /**
  * Module exports
  */
-export default conf
+export default conf[env]

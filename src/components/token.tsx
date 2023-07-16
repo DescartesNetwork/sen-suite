@@ -13,15 +13,15 @@ import { useMyTokenAccountsSelector } from '@/providers/wallet.provider'
 import { undecimalize } from '@/helpers/decimals'
 
 export type TokenLogoProps = {
-  address: string
+  tokenAddress: string
   className?: string
 }
 
 export function TokenLogo({
-  address,
+  tokenAddress,
   className = 'w-12 h-12 rounded-full bg-base-300',
 }: TokenLogoProps) {
-  const { logoURI, name } = useTokenByAddress(address) || {
+  const { logoURI, name } = useTokenByAddress(tokenAddress) || {
     logoURI: '',
     name: '',
   }
@@ -39,42 +39,42 @@ export function TokenLogo({
 }
 
 export type TokenNameProps = {
-  address: string
+  tokenAddress: string
 }
 
-export function TokenName({ address }: TokenNameProps) {
-  const { name } = useTokenByAddress(address) || {
-    name: shortenAddress(address, 6),
+export function TokenName({ tokenAddress }: TokenNameProps) {
+  const { name } = useTokenByAddress(tokenAddress) || {
+    name: shortenAddress(tokenAddress, 6),
   }
   return <Fragment>{name}</Fragment>
 }
 
 export type TokenSymbolProps = {
-  address: string
+  tokenAddress: string
 }
 
-export function TokenSymbol({ address }: TokenSymbolProps) {
-  const { symbol } = useTokenByAddress(address) || {
-    symbol: address.substring(0, 6),
+export function TokenSymbol({ tokenAddress }: TokenSymbolProps) {
+  const { symbol } = useTokenByAddress(tokenAddress) || {
+    symbol: tokenAddress.substring(0, 6),
   }
   return <Fragment>{symbol}</Fragment>
 }
 
 export type TokenBalanceProps = {
-  address: string
+  tokenAddress: string
   format?: string
 }
 
 export function MyTokenBalance({
-  address,
+  tokenAddress,
   format = '0,0.[0000]',
 }: TokenBalanceProps) {
   const { publicKey } = useWallet()
-  const { decimals } = useTokenByAddress(address) || { decimals: 0 }
+  const { decimals } = useTokenByAddress(tokenAddress) || { decimals: 0 }
   const balance = useMyTokenAccountsSelector<string>((tokenAccounts) => {
-    if (!publicKey) return '0'
+    if (!publicKey || !tokenAddress) return '0'
     const tokenAccount = utils.token.associatedAddress({
-      mint: new PublicKey(address),
+      mint: new PublicKey(tokenAddress),
       owner: publicKey,
     })
     const { amount } = tokenAccounts[tokenAccount.toBase58()] || {

@@ -10,9 +10,15 @@ import { useMyTokenAccounts } from '@/providers/wallet.provider'
 
 export type TokenListProps = {
   tokens?: TokenMetadata[]
+  tokenAddress?: string
+  onChange?: (tokenAddress: string) => void
 }
 
-export default function TokenList({ tokens }: TokenListProps) {
+export default function TokenList({
+  tokens,
+  tokenAddress,
+  onChange = () => {},
+}: TokenListProps) {
   const [hidden, setHidden] = useState(true)
   const all = useAllTokens()
   const recentTokensAccount = useMyTokenAccounts()
@@ -51,7 +57,12 @@ export default function TokenList({ tokens }: TokenListProps) {
       {recentTokens.map((address) => (
         <div key={address} className="col-span-12">
           <LazyLoad height={64}>
-            <TokenCard tokenAddress={address} showBalance />
+            <TokenCard
+              tokenAddress={address}
+              onClick={() => onChange(address)}
+              active={address === tokenAddress}
+              showBalance
+            />
           </LazyLoad>
         </div>
       ))}
@@ -71,7 +82,11 @@ export default function TokenList({ tokens }: TokenListProps) {
       {(tokens || randTokens).map(({ address }) => (
         <div key={address} className="col-span-12">
           <LazyLoad height={64}>
-            <TokenCard tokenAddress={address} />
+            <TokenCard
+              tokenAddress={address}
+              onClick={() => onChange(address)}
+              active={address === tokenAddress}
+            />
           </LazyLoad>
         </div>
       ))}

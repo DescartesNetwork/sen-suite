@@ -1,9 +1,9 @@
 'use client'
 import { useEffect, useState } from 'react'
 
-import Modal from '@/components/modal'
 import { Search } from 'lucide-react'
-import Island from '../island'
+import Modal from '@/components/modal'
+import Island from '@/components/island'
 import TokenList from './tokenList'
 
 import { useSearchToken } from '@/providers/token.provider'
@@ -11,9 +11,16 @@ import { useSearchToken } from '@/providers/token.provider'
 export type TokenSelectionType = {
   open?: boolean
   onCancel?: () => void
+  tokenAddress?: string
+  onChange?: (tokenAddress: string) => void
 }
 
-export default function TokenSelection({ open, onCancel }: TokenSelectionType) {
+export default function TokenSelection({
+  open,
+  onCancel,
+  tokenAddress,
+  onChange = () => {},
+}: TokenSelectionType) {
   const [text, setText] = useState('')
   const [tokens, setTokens] = useState<TokenMetadata[] | undefined>()
   const search = useSearchToken()
@@ -50,7 +57,11 @@ export default function TokenSelection({ open, onCancel }: TokenSelectionType) {
         </div>
         <div className="col-span-12">
           <Island>
-            <TokenList tokens={tokens} />
+            <TokenList
+              tokens={tokens}
+              tokenAddress={tokenAddress}
+              onChange={onChange}
+            />
           </Island>
         </div>
       </div>
