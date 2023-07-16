@@ -48,13 +48,13 @@ export default function WalletInfo({
       </label>
       <ul
         tabIndex={0}
-        className="dropdown-content z-[1] !menu-md p-2 shadow-xl bg-base-100 rounded-box !w-56"
+        className="dropdown-content z-[1] !menu-md p-2 shadow-xl bg-base-100 rounded-box !w-64"
       >
         <li>
           <div className="active flex flex-col gap-1">
             <div className="flex flex-row gap-1 w-full items-center">
               <p className="flex-auto text-xs font-bold opacity-60">
-                {shortenAddress(address, 3)}
+                {shortenAddress(address)}
               </p>
               <span className="badge badge-accent">{solConfig.network}</span>
             </div>
