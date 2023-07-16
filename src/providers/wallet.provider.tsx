@@ -1,5 +1,5 @@
 'use client'
-import { Fragment, ReactNode, useCallback, useEffect, useMemo } from 'react'
+import { Fragment, ReactNode, useEffect, useMemo } from 'react'
 import {
   PhantomWalletAdapter,
   TorusWalletAdapter,
