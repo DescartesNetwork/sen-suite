@@ -54,7 +54,7 @@ export default function WalletInfo({
           <div className="active flex flex-col gap-1">
             <div className="flex flex-row gap-1 w-full items-center">
               <p className="flex-auto text-xs font-bold opacity-60">
-                {shortenAddress(address)}
+                {shortenAddress(address, 3)}
               </p>
               <span className="badge badge-accent">{solConfig.network}</span>
             </div>
