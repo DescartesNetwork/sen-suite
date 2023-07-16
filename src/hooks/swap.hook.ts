@@ -13,6 +13,8 @@ export type SwapStore = {
   setAskTokenAddress: (askTokenAddress: string) => void
   askAmount: string
   setAskAmount: (askAmount: string) => void
+  slippage: number
+  setSlippage: (slippage: number) => void
 }
 
 /**
@@ -22,18 +24,21 @@ export type SwapStore = {
 export const useSwapStore = create<SwapStore>()(
   devtools(
     (set) => ({
-      bidTokenAddress: '',
+      bidTokenAddress: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
       setBidTokenAddress: (bidTokenAddress: string) =>
         set({ bidTokenAddress }, false, 'setBidTokenAddress'),
       bidAmount: '',
       setBidAmount: (bidAmount: string) =>
         set({ bidAmount }, false, 'setBidAmount'),
-      askTokenAddress: '',
+      askTokenAddress: 'SENBBKVCM7homnf5RX9zqpf1GFe935hnbU4uVzY1Y6M',
       setAskTokenAddress: (askTokenAddress: string) =>
         set({ askTokenAddress }, false, 'setAskTokenAddress'),
       askAmount: '',
       setAskAmount: (askAmount: string) =>
         set({ askAmount }, false, 'setAskAmount'),
+      slippage: 0.01,
+      setSlippage: (slippage: number) =>
+        set({ slippage }, false, 'setSlippage'),
     }),
     {
       name: 'swap',

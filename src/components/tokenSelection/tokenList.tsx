@@ -1,5 +1,5 @@
 'use client'
-import { useMemo, useState } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 
 import LazyLoad from 'react-lazy-load'
 import { Dices, History, SearchCheck } from 'lucide-react'
@@ -39,33 +39,39 @@ export default function TokenList({
 
   return (
     <div className="grid grid-cols-12 gap-2 relative max-h-96 overflow-y-auto overflow-x-hidden no-scrollbar">
-      <div className="sticky top-0 col-span-12 flex gap-2 items-center bg-base-100 z-10">
-        <History className="w-4 h-4 opacity-60" />
-        <h5 className="flex-auto text-sm opacity-60">Recent</h5>
-        <div className="form-control">
-          <label className="label cursor-pointer gap-2">
-            <span className="label-text opacity-60">Hide unknown tokens</span>
-            <input
-              type="checkbox"
-              className="checkbox checkbox-sm"
-              checked={hidden}
-              onChange={(e) => setHidden(e.target.checked)}
-            />
-          </label>
-        </div>
-      </div>
-      {recentTokens.map((address) => (
-        <div key={address} className="col-span-12">
-          <LazyLoad height={64}>
-            <TokenCard
-              tokenAddress={address}
-              onClick={() => onChange(address)}
-              active={address === tokenAddress}
-              showBalance
-            />
-          </LazyLoad>
-        </div>
-      ))}
+      {!tokens && (
+        <Fragment>
+          <div className="sticky top-0 col-span-12 flex gap-2 items-center bg-base-100 z-10">
+            <History className="w-4 h-4 opacity-60" />
+            <h5 className="flex-auto text-sm opacity-60">Recent</h5>
+            <div className="form-control">
+              <label className="label cursor-pointer gap-2">
+                <span className="label-text opacity-60">
+                  Hide unknown tokens
+                </span>
+                <input
+                  type="checkbox"
+                  className="checkbox checkbox-sm"
+                  checked={hidden}
+                  onChange={(e) => setHidden(e.target.checked)}
+                />
+              </label>
+            </div>
+          </div>
+          {recentTokens.map((address) => (
+            <div key={address} className="col-span-12">
+              <LazyLoad height={64}>
+                <TokenCard
+                  tokenAddress={address}
+                  onClick={() => onChange(address)}
+                  active={address === tokenAddress}
+                  showBalance
+                />
+              </LazyLoad>
+            </div>
+          ))}
+        </Fragment>
+      )}
       <div className="sticky top-0 col-span-12 bg-base-100 z-10 py-2">
         <label className="swap">
           <input type="checkbox" checked={!tokens} readOnly />

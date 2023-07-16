@@ -1,5 +1,5 @@
 'use client'
-import { Fragment, ReactNode, useMemo } from 'react'
+import { Fragment, ReactNode, useCallback, useEffect, useMemo } from 'react'
 import {
   PhantomWalletAdapter,
   TorusWalletAdapter,
@@ -40,6 +40,8 @@ const SUPPORTED_WALLETS = [new PhantomWalletAdapter(), new TorusWalletAdapter()]
 export type WalletStore = {
   tokenAccounts: Record<string, TokenAccount>
   setTokenAccounts: (tokenAccounts: Record<string, TokenAccount>) => void
+  lamports: number
+  setLamports: (lamports: number) => void
 }
 
 export const useWalletStore = create<WalletStore>()(
@@ -48,6 +50,9 @@ export const useWalletStore = create<WalletStore>()(
       tokenAccounts: {},
       setTokenAccounts: (tokenAccounts: Record<string, TokenAccount>) =>
         set({ tokenAccounts }, false, 'setTokenAccounts'),
+      lamports: 0,
+      setLamports: (lamports: number) =>
+        set({ lamports }, false, 'setLamports'),
     }),
     {
       name: 'wallet',
@@ -59,6 +64,27 @@ export const useWalletStore = create<WalletStore>()(
 /**
  * Provider
  */
+
+function LamportsProvider({ children }: { children: ReactNode }) {
+  const setLamports = useWalletStore(({ setLamports }) => setLamports)
+  const { publicKey } = useWallet()
+  const { connection } = useConnection()
+
+  const watch = useCallback(() => {
+    if (!publicKey) return () => {}
+    const watchId = connection.onAccountChange(publicKey, ({ lamports }) =>
+      setLamports(lamports),
+    )
+    return () => connection.removeAccountChangeListener(watchId)
+  }, [publicKey])
+
+  useEffect(() => {
+    const unwatch = watch()
+    return unwatch
+  })
+
+  return <Fragment>{children}</Fragment>
+}
 
 function TokenAccountProvider({ children }: { children: ReactNode }) {
   const setTokenAccounts = useWalletStore(
@@ -90,7 +116,9 @@ export default function WalletProvider({ children }: { children: ReactNode }) {
     <ConnectionProvider endpoint={solConfig.rpc}>
       <SolanaWalletProvider wallets={SUPPORTED_WALLETS} autoConnect>
         <WalletModalProvider>
-          <TokenAccountProvider>{children}</TokenAccountProvider>
+          <LamportsProvider>
+            <TokenAccountProvider>{children}</TokenAccountProvider>
+          </LamportsProvider>
         </WalletModalProvider>
       </SolanaWalletProvider>
     </ConnectionProvider>
@@ -137,7 +165,7 @@ export const useMyTokenAccountsSelector = <T,>(
 }
 
 /**
- * Get reaadable (undecimalized) token balance
+ * Get readable (undecimalized) token balance
  * @param tokenAddress Token Address
  * @returns Balance
  */
@@ -156,4 +184,12 @@ export const useMyReadableBalanceByTokenAddress = (tokenAddress: string) => {
     return undecimalize(amount, decimals)
   })
   return balance
+}
+
+/**
+ * Get lamports balance
+ */
+export const useLamports = () => {
+  const lamports = useWalletStore(({ lamports }) => lamports)
+  return lamports
 }

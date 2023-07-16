@@ -2,12 +2,16 @@
 import { useCallback, useMemo, useState } from 'react'
 import { Wallet } from '@solana/wallet-adapter-react'
 import copy from 'copy-to-clipboard'
+import { BN } from 'bn.js'
 
 import { ArrowUpRightSquare, Copy, LogOut } from 'lucide-react'
 import { WalletIcon } from '@solana/wallet-adapter-react-ui'
 
-import { asyncWait, shortenAddress } from '@/helpers/utils'
+import { asyncWait, numeric, shortenAddress } from '@/helpers/utils'
 import { solscan } from '@/helpers/explorers'
+import solConfig from '@/configs/sol.config'
+import { useLamports } from '@/providers/wallet.provider'
+import { undecimalize } from '@/helpers/decimals'
 
 export type WalletInfoProps = {
   wallet: Wallet
@@ -19,6 +23,7 @@ export default function WalletInfo({
   onDisconnect = () => {},
 }: WalletInfoProps) {
   const [copied, setCopied] = useState(false)
+  const lamports = useLamports()
 
   const address = useMemo(
     () => wallet.adapter.publicKey?.toBase58() || '',
@@ -36,17 +41,35 @@ export default function WalletInfo({
   const tolltipText = copied ? 'Copied' : 'Copy'
 
   return (
-    <li className="dropdown">
+    <li className="dropdown dropdown-top">
       <label tabIndex={0}>
         <WalletIcon className="avatar h-5 w-5" wallet={wallet} />
         <p className="menu-option font-semibold">{shortenAddress(address)}</p>
       </label>
       <ul
         tabIndex={0}
-        className="dropdown-content z-[1] !menu-md p-2 shadow-xl bg-base-100 rounded-box !w-48"
+        className="dropdown-content z-[1] !menu-md p-2 shadow-xl bg-base-100 rounded-box !w-56"
       >
         <li>
-          <a className="flex w-full" onClick={onCopy}>
+          <div className="active flex flex-col gap-1">
+            <div className="flex flex-row gap-1 w-full items-center">
+              <p className="flex-auto text-xs font-bold opacity-60">
+                {shortenAddress(address)}
+              </p>
+              <span className="badge badge-accent">{solConfig.network}</span>
+            </div>
+            <div className="flex flex-row gap-1 w-full items-center">
+              <p className="font-bold">
+                {numeric(undecimalize(new BN(lamports), 9)).format(
+                  '0,0.[0000]',
+                )}
+              </p>
+              <p className="flex-auto opacity-60">SOL</p>
+            </div>
+          </div>
+        </li>
+        <li>
+          <a className="flex" onClick={onCopy}>
             <span className="flex-auto">Copy Address</span>
             <span className={tolltipClassName} data-tip={tolltipText}>
               <Copy className="h-4 w-4" />
@@ -55,7 +78,7 @@ export default function WalletInfo({
         </li>
         <li>
           <a
-            className="flex w-full"
+            className="flex"
             href={solscan(address)}
             target="_blank"
             rel="noreferrer"
@@ -65,7 +88,7 @@ export default function WalletInfo({
           </a>
         </li>
         <li>
-          <a className="flex w-full link-error" onClick={onDisconnect}>
+          <a className="flex link-error" onClick={onDisconnect}>
             <span className="flex-auto">Disconnect</span>
             <LogOut className="h-4 w-4" />
           </a>
