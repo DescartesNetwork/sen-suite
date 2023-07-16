@@ -48,7 +48,7 @@ export default function TokenCard({
         {showBalance && (
           <div className="flex flex-col gap-1 items-end group-hover:hidden">
             <div className="flex flex-row">
-              <div className="text-xs opacity-60">Balance</div>
+              <div className="text-xs opacity-60">My Balance</div>
               <div className="divider divider-horizontal mx-0 my-1" />
               <div className="text-xs opacity-60">
                 <TokenSymbol address={tokenAddress} />

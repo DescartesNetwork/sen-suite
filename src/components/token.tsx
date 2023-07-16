@@ -10,6 +10,7 @@ import { Diamond } from 'lucide-react'
 import { useTokenByAddress } from '@/providers/token.provider'
 import { shortenAddress, numeric } from '@/helpers/utils'
 import { useMyTokenAccountsSelector } from '@/providers/wallet.provider'
+import { undecimalize } from '@/helpers/decimals'
 
 export type TokenLogoProps = {
   address: string
@@ -70,8 +71,8 @@ export function MyTokenBalance({
 }: TokenBalanceProps) {
   const { publicKey } = useWallet()
   const { decimals } = useTokenByAddress(address) || { decimals: 0 }
-  const balance = useMyTokenAccountsSelector<number>((tokenAccounts) => {
-    if (!publicKey) return 0
+  const balance = useMyTokenAccountsSelector<string>((tokenAccounts) => {
+    if (!publicKey) return '0'
     const tokenAccount = utils.token.associatedAddress({
       mint: new PublicKey(address),
       owner: publicKey,
@@ -79,7 +80,7 @@ export function MyTokenBalance({
     const { amount } = tokenAccounts[tokenAccount.toBase58()] || {
       amount: new BN(0),
     }
-    return amount.toNumber() / 10 ** decimals
+    return undecimalize(amount, decimals)
   })
 
   return <Fragment>{numeric(balance).format(format)}</Fragment>

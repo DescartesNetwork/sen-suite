@@ -57,7 +57,7 @@ export default function TokenList({ tokens }: TokenListProps) {
       ))}
       <div className="sticky top-0 col-span-12 bg-base-100 z-10 py-2">
         <label className="swap">
-          <input type="checkbox" checked={!tokens} />
+          <input type="checkbox" checked={!tokens} readOnly />
           <div className="swap-on flex gap-2 items-center">
             <Dices className="w-4 h-4 opacity-60" />
             <h5 className="flex-auto text-sm opacity-60">Explorer</h5>
