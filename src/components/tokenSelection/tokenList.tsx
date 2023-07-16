@@ -2,11 +2,9 @@
 import { useMemo, useState } from 'react'
 
 import LazyLoad from 'react-lazy-load'
-import Clipboard from '@/components/clipboard'
-import { ArrowUpRightSquare, Dices, History, SearchCheck } from 'lucide-react'
-import { TokenLogo, TokenName, TokenSymbol } from '../token'
+import { Dices, History, SearchCheck } from 'lucide-react'
+import TokenCard from './tokenCard'
 
-import { solscan } from '@/helpers/explorers'
 import { useAllTokens, useRandomTokens } from '@/providers/token.provider'
 import { useMyTokenAccounts } from '@/providers/wallet.provider'
 
@@ -52,32 +50,9 @@ export default function TokenList({ tokens }: TokenListProps) {
       </div>
       {recentTokens.map((address) => (
         <div key={address} className="col-span-12">
-          <div className="group card w-full p-2 hover:bg-base-200 cursor-pointer">
-            <div className="flex gap-2">
-              <TokenLogo address={address} />
-              <div className="flex-auto">
-                <p className="font-semibold">
-                  <TokenSymbol address={address} />
-                </p>
-                <p className="text-sm opacity-60">
-                  <TokenName address={address} />
-                </p>
-              </div>
-              <div className="invisible group-hover:visible">
-                <Clipboard content={address} idleText="Copy Token Address" />
-              </div>
-              <div className="invisible group-hover:visible">
-                <a
-                  className="btn btn-sm btn-ghost btn-square"
-                  href={solscan(address)}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <ArrowUpRightSquare className="w-4 h-4" />
-                </a>
-              </div>
-            </div>
-          </div>
+          <LazyLoad height={64}>
+            <TokenCard tokenAddress={address} showBalance />
+          </LazyLoad>
         </div>
       ))}
       <div className="sticky top-0 col-span-12 bg-base-100 z-10 py-2">
@@ -93,35 +68,10 @@ export default function TokenList({ tokens }: TokenListProps) {
           </div>
         </label>
       </div>
-      {(tokens || randTokens).map(({ name, symbol, address, logoURI }) => (
+      {(tokens || randTokens).map(({ address }) => (
         <div key={address} className="col-span-12">
           <LazyLoad height={64}>
-            <div className="group card w-full p-2 hover:bg-base-200 cursor-pointer">
-              <div className="flex gap-2">
-                <div className="avatar">
-                  <div className="w-12 h-12 rounded-full">
-                    <img src={logoURI} alt={name} />
-                  </div>
-                </div>
-                <div className="flex-auto">
-                  <p className="font-semibold">{symbol}</p>
-                  <p className="text-sm opacity-60">{name}</p>
-                </div>
-                <div className="invisible group-hover:visible">
-                  <Clipboard content={address} idleText="Copy Token Address" />
-                </div>
-                <div className="invisible group-hover:visible">
-                  <a
-                    className="btn btn-sm btn-ghost btn-square"
-                    href={solscan(address)}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    <ArrowUpRightSquare className="w-4 h-4" />
-                  </a>
-                </div>
-              </div>
-            </div>
+            <TokenCard tokenAddress={address} />
           </LazyLoad>
         </div>
       ))}

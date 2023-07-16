@@ -10,6 +10,7 @@ export type ClipboardProps = {
   idleText?: string
   className?: string
   iconClassName?: string
+  tooltipClassName?: string
 }
 
 export default function Clipboard({
@@ -17,6 +18,7 @@ export default function Clipboard({
   idleText = 'Copy',
   className = 'btn btn-sm btn-ghost btn-square',
   iconClassName = 'w-4 h-4',
+  tooltipClassName = 'tooltip tooltip-left',
 }: ClipboardProps) {
   const [copied, setCopied] = useState(false)
 
@@ -27,11 +29,11 @@ export default function Clipboard({
     return setCopied(false)
   }, [content])
 
-  const tolltipClassName = copied ? 'tooltip tooltip-open' : 'tooltip'
+  if (copied) tooltipClassName = tooltipClassName + ' tooltip-open'
   const tolltipText = copied ? 'Copied' : idleText
 
   return (
-    <span className={tolltipClassName} data-tip={tolltipText}>
+    <span className={tooltipClassName} data-tip={tolltipText}>
       <button className={className} onClick={onCopy}>
         <Copy className={iconClassName} />
       </button>
