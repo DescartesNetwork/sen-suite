@@ -9,6 +9,8 @@ import { env } from '@/configs/env'
 import { isAddress } from '@/helpers/utils'
 import { useTokenByAddress } from '@/providers/token.provider'
 import { decimalize } from '@/helpers/decimals'
+import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { VersionedTransaction } from '@solana/web3.js'
 
 export enum JupiterSwapMode {
   ExactIn = 'ExactIn',
@@ -121,6 +123,8 @@ export const useSwitch = () => {
 }
 
 export const useSwap = () => {
+  const { publicKey, signTransaction } = useWallet()
+  const { connection } = useConnection()
   const bidTokenAddress = useSwapStore(({ bidTokenAddress }) => bidTokenAddress)
   const bidAmount = useSwapStore(({ bidAmount }) => bidAmount)
   const askTokenAddress = useSwapStore(({ askTokenAddress }) => askTokenAddress)
@@ -147,8 +151,28 @@ export const useSwap = () => {
   }, [bidTokenAddress, bidAmount, askTokenAddress, slippage, decimals])
 
   const swap = useCallback(async () => {
-    console.log(value)
-  }, [value])
+    if (!publicKey || !signTransaction || !connection)
+      throw new Error('Cannot connect wallet.')
+    if (!value) throw new Error('Invalid input.')
+    const [bestRoute] = value
+    const {
+      data: { swapTransaction },
+    } = await axios.post('https://quote-api.jup.ag/v4/swap', {
+      route: bestRoute,
+      userPublicKey: publicKey.toBase58(),
+      wrapUnwrapSOL: true,
+    })
+    if (!swapTransaction) return undefined
+    const buf = Buffer.from(swapTransaction, 'base64')
+    const tx = VersionedTransaction.deserialize(buf)
+    const signedTx = await signTransaction(tx)
+    const raw = signedTx.serialize()
+    const txId = await connection.sendRawTransaction(raw, {
+      skipPreflight: true,
+      maxRetries: 2,
+    })
+    return txId
+  }, [value, publicKey, signTransaction, connection])
 
   return { routes: value || [], swap, fetching: loading }
 }

@@ -17,7 +17,8 @@ export default function Swap() {
   const onSwap = useCallback(async () => {
     try {
       setLoading(true)
-      await swap()
+      const txId = await swap()
+      console.log(txId)
     } catch (er: any) {
       console.log(er.message)
     } finally {
@@ -54,7 +55,7 @@ export default function Swap() {
             <div className="col-span-12">
               <button
                 className="btn btn-primary w-full rounded-full"
-                disabled={loading || fetching || !routes}
+                disabled={loading || fetching || !routes.length}
                 onClick={onSwap}
               >
                 Swap
