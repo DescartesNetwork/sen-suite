@@ -1,8 +1,14 @@
+import { useCallback } from 'react'
+import { useAsync } from 'react-use'
+import axios from 'axios'
+
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 
 import { env } from '@/configs/env'
-import { useCallback } from 'react'
+import { isAddress } from '@/helpers/utils'
+import { useTokenByAddress } from '@/providers/token.provider'
+import { decimalize } from '@/helpers/decimals'
 
 export type SwapStore = {
   bidTokenAddress: string
@@ -78,4 +84,41 @@ export const useSwitch = () => {
   ])
 
   return onSwitch
+}
+
+export const useSwap = () => {
+  const bidTokenAddress = useSwapStore(({ bidTokenAddress }) => bidTokenAddress)
+  const bidAmount = useSwapStore(({ bidAmount }) => bidAmount)
+  const askTokenAddress = useSwapStore(({ askTokenAddress }) => askTokenAddress)
+  const slippage = useSwapStore(({ slippage }) => slippage)
+
+  const { decimals } = useTokenByAddress(bidTokenAddress) || { decimals: 0 }
+
+  const { value: routes, loading } = useAsync(async () => {
+    if (
+      !isAddress(bidTokenAddress) ||
+      !isAddress(askTokenAddress) ||
+      !bidAmount
+    )
+      return undefined
+    try {
+      const amount = decimalize(bidAmount, decimals).toString()
+      const {
+        data: { data },
+      } = await axios.get(
+        `https://quote-api.jup.ag/v4/quote?inputMint=${bidTokenAddress}&outputMint=${askTokenAddress}&amount=${amount}&slippageBps=${
+          slippage * 10000
+        }`,
+      )
+      return data
+    } catch (er) {
+      return undefined
+    }
+  }, [bidTokenAddress, bidAmount, askTokenAddress, slippage, decimals])
+
+  const swap = useCallback(async () => {
+    console.log(routes)
+  }, [routes])
+
+  return { routes, swap, fetching: loading }
 }

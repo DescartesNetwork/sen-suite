@@ -7,23 +7,23 @@ import Bid from './bid'
 import SwapSettings from './swapSettings'
 import SwapInfo from './swapInfo'
 
-import { useSwitch } from '@/hooks/swap.hook'
-import { asyncWait } from '@/helpers/utils'
+import { useSwap, useSwitch } from '@/hooks/swap.hook'
 
 export default function Swap() {
   const [loading, setLoading] = useState(false)
   const onSwitch = useSwitch()
+  const { routes, swap, fetching } = useSwap()
 
   const onSwap = useCallback(async () => {
     try {
       setLoading(true)
-      await asyncWait(5000)
+      await swap()
     } catch (er: any) {
       console.log(er.message)
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [swap])
 
   return (
     <div className="flex h-full rounded-3xl bg-swap-light dark:bg-swap-dark bg-center bg-cover transition-all p-4 items-center">
@@ -54,11 +54,12 @@ export default function Swap() {
             <div className="col-span-12">
               <button
                 className="btn btn-primary w-full rounded-full"
-                disabled={loading}
+                disabled={loading || fetching || !routes}
                 onClick={onSwap}
               >
                 Swap
-                {loading && <span className="loading loading-spinner" />}
+                {loading ||
+                  (fetching && <span className="loading loading-spinner" />)}
               </button>
             </div>
           </div>

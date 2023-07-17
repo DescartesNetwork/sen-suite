@@ -1,11 +1,6 @@
 'use client'
 
-import {
-  MessagesSquare,
-  PanelLeftClose,
-  PanelLeftOpen,
-  Twitter,
-} from 'lucide-react'
+import { PanelLeftClose, PanelLeftOpen, Send, Twitter } from 'lucide-react'
 import Island from '@/components/island'
 import ThemeSwitch from './themeSwitch'
 
@@ -29,7 +24,7 @@ export default function Panel({ open = false, onOpen = () => {} }: PanelProps) {
       </li>
       <li>
         <a href="https://t.me/Sentre" target="_blank" rel="noreferrer">
-          <MessagesSquare className="menu-logo" />
+          <Send className="menu-logo" />
           <p className="menu-option">Telegram</p>
         </a>
       </li>
