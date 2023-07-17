@@ -10,6 +10,40 @@ import { isAddress } from '@/helpers/utils'
 import { useTokenByAddress } from '@/providers/token.provider'
 import { decimalize } from '@/helpers/decimals'
 
+export enum JupiterSwapMode {
+  ExactIn = 'ExactIn',
+  ExactOut = 'ExactOut',
+}
+export type JupiterFee = {
+  amount: string
+  mint: string
+  pct: number
+}
+export type JupiterRouteInfo = {
+  contextSlot: number
+  data: Array<{
+    amount: string
+    inAmount: string
+    marketInfos: Array<{
+      id: string
+      inAmount: string
+      inputMint: string
+      label: string
+      lpFee: JupiterFee
+      notEnoughLiquidity: boolean
+      outAmount: string
+      outputMint: string
+      platformFee: JupiterFee
+    }>
+    otherAmountThreshold: string
+    outAmount: string
+    priceImpactPct: number
+    slippageBps: number
+    swapMode: JupiterSwapMode
+  }>
+  timeTaken: number
+}
+
 export type SwapStore = {
   bidTokenAddress: string
   setBidTokenAddress: (bidTokenAddress: string) => void
@@ -94,31 +128,27 @@ export const useSwap = () => {
 
   const { decimals } = useTokenByAddress(bidTokenAddress) || { decimals: 0 }
 
-  const { value: routes, loading } = useAsync(async () => {
+  const { value, loading } = useAsync(async () => {
     if (
       !isAddress(bidTokenAddress) ||
       !isAddress(askTokenAddress) ||
       !bidAmount
     )
       return undefined
-    try {
-      const amount = decimalize(bidAmount, decimals).toString()
-      const {
-        data: { data },
-      } = await axios.get(
-        `https://quote-api.jup.ag/v4/quote?inputMint=${bidTokenAddress}&outputMint=${askTokenAddress}&amount=${amount}&slippageBps=${
-          slippage * 10000
-        }`,
-      )
-      return data
-    } catch (er) {
-      return undefined
-    }
+    const amount = decimalize(bidAmount, decimals).toString()
+    const {
+      data: { data },
+    } = await axios.get<JupiterRouteInfo>(
+      `https://quote-api.jup.ag/v4/quote?inputMint=${bidTokenAddress}&outputMint=${askTokenAddress}&amount=${amount}&slippageBps=${
+        slippage * 10000
+      }`,
+    )
+    return data
   }, [bidTokenAddress, bidAmount, askTokenAddress, slippage, decimals])
 
   const swap = useCallback(async () => {
-    console.log(routes)
-  }, [routes])
+    console.log(value)
+  }, [value])
 
-  return { routes, swap, fetching: loading }
+  return { routes: value || [], swap, fetching: loading }
 }
