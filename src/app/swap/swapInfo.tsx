@@ -86,13 +86,19 @@ function Platform() {
 
   return (
     <div className="flex flex-row gap-2 items-baseline">
-      <p className="flex-auto text-sm opacity-60">Platform</p>
+      <p className="flex-auto text-sm opacity-60">Platforms</p>
       <div className="flex flex-col justify-end gap-0">
         {(bestRoute?.marketInfos || [{ id: '-', label: '-' }]).map(
           ({ id, label }, i) => (
-            <div key={id} className="flex flex-row gap-2">
+            <div key={id} className="flex flex-row gap-2 items-center">
               {id !== '-' && (
-                <p className="flex-auto text-sm font-bold opacity-60">#{i}</p>
+                <div className="flex-auto">
+                  <div className="badge badge-info min-w-[28px]">
+                    <p className="text-xs font-bold text-info-content">
+                      {i + 1}
+                    </p>
+                  </div>
+                </div>
               )}
               <p className="text-sm font-bold">{label}</p>
             </div>
