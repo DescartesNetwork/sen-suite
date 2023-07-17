@@ -30,7 +30,9 @@ export default function Swap() {
         },
       )
     } catch (er: any) {
-      pushMessage('alert-error', er.message)
+      pushMessage('alert-error', er.message, {
+        ttl: 60000,
+      })
     } finally {
       setLoading(false)
     }
