@@ -56,7 +56,9 @@ export default function Sidebar() {
 
   return (
     <aside
-      className={`sidebar sticky top-0 ${!open ? '' : 'open'} flex flex-col`}
+      className={`sidebar sticky top-0 ${
+        !open ? '' : 'open'
+      } flex flex-col z-10`}
     >
       <ul className="menu menu-md rounded-box flex-auto">
         <li className="mb-8">

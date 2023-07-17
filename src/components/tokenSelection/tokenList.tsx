@@ -41,7 +41,7 @@ export default function TokenList({
     <div className="grid grid-cols-12 gap-2 relative max-h-96 overflow-y-auto overflow-x-hidden no-scrollbar">
       {!tokens && (
         <Fragment>
-          <div className="sticky top-0 col-span-12 flex gap-2 items-center bg-base-100 z-10">
+          <div className="sticky top-0 col-span-12 flex gap-2 items-center bg-base-100 z-[1]">
             <History className="w-4 h-4 opacity-60" />
             <h5 className="flex-auto text-sm opacity-60">Recent</h5>
             <div className="form-control">
@@ -72,7 +72,7 @@ export default function TokenList({
           ))}
         </Fragment>
       )}
-      <div className="sticky top-0 col-span-12 bg-base-100 z-10 py-2">
+      <div className="sticky top-0 col-span-12 bg-base-100 py-2">
         <label className="swap">
           <input type="checkbox" checked={!tokens} readOnly />
           <div className="swap-on flex gap-2 items-center">

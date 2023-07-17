@@ -48,7 +48,7 @@ export default function WalletInfo({
       </label>
       <ul
         tabIndex={0}
-        className="dropdown-content z-[1] !menu-md p-2 shadow-xl bg-base-100 rounded-box !w-64"
+        className="dropdown-content !menu-md p-2 shadow-xl bg-base-100 rounded-box !w-64"
       >
         <li>
           <div className="active flex flex-col gap-1">

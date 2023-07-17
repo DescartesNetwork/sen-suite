@@ -38,9 +38,9 @@ export default function Swap() {
             <div className="col-span-12">
               <Bid />
             </div>
-            <div className="col-span-12 flex flex-row justify-center -my-4">
+            <div className="col-span-12 flex flex-row justify-center -my-4 z-[1]">
               <button
-                className="btn btn-sm btn-square bg-base-100 z-[1] shadow-md"
+                className="btn btn-sm btn-square bg-base-100 shadow-md"
                 onClick={onSwitch}
               >
                 <ArrowUpDown className="h-4 w-4" />
