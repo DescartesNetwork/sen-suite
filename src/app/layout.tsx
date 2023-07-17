@@ -9,7 +9,6 @@ import Message from '@/components/message/page'
 import Sidebar from '@/app/sidebar'
 
 import '@/styles/global.scss'
-import Splash from '@/components/splash'
 
 export const metadata: Metadata = {
   title: 'Sentre',
