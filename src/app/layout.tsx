@@ -18,6 +18,18 @@ export const metadata: Metadata = {
     initialScale: 1,
     maximumScale: 1,
   },
+  icons: [
+    {
+      url: '/logo192.png',
+      type: 'image/png',
+      sizes: '192x192',
+    },
+    {
+      url: '/logo512.png',
+      type: 'image/png',
+      sizes: '512x512',
+    },
+  ],
 }
 
 export default function RootLayout({ children }: { children: ReactNode }) {

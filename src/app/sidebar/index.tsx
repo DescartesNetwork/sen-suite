@@ -16,21 +16,25 @@ const routes = [
     route: '/swap',
     name: 'Swap',
     Logo: CandlestickChart,
+    disabled: false,
   },
   {
     route: '/farming',
     name: 'Farming',
     Logo: Leaf,
+    disabled: true,
   },
   {
     route: '/airdrop',
     name: 'Airdrop',
     Logo: Droplets,
+    disabled: true,
   },
   {
     route: '/launchpad',
     name: 'Launchpad',
     Logo: Rocket,
+    disabled: true,
   },
 ]
 
@@ -39,7 +43,9 @@ export default function Sidebar() {
   const pathname = usePathname()
 
   return (
-    <aside className={`sidebar ${!open ? '' : 'open'} flex flex-col`}>
+    <aside
+      className={`sidebar sticky top-0 ${!open ? '' : 'open'} flex flex-col`}
+    >
       <ul className="menu menu-md rounded-box flex-auto">
         <li className="mb-8">
           <a href="/">
@@ -50,8 +56,8 @@ export default function Sidebar() {
             />
           </a>
         </li>
-        {routes.map(({ route, name, Logo }) => (
-          <li key={route}>
+        {routes.map(({ route, name, Logo, disabled }) => (
+          <li key={route} className={disabled ? 'disabled' : ''}>
             <Link
               href={route}
               className={pathname.startsWith(route) ? 'focus' : ''}
