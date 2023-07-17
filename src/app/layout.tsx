@@ -5,7 +5,7 @@ import UiProvider from '@/providers/ui.provider'
 import WalletProvider from '@/providers/wallet.provider'
 import TokenProvider from '@/providers/token.provider'
 
-import Message from '@/components/message/page'
+import Message from '@/components/message'
 import Sidebar from '@/app/sidebar'
 
 import '@/styles/global.scss'

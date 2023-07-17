@@ -1,6 +1,9 @@
-import { useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useAsync } from 'react-use'
 import axios from 'axios'
+import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { VersionedTransaction } from '@solana/web3.js'
+import { BN } from 'bn.js'
 
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
@@ -8,9 +11,7 @@ import { devtools } from 'zustand/middleware'
 import { env } from '@/configs/env'
 import { isAddress } from '@/helpers/utils'
 import { useTokenByAddress } from '@/providers/token.provider'
-import { decimalize } from '@/helpers/decimals'
-import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { VersionedTransaction } from '@solana/web3.js'
+import { decimalize, undecimalize } from '@/helpers/decimals'
 
 export enum JupiterSwapMode {
   ExactIn = 'ExactIn',
@@ -57,6 +58,8 @@ export type SwapStore = {
   setAskAmount: (askAmount: string) => void
   slippage: number
   setSlippage: (slippage: number) => void
+  routes: JupiterRouteInfo['data'] | undefined
+  setRoutes: (routes: JupiterRouteInfo['data'] | undefined) => void
 }
 
 /**
@@ -81,6 +84,9 @@ export const useSwapStore = create<SwapStore>()(
       slippage: 0.01,
       setSlippage: (slippage: number) =>
         set({ slippage }, false, 'setSlippage'),
+      routes: undefined,
+      setRoutes: (routes: JupiterRouteInfo['data'] | undefined) =>
+        set({ routes }, false, 'setRoutes'),
     }),
     {
       name: 'swap',
@@ -122,15 +128,20 @@ export const useSwitch = () => {
   return onSwitch
 }
 
-export const useSwap = () => {
-  const { publicKey, signTransaction } = useWallet()
-  const { connection } = useConnection()
+export const useUnsafeSwap = () => {
   const bidTokenAddress = useSwapStore(({ bidTokenAddress }) => bidTokenAddress)
   const bidAmount = useSwapStore(({ bidAmount }) => bidAmount)
   const askTokenAddress = useSwapStore(({ askTokenAddress }) => askTokenAddress)
+  const setAskAmount = useSwapStore(({ setAskAmount }) => setAskAmount)
   const slippage = useSwapStore(({ slippage }) => slippage)
+  const setRoutes = useSwapStore(({ setRoutes }) => setRoutes)
 
-  const { decimals } = useTokenByAddress(bidTokenAddress) || { decimals: 0 }
+  const { decimals: bidDecimals } = useTokenByAddress(bidTokenAddress) || {
+    decimals: 0,
+  }
+  const { decimals: askDecimals } = useTokenByAddress(askTokenAddress) || {
+    decimals: 0,
+  }
 
   const { value, loading } = useAsync(async () => {
     if (
@@ -139,7 +150,7 @@ export const useSwap = () => {
       !bidAmount
     )
       return undefined
-    const amount = decimalize(bidAmount, decimals).toString()
+    const amount = decimalize(bidAmount, bidDecimals).toString()
     const {
       data: { data },
     } = await axios.get<JupiterRouteInfo>(
@@ -148,13 +159,29 @@ export const useSwap = () => {
       }`,
     )
     return data
-  }, [bidTokenAddress, bidAmount, askTokenAddress, slippage, decimals])
+  }, [bidTokenAddress, bidAmount, askTokenAddress, slippage, bidDecimals])
+
+  useEffect(() => {
+    const [bestRoute] = value || []
+    const { outAmount } = bestRoute || {}
+    if (!outAmount) setAskAmount('')
+    else setAskAmount(undecimalize(new BN(outAmount), askDecimals))
+    setRoutes(value)
+  }, [value, setRoutes, setAskAmount, askDecimals])
+
+  return { routes: value || [], fetching: loading }
+}
+
+export const useSwap = () => {
+  const { publicKey, signTransaction } = useWallet()
+  const { connection } = useConnection()
+  const routes = useSwapStore(({ routes }) => routes)
 
   const swap = useCallback(async () => {
     if (!publicKey || !signTransaction || !connection)
       throw new Error('Cannot connect wallet.')
-    if (!value) throw new Error('Invalid input.')
-    const [bestRoute] = value
+    if (!routes) throw new Error('Invalid input.')
+    const [bestRoute] = routes
     const {
       data: { swapTransaction },
     } = await axios.post('https://quote-api.jup.ag/v4/swap', {
@@ -162,7 +189,7 @@ export const useSwap = () => {
       userPublicKey: publicKey.toBase58(),
       wrapUnwrapSOL: true,
     })
-    if (!swapTransaction) return undefined
+    if (!swapTransaction) throw new Error('Cannot find routes.')
     const buf = Buffer.from(swapTransaction, 'base64')
     const tx = VersionedTransaction.deserialize(buf)
     const signedTx = await signTransaction(tx)
@@ -172,7 +199,7 @@ export const useSwap = () => {
       maxRetries: 2,
     })
     return txId
-  }, [value, publicKey, signTransaction, connection])
+  }, [routes, publicKey, signTransaction, connection])
 
-  return { routes: value || [], swap, fetching: loading }
+  return { routes: routes || [], swap }
 }

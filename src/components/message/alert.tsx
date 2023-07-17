@@ -21,7 +21,13 @@ export function AlertIcon({ type }: { type: MessageType }) {
   return <HelpCircle />
 }
 
-export default function Alert({ id, type, message, ttl }: MessageProps) {
+export default function Alert({
+  id,
+  type,
+  message,
+  ttl,
+  onClick,
+}: MessageProps) {
   const t = useTween('linear', ttl)
   const unregister = useMessage(({ unregister }) => unregister)
 
@@ -30,7 +36,7 @@ export default function Alert({ id, type, message, ttl }: MessageProps) {
   }, [t, ttl, id, unregister])
 
   return (
-    <div className={'alert ' + type}>
+    <div className={'alert ' + type} onClick={onClick}>
       <AlertIcon type={type} />
       <div>
         <p>{message}</p>

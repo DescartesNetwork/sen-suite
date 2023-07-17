@@ -7,24 +7,34 @@ import Bid from './bid'
 import SwapSettings from './swapSettings'
 import SwapInfo from './swapInfo'
 
-import { useSwap, useSwitch } from '@/hooks/swap.hook'
+import { useSwap, useSwitch, useUnsafeSwap } from '@/hooks/swap.hook'
+import { usePushMessage } from '@/components/message/store'
+import { solscan } from '@/helpers/explorers'
 
 export default function Swap() {
   const [loading, setLoading] = useState(false)
   const onSwitch = useSwitch()
-  const { routes, swap, fetching } = useSwap()
+  const { routes, fetching } = useUnsafeSwap()
+  const { swap } = useSwap()
+  const pushMessage = usePushMessage()
 
   const onSwap = useCallback(async () => {
     try {
       setLoading(true)
       const txId = await swap()
-      console.log(txId)
+      pushMessage(
+        'alert-success',
+        'Swap successfully. Click here to view on explorer.',
+        {
+          onClick: () => window.open(solscan(txId), '_blank'),
+        },
+      )
     } catch (er: any) {
-      console.log(er.message)
+      pushMessage('alert-error', er.message)
     } finally {
       setLoading(false)
     }
-  }, [swap])
+  }, [swap, pushMessage])
 
   return (
     <div className="flex h-full rounded-3xl bg-swap-light dark:bg-swap-dark bg-center bg-cover transition-all p-4 items-center">
