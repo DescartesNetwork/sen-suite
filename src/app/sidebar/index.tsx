@@ -3,7 +3,13 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-import { CandlestickChart, Droplets, Leaf, Rocket } from 'lucide-react'
+import {
+  BookPlus,
+  CandlestickChart,
+  Droplets,
+  Leaf,
+  Rocket,
+} from 'lucide-react'
 import Brand from '@/components/brand'
 import Island from '@/components/island'
 import WalletButton from './walletButton'
@@ -34,6 +40,12 @@ const routes = [
     route: '/launchpad',
     name: 'Launchpad',
     Logo: Rocket,
+    disabled: true,
+  },
+  {
+    route: '/token',
+    name: 'Token Creation',
+    Logo: BookPlus,
     disabled: true,
   },
 ]
