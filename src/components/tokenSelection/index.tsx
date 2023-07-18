@@ -44,8 +44,8 @@ export default function TokenSelection({
         <div className="col-span-12">
           <h5>Search your token</h5>
         </div>
-        <div className="col-span-12 relative">
-          <Search className="pointer-events-none w-4 h-4 absolute top-1/2 transform -translate-y-1/2 left-3" />
+        <div className="col-span-12 relative flex flex-row items-center">
+          <Search className="pointer-events-none w-4 h-4 absolute left-3" />
           <input
             type="search"
             name="search"

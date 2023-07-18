@@ -22,7 +22,6 @@ const routes = [
     route: '/swap',
     name: 'Swap',
     Logo: CandlestickChart,
-    disabled: false,
   },
   {
     route: '/farming',
@@ -43,10 +42,9 @@ const routes = [
     disabled: true,
   },
   {
-    route: '/token',
+    route: '/token-creation',
     name: 'Token Creation',
     Logo: BookPlus,
-    disabled: true,
   },
 ]
 
