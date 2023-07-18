@@ -13,6 +13,9 @@
     .menu-logo {
       @apply h-5 w-5;
     }
+    li.disabled > a {
+      @apply cursor-not-allowed;
+    }
   }
 
   &.open {

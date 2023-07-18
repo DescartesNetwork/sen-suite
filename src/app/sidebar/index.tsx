@@ -73,7 +73,7 @@ export default function Sidebar() {
         {routes.map(({ route, name, Logo, disabled }) => (
           <li key={route} className={disabled ? 'disabled' : ''}>
             <Link
-              href={route}
+              href={disabled ? '#' : route}
               className={pathname.startsWith(route) ? 'focus' : ''}
             >
               <p>
