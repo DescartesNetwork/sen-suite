@@ -2,8 +2,8 @@
 import { Fragment, useMemo } from 'react'
 import { BN } from 'bn.js'
 
-import { TokenLogo, TokenSymbol } from '@/components/token'
-import { ChevronRight } from 'lucide-react'
+import { TokenSymbol } from '@/components/token'
+import { ChevronRight, Diamond } from 'lucide-react'
 
 import { undecimalize } from '@/helpers/decimals'
 import { numeric } from '@/helpers/utils'
@@ -80,6 +80,27 @@ function SlippageTolerance() {
   )
 }
 
+function Hop({ tokenAddress }: { tokenAddress: string }) {
+  const { logoURI, symbol } = useTokenByAddress(tokenAddress) || {
+    logoURI: '',
+    symbol: tokenAddress.substring(0, 6),
+  }
+
+  return (
+    <span className="tooltip flex" data-tip={symbol}>
+      <div className="avatar placeholder cursor-pointer">
+        <div className="w-6 h-6 rounded-full shadow-sm">
+          {logoURI ? (
+            <img src={logoURI} alt={symbol} />
+          ) : (
+            <Diamond className="text-base-content" />
+          )}
+        </div>
+      </div>
+    </span>
+  )
+}
+
 function Routes() {
   const {
     routes: [bestRoute],
@@ -102,10 +123,7 @@ function Routes() {
       {hops.map((tokenAddress, i) => (
         <Fragment key={i}>
           {i !== 0 && <ChevronRight className="w-4 h-4" />}
-          <TokenLogo
-            className="w-6 h-6 rounded-full shadow-sm"
-            tokenAddress={tokenAddress}
-          />
+          <Hop tokenAddress={tokenAddress} />
         </Fragment>
       ))}
     </div>
