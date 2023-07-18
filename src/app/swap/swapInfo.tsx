@@ -1,8 +1,9 @@
 'use client'
-import { useMemo } from 'react'
+import { Fragment, useMemo } from 'react'
 import { BN } from 'bn.js'
 
-import { TokenSymbol } from '@/components/token'
+import { TokenLogo, TokenSymbol } from '@/components/token'
+import { ChevronRight } from 'lucide-react'
 
 import { undecimalize } from '@/helpers/decimals'
 import { numeric } from '@/helpers/utils'
@@ -79,32 +80,34 @@ function SlippageTolerance() {
   )
 }
 
-function Platform() {
+function Routes() {
   const {
     routes: [bestRoute],
   } = useSwap()
 
+  const hops = useMemo(() => {
+    if (!bestRoute?.marketInfos) return []
+    const hops: string[] = []
+    bestRoute?.marketInfos.forEach(({ inputMint, outputMint }) => {
+      hops.pop()
+      hops.push(inputMint)
+      hops.push(outputMint)
+    })
+    return hops
+  }, [bestRoute?.marketInfos])
+
   return (
-    <div className="flex flex-row gap-2 items-baseline">
-      <p className="flex-auto text-sm opacity-60">Platforms</p>
-      <div className="flex flex-col justify-end gap-0">
-        {(bestRoute?.marketInfos || [{ id: '-', label: '-' }]).map(
-          ({ id, label }, i) => (
-            <div key={id} className="flex flex-row gap-2 items-center">
-              {id !== '-' && (
-                <div className="flex-auto">
-                  <div className="badge badge-info min-w-[28px]">
-                    <p className="text-xs font-bold text-info-content">
-                      {i + 1}
-                    </p>
-                  </div>
-                </div>
-              )}
-              <p className="text-sm font-bold">{label}</p>
-            </div>
-          ),
-        )}
-      </div>
+    <div className="flex flex-row gap-1 items-center">
+      <p className="flex-auto text-sm opacity-60">Routes</p>
+      {hops.map((tokenAddress, i) => (
+        <Fragment key={i}>
+          {i !== 0 && <ChevronRight className="w-4 h-4" />}
+          <TokenLogo
+            className="w-6 h-6 rounded-full shadow-sm"
+            tokenAddress={tokenAddress}
+          />
+        </Fragment>
+      ))}
     </div>
   )
 }
@@ -122,7 +125,7 @@ export default function SwapInfo() {
         <SlippageTolerance />
       </div>
       <div className="col-span-12">
-        <Platform />
+        <Routes />
       </div>
     </div>
   )
