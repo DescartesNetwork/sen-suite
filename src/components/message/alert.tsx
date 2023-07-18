@@ -41,7 +41,10 @@ export default function Alert({
   return (
     <div
       className={'cursor-pointer alert max-w-sm ' + type}
-      onClick={onClick}
+      onClick={(e) => {
+        e.stopPropagation()
+        return onClick()
+      }}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
