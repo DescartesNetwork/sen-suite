@@ -41,13 +41,13 @@ export default function Panel({ open = false, onOpen = () => {} }: PanelProps) {
       </li>
       <li onClick={() => onOpen(!open)}>
         <span className="flex flex-row gap-1 items-center justify-between">
-          <div className="menu-option gap-1">
+          <div className="menu-option pl-6 gap-1">
             <span className="join opacity-60">
-              <kbd className="join-item kbd !kbd-sm">ctrl</kbd>
-              <kbd className="join-item kbd !kbd-sm">⌘</kbd>
+              <kbd className="join-item kbd !kbd-xs">ctrl</kbd>
+              <kbd className="join-item kbd !kbd-xs">⌘</kbd>
             </span>
             <span>+</span>
-            <kbd className="kbd !kbd-sm opacity-60">K</kbd>
+            <kbd className="kbd !kbd-xs opacity-60">K</kbd>
           </div>
           <label className="menu-logo swap swap-rotate">
             <input
