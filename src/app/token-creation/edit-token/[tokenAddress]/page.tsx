@@ -7,6 +7,13 @@ import { TokenLogo, TokenName, TokenSymbol } from '@/components/token'
 import { isAddress } from '@/helpers/utils'
 import { ArrowLeft, Settings } from 'lucide-react'
 
+export async function getStaticPaths() {
+  return {
+    paths: [],
+    fallback: false,
+  }
+}
+
 export default function EditSpecificToken() {
   const { tokenAddress } = useParams()
   const router = useRouter()
