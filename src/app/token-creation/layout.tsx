@@ -39,7 +39,9 @@ export default function TokenCreationLayout({
         </div>
       </div>
       <div className="flex flex-row w-full justify-center">
-        <div className="max-w-[360px]">{children}</div>
+        <div className="max-w-[360px] sm:min-w-[240px] md:min-w-[360px]">
+          {children}
+        </div>
       </div>
     </div>
   )

@@ -77,8 +77,18 @@ export default function TokenKeypair({ keypair, onChange }: TokenKeypairProps) {
                   </SmActionInput>
                 </div>
                 <div className="form-control w-full">
-                  <label className="label">
-                    <span className="label-text text-error">Secret Key</span>
+                  <label
+                    className="label cursor-pointer"
+                    onClick={(e) => e.preventDefault()}
+                  >
+                    <span className="label-text text-error">
+                      <span
+                        className="tooltip flex flex-row gap-1 items-center"
+                        data-tip="DO NOT LEAK THIS SECRET KEY!"
+                      >
+                        Secret Key
+                      </span>
+                    </span>
                     <button
                       className="label-text-alt btn btn-xs"
                       onClick={() => onChange(new Keypair())}
@@ -104,7 +114,7 @@ export default function TokenKeypair({ keypair, onChange }: TokenKeypairProps) {
                     <span className="label-text cursor-pointer">
                       <span
                         className="tooltip flex flex-row gap-1 items-center"
-                        data-tip="The process is quite computationally heavy and takes time as long as the length of the prefix. To restrict the computation, the prefix is 3 characters of maximum."
+                        data-tip="The process is quite computationally heavy and takes time as long as the length of the prefix. To limit the computation under 15 minutes, the prefix is 3 characters of maximum."
                       >
                         <Info className="w-3 h-3" />
                         Find a prefixed address?
