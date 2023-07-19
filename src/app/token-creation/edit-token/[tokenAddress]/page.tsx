@@ -1,21 +1,25 @@
 'use client'
-import { useParams, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
+import { ArrowLeft, Settings } from 'lucide-react'
 import { TokenLogo, TokenName, TokenSymbol } from '@/components/token'
 
 import { isAddress } from '@/helpers/utils'
-import { ArrowLeft, Settings } from 'lucide-react'
 
-export async function getStaticPaths() {
-  return {
-    paths: [],
-    fallback: false,
-  }
+export async function generateStaticParams() {
+  return [
+    {
+      tokenAddress: 'SENBBKVCM7homnf5RX9zqpf1GFe935hnbU4uVzY1Y6M',
+    },
+  ]
 }
 
-export default function EditSpecificToken() {
-  const { tokenAddress } = useParams()
+export default function EditSpecificToken({
+  params: { tokenAddress },
+}: {
+  params: { tokenAddress: string }
+}) {
   const router = useRouter()
 
   useEffect(() => {
