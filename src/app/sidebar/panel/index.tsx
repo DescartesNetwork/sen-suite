@@ -1,4 +1,5 @@
 'use client'
+import { useKey } from 'react-use'
 
 import { PanelLeftClose, PanelLeftOpen, Send, Twitter } from 'lucide-react'
 import Island from '@/components/island'
@@ -10,6 +11,11 @@ export type PanelProps = {
 }
 
 export default function Panel({ open = false, onOpen = () => {} }: PanelProps) {
+  useKey(
+    (e) => e.metaKey && e.key === 'k',
+    () => onOpen(!open),
+  )
+
   return (
     <ul className="menu menu-md rounded-box">
       <li>
@@ -33,20 +39,31 @@ export default function Panel({ open = false, onOpen = () => {} }: PanelProps) {
           <ThemeSwitch />
         </Island>
       </li>
-      <li>
-        <label className="swap swap-rotate">
-          <input
-            type="checkbox"
-            onChange={() => onOpen(!open)}
-            checked={open}
-          />
-          <p className="swap-on">
-            <PanelLeftClose className="menu-logo" />
-          </p>
-          <p className="swap-off">
-            <PanelLeftOpen className="menu-logo" />
-          </p>
-        </label>
+      <li onClick={() => onOpen(!open)}>
+        <span className="flex flex-row gap-1 items-center justify-between">
+          <div className="menu-option gap-1">
+            <span className="join opacity-60">
+              <kbd className="join-item kbd !kbd-sm">ctrl</kbd>
+              <kbd className="join-item kbd !kbd-sm">⌘</kbd>
+            </span>
+            <span>+</span>
+            <kbd className="kbd !kbd-sm opacity-60">K</kbd>
+          </div>
+          <label className="menu-logo swap swap-rotate">
+            <input
+              type="checkbox"
+              onClick={(e) => e.stopPropagation()}
+              checked={open}
+              readOnly
+            />
+            <p className="swap-on">
+              <PanelLeftClose className="menu-logo" />
+            </p>
+            <p className="swap-off">
+              <PanelLeftOpen className="menu-logo" />
+            </p>
+          </label>
+        </span>
       </li>
     </ul>
   )

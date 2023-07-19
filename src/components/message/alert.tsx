@@ -41,10 +41,7 @@ export default function Alert({
   return (
     <div
       className={'cursor-pointer alert max-w-sm ' + type}
-      onClick={(e) => {
-        e.stopPropagation()
-        return onClick()
-      }}
+      onClick={() => onClick()}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
@@ -59,7 +56,10 @@ export default function Alert({
             '--thickness': ttl >= 0 ? '2px' : '0px',
           } as CSSProperties
         }
-        onClick={() => unregister(id)}
+        onClick={(e) => {
+          e.stopPropagation()
+          return unregister(id)
+        }}
       >
         <X className="w-5 h-5" />
       </div>
