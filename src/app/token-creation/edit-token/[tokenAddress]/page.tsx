@@ -8,11 +8,7 @@ import { TokenLogo, TokenName, TokenSymbol } from '@/components/token'
 import { isAddress } from '@/helpers/utils'
 
 export async function generateStaticParams() {
-  return [
-    {
-      tokenAddress: 'SENBBKVCM7homnf5RX9zqpf1GFe935hnbU4uVzY1Y6M',
-    },
-  ]
+  return []
 }
 
 export default function EditSpecificToken({
