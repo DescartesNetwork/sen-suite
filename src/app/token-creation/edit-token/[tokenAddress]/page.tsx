@@ -7,9 +7,7 @@ import { TokenLogo, TokenName, TokenSymbol } from '@/components/token'
 
 import { isAddress } from '@/helpers/utils'
 
-export async function generateStaticParams() {
-  return []
-}
+export const dynamicParams = true
 
 export default function EditSpecificToken({
   params: { tokenAddress },
