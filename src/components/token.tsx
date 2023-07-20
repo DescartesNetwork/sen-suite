@@ -22,7 +22,6 @@ export function TokenLogo({
     logoURI: fallback,
     name: '',
   }
-  console.log(fallback)
   return (
     <div className="avatar placeholder">
       <div className={className}>
