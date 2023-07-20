@@ -23,7 +23,7 @@
     "@coral-xyz/anchor": "^0.28.1-beta.1",
     "@coral-xyz/spl-token": "^0.28.1-beta.1",
     "@mdx-js/react": "^2.3.0",
-    "@metaplex-foundation/js": "^0.19.4",
+    "@metaplex-foundation/js": "^0.18.3",
     "@solana/wallet-adapter-base": "^0.9.22",
     "@solana/wallet-adapter-react": "^0.15.32",
     "@solana/wallet-adapter-react-ui": "^0.9.31",
@@ -46,6 +46,7 @@
     "react-fast-compare": "^3.2.2",
     "react-lazy-load": "^4.0.1",
     "react-use": "^17.4.0",
+    "swr": "^2.2.0",
     "uuid": "^9.0.0",
     "zustand": "^4.3.9"
   },

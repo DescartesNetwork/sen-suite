@@ -1,23 +1,21 @@
 'use client'
-import { Fragment, ReactNode, useEffect, useMemo } from 'react'
+import { Fragment, ReactNode, useEffect } from 'react'
 import {
   PhantomWalletAdapter,
   TorusWalletAdapter,
 } from '@solana/wallet-adapter-wallets'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
-import { AnchorProvider, utils } from '@coral-xyz/anchor'
+import { utils } from '@coral-xyz/anchor'
 import { splTokenProgram } from '@coral-xyz/spl-token'
 import {
-  AnchorWallet,
   ConnectionProvider,
   WalletProvider as SolanaWalletProvider,
-  useAnchorWallet,
   useConnection,
   useWallet,
 } from '@solana/wallet-adapter-react'
 import { useAsync } from 'react-use'
-import { PublicKey, SystemProgram } from '@solana/web3.js'
+import { PublicKey } from '@solana/web3.js'
 import isEqual from 'react-fast-compare'
 import { BN } from 'bn.js'
 
@@ -27,6 +25,7 @@ import { env } from '@/configs/env'
 import solConfig from '@/configs/sol.config'
 import { useTokenByAddress } from '@/providers/token.provider'
 import { undecimalize } from '@/helpers/decimals'
+import { useSpl } from '@/hooks/spl.hook'
 
 export type TokenAccount = Awaited<
   ReturnType<ReturnType<typeof splTokenProgram>['account']['account']['fetch']>
@@ -128,31 +127,20 @@ export default function WalletProvider({ children }: { children: ReactNode }) {
  * Hooks
  */
 
-export const useAnchorProvider = () => {
-  const wallet = useAnchorWallet()
-  const { connection } = useConnection()
-  const provider = useMemo(() => {
-    const _wallet: AnchorWallet = wallet || {
-      publicKey: SystemProgram.programId,
-      signTransaction: async (tx) => tx,
-      signAllTransactions: async (txs) => txs,
-    }
-    return new AnchorProvider(connection, _wallet, { commitment: 'confirmed' })
-  }, [connection, wallet])
-  return provider
-}
-
-export const useSpl = () => {
-  const provider = useAnchorProvider()
-  const spl = useMemo(() => splTokenProgram({ provider }), [provider])
-  return spl
-}
-
+/**
+ * Get all my token accounts
+ * @returns Token account list
+ */
 export const useMyTokenAccounts = () => {
   const tokenAccounts = useWalletStore(({ tokenAccounts }) => tokenAccounts)
   return tokenAccounts
 }
 
+/**
+ * Get some my token accounts with filter
+ * @param selector Filter function
+ * @returns Token account list
+ */
 export const useMyTokenAccountsSelector = <T,>(
   selector: (multisigs: Record<string, TokenAccount>) => T,
 ) => {
@@ -165,16 +153,16 @@ export const useMyTokenAccountsSelector = <T,>(
 
 /**
  * Get readable (undecimalized) token balance
- * @param tokenAddress Token Address
+ * @param mintAddress Mint Address
  * @returns Balance
  */
-export const useMyReadableBalanceByTokenAddress = (tokenAddress: string) => {
+export const useMyReadableBalanceByMintAddress = (mintAddress: string) => {
   const { publicKey } = useWallet()
-  const { decimals } = useTokenByAddress(tokenAddress) || { decimals: 0 }
+  const { decimals } = useTokenByAddress(mintAddress) || { decimals: 0 }
   const balance = useMyTokenAccountsSelector<string>((tokenAccounts) => {
-    if (!publicKey || !tokenAddress) return '0'
+    if (!publicKey || !mintAddress) return '0'
     const tokenAccount = utils.token.associatedAddress({
-      mint: new PublicKey(tokenAddress),
+      mint: new PublicKey(mintAddress),
       owner: publicKey,
     })
     const { amount } = tokenAccounts[tokenAccount.toBase58()] || {

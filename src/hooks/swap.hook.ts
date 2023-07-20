@@ -48,12 +48,12 @@ export type JupiterRouteInfo = {
 }
 
 export type SwapStore = {
-  bidTokenAddress: string
-  setBidTokenAddress: (bidTokenAddress: string) => void
+  bidMintAddress: string
+  setBidMintAddress: (bidMintAddress: string) => void
   bidAmount: string
   setBidAmount: (bidAmount: string) => void
-  askTokenAddress: string
-  setAskTokenAddress: (askTokenAddress: string) => void
+  askMintAddress: string
+  setAskMintAddress: (askMintAddress: string) => void
   askAmount: string
   setAskAmount: (askAmount: string) => void
   slippage: number
@@ -69,15 +69,15 @@ export type SwapStore = {
 export const useSwapStore = create<SwapStore>()(
   devtools(
     (set) => ({
-      bidTokenAddress: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
-      setBidTokenAddress: (bidTokenAddress: string) =>
-        set({ bidTokenAddress }, false, 'setBidTokenAddress'),
+      bidMintAddress: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+      setBidMintAddress: (bidMintAddress: string) =>
+        set({ bidMintAddress }, false, 'setBidMintAddress'),
       bidAmount: '',
       setBidAmount: (bidAmount: string) =>
         set({ bidAmount }, false, 'setBidAmount'),
-      askTokenAddress: 'SENBBKVCM7homnf5RX9zqpf1GFe935hnbU4uVzY1Y6M',
-      setAskTokenAddress: (askTokenAddress: string) =>
-        set({ askTokenAddress }, false, 'setAskTokenAddress'),
+      askMintAddress: 'SENBBKVCM7homnf5RX9zqpf1GFe935hnbU4uVzY1Y6M',
+      setAskMintAddress: (askMintAddress: string) =>
+        set({ askMintAddress }, false, 'setAskMintAddress'),
       askAmount: '',
       setAskAmount: (askAmount: string) =>
         set({ askAmount }, false, 'setAskAmount'),
@@ -100,28 +100,28 @@ export const useSwapStore = create<SwapStore>()(
  */
 
 export const useSwitch = () => {
-  const bidTokenAddress = useSwapStore(({ bidTokenAddress }) => bidTokenAddress)
-  const setBidTokenAddress = useSwapStore(
-    ({ setBidTokenAddress }) => setBidTokenAddress,
+  const bidMintAddress = useSwapStore(({ bidMintAddress }) => bidMintAddress)
+  const setBidMintAddress = useSwapStore(
+    ({ setBidMintAddress }) => setBidMintAddress,
   )
   const setBidAmount = useSwapStore(({ setBidAmount }) => setBidAmount)
-  const askTokenAddress = useSwapStore(({ askTokenAddress }) => askTokenAddress)
-  const setAskTokenAddress = useSwapStore(
-    ({ setAskTokenAddress }) => setAskTokenAddress,
+  const askMintAddress = useSwapStore(({ askMintAddress }) => askMintAddress)
+  const setAskMintAddress = useSwapStore(
+    ({ setAskMintAddress }) => setAskMintAddress,
   )
   const setAskAmount = useSwapStore(({ setAskAmount }) => setAskAmount)
 
   const onSwitch = useCallback(() => {
-    setBidTokenAddress(askTokenAddress)
-    setAskTokenAddress(bidTokenAddress)
+    setBidMintAddress(askMintAddress)
+    setAskMintAddress(bidMintAddress)
     setBidAmount('')
     setAskAmount('')
   }, [
-    bidTokenAddress,
-    setBidTokenAddress,
+    bidMintAddress,
+    setBidMintAddress,
     setBidAmount,
-    askTokenAddress,
-    setAskTokenAddress,
+    askMintAddress,
+    setAskMintAddress,
     setAskAmount,
   ])
 
@@ -129,37 +129,33 @@ export const useSwitch = () => {
 }
 
 export const useUnsafeSwap = () => {
-  const bidTokenAddress = useSwapStore(({ bidTokenAddress }) => bidTokenAddress)
+  const bidMintAddress = useSwapStore(({ bidMintAddress }) => bidMintAddress)
   const bidAmount = useSwapStore(({ bidAmount }) => bidAmount)
-  const askTokenAddress = useSwapStore(({ askTokenAddress }) => askTokenAddress)
+  const askMintAddress = useSwapStore(({ askMintAddress }) => askMintAddress)
   const setAskAmount = useSwapStore(({ setAskAmount }) => setAskAmount)
   const slippage = useSwapStore(({ slippage }) => slippage)
   const setRoutes = useSwapStore(({ setRoutes }) => setRoutes)
 
-  const { decimals: bidDecimals } = useTokenByAddress(bidTokenAddress) || {
+  const { decimals: bidDecimals } = useTokenByAddress(bidMintAddress) || {
     decimals: 0,
   }
-  const { decimals: askDecimals } = useTokenByAddress(askTokenAddress) || {
+  const { decimals: askDecimals } = useTokenByAddress(askMintAddress) || {
     decimals: 0,
   }
 
   const { value, loading } = useAsync(async () => {
-    if (
-      !isAddress(bidTokenAddress) ||
-      !isAddress(askTokenAddress) ||
-      !bidAmount
-    )
+    if (!isAddress(bidMintAddress) || !isAddress(askMintAddress) || !bidAmount)
       return undefined
     const amount = decimalize(bidAmount, bidDecimals).toString()
     const {
       data: { data },
     } = await axios.get<JupiterRouteInfo>(
-      `https://quote-api.jup.ag/v4/quote?inputMint=${bidTokenAddress}&outputMint=${askTokenAddress}&amount=${amount}&slippageBps=${
+      `https://quote-api.jup.ag/v4/quote?inputMint=${bidMintAddress}&outputMint=${askMintAddress}&amount=${amount}&slippageBps=${
         slippage * 10000
       }`,
     )
     return data
-  }, [bidTokenAddress, bidAmount, askTokenAddress, slippage, bidDecimals])
+  }, [bidMintAddress, bidAmount, askMintAddress, slippage, bidDecimals])
 
   useEffect(() => {
     const [bestRoute] = value || []

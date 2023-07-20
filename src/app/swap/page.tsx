@@ -10,6 +10,7 @@ import SwapInfo from './swapInfo'
 import { useSwap, useSwitch, useUnsafeSwap } from '@/hooks/swap.hook'
 import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
+import solConfig from '@/configs/sol.config'
 
 export default function Swap() {
   const [loading, setLoading] = useState(false)
@@ -26,7 +27,8 @@ export default function Swap() {
         'alert-success',
         'Swap successfully. Click here to view on explorer.',
         {
-          onClick: () => window.open(solscan(txId), '_blank'),
+          onClick: () =>
+            window.open(solscan(txId, solConfig.network), '_blank'),
         },
       )
     } catch (er: any) {

@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { isAddress } from '@/helpers/utils'
 
 export default function SearchToken() {
-  const [tokenAddress, setTokenAddress] = useState('')
+  const [mintAddress, setMintAddress] = useState('')
 
   return (
     <div className="grid grid-cols-12 gap-2 justify-center">
@@ -21,23 +21,23 @@ export default function SearchToken() {
           placeholder="Token Address"
           className={
             'input w-full bg-base-200' +
-            (!!tokenAddress && !isAddress(tokenAddress)
+            (!!mintAddress && !isAddress(mintAddress)
               ? ' ring-2 ring-error'
               : '')
           }
-          value={tokenAddress}
-          onChange={(e) => setTokenAddress(e.target.value)}
+          value={mintAddress}
+          onChange={(e) => setMintAddress(e.target.value)}
         />
       </div>
       <div className="col-span-full">
         <Link
           className={
             'btn btn-primary w-full' +
-            (isAddress(tokenAddress) ? '' : ' btn-disabled')
+            (isAddress(mintAddress) ? '' : ' btn-disabled')
           }
           href={
-            isAddress(tokenAddress)
-              ? `/token-creation/edit-token/details?tokenAddress=${tokenAddress}`
+            isAddress(mintAddress)
+              ? `/token-creation/edit-token/details?mintAddress=${mintAddress}`
               : '#'
           }
         >

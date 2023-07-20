@@ -9,20 +9,20 @@ import { useSwapStore } from '@/hooks/swap.hook'
 
 export default function Ask() {
   const [open, setOpen] = useState(false)
-  const askTokenAddress = useSwapStore(({ askTokenAddress }) => askTokenAddress)
-  const setAskTokenAddress = useSwapStore(
-    ({ setAskTokenAddress }) => setAskTokenAddress,
+  const askMintAddress = useSwapStore(({ askMintAddress }) => askMintAddress)
+  const setAskMintAddress = useSwapStore(
+    ({ setAskMintAddress }) => setAskMintAddress,
   )
   const askAmount = useSwapStore(({ askAmount }) => askAmount)
 
-  const onAskTokenAddress = useCallback(
-    (tokenAddress: string) => {
-      if (askTokenAddress !== tokenAddress) {
-        setAskTokenAddress(tokenAddress)
+  const onAskMintAddress = useCallback(
+    (mintAddress: string) => {
+      if (askMintAddress !== mintAddress) {
+        setAskMintAddress(mintAddress)
         setOpen(false)
       }
     },
-    [askTokenAddress, setAskTokenAddress, setOpen],
+    [askMintAddress, setAskMintAddress, setOpen],
   )
 
   return (
@@ -33,11 +33,11 @@ export default function Ask() {
           onClick={() => setOpen(true)}
         >
           <TokenLogo
-            tokenAddress={askTokenAddress}
+            mintAddress={askMintAddress}
             className="w-8 h-8 rounded-full"
           />
           <h5 className="text-sm">
-            <TokenSymbol tokenAddress={askTokenAddress} />
+            <TokenSymbol mintAddress={askMintAddress} />
           </h5>
           <ChevronDown className="h-4 w-4" />
         </div>
@@ -52,8 +52,8 @@ export default function Ask() {
       <TokenSelection
         open={open}
         onCancel={() => setOpen(false)}
-        tokenAddress={askTokenAddress}
-        onChange={onAskTokenAddress}
+        mintAddress={askMintAddress}
+        onChange={onAskMintAddress}
       />
     </div>
   )

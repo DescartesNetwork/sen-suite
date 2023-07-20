@@ -7,9 +7,10 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import TokenKeypair from './tokenKeypair'
 
 import { usePushMessage } from '@/components/message/store'
-import { useSpl } from '@/providers/wallet.provider'
+import { useSpl } from '@/hooks/spl.hook'
 import { isAddress } from '@/helpers/utils'
 import { solscan } from '@/helpers/explorers'
+import solConfig from '@/configs/sol.config'
 
 export default function NewToken() {
   const [keypair, setKeypair] = useState<Keypair>(new Keypair())
@@ -56,10 +57,13 @@ export default function NewToken() {
       pushMessage(
         'alert-success',
         'Successfully created a new token. Click here to view on explorer.',
-        { onClick: () => window.open(solscan(txId), '_blank') },
+        {
+          onClick: () =>
+            window.open(solscan(txId, solConfig.network), '_blank'),
+        },
       )
       router.push(
-        `/token-creation/edit-token/details?tokenAddress=${keypair.publicKey.toBase58()}`,
+        `/token-creation/edit-token/details?mintAddress=${keypair.publicKey.toBase58()}`,
       )
     } catch (er: any) {
       pushMessage('alert-error', er.message)
@@ -83,7 +87,7 @@ export default function NewToken() {
   }, [publicKey])
 
   return (
-    <div className="grid grid-cols-12 gap-2">
+    <div className="grid grid-cols-12 gap-x-2 gap-y-4">
       <div className="col-span-12">
         <TokenKeypair keypair={keypair} onChange={setKeypair} />
       </div>

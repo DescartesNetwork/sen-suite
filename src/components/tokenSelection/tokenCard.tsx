@@ -12,14 +12,14 @@ import { ArrowUpRightSquare } from 'lucide-react'
 import { solscan } from '@/helpers/explorers'
 
 export type TokenCardProps = {
-  tokenAddress: string
+  mintAddress: string
   onClick?: () => void
   active?: boolean
   showBalance?: boolean
 }
 
 export default function TokenCard({
-  tokenAddress,
+  mintAddress,
   onClick = () => {},
   active = false,
   showBalance = false,
@@ -33,20 +33,20 @@ export default function TokenCard({
       onClick={onClick}
     >
       <div className="flex gap-2">
-        <TokenLogo tokenAddress={tokenAddress} />
+        <TokenLogo mintAddress={mintAddress} />
         <div className="flex-auto">
           <p className="font-semibold">
-            <TokenSymbol tokenAddress={tokenAddress} />
+            <TokenSymbol mintAddress={mintAddress} />
           </p>
           <p className="text-sm opacity-60">
-            <TokenName tokenAddress={tokenAddress} />
+            <TokenName mintAddress={mintAddress} />
           </p>
         </div>
         <div className="invisible group-hover:visible">
-          <Clipboard content={tokenAddress} idleText="Copy Token Address" />
+          <Clipboard content={mintAddress} idleText="Copy Token Address" />
           <a
             className="btn btn-sm btn-ghost btn-square"
-            href={solscan(tokenAddress)}
+            href={solscan(mintAddress)}
             target="_blank"
             rel="noreferrer"
           >
@@ -59,11 +59,11 @@ export default function TokenCard({
               <div className="text-xs opacity-60">My Balance</div>
               <div className="divider divider-horizontal mx-0 my-1" />
               <div className="text-xs opacity-60">
-                <TokenSymbol tokenAddress={tokenAddress} />
+                <TokenSymbol mintAddress={mintAddress} />
               </div>
             </div>
             <div className="text-sm">
-              <MyTokenBalance tokenAddress={tokenAddress} />
+              <MyTokenBalance mintAddress={mintAddress} />
             </div>
           </div>
         )}

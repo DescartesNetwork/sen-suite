@@ -6,26 +6,26 @@ import { MyTokenBalance, TokenLogo, TokenSymbol } from '@/components/token'
 import { ChevronDown } from 'lucide-react'
 
 import { useSwapStore } from '@/hooks/swap.hook'
-import { useMyReadableBalanceByTokenAddress } from '@/providers/wallet.provider'
+import { useMyReadableBalanceByMintAddress } from '@/providers/wallet.provider'
 
 export default function Bid() {
   const [open, setOpen] = useState(false)
   const [range, setRange] = useState('0')
-  const bidTokenAddress = useSwapStore(({ bidTokenAddress }) => bidTokenAddress)
-  const setBidTokenAddress = useSwapStore(
-    ({ setBidTokenAddress }) => setBidTokenAddress,
+  const bidMintAddress = useSwapStore(({ bidMintAddress }) => bidMintAddress)
+  const setBidMintAddress = useSwapStore(
+    ({ setBidMintAddress }) => setBidMintAddress,
   )
   const bidAmount = useSwapStore(({ bidAmount }) => bidAmount)
   const setBidAmount = useSwapStore(({ setBidAmount }) => setBidAmount)
 
-  const onBidTokenAddress = useCallback(
-    (tokenAddress: string) => {
-      if (bidTokenAddress !== tokenAddress) {
-        setBidTokenAddress(tokenAddress)
+  const onBidMintAddress = useCallback(
+    (mintAddress: string) => {
+      if (bidMintAddress !== mintAddress) {
+        setBidMintAddress(mintAddress)
         setOpen(false)
       }
     },
-    [bidTokenAddress, setBidTokenAddress, setOpen],
+    [bidMintAddress, setBidMintAddress, setOpen],
   )
   const onBidAmount = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -35,7 +35,7 @@ export default function Bid() {
     [setBidAmount],
   )
 
-  const balance = useMyReadableBalanceByTokenAddress(bidTokenAddress)
+  const balance = useMyReadableBalanceByMintAddress(bidMintAddress)
   const onRange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       const percentage = Number(e.target.value) / 100
@@ -53,11 +53,11 @@ export default function Bid() {
           onClick={() => setOpen(true)}
         >
           <TokenLogo
-            tokenAddress={bidTokenAddress}
+            mintAddress={bidMintAddress}
             className="w-8 h-8 rounded-full"
           />
           <h5 className="text-sm">
-            <TokenSymbol tokenAddress={bidTokenAddress} />
+            <TokenSymbol mintAddress={bidMintAddress} />
           </h5>
           <ChevronDown className="h-4 w-4" />
         </div>
@@ -73,7 +73,7 @@ export default function Bid() {
         <div className="flex flex-col">
           <p className="text-xs font-bold opacity-60">Available</p>
           <p>
-            <MyTokenBalance tokenAddress={bidTokenAddress} />
+            <MyTokenBalance mintAddress={bidMintAddress} />
           </p>
         </div>
         <div className="flex-auto max-w-[112px]">
@@ -96,8 +96,8 @@ export default function Bid() {
       <TokenSelection
         open={open}
         onCancel={() => setOpen(false)}
-        tokenAddress={bidTokenAddress}
-        onChange={onBidTokenAddress}
+        mintAddress={bidMintAddress}
+        onChange={onBidMintAddress}
       />
     </div>
   )

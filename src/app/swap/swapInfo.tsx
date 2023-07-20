@@ -26,19 +26,19 @@ function PriceImpact() {
 }
 
 function Price() {
-  const { bidTokenAddress, askTokenAddress } = useSwapStore()
+  const { bidMintAddress, askMintAddress } = useSwapStore()
   const {
     routes: [bestRoute],
   } = useSwap()
 
-  const { decimals: bidDecimals } = useTokenByAddress(bidTokenAddress) || {
+  const { decimals: bidDecimals } = useTokenByAddress(bidMintAddress) || {
     decimals: 0,
   }
   const bidAmount = useMemo(
     () => Number(undecimalize(new BN(bestRoute?.inAmount || '0'), bidDecimals)),
     [bestRoute?.inAmount, bidDecimals],
   )
-  const { decimals: askDecimals } = useTokenByAddress(askTokenAddress) || {
+  const { decimals: askDecimals } = useTokenByAddress(askMintAddress) || {
     decimals: 0,
   }
   const askAmount = useMemo(
@@ -54,9 +54,9 @@ function Price() {
         {numeric(bidAmount / askAmount).format('0,0.[000000]')}
       </p>
       <p className="text-sm font-bold opacity-60">
-        <TokenSymbol tokenAddress={bidTokenAddress} />
+        <TokenSymbol mintAddress={bidMintAddress} />
         <span>/</span>
-        <TokenSymbol tokenAddress={askTokenAddress} />
+        <TokenSymbol mintAddress={askMintAddress} />
       </p>
     </div>
   )
@@ -80,10 +80,10 @@ function SlippageTolerance() {
   )
 }
 
-function Hop({ tokenAddress }: { tokenAddress: string }) {
-  const { logoURI, symbol } = useTokenByAddress(tokenAddress) || {
+function Hop({ mintAddress }: { mintAddress: string }) {
+  const { logoURI, symbol } = useTokenByAddress(mintAddress) || {
     logoURI: '',
-    symbol: tokenAddress.substring(0, 6),
+    symbol: mintAddress.substring(0, 6),
   }
 
   return (
@@ -120,10 +120,10 @@ function Routes() {
   return (
     <div className="flex flex-row gap-1 items-center">
       <p className="flex-auto text-sm opacity-60">Routes</p>
-      {hops.map((tokenAddress, i) => (
+      {hops.map((mintAddress, i) => (
         <Fragment key={i}>
           {i !== 0 && <ChevronRight className="w-4 h-4" />}
-          <Hop tokenAddress={tokenAddress} />
+          <Hop mintAddress={mintAddress} />
         </Fragment>
       ))}
     </div>

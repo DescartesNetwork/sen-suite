@@ -11,14 +11,14 @@ import { useSearchToken } from '@/providers/token.provider'
 export type TokenSelectionType = {
   open?: boolean
   onCancel?: () => void
-  tokenAddress?: string
-  onChange?: (tokenAddress: string) => void
+  mintAddress?: string
+  onChange?: (mintAddress: string) => void
 }
 
 export default function TokenSelection({
   open,
   onCancel,
-  tokenAddress,
+  mintAddress,
   onChange = () => {},
 }: TokenSelectionType) {
   const [text, setText] = useState('')
@@ -59,7 +59,7 @@ export default function TokenSelection({
           <Island>
             <TokenList
               tokens={tokens}
-              tokenAddress={tokenAddress}
+              mintAddress={mintAddress}
               onChange={onChange}
             />
           </Island>

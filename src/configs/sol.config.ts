@@ -18,6 +18,8 @@ const conf: Record<Env, Conf> = {
   development: {
     rpc: 'https://api.devnet.solana.com',
     network: WalletAdapterNetwork.Devnet,
+    // rpc: 'https://radial-billowing-gas.solana-mainnet.quiknode.pro/9d19e80c758eb5bd7b86d912e9345aa153db6a8f/',
+    // network: WalletAdapterNetwork.Mainnet,
     balancerAddress: '6SRa2Kc3G4wTG319G4Se6yrRWeS1A1Hj79BC3o7X9v6T',
   },
 

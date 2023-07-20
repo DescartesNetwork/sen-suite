@@ -5,18 +5,18 @@ import { Diamond } from 'lucide-react'
 
 import { useTokenByAddress } from '@/providers/token.provider'
 import { shortenAddress, numeric } from '@/helpers/utils'
-import { useMyReadableBalanceByTokenAddress } from '@/providers/wallet.provider'
+import { useMyReadableBalanceByMintAddress } from '@/providers/wallet.provider'
 
 export type TokenLogoProps = {
-  tokenAddress: string
+  mintAddress: string
   className?: string
 }
 
 export function TokenLogo({
-  tokenAddress,
+  mintAddress,
   className = 'w-12 h-12 rounded-full bg-base-300',
 }: TokenLogoProps) {
-  const { logoURI, name } = useTokenByAddress(tokenAddress) || {
+  const { logoURI, name } = useTokenByAddress(mintAddress) || {
     logoURI: '',
     name: '',
   }
@@ -34,37 +34,37 @@ export function TokenLogo({
 }
 
 export type TokenNameProps = {
-  tokenAddress: string
+  mintAddress: string
 }
 
-export function TokenName({ tokenAddress }: TokenNameProps) {
-  const { name } = useTokenByAddress(tokenAddress) || {
-    name: shortenAddress(tokenAddress, 6),
+export function TokenName({ mintAddress }: TokenNameProps) {
+  const { name } = useTokenByAddress(mintAddress) || {
+    name: shortenAddress(mintAddress, 6),
   }
   return <Fragment>{name}</Fragment>
 }
 
 export type TokenSymbolProps = {
-  tokenAddress: string
+  mintAddress: string
 }
 
-export function TokenSymbol({ tokenAddress }: TokenSymbolProps) {
-  const { symbol } = useTokenByAddress(tokenAddress) || {
-    symbol: tokenAddress.substring(0, 6),
+export function TokenSymbol({ mintAddress }: TokenSymbolProps) {
+  const { symbol } = useTokenByAddress(mintAddress) || {
+    symbol: mintAddress.substring(0, 6),
   }
   return <Fragment>{symbol}</Fragment>
 }
 
 export type TokenBalanceProps = {
-  tokenAddress: string
+  mintAddress: string
   format?: string
 }
 
 export function MyTokenBalance({
-  tokenAddress,
+  mintAddress,
   format = '0,0.[0000]',
 }: TokenBalanceProps) {
-  const balance = useMyReadableBalanceByTokenAddress(tokenAddress)
+  const balance = useMyReadableBalanceByMintAddress(mintAddress)
 
   return <Fragment>{numeric(balance).format(format)}</Fragment>
 }

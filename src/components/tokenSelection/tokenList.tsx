@@ -10,13 +10,13 @@ import { useMyTokenAccounts } from '@/providers/wallet.provider'
 
 export type TokenListProps = {
   tokens?: TokenMetadata[]
-  tokenAddress?: string
-  onChange?: (tokenAddress: string) => void
+  mintAddress?: string
+  onChange?: (mintAddress: string) => void
 }
 
 export default function TokenList({
   tokens,
-  tokenAddress,
+  mintAddress,
   onChange = () => {},
 }: TokenListProps) {
   const [hidden, setHidden] = useState(true)
@@ -25,16 +25,16 @@ export default function TokenList({
   const randTokens = useRandomTokens()
 
   const recentTokens = useMemo(() => {
-    const tokenAddresses = all.map(({ address }) => address)
+    const mintAddresses = all.map(({ address }) => address)
     const recentAddresses = Object.values(recentTokensAccount)
       .map(({ mint }) => mint.toBase58())
       .sort((a, b) => {
-        const x = tokenAddresses.includes(a) ? 1 : 0
-        const y = tokenAddresses.includes(b) ? 1 : 0
+        const x = mintAddresses.includes(a) ? 1 : 0
+        const y = mintAddresses.includes(b) ? 1 : 0
         return y - x
       })
     if (!hidden) return recentAddresses
-    return recentAddresses.filter((address) => tokenAddresses.includes(address))
+    return recentAddresses.filter((address) => mintAddresses.includes(address))
   }, [all, hidden, recentTokensAccount])
 
   return (
@@ -62,9 +62,9 @@ export default function TokenList({
             <div key={address} className="col-span-12">
               <LazyLoad height={64}>
                 <TokenCard
-                  tokenAddress={address}
+                  mintAddress={address}
                   onClick={() => onChange(address)}
-                  active={address === tokenAddress}
+                  active={address === mintAddress}
                   showBalance
                 />
               </LazyLoad>
@@ -89,9 +89,9 @@ export default function TokenList({
         <div key={address} className="col-span-12">
           <LazyLoad height={64}>
             <TokenCard
-              tokenAddress={address}
+              mintAddress={address}
               onClick={() => onChange(address)}
-              active={address === tokenAddress}
+              active={address === mintAddress}
             />
           </LazyLoad>
         </div>
