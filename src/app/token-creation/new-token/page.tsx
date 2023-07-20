@@ -15,8 +15,6 @@ import solConfig from '@/configs/sol.config'
 export default function NewToken() {
   const [keypair, setKeypair] = useState<Keypair>(new Keypair())
   const [decimals, setDecimals] = useState(9)
-  const [symbol, setSymbol] = useState('')
-  const [name, setName] = useState('')
   const { publicKey } = useWallet()
   const [mintAuthority, setMintAuthority] = useState('')
   const [freezeAuthority, setFreezeAuthority] = useState('')
@@ -28,12 +26,10 @@ export default function NewToken() {
   const ok = useMemo(() => {
     if (!keypair) return false
     if (decimals < 0 || decimals > 18) return false
-    if (!symbol) return false
-    if (!name) return false
     if (!isAddress(mintAuthority)) return false
     if (!isAddress(freezeAuthority)) return false
     return true
-  }, [keypair, decimals, symbol, name, mintAuthority, freezeAuthority])
+  }, [keypair, decimals, mintAuthority, freezeAuthority])
 
   const onCreate = useCallback(async () => {
     try {
@@ -88,29 +84,11 @@ export default function NewToken() {
 
   return (
     <div className="grid grid-cols-12 gap-x-2 gap-y-4">
-      <div className="col-span-12">
+      <div className="col-span-full">
         <TokenKeypair keypair={keypair} onChange={setKeypair} />
       </div>
-      <div className="col-span-12">
-        <p className="text-sm font-bold">Token Name</p>
-      </div>
-      <div className="col-span-12">
-        <input
-          className="input w-full bg-base-200"
-          type="text"
-          name="name"
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </div>
-      <div className="col-span-6">
+      <div className="col-span-full flex flex-col gap-2">
         <p className="text-sm font-bold">Token Decimals</p>
-      </div>
-      <div className="col-span-6">
-        <p className="text-sm font-bold">Token Symbol</p>
-      </div>
-      <div className="col-span-6">
         <input
           className="input w-full bg-base-200"
           type="number"
@@ -123,20 +101,8 @@ export default function NewToken() {
           onChange={(e) => setDecimals(Number(e.target.value))}
         />
       </div>
-      <div className="col-span-6">
-        <input
-          className="input w-full bg-base-200"
-          type="text"
-          name="symbol"
-          placeholder="Symbol"
-          value={symbol}
-          onChange={(e) => setSymbol(e.target.value)}
-        />
-      </div>
-      <div className="col-span-12">
+      <div className="col-span-full flex flex-col gap-2">
         <p className="text-sm font-bold">Mint Authority</p>
-      </div>
-      <div className="col-span-12">
         <input
           className={
             'input w-full bg-base-200' +
@@ -149,10 +115,8 @@ export default function NewToken() {
           onChange={(e) => setMintAuthority(e.target.value)}
         />
       </div>
-      <div className="col-span-12">
+      <div className="col-span-full flex flex-col gap-2">
         <p className="text-sm font-bold">Freeze Authority</p>
-      </div>
-      <div className="col-span-12">
         <input
           className={
             'input w-full bg-base-200' +
@@ -165,7 +129,7 @@ export default function NewToken() {
           onChange={(e) => setFreezeAuthority(e.target.value)}
         />
       </div>
-      <div className="col-span-12">
+      <div className="col-span-full">
         <button
           className="btn btn-primary w-full"
           onClick={onCreate}

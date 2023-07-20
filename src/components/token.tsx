@@ -10,16 +10,19 @@ import { useMyReadableBalanceByMintAddress } from '@/providers/wallet.provider'
 export type TokenLogoProps = {
   mintAddress: string
   className?: string
+  fallback?: string
 }
 
 export function TokenLogo({
   mintAddress,
   className = 'w-12 h-12 rounded-full bg-base-300',
+  fallback = '',
 }: TokenLogoProps) {
   const { logoURI, name } = useTokenByAddress(mintAddress) || {
-    logoURI: '',
+    logoURI: fallback,
     name: '',
   }
+  console.log(fallback)
   return (
     <div className="avatar placeholder">
       <div className={className}>

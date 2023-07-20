@@ -1,10 +1,12 @@
 'use client'
-import { useCallback, useEffect, useState } from 'react'
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { PublicKey } from '@solana/web3.js'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 import { TokenLogo } from '@/components/token'
 import Splash from '@/components/splash'
+import { ImagePlusIcon, X } from 'lucide-react'
 
 import { isAddress, numeric } from '@/helpers/utils'
 import { useMpl, useNft } from '@/hooks/mpl.hook'
@@ -12,7 +14,6 @@ import { useMint, useSpl } from '@/hooks/spl.hook'
 import { undecimalize } from '@/helpers/decimals'
 import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
-import { useWallet } from '@solana/wallet-adapter-react'
 import solConfig from '@/configs/sol.config'
 
 export default function TokenDetails() {
@@ -23,6 +24,8 @@ export default function TokenDetails() {
   const [mintName, setMintName] = useState<string>()
   const [mintAuthority, setMintAuthority] = useState<string>()
   const [freezeAuthority, setFreezeAuthority] = useState<string>()
+  const [logo, setLogo] = useState<File>()
+  const ref = useRef<HTMLInputElement>(null)
   const [loading, setLoading] = useState(false)
   const pushMessage = usePushMessage()
   const { publicKey } = useWallet()
@@ -64,6 +67,16 @@ export default function TokenDetails() {
     }
   }, [pushMessage, spl, mpl, publicKey, mintAddress, freezeAuthority])
 
+  const onUpload = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    const [logo] = Array.from(e.target.files || [])
+    return setLogo(logo)
+  }, [])
+
+  const onClearLogo = useCallback(() => {
+    if (ref.current?.value) ref.current.value = ''
+    return setLogo(undefined)
+  }, [ref])
+
   useEffect(() => {
     if (!isAddress(mintAddress))
       return push('/token-creation/edit-token/search')
@@ -73,10 +86,31 @@ export default function TokenDetails() {
   return (
     <div className="grid grid-cols-12 gap-x-2 gap-y-4">
       <div className="col-span-full flex flex-row justify-center">
-        <TokenLogo
-          mintAddress={mintAddress}
-          className="w-24 h-24 mask mask-squircle"
-        />
+        <div className="group relative cursor-pointer">
+          <TokenLogo
+            mintAddress={mintAddress}
+            className="w-24 h-24 rounded-full ring ring-secondary ring-offset-base-100 ring-offset-2"
+            fallback={logo ? URL.createObjectURL(logo) : ''}
+          />
+          <button
+            className="invisible group-hover:visible btn btn-circle btn-sm btn-neutral absolute -right-1 -top-1"
+            onClick={onClearLogo}
+            disabled={!logo}
+          >
+            <X className="w-4 h-4" />
+          </button>
+          <label className="btn btn-circle btn-sm btn-secondary absolute -right-1 -bottom-1">
+            <ImagePlusIcon className="w-4 h-4" />
+            <input
+              type="file"
+              name="token-logo"
+              accept="image/*"
+              className="invisible absolute"
+              onChange={onUpload}
+              ref={ref}
+            />
+          </label>
+        </div>
       </div>
       <div className="col-span-full flex flex-col gap-2">
         <span className="flex flex-row items-center gap-2">
