@@ -11,7 +11,7 @@ export function BrandLogo({ size = 32 }: BrandLogoProps) {
       <div className={'mask mask-squircle'} style={{ width: size }}>
         <Image
           className="!object-contain"
-          src="/logo.svg"
+          src="/web.svg"
           alt="sentre"
           width={size}
           height={size}
