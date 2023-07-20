@@ -59,7 +59,7 @@ export default function NewToken() {
         { onClick: () => window.open(solscan(txId), '_blank') },
       )
       router.push(
-        `/token-creation/edit-token?tokenAddress=${keypair.publicKey.toBase58()}`,
+        `/token-creation/edit-token/details?tokenAddress=${keypair.publicKey.toBase58()}`,
       )
     } catch (er: any) {
       pushMessage('alert-error', er.message)
