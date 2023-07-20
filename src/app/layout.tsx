@@ -19,8 +19,8 @@ export const metadata: Metadata = {
     maximumScale: 1,
   },
   icons: {
-    icon: '/logo512.png',
-    apple: '/logo192.png',
+    icon: '/logo.svg',
+    apple: '/ios.svg',
   },
 }
 
