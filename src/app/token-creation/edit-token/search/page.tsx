@@ -8,12 +8,7 @@ export default function SearchToken() {
   const [mintAddress, setMintAddress] = useState('')
 
   return (
-    <div className="grid grid-cols-12 gap-2 justify-center">
-      <div className="col-span-full">
-        <p className="text-sm font-bold w-full text-center">
-          Enter Your Token Address
-        </p>
-      </div>
+    <div className="grid grid-cols-12 gap-2 justify-center gap-x-2 gap-y-4">
       <div className="col-span-full">
         <input
           type="text"

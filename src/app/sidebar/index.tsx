@@ -27,7 +27,6 @@ const routes = [
     route: '/farming',
     name: 'Farming',
     Logo: Leaf,
-    disabled: true,
   },
   {
     route: '/airdrop',

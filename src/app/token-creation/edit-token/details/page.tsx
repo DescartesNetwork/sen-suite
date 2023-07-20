@@ -116,7 +116,9 @@ export default function TokenDetails() {
         <span className="flex flex-row items-center gap-2">
           <p className="flex-auto text-sm font-bold">Total Supply</p>
           <p className="text-sm font-bold">Decimals</p>
-          <span className="badge badge-neutral">{mint?.decimals}</span>
+          <span className="badge badge-neutral font-bold">
+            {mint?.decimals}
+          </span>
         </span>
         <input
           className="input bg-base-200 w-full"
