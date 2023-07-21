@@ -3,7 +3,7 @@
 export default function FarmingPanel() {
   return (
     <div className="card w-full shadow-lg p-8 ring-1 ring-base-100 bg-gradient-to-br from-lime-200 to-teal-300 flex flex-row-reverse flex-wrap gap-x-2 gap-y-16 justify-center">
-      <div className="w-48 relative -mb-4 -mr-4">
+      <div className="w-48 relative -mb-4">
         <img
           className="w-full"
           src="/farming-illustration.png"

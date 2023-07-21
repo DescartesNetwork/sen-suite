@@ -72,7 +72,7 @@ export default function TokenList({
           ))}
         </Fragment>
       )}
-      <div className="sticky top-0 col-span-12 bg-base-100 py-2">
+      <div className="sticky top-0 col-span-12 bg-base-100 py-2 z-[1]">
         <label className="swap">
           <input type="checkbox" checked={!tokens} readOnly />
           <div className="swap-on flex gap-2 items-center">
