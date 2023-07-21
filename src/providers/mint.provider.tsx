@@ -7,6 +7,7 @@ import Fuse from 'fuse.js'
 import { keccak_256 } from '@noble/hashes/sha3'
 import BN from 'bn.js'
 import { v4 as uuid } from 'uuid'
+import useSWR from 'swr'
 
 import { env } from '@/configs/env'
 
@@ -118,6 +119,10 @@ export const useMintByAddress = (addr: string) => {
   return mint
 }
 
+/**
+ * Semantic search mint
+ * @returns Mint list
+ */
 export const useSearchMint = () => {
   const engine = useMintStore(({ engine }) => engine)
   const search = useCallback(
@@ -128,4 +133,31 @@ export const useSearchMint = () => {
     [engine],
   )
   return search
+}
+
+/**
+ * Get mint price
+ * @param symbol Mint symbol
+ * @returns Price
+ */
+export const getPrice = async (symbolOrAddress: string) => {
+  try {
+    const {
+      data: {
+        data: {
+          [symbolOrAddress]: { price },
+        },
+      },
+    } = await axios.get<{
+      data: Record<string, { price: number }>
+      timeTake: number
+    }>(`https://price.jup.ag/v4/price?ids=${symbolOrAddress}`)
+    return price
+  } catch (er) {
+    return 0
+  }
+}
+export const usePrice = (symbol: string) => {
+  const { data } = useSWR([symbol, 'price'], ([symbol]) => getPrice(symbol))
+  return data || 0
 }

@@ -68,3 +68,12 @@ export default function FarmingProvider({ children }: { children: ReactNode }) {
 
   return <Fragment>{children}</Fragment>
 }
+
+/**
+ * Get all farms
+ * @returns Farm list
+ */
+export const useAllFrams = () => {
+  const farms = useFarmingStore(({ farms }) => farms)
+  return farms
+}
