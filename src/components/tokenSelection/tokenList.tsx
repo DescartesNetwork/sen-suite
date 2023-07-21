@@ -5,11 +5,11 @@ import LazyLoad from 'react-lazy-load'
 import { Dices, History, SearchCheck } from 'lucide-react'
 import TokenCard from './tokenCard'
 
-import { useAllTokens, useRandomTokens } from '@/providers/token.provider'
+import { useAllMints, useRandomMints } from '@/providers/mint.provider'
 import { useMyTokenAccounts } from '@/providers/wallet.provider'
 
 export type TokenListProps = {
-  tokens?: TokenMetadata[]
+  tokens?: MintMetadata[]
   mintAddress?: string
   onChange?: (mintAddress: string) => void
 }
@@ -20,9 +20,9 @@ export default function TokenList({
   onChange = () => {},
 }: TokenListProps) {
   const [hidden, setHidden] = useState(true)
-  const all = useAllTokens()
+  const all = useAllMints()
   const recentTokensAccount = useMyTokenAccounts()
-  const randTokens = useRandomTokens()
+  const randTokens = useRandomMints()
 
   const recentTokens = useMemo(() => {
     const mintAddresses = all.map(({ address }) => address)

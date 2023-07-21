@@ -10,7 +10,7 @@ import { devtools } from 'zustand/middleware'
 
 import { env } from '@/configs/env'
 import { isAddress } from '@/helpers/utils'
-import { useTokenByAddress } from '@/providers/token.provider'
+import { useMintByAddress } from '@/providers/mint.provider'
 import { decimalize, undecimalize } from '@/helpers/decimals'
 
 export enum JupiterSwapMode {
@@ -136,10 +136,10 @@ export const useUnsafeSwap = () => {
   const slippage = useSwapStore(({ slippage }) => slippage)
   const setRoutes = useSwapStore(({ setRoutes }) => setRoutes)
 
-  const { decimals: bidDecimals } = useTokenByAddress(bidMintAddress) || {
+  const { decimals: bidDecimals } = useMintByAddress(bidMintAddress) || {
     decimals: 0,
   }
-  const { decimals: askDecimals } = useTokenByAddress(askMintAddress) || {
+  const { decimals: askDecimals } = useMintByAddress(askMintAddress) || {
     decimals: 0,
   }
 

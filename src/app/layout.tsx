@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 
 import UiProvider from '@/providers/ui.provider'
 import WalletProvider from '@/providers/wallet.provider'
-import TokenProvider from '@/providers/token.provider'
+import MintProvider from '@/providers/mint.provider'
 
 import Message from '@/components/message'
 import Sidebar from '@/app/sidebar'
@@ -41,7 +41,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       </head>
       <body>
         <UiProvider>
-          <TokenProvider>
+          <MintProvider>
             <WalletProvider>
               <main className="flex w-full">
                 <Sidebar />
@@ -51,7 +51,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               </main>
               <Message />
             </WalletProvider>
-          </TokenProvider>
+          </MintProvider>
         </UiProvider>
       </body>
     </html>

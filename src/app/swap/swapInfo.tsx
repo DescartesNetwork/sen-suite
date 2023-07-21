@@ -8,7 +8,7 @@ import { ChevronRight, Diamond } from 'lucide-react'
 import { undecimalize } from '@/helpers/decimals'
 import { numeric } from '@/helpers/utils'
 import { useSwap, useSwapStore } from '@/hooks/swap.hook'
-import { useTokenByAddress } from '@/providers/token.provider'
+import { useMintByAddress } from '@/providers/mint.provider'
 
 function PriceImpact() {
   const {
@@ -31,14 +31,14 @@ function Price() {
     routes: [bestRoute],
   } = useSwap()
 
-  const { decimals: bidDecimals } = useTokenByAddress(bidMintAddress) || {
+  const { decimals: bidDecimals } = useMintByAddress(bidMintAddress) || {
     decimals: 0,
   }
   const bidAmount = useMemo(
     () => Number(undecimalize(new BN(bestRoute?.inAmount || '0'), bidDecimals)),
     [bestRoute?.inAmount, bidDecimals],
   )
-  const { decimals: askDecimals } = useTokenByAddress(askMintAddress) || {
+  const { decimals: askDecimals } = useMintByAddress(askMintAddress) || {
     decimals: 0,
   }
   const askAmount = useMemo(
@@ -81,7 +81,7 @@ function SlippageTolerance() {
 }
 
 function Hop({ mintAddress }: { mintAddress: string }) {
-  const { logoURI, symbol } = useTokenByAddress(mintAddress) || {
+  const { logoURI, symbol } = useMintByAddress(mintAddress) || {
     logoURI: '',
     symbol: mintAddress.substring(0, 6),
   }

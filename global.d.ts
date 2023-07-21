@@ -2,7 +2,7 @@ type Theme = 'light' | 'dark'
 
 type ChainId = 101 | 102 | 103
 
-type TokenMetadata = {
+type MintMetadata = {
   address: string
   chainId: ChainId
   decimals: number

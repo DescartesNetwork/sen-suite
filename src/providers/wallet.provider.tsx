@@ -23,7 +23,7 @@ import { WalletModalProvider } from '@solana/wallet-adapter-react-ui'
 
 import { env } from '@/configs/env'
 import solConfig from '@/configs/sol.config'
-import { useTokenByAddress } from '@/providers/token.provider'
+import { useMintByAddress } from '@/providers/mint.provider'
 import { undecimalize } from '@/helpers/decimals'
 import { useSpl } from '@/hooks/spl.hook'
 
@@ -158,7 +158,7 @@ export const useMyTokenAccountsSelector = <T,>(
  */
 export const useMyReadableBalanceByMintAddress = (mintAddress: string) => {
   const { publicKey } = useWallet()
-  const { decimals } = useTokenByAddress(mintAddress) || { decimals: 0 }
+  const { decimals } = useMintByAddress(mintAddress) || { decimals: 0 }
   const balance = useMyTokenAccountsSelector<string>((tokenAccounts) => {
     if (!publicKey || !mintAddress) return '0'
     const tokenAccount = utils.token.associatedAddress({

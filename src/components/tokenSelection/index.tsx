@@ -6,7 +6,7 @@ import Modal from '@/components/modal'
 import Island from '@/components/island'
 import TokenList from './tokenList'
 
-import { useSearchToken } from '@/providers/token.provider'
+import { useSearchMint } from '@/providers/mint.provider'
 
 export type TokenSelectionType = {
   open?: boolean
@@ -22,8 +22,8 @@ export default function TokenSelection({
   onChange = () => {},
 }: TokenSelectionType) {
   const [text, setText] = useState('')
-  const [tokens, setTokens] = useState<TokenMetadata[] | undefined>()
-  const search = useSearchToken()
+  const [tokens, setTokens] = useState<MintMetadata[] | undefined>()
+  const search = useSearchMint()
 
   useEffect(() => {
     const data = !text.length

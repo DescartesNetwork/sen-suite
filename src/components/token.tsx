@@ -3,7 +3,7 @@ import { Fragment } from 'react'
 
 import { Diamond } from 'lucide-react'
 
-import { useTokenByAddress } from '@/providers/token.provider'
+import { useMintByAddress } from '@/providers/mint.provider'
 import { shortenAddress, numeric } from '@/helpers/utils'
 import { useMyReadableBalanceByMintAddress } from '@/providers/wallet.provider'
 
@@ -18,7 +18,7 @@ export function TokenLogo({
   className = 'w-12 h-12 rounded-full bg-base-300',
   fallback = '',
 }: TokenLogoProps) {
-  const { logoURI, name } = useTokenByAddress(mintAddress) || {
+  const { logoURI, name } = useMintByAddress(mintAddress) || {
     logoURI: fallback,
     name: '',
   }
@@ -40,7 +40,7 @@ export type TokenNameProps = {
 }
 
 export function TokenName({ mintAddress }: TokenNameProps) {
-  const { name } = useTokenByAddress(mintAddress) || {
+  const { name } = useMintByAddress(mintAddress) || {
     name: shortenAddress(mintAddress, 6),
   }
   return <Fragment>{name}</Fragment>
@@ -51,7 +51,7 @@ export type TokenSymbolProps = {
 }
 
 export function TokenSymbol({ mintAddress }: TokenSymbolProps) {
-  const { symbol } = useTokenByAddress(mintAddress) || {
+  const { symbol } = useMintByAddress(mintAddress) || {
     symbol: mintAddress.substring(0, 6),
   }
   return <Fragment>{symbol}</Fragment>

@@ -15,6 +15,7 @@ export default function FarmingPanel() {
           alt="farming-coin-1"
         />
         <img
+          style={{ animationDelay: '150ms' }}
           className="absolute -top-12 right-2 animate-bounce"
           src="/farming-coin-2.svg"
           alt="farming-coin-2"
