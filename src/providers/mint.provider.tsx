@@ -8,14 +8,18 @@ import { keccak_256 } from '@noble/hashes/sha3'
 import BN from 'bn.js'
 import { v4 as uuid } from 'uuid'
 import useSWR from 'swr'
+import { PublicKey } from '@solana/web3.js'
+import { produce } from 'immer'
 
 import { env } from '@/configs/env'
+import { useMpl } from '@/hooks/mpl.hook'
 
 export type MintStore = {
   mints: MintMetadata[]
-  setMints: (mints: MintMetadata[]) => void
+  upsertMints: (newMints: MintMetadata[]) => void
   engine?: Fuse<MintMetadata>
   setEngine: (engine?: Fuse<MintMetadata>) => void
+  unmount: () => void
 }
 
 /**
@@ -25,10 +29,25 @@ export const useMintStore = create<MintStore>()(
   devtools(
     (set) => ({
       mints: [],
-      setMints: (mints: MintMetadata[]) => set({ mints }, false, 'setMints'),
+      upsertMints: (newMints: MintMetadata[]) =>
+        set(
+          produce<MintStore>(({ mints }) => {
+            newMints.forEach((newMint) => {
+              const index = mints.findIndex(
+                ({ address }) => address === newMint.address,
+              )
+              if (index >= 0)
+                mints[index] = Object.assign(mints[index], newMint)
+              else mints.push(newMint)
+            })
+          }),
+          false,
+          'setMints',
+        ),
       engine: undefined,
       setEngine: (engine?: Fuse<MintMetadata>) =>
         set({ engine }, false, 'setEngine'),
+      unmount: () => set({ mints: [], engine: undefined }, false, 'unmount'),
     }),
     {
       name: 'token',
@@ -42,8 +61,9 @@ export const useMintStore = create<MintStore>()(
  */
 
 export default function MintProvider({ children }: { children: ReactNode }) {
-  const setMints = useMintStore(({ setMints }) => setMints)
+  const upsertMints = useMintStore(({ upsertMints }) => upsertMints)
   const setEngine = useMintStore(({ setEngine }) => setEngine)
+  const unmount = useMintStore(({ unmount }) => unmount)
 
   const fetch = useCallback(async () => {
     const { data } = await axios.get<MintMetadata[]>('https://token.jup.ag/all')
@@ -51,14 +71,9 @@ export default function MintProvider({ children }: { children: ReactNode }) {
       includeScore: true,
       keys: ['name', 'symbol'],
     })
-    setMints(data)
+    upsertMints(data)
     setEngine(fuse)
-  }, [setMints, setEngine])
-
-  const unmount = useCallback(() => {
-    setMints([])
-    setEngine(undefined)
-  }, [setMints, setEngine])
+  }, [upsertMints, setEngine])
 
   useEffect(() => {
     fetch()
@@ -107,16 +122,36 @@ export const useRandomMints = ({
 
 /**
  * Get mint by address
- * @param addr Mint address
+ * @param mintAddress Mint address
  * @returns Mint
  */
-export const useMintByAddress = (addr: string) => {
-  const mints = useMintStore(({ mints }) => mints)
-  const mint = useMemo(
-    () => mints.find(({ address }) => address === addr),
-    [mints, addr],
+export const useMintByAddress = (mintAddress: string) => {
+  const mint = useMintStore(({ mints }) =>
+    mints.find(({ address }) => address === mintAddress),
   )
   return mint
+}
+
+export const useSftByAddress = (mintAddress: string) => {
+  const mpl = useMpl()
+  const { data } = useSWR([mintAddress, 'sft'], async ([mintAddress]) => {
+    const data = await mpl
+      .nfts()
+      .findByMint({ mintAddress: new PublicKey(mintAddress) })
+    const onchainMint: MintMetadata = {
+      address: mintAddress,
+      chainId: 101,
+      decimals: data.mint.decimals,
+      name: data.name,
+      symbol: data.symbol,
+      logoURI: data.json?.image || '',
+      tags: ['sft'],
+      extensions: {},
+    }
+    return onchainMint
+  })
+
+  return data
 }
 
 /**
