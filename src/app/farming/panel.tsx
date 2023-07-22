@@ -8,17 +8,14 @@ import { useTvl } from '@/hooks/tvl.hook'
 
 export default function FarmingPanel() {
   const farms = useAllFarms()
-  const mintAddressToAmount = useMemo(() => {
-    const mapping: Record<string, BN> = {}
-    Object.values(farms).forEach(({ totalShares, inputMint }) => {
-      if (!mapping[inputMint.toBase58()])
-        mapping[inputMint.toBase58()] = totalShares
-      else
-        mapping[inputMint.toBase58()] =
-          mapping[inputMint.toBase58()].add(totalShares)
-    })
-    return mapping
-  }, [farms])
+  const mintAddressToAmount: Array<[string, BN]> = useMemo(
+    () =>
+      Object.values(farms).map(({ totalShares, inputMint }) => [
+        inputMint.toBase58(),
+        totalShares,
+      ]),
+    [farms],
+  )
   const tvl = useTvl(mintAddressToAmount)
 
   return (

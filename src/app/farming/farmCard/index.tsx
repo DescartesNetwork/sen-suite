@@ -12,7 +12,7 @@ export type FarmingCardProps = {
   farmAddress: string
 }
 
-export default function FarmingCard({ farmAddress }: FarmingCardProps) {
+export default function FarmCard({ farmAddress }: FarmingCardProps) {
   const { inputMint } = useFarmByAddress(farmAddress)
 
   return (

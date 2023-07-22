@@ -4,14 +4,14 @@ import { useMemo } from 'react'
 import { useAllMints, usePrices } from '@/providers/mint.provider'
 import { undecimalize } from '@/helpers/decimals'
 
-export const useTvl = (mintAddressToAmount: Record<string, BN>) => {
+export const useTvl = (mintAddressToAmount: Array<[string, BN]>) => {
   const mints = useAllMints()
   const mintAddresses = useMemo(
-    () => Object.keys(mintAddressToAmount),
+    () => mintAddressToAmount.map(([mintAddress]) => mintAddress),
     [mintAddressToAmount],
   )
   const amounts = useMemo(
-    () => Object.values(mintAddressToAmount),
+    () => mintAddressToAmount.map(([_, amount]) => amount),
     [mintAddressToAmount],
   )
   const prices = usePrices(mintAddresses)

@@ -1,6 +1,6 @@
 'use client'
 import { Fragment, ReactNode, useCallback, useEffect, useMemo } from 'react'
-import { FarmData, DebtData, BoostingData } from '@sentre/farming'
+import { FarmData, DebtData, RewardData, BoostingData } from '@sentre/farming'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { produce } from 'immer'
@@ -17,6 +17,8 @@ export type FarmingStore = {
   upsertFarms: (newFarms: Record<string, FarmData>) => void
   debts: Record<string, DebtData>
   upsertDebts: (newDebts: Record<string, DebtData>) => void
+  rewards: Record<string, RewardData>
+  upsertRewards: (newRewards: Record<string, RewardData>) => void
   boostings: Record<string, BoostingData>
   upsertBoostings: (newBoostings: Record<string, BoostingData>) => void
   sortedByLiquidity: SortState
@@ -60,6 +62,20 @@ export const useFarmingStore = create<FarmingStore>()(
           false,
           'upsertDebts',
         ),
+      rewards: {},
+      upsertRewards: (newRewards: Record<string, RewardData>) =>
+        set(
+          produce<FarmingStore>(({ rewards }) => {
+            Object.keys(newRewards).forEach((rewardAddress) => {
+              if (!rewards[rewardAddress])
+                rewards[rewardAddress] = newRewards[rewardAddress]
+              else
+                Object.assign(rewards[rewardAddress], newRewards[rewardAddress])
+            })
+          }),
+          false,
+          'upsertRewards',
+        ),
       boostings: {},
       upsertBoostings: (newBoostings: Record<string, BoostingData>) =>
         set(
@@ -87,7 +103,11 @@ export const useFarmingStore = create<FarmingStore>()(
       setNftBoosted: (nftBoosted: boolean) =>
         set({ nftBoosted }, false, 'setNftBoosted'),
       unmount: () =>
-        set({ farms: {}, debts: {}, boostings: {} }, false, 'unmount'),
+        set(
+          { farms: {}, debts: {}, rewards: {}, boostings: {} },
+          false,
+          'unmount',
+        ),
     }),
     {
       name: 'farming',
@@ -104,6 +124,7 @@ export default function FarmingProvider({ children }: { children: ReactNode }) {
   const { publicKey } = useWallet()
   const upsertFarms = useFarmingStore(({ upsertFarms }) => upsertFarms)
   const upsertDebts = useFarmingStore(({ upsertDebts }) => upsertDebts)
+  const upsertRewards = useFarmingStore(({ upsertRewards }) => upsertRewards)
   const upsertBoostings = useFarmingStore(
     ({ upsertBoostings }) => upsertBoostings,
   )
@@ -124,6 +145,10 @@ export default function FarmingProvider({ children }: { children: ReactNode }) {
     return upsertFarms(farms)
   }, [farming, upsertFarms])
 
+  useEffect(() => {
+    fetchFarms()
+  }, [fetchFarms])
+
   const fetchDebts = useCallback(async () => {
     if (!filter) return upsertDebts({})
     const data: Array<{ publicKey: PublicKey; account: DebtData }> =
@@ -135,6 +160,24 @@ export default function FarmingProvider({ children }: { children: ReactNode }) {
     return upsertDebts(debts)
   }, [farming, filter, upsertDebts])
 
+  useEffect(() => {
+    fetchDebts()
+  }, [fetchDebts])
+
+  const fetchRewards = useCallback(async () => {
+    const data: Array<{ publicKey: PublicKey; account: RewardData }> =
+      await farming.program.account.farmRewardMint.all()
+    const rewards: Record<string, RewardData> = {}
+    data.forEach(
+      ({ publicKey, account }) => (rewards[publicKey.toBase58()] = account),
+    )
+    return upsertRewards(rewards)
+  }, [farming, upsertRewards])
+
+  useEffect(() => {
+    fetchRewards()
+  }, [fetchRewards])
+
   const fetchBoostings = useCallback(async () => {
     const data: Array<{ publicKey: PublicKey; account: BoostingData }> =
       await farming.program.account.farmBoostingCollection.all()
@@ -144,14 +187,6 @@ export default function FarmingProvider({ children }: { children: ReactNode }) {
     )
     return upsertBoostings(boostings)
   }, [farming, upsertBoostings])
-
-  useEffect(() => {
-    fetchFarms()
-  }, [fetchFarms])
-
-  useEffect(() => {
-    fetchDebts()
-  }, [fetchDebts])
 
   useEffect(() => {
     fetchBoostings()
@@ -186,6 +221,20 @@ export const useAllDebts = () => {
 }
 
 /**
+ * Get reward by farm address
+ * @param farmAddress Farm address
+ * @returns Reward
+ */
+export const useRewardsByFarmAddress = (farmAddress: string) => {
+  const rewards = useFarmingStore(({ rewards }) =>
+    Object.values(rewards).filter(
+      ({ farm }) => farm.toBase58() === farmAddress,
+    ),
+  )
+  return rewards
+}
+
+/**
  * Get all boostings
  * @returns Boosting list
  */
@@ -202,7 +251,7 @@ export const useAllBoostings = () => {
 export const useBoostingByFarmAddress = (farmAddress: string) => {
   const boosting = useFarmingStore(({ boostings }) =>
     Object.values(boostings).find(
-      (boosting) => boosting.farm.toBase58() === farmAddress,
+      ({ farm }) => farm.toBase58() === farmAddress,
     ),
   )
   return boosting

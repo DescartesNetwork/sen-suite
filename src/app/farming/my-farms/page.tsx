@@ -1,7 +1,7 @@
 'use client'
 import { useWallet } from '@solana/wallet-adapter-react'
 
-import FarmingCard from '../card'
+import FarmCard from '../farmCard'
 
 import { useAllDebts, useAllFarms } from '@/providers/farming.provider'
 
@@ -21,7 +21,7 @@ export default function MyFarms() {
       <h5 className="col-span-12 opacity-60">Created Farms</h5>
       {myFarms.map((farmAddress) => (
         <div className="col-span-12 @2xl:col-span-6" key={farmAddress}>
-          <FarmingCard farmAddress={farmAddress} />
+          <FarmCard farmAddress={farmAddress} />
         </div>
       ))}
       <h5 className="col-span-12 opacity-60">Staked Farms</h5>

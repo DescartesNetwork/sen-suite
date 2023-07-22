@@ -1,7 +1,7 @@
 'use client'
 import { useMemo } from 'react'
 
-import FarmingCard from './card'
+import FarmingCard from './farmCard'
 
 import { useAllFarms } from '@/providers/farming.provider'
 
