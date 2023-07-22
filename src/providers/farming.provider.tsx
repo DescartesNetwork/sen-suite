@@ -1,18 +1,22 @@
 'use client'
-import { Fragment, ReactNode, useCallback, useEffect } from 'react'
-import { FarmData } from '@sentre/farming'
+import { Fragment, ReactNode, useCallback, useEffect, useMemo } from 'react'
+import { FarmData, DebtData } from '@sentre/farming'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { produce } from 'immer'
+import { PublicKey } from '@solana/web3.js'
+import { useWallet } from '@solana/wallet-adapter-react'
+import { useUnmount } from 'react-use'
 
 import { env } from '@/configs/env'
 import { useFarming } from '@/hooks/farming.hook'
-import { PublicKey } from '@solana/web3.js'
 
 export type SortState = -1 | 0 | 1
 export type FarmingStore = {
   farms: Record<string, FarmData>
   upsertFarms: (newFarms: Record<string, FarmData>) => void
+  debts: Record<string, DebtData>
+  upsertDebts: (newDebts: Record<string, DebtData>) => void
   sortedByLiquidity: SortState
   setSortedByLiquidity: (value: SortState) => void
   sortedByApr: SortState
@@ -41,6 +45,19 @@ export const useFarmingStore = create<FarmingStore>()(
           false,
           'upsertFarms',
         ),
+      debts: {},
+      upsertDebts: (newDebts: Record<string, DebtData>) =>
+        set(
+          produce<FarmingStore>(({ debts }) => {
+            Object.keys(newDebts).forEach((debtAddress) => {
+              if (!debts[debtAddress])
+                debts[debtAddress] = newDebts[debtAddress]
+              else Object.assign(debts[debtAddress], newDebts[debtAddress])
+            })
+          }),
+          false,
+          'upsertDebts',
+        ),
       sortedByLiquidity: 0,
       setSortedByLiquidity: (sortedByLiquidity) =>
         set({ sortedByLiquidity }, false, 'setSortedByLiquidity'),
@@ -50,7 +67,7 @@ export const useFarmingStore = create<FarmingStore>()(
       nftBoosted: false,
       setNftBoosted: (nftBoosted: boolean) =>
         set({ nftBoosted }, false, 'setNftBoosted'),
-      unmount: () => set({ farms: {} }, false, 'unmount'),
+      unmount: () => set({ farms: {}, debts: {} }, false, 'unmount'),
     }),
     {
       name: 'farming',
@@ -64,10 +81,17 @@ export const useFarmingStore = create<FarmingStore>()(
  */
 export default function FarmingProvider({ children }: { children: ReactNode }) {
   const farming = useFarming()
+  const { publicKey } = useWallet()
   const upsertFarms = useFarmingStore(({ upsertFarms }) => upsertFarms)
+  const upsertDebts = useFarmingStore(({ upsertDebts }) => upsertDebts)
   const unmount = useFarmingStore(({ unmount }) => unmount)
 
-  const fetch = useCallback(async () => {
+  const filter = useMemo(() => {
+    if (!publicKey) return undefined
+    return [{ memcmp: { bytes: publicKey.toBase58(), offset: 40 } }]
+  }, [publicKey])
+
+  const fetchFarms = useCallback(async () => {
     const data: Array<{ publicKey: PublicKey; account: FarmData }> =
       (await farming.program.account.farm.all()) as any
     const farms: Record<string, FarmData> = {}
@@ -77,10 +101,26 @@ export default function FarmingProvider({ children }: { children: ReactNode }) {
     return upsertFarms(farms)
   }, [farming, upsertFarms])
 
+  const fetchDebts = useCallback(async () => {
+    if (!filter) return upsertDebts({})
+    const data: Array<{ publicKey: PublicKey; account: DebtData }> =
+      await farming.program.account.debt.all(filter)
+    const debts: Record<string, DebtData> = {}
+    data.forEach(
+      ({ publicKey, account }) => (debts[publicKey.toBase58()] = account),
+    )
+    return upsertDebts(debts)
+  }, [farming, filter, upsertDebts])
+
   useEffect(() => {
-    fetch()
-    return unmount
-  }, [fetch, unmount])
+    fetchFarms()
+  }, [fetchFarms])
+
+  useEffect(() => {
+    fetchDebts()
+  }, [fetchDebts])
+
+  useUnmount(unmount)
 
   return <Fragment>{children}</Fragment>
 }
@@ -89,9 +129,18 @@ export default function FarmingProvider({ children }: { children: ReactNode }) {
  * Get all farms
  * @returns Farm list
  */
-export const useAllFrams = () => {
+export const useAllFarms = () => {
   const farms = useFarmingStore(({ farms }) => farms)
   return farms
+}
+
+/**
+ * Get all debts
+ * @returns Debt list
+ */
+export const useAllDebts = () => {
+  const debts = useFarmingStore(({ debts }) => debts)
+  return debts
 }
 
 /**

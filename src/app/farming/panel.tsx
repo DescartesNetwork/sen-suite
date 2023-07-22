@@ -2,14 +2,14 @@
 import { useCallback, useState } from 'react'
 import { useDebounce } from 'react-use'
 
-import { useAllFrams } from '@/providers/farming.provider'
+import { useAllFarms } from '@/providers/farming.provider'
 import { numeric } from '@/helpers/utils'
 import { getPrice, useMintStore } from '@/providers/mint.provider'
 import { undecimalize } from '@/helpers/decimals'
 
 export default function FarmingPanel() {
   const [tvl, setTvl] = useState(0)
-  const farms = useAllFrams()
+  const farms = useAllFarms()
 
   const fetch = useCallback(async () => {
     const data = await Promise.all(
@@ -59,7 +59,7 @@ export default function FarmingPanel() {
         <div className="flex flex-row gap-2">
           <div className="">
             <p className="text-sm">TVL</p>
-            <h5>{numeric(tvl).format('$0,0.[000]')}</h5>
+            <h5>{numeric(tvl).format('$0,0.[00]')}</h5>
           </div>
           <span className="divider divider-horizontal m-0" />
           <div className="">

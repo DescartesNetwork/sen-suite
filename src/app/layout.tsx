@@ -11,8 +11,9 @@ import Sidebar from '@/app/sidebar'
 import '@/styles/global.scss'
 
 export const metadata: Metadata = {
-  title: 'Sentre',
-  description: 'The suite for startups on Solana',
+  title: 'Sentre: The suite for startups on Solana',
+  description:
+    'The suite for startups on Solana. Formerly, The dApp Store for All Things Solana.',
   viewport: {
     width: 'device-width',
     initialScale: 1,

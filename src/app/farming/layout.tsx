@@ -1,30 +1,15 @@
 import { ReactNode } from 'react'
+import type { Metadata } from 'next'
 
 import FarmingPanel from './panel'
-import Tab from './tab'
+import Navigation from './navigation'
 import FarmingSearch from './search'
 
 import FarmingProvider from '@/providers/farming.provider'
 
-const TABS = [
-  {
-    title: 'All',
-    route: '/farming',
-    active: true,
-  },
-  {
-    title: 'My Farms',
-    route: '/farming/my-farms',
-  },
-  {
-    title: 'Expired Farms',
-    route: '/farming/expired-farms',
-  },
-  {
-    title: 'Upcoming Farms',
-    route: '/farming/upcoming-farms',
-  },
-]
+export const metadata: Metadata = {
+  title: 'SenFarming - v2 | Sentre: The suite for startups on Solana',
+}
 
 export default function FarmingLayout({ children }: { children: ReactNode }) {
   return (
@@ -36,9 +21,7 @@ export default function FarmingLayout({ children }: { children: ReactNode }) {
               <FarmingPanel />
             </div>
             <div className="col-span-full flex flex-row gap-2 overflow-auto no-scrollbar">
-              {TABS.map(({ title, route, active }, i) => (
-                <Tab key={i} title={title} to={route} active={active} />
-              ))}
+              <Navigation />
             </div>
             <div className="col-span-full">
               <FarmingSearch />
