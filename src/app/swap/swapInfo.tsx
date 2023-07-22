@@ -2,7 +2,7 @@
 import { Fragment, useMemo } from 'react'
 import { BN } from 'bn.js'
 
-import { TokenSymbol } from '@/components/token'
+import { MintSymbol } from '@/components/mint'
 import { ChevronRight, Diamond } from 'lucide-react'
 
 import { undecimalize } from '@/helpers/decimals'
@@ -54,9 +54,9 @@ function Price() {
         {numeric(bidAmount / askAmount).format('0,0.[000000]')}
       </p>
       <p className="text-sm font-bold opacity-60">
-        <TokenSymbol mintAddress={bidMintAddress} />
+        <MintSymbol mintAddress={bidMintAddress} />
         <span>/</span>
-        <TokenSymbol mintAddress={askMintAddress} />
+        <MintSymbol mintAddress={askMintAddress} />
       </p>
     </div>
   )

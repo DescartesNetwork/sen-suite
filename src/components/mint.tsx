@@ -7,19 +7,19 @@ import { useMintByAddress } from '@/providers/mint.provider'
 import { shortenAddress, numeric } from '@/helpers/utils'
 import { useMyReadableBalanceByMintAddress } from '@/providers/wallet.provider'
 
-export type TokenLogoProps = {
+export type MintLogoProps = {
   mintAddress: string
   className?: string
   iconClassName?: string
   fallback?: string
 }
 
-export function TokenLogo({
+export function MintLogo({
   mintAddress,
   className = 'w-12 h-12 rounded-full bg-base-300',
   iconClassName = 'text-base-content',
   fallback = '',
-}: TokenLogoProps) {
+}: MintLogoProps) {
   const { logoURI, name } = useMintByAddress(mintAddress) || {
     logoURI: fallback,
     name: '',
@@ -37,37 +37,37 @@ export function TokenLogo({
   )
 }
 
-export type TokenNameProps = {
+export type MintNameProps = {
   mintAddress: string
 }
 
-export function TokenName({ mintAddress }: TokenNameProps) {
+export function MintName({ mintAddress }: MintNameProps) {
   const { name } = useMintByAddress(mintAddress) || {
     name: shortenAddress(mintAddress, 6),
   }
   return <Fragment>{name}</Fragment>
 }
 
-export type TokenSymbolProps = {
+export type MintSymbolProps = {
   mintAddress: string
 }
 
-export function TokenSymbol({ mintAddress }: TokenSymbolProps) {
+export function MintSymbol({ mintAddress }: MintSymbolProps) {
   const { symbol } = useMintByAddress(mintAddress) || {
     symbol: mintAddress.substring(0, 6),
   }
   return <Fragment>{symbol}</Fragment>
 }
 
-export type TokenBalanceProps = {
+export type MintBalanceProps = {
   mintAddress: string
   format?: string
 }
 
-export function MyTokenBalance({
+export function MyBalance({
   mintAddress,
   format = '0,0.[0000]',
-}: TokenBalanceProps) {
+}: MintBalanceProps) {
   const balance = useMyReadableBalanceByMintAddress(mintAddress)
 
   return <Fragment>{numeric(balance).format(format)}</Fragment>

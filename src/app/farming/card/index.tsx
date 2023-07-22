@@ -1,6 +1,6 @@
 'use client'
 
-import { TokenLogo, TokenSymbol } from '@/components/token'
+import { MintLogo, MintSymbol } from '@/components/mint'
 import { Crown, Info } from 'lucide-react'
 import FarmTimeline from './farmTimeline'
 import FarmStatus from './farmStatus'
@@ -18,9 +18,9 @@ export default function FarmingCard({ farmAddress }: FarmingCardProps) {
   return (
     <div className="card rounded-box shadow hover:shadow-lg p-4 bg-base-100 grid grid-cols-12 gap-2 cursor-pointer transition-all">
       <div className="col-span-12 flex flex-row items-center gap-2">
-        <TokenLogo mintAddress={inputMint.toBase58()} />
+        <MintLogo mintAddress={inputMint.toBase58()} />
         <p className="font-bold flex-auto">
-          <TokenSymbol mintAddress={inputMint.toBase58()} />
+          <MintSymbol mintAddress={inputMint.toBase58()} />
         </p>
         <FarmStatus farmAddress={farmAddress} />
       </div>

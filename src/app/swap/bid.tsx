@@ -2,7 +2,7 @@
 import { ChangeEvent, useCallback, useState } from 'react'
 
 import TokenSelection from '@/components/tokenSelection'
-import { MyTokenBalance, TokenLogo, TokenSymbol } from '@/components/token'
+import { MyBalance, MintLogo, MintSymbol } from '@/components/mint'
 import { ChevronDown } from 'lucide-react'
 
 import { useSwapStore } from '@/hooks/swap.hook'
@@ -52,12 +52,12 @@ export default function Bid() {
           className="card bg-base-100 p-2 rounded-full flex flex-row gap-2 items-center cursor-pointer"
           onClick={() => setOpen(true)}
         >
-          <TokenLogo
+          <MintLogo
             mintAddress={bidMintAddress}
             className="w-8 h-8 rounded-full"
           />
           <h5 className="text-sm">
-            <TokenSymbol mintAddress={bidMintAddress} />
+            <MintSymbol mintAddress={bidMintAddress} />
           </h5>
           <ChevronDown className="h-4 w-4" />
         </div>
@@ -73,7 +73,7 @@ export default function Bid() {
         <div className="flex flex-col">
           <p className="text-xs font-bold opacity-60">Available</p>
           <p>
-            <MyTokenBalance mintAddress={bidMintAddress} />
+            <MyBalance mintAddress={bidMintAddress} />
           </p>
         </div>
         <div className="flex-auto max-w-[112px]">
