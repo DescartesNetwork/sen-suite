@@ -9,9 +9,16 @@ import { env } from '@/configs/env'
 import { useFarming } from '@/hooks/farming.hook'
 import { PublicKey } from '@solana/web3.js'
 
+export type SortState = -1 | 0 | 1
 export type FarmingStore = {
   farms: Record<string, FarmData>
   upsertFarms: (newFarms: Record<string, FarmData>) => void
+  sortedByLiquidity: SortState
+  setSortedByLiquidity: (value: SortState) => void
+  sortedByApr: SortState
+  setSortedByApr: (value: SortState) => void
+  nftBoosted: boolean
+  setNftBoosted: (value: boolean) => void
   unmount: () => void
 }
 
@@ -34,6 +41,15 @@ export const useFarmingStore = create<FarmingStore>()(
           false,
           'upsertFarms',
         ),
+      sortedByLiquidity: 0,
+      setSortedByLiquidity: (sortedByLiquidity) =>
+        set({ sortedByLiquidity }, false, 'setSortedByLiquidity'),
+      sortedByApr: 0,
+      setSortedByApr: (sortedByApr) =>
+        set({ sortedByApr }, false, 'setSortedByApr'),
+      nftBoosted: false,
+      setNftBoosted: (nftBoosted: boolean) =>
+        set({ nftBoosted }, false, 'setNftBoosted'),
       unmount: () => set({ farms: {} }, false, 'unmount'),
     }),
     {
@@ -76,4 +92,43 @@ export default function FarmingProvider({ children }: { children: ReactNode }) {
 export const useAllFrams = () => {
   const farms = useFarmingStore(({ farms }) => farms)
   return farms
+}
+
+/**
+ * Use sorted by liquidity
+ */
+export const useSortedByLiquidity = () => {
+  const { sortedByLiquidity, setSortedByLiquidity } = useFarmingStore(
+    ({ sortedByLiquidity, setSortedByLiquidity }) => ({
+      sortedByLiquidity,
+      setSortedByLiquidity,
+    }),
+  )
+  return { sortedByLiquidity, setSortedByLiquidity }
+}
+
+/**
+ * Use sorted by APR
+ */
+export const useSortedByApr = () => {
+  const { sortedByApr, setSortedByApr } = useFarmingStore(
+    ({ sortedByApr, setSortedByApr }) => ({
+      sortedByApr,
+      setSortedByApr,
+    }),
+  )
+  return { sortedByApr, setSortedByApr }
+}
+
+/**
+ * Use sorted by APR
+ */
+export const useNftBoosted = () => {
+  const { nftBoosted, setNftBoosted } = useFarmingStore(
+    ({ nftBoosted, setNftBoosted }) => ({
+      nftBoosted,
+      setNftBoosted,
+    }),
+  )
+  return { nftBoosted, setNftBoosted }
 }
