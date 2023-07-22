@@ -8,11 +8,11 @@ import { useFarmByAddress } from '@/providers/farming.provider'
 
 dayjs.extend(duration)
 
-export type TimelineProps = {
+export type FarmTimelineProps = {
   farmAddress: string
 }
 
-export default function Timeline({ farmAddress }: TimelineProps) {
+export default function FarmTimeline({ farmAddress }: FarmTimelineProps) {
   const [current, setCurrent] = useState(Date.now())
   const { startDate, endDate } = useFarmByAddress(farmAddress)
 
@@ -26,7 +26,7 @@ export default function Timeline({ farmAddress }: TimelineProps) {
   if (end < current) return <div className="badge badge-neutral">Expired</div>
   if (start > current)
     return (
-      <div className="flex flex-row items-center gap-1">
+      <div className="flex flex-row items-center gap-2">
         <p className="text-sm opacity-60">Started in</p>
         <span className="join">
           <div className="badge badge-neutral join-item">
@@ -42,7 +42,7 @@ export default function Timeline({ farmAddress }: TimelineProps) {
       </div>
     )
   return (
-    <div className="flex flex-row items-center gap-1">
+    <div className="flex flex-row items-center gap-2">
       <p className="text-sm opacity-60">Ended in</p>
       <span className="join">
         <div className="badge badge-neutral join-item">

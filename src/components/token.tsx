@@ -10,12 +10,14 @@ import { useMyReadableBalanceByMintAddress } from '@/providers/wallet.provider'
 export type TokenLogoProps = {
   mintAddress: string
   className?: string
+  iconClassName?: string
   fallback?: string
 }
 
 export function TokenLogo({
   mintAddress,
   className = 'w-12 h-12 rounded-full bg-base-300',
+  iconClassName = 'text-base-content',
   fallback = '',
 }: TokenLogoProps) {
   const { logoURI, name } = useMintByAddress(mintAddress) || {
@@ -28,7 +30,7 @@ export function TokenLogo({
         {logoURI ? (
           <img src={logoURI} alt={name} />
         ) : (
-          <Diamond className="text-base-content" />
+          <Diamond className={iconClassName} />
         )}
       </div>
     </div>
