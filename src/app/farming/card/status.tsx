@@ -15,13 +15,12 @@ export type StatusProps = {
 
 export default function Status({ farmAddress }: StatusProps) {
   const [current, setCurrent] = useState(Date.now())
-  const { startDate, endDate } = useFarmByAddress(farmAddress)
+  const { startDate } = useFarmByAddress(farmAddress)
   const boosting = useBoostingByFarmAddress(farmAddress)
 
   useInterval(() => setCurrent(Date.now()), 1000)
 
   const start = startDate.toNumber() * 1000
-  const end = endDate.toNumber() * 1000
 
   if (start > current)
     return (
