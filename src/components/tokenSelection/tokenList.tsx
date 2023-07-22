@@ -3,30 +3,31 @@ import { Fragment, useMemo, useState } from 'react'
 
 import LazyLoad from 'react-lazy-load'
 import { Dices, History, SearchCheck } from 'lucide-react'
+import Empty from '@/components/empty'
 import TokenCard from './tokenCard'
 
 import { useAllMints, useRandomMints } from '@/providers/mint.provider'
 import { useMyTokenAccounts } from '@/providers/wallet.provider'
 
 export type TokenListProps = {
-  tokens?: MintMetadata[]
+  mints?: MintMetadata[]
   mintAddress?: string
   onChange?: (mintAddress: string) => void
 }
 
 export default function TokenList({
-  tokens,
+  mints,
   mintAddress,
   onChange = () => {},
 }: TokenListProps) {
   const [hidden, setHidden] = useState(true)
   const all = useAllMints()
-  const recentTokensAccount = useMyTokenAccounts()
-  const randTokens = useRandomMints()
+  const myAccounts = useMyTokenAccounts()
+  const randMints = useRandomMints()
 
-  const recentTokens = useMemo(() => {
-    const mintAddresses = all.map(({ address }) => address)
-    const recentAddresses = Object.values(recentTokensAccount)
+  const mintAddresses = useMemo(() => all.map(({ address }) => address), [all])
+  const recentMintAddresses = useMemo(() => {
+    const recentAddresses = Object.values(myAccounts)
       .map(({ mint }) => mint.toBase58())
       .sort((a, b) => {
         const x = mintAddresses.includes(a) ? 1 : 0
@@ -35,11 +36,11 @@ export default function TokenList({
       })
     if (!hidden) return recentAddresses
     return recentAddresses.filter((address) => mintAddresses.includes(address))
-  }, [all, hidden, recentTokensAccount])
+  }, [mintAddresses, hidden, myAccounts])
 
   return (
     <div className="grid grid-cols-12 gap-2 relative max-h-96 overflow-y-auto overflow-x-hidden no-scrollbar">
-      {!tokens && (
+      {!mints && (
         <Fragment>
           <div className="sticky top-0 col-span-12 flex gap-2 items-center bg-base-100 z-[1]">
             <History className="w-4 h-4 opacity-60" />
@@ -58,7 +59,12 @@ export default function TokenList({
               </label>
             </div>
           </div>
-          {recentTokens.map((address) => (
+          {!recentMintAddresses.length && (
+            <div className="col-span-full flex flex-row justify-center">
+              <Empty />
+            </div>
+          )}
+          {recentMintAddresses.map((address) => (
             <div key={address} className="col-span-12">
               <LazyLoad height={64}>
                 <TokenCard
@@ -74,7 +80,7 @@ export default function TokenList({
       )}
       <div className="sticky top-0 col-span-12 bg-base-100 py-2 z-[1]">
         <label className="swap">
-          <input type="checkbox" checked={!tokens} readOnly />
+          <input type="checkbox" checked={!mints} readOnly />
           <div className="swap-on flex gap-2 items-center">
             <Dices className="w-4 h-4 opacity-60" />
             <h5 className="flex-auto text-sm opacity-60">Explorer</h5>
@@ -85,7 +91,7 @@ export default function TokenList({
           </div>
         </label>
       </div>
-      {(tokens || randTokens).map(({ address }) => (
+      {(mints || randMints).map(({ address }) => (
         <div key={address} className="col-span-12">
           <LazyLoad height={64}>
             <TokenCard

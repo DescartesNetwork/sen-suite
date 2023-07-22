@@ -24,8 +24,8 @@ export default function FarmingCard({ farmAddress }: FarmingCardProps) {
         </p>
         <FarmStatus farmAddress={farmAddress} />
       </div>
-      <div className="col-span-12 flex flex-row items-center gap-2">
-        <div className="dropdown dropdown-hover flex-auto">
+      <div className="col-span-12 flex flex-row flex-wrap items-center gap-2">
+        <div className="dropdown dropdown-hover">
           <label tabIndex={0} className="flex flex-row items-center gap-1">
             <Info className="w-3 h-3" />
             <p className="text-sm">Need stake tokens?</p>
@@ -42,7 +42,9 @@ export default function FarmingCard({ farmAddress }: FarmingCardProps) {
             </li>
           </ul>
         </div>
-        <FarmTimeline farmAddress={farmAddress} />
+        <div className="flex-auto flex flex-row justify-end">
+          <FarmTimeline farmAddress={farmAddress} />
+        </div>
       </div>
       <div className="col-span-12 mt-8">
         <FarmInfo farmAddress={farmAddress} />

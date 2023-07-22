@@ -22,16 +22,13 @@ export default function TokenSelection({
   onChange = () => {},
 }: TokenSelectionType) {
   const [text, setText] = useState('')
-  const [tokens, setTokens] = useState<MintMetadata[] | undefined>()
+  const [mints, setMints] = useState<MintMetadata[] | undefined>()
   const search = useSearchMint()
 
   useEffect(() => {
-    const data = !text.length
-      ? undefined
-      : text.length <= 2
-      ? []
-      : search(text).map(({ item }) => item)
-    setTokens(data)
+    if (!text.length) setMints(undefined)
+    else if (text.length <= 2) setMints([])
+    else setMints(search(text).map(({ item }) => item))
   }, [text, search])
 
   useEffect(() => {
@@ -58,7 +55,7 @@ export default function TokenSelection({
         <div className="col-span-12">
           <Island>
             <TokenList
-              tokens={tokens}
+              mints={mints}
               mintAddress={mintAddress}
               onChange={onChange}
             />
