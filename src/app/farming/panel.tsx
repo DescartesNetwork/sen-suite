@@ -63,7 +63,7 @@ export default function FarmingPanel() {
           </div>
           <span className="divider divider-horizontal m-0" />
           <div className="">
-            <p className="text-sm">Your Reward</p>
+            <p className="text-sm">Your Rewards</p>
             <h5>$2,053.38</h5>
           </div>
         </div>

@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { PublicKey } from '@solana/web3.js'
 import { useWallet } from '@solana/wallet-adapter-react'
 
-import { TokenLogo } from '@/components/token'
+import { MintLogo } from '@/components/mint'
 import Splash from '@/components/splash'
 import { ImagePlusIcon, X } from 'lucide-react'
 
@@ -87,7 +87,7 @@ export default function TokenDetails() {
     <div className="grid grid-cols-12 gap-x-2 gap-y-4">
       <div className="col-span-full flex flex-row justify-center">
         <div className="group relative cursor-pointer">
-          <TokenLogo
+          <MintLogo
             mintAddress={mintAddress}
             className="w-24 h-24 rounded-full ring ring-secondary ring-offset-base-100 ring-offset-2"
             fallback={logo ? URL.createObjectURL(logo) : ''}

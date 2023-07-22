@@ -1,12 +1,7 @@
 'use client'
 
 import Clipboard from '@/components/clipboard'
-import {
-  MyTokenBalance,
-  TokenLogo,
-  TokenName,
-  TokenSymbol,
-} from '@/components/token'
+import { MyBalance, MintLogo, MintName, MintSymbol } from '@/components/mint'
 import { ArrowUpRightSquare } from 'lucide-react'
 
 import { solscan } from '@/helpers/explorers'
@@ -33,13 +28,13 @@ export default function TokenCard({
       onClick={onClick}
     >
       <div className="flex gap-2">
-        <TokenLogo mintAddress={mintAddress} />
+        <MintLogo mintAddress={mintAddress} />
         <div className="flex-auto">
           <p className="font-semibold">
-            <TokenSymbol mintAddress={mintAddress} />
+            <MintSymbol mintAddress={mintAddress} />
           </p>
           <p className="text-sm opacity-60">
-            <TokenName mintAddress={mintAddress} />
+            <MintName mintAddress={mintAddress} />
           </p>
         </div>
         <div className="invisible group-hover:visible">
@@ -59,11 +54,11 @@ export default function TokenCard({
               <div className="text-xs opacity-60">My Balance</div>
               <div className="divider divider-horizontal mx-0 my-1" />
               <div className="text-xs opacity-60">
-                <TokenSymbol mintAddress={mintAddress} />
+                <MintSymbol mintAddress={mintAddress} />
               </div>
             </div>
             <div className="text-sm">
-              <MyTokenBalance mintAddress={mintAddress} />
+              <MyBalance mintAddress={mintAddress} />
             </div>
           </div>
         )}

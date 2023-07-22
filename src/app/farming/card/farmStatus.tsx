@@ -9,11 +9,11 @@ import {
   useFarmByAddress,
 } from '@/providers/farming.provider'
 
-export type StatusProps = {
+export type FarmStatusProps = {
   farmAddress: string
 }
 
-export default function Status({ farmAddress }: StatusProps) {
+export default function FarmStatus({ farmAddress }: FarmStatusProps) {
   const [current, setCurrent] = useState(Date.now())
   const { startDate } = useFarmByAddress(farmAddress)
   const boosting = useBoostingByFarmAddress(farmAddress)

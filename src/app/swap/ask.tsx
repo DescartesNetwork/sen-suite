@@ -2,7 +2,7 @@
 import { useCallback, useState } from 'react'
 
 import TokenSelection from '@/components/tokenSelection'
-import { TokenLogo, TokenSymbol } from '@/components/token'
+import { MintLogo, MintSymbol } from '@/components/mint'
 import { ChevronDown } from 'lucide-react'
 
 import { useSwapStore } from '@/hooks/swap.hook'
@@ -32,12 +32,12 @@ export default function Ask() {
           className="card bg-base-100 p-2 rounded-full flex flex-row gap-2 items-center cursor-pointer"
           onClick={() => setOpen(true)}
         >
-          <TokenLogo
+          <MintLogo
             mintAddress={askMintAddress}
             className="w-8 h-8 rounded-full"
           />
           <h5 className="text-sm">
-            <TokenSymbol mintAddress={askMintAddress} />
+            <MintSymbol mintAddress={askMintAddress} />
           </h5>
           <ChevronDown className="h-4 w-4" />
         </div>

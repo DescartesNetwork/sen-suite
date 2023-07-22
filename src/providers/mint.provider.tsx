@@ -140,24 +140,26 @@ export const useSearchMint = () => {
  * @param symbol Mint symbol
  * @returns Price
  */
-export const getPrice = async (symbolOrAddress: string) => {
+export const getPrice = async (mintAddress: string) => {
   try {
     const {
       data: {
         data: {
-          [symbolOrAddress]: { price },
+          [mintAddress]: { price },
         },
       },
     } = await axios.get<{
       data: Record<string, { price: number }>
       timeTake: number
-    }>(`https://price.jup.ag/v4/price?ids=${symbolOrAddress}`)
+    }>(`https://price.jup.ag/v4/price?ids=${mintAddress}`)
     return price
   } catch (er) {
     return 0
   }
 }
-export const usePrice = (symbol: string) => {
-  const { data } = useSWR([symbol, 'price'], ([symbol]) => getPrice(symbol))
+export const usePrice = (mintAddress: string) => {
+  const { data } = useSWR([mintAddress, 'price'], ([mintAddress]) =>
+    getPrice(mintAddress),
+  )
   return data || 0
 }

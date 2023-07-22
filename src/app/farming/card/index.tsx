@@ -1,9 +1,10 @@
 'use client'
 
-import { TokenLogo, TokenSymbol } from '@/components/token'
+import { MintLogo, MintSymbol } from '@/components/mint'
 import { Crown, Info } from 'lucide-react'
-import Timeline from './timeline'
-import Status from './status'
+import FarmTimeline from './farmTimeline'
+import FarmStatus from './farmStatus'
+import FarmInfo from './farmInfo'
 
 import { useFarmByAddress } from '@/providers/farming.provider'
 
@@ -17,17 +18,17 @@ export default function FarmingCard({ farmAddress }: FarmingCardProps) {
   return (
     <div className="card rounded-box shadow hover:shadow-lg p-4 bg-base-100 grid grid-cols-12 gap-2 cursor-pointer transition-all">
       <div className="col-span-12 flex flex-row items-center gap-2">
-        <TokenLogo mintAddress={inputMint.toBase58()} />
+        <MintLogo mintAddress={inputMint.toBase58()} />
         <p className="font-bold flex-auto">
-          <TokenSymbol mintAddress={inputMint.toBase58()} />
+          <MintSymbol mintAddress={inputMint.toBase58()} />
         </p>
-        <Status farmAddress={farmAddress} />
+        <FarmStatus farmAddress={farmAddress} />
       </div>
       <div className="col-span-12 flex flex-row items-center gap-2">
         <div className="dropdown dropdown-hover flex-auto">
-          <label tabIndex={0} className="flex flex-row items-center gap-2">
-            <Info className="w-4 h-4" />
-            <p className="text-sm">Get stake tokens?</p>
+          <label tabIndex={0} className="flex flex-row items-center gap-1">
+            <Info className="w-3 h-3" />
+            <p className="text-sm">Need stake tokens?</p>
           </label>
           <ul
             tabIndex={0}
@@ -41,7 +42,10 @@ export default function FarmingCard({ farmAddress }: FarmingCardProps) {
             </li>
           </ul>
         </div>
-        <Timeline farmAddress={farmAddress} />
+        <FarmTimeline farmAddress={farmAddress} />
+      </div>
+      <div className="col-span-12 mt-8">
+        <FarmInfo farmAddress={farmAddress} />
       </div>
     </div>
   )
