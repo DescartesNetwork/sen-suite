@@ -23,12 +23,12 @@ export default function FarmInfo({ farmAddress }: FarmInfoProps) {
   const rewards = useRewardsByFarmAddress(farmAddress) || {}
 
   const { lifetime } = useFarmOracle(farmAddress)
-  const tvl = useTvl([[inputMintAddress, totalShares]])
+  const tvl = useTvl([{ mintAddress: inputMintAddress, amount: totalShares }])
   const totalReward = useTvl(
-    rewards.map(({ rewardMint, totalRewards }) => [
-      rewardMint.toBase58(),
-      totalRewards,
-    ]),
+    rewards.map(({ rewardMint, totalRewards }) => ({
+      mintAddress: rewardMint.toBase58(),
+      amount: totalRewards,
+    })),
   )
   const rewardPerYear = (totalReward * YEAR) / lifetime.toNumber()
   const apr = rewardPerYear / Math.max(tvl, 100)

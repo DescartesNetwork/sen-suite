@@ -1,6 +1,7 @@
 'use client'
 import { useMemo } from 'react'
 
+import LazyLoad from 'react-lazy-load'
 import FarmingCard from './farmCard'
 
 import { useAllFarms } from '@/providers/farming.provider'
@@ -23,9 +24,9 @@ export default function Farming() {
   return (
     <div className="grid grid-cols-12 gap-4 @container">
       {sortedFarmAddresses.map((farmAddress) => (
-        <div className="col-span-12 @2xl:col-span-6" key={farmAddress}>
+        <LazyLoad className="col-span-12 @2xl:col-span-6" key={farmAddress}>
           <FarmingCard farmAddress={farmAddress} />
-        </div>
+        </LazyLoad>
       ))}
     </div>
   )

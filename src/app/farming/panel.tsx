@@ -8,12 +8,24 @@ import { useTvl } from '@/hooks/tvl.hook'
 
 export default function FarmingPanel() {
   const farms = useAllFarms()
-  const mintAddressToAmount: Array<[string, BN]> = useMemo(
+  const mintAddressToAmount = useMemo(
     () =>
-      Object.values(farms).map(({ totalShares, inputMint }) => [
-        inputMint.toBase58(),
-        totalShares,
-      ]),
+      Object.values(farms)
+        .map(({ totalShares, inputMint }) => ({
+          mintAddress: inputMint.toBase58(),
+          amount: totalShares,
+        }))
+        .reduce<
+          Array<{
+            mintAddress: string
+            amount: BN
+          }>
+        >((a, { mintAddress, amount }) => {
+          const i = a.findIndex(({ mintAddress: addr }) => addr === mintAddress)
+          if (i >= 0) a[i].amount = a[i].amount.add(amount)
+          else a.push({ mintAddress, amount })
+          return a
+        }, []),
     [farms],
   )
   const tvl = useTvl(mintAddressToAmount)
