@@ -1,35 +1,25 @@
 'use client'
-import { useCallback, useState } from 'react'
-import { useDebounce } from 'react-use'
+import { useMemo } from 'react'
+import BN from 'bn.js'
 
 import { useAllFarms } from '@/providers/farming.provider'
 import { numeric } from '@/helpers/utils'
-import { getPrice, useMintStore } from '@/providers/mint.provider'
-import { undecimalize } from '@/helpers/decimals'
+import { useTvl } from '@/hooks/tvl.hook'
 
 export default function FarmingPanel() {
-  const [tvl, setTvl] = useState(0)
   const farms = useAllFarms()
-
-  const fetch = useCallback(async () => {
-    const data = await Promise.all(
-      Object.values(farms).map(async ({ totalShares, inputMint }) => {
-        if (totalShares.isZero()) return 0
-        const price = await getPrice(inputMint.toBase58())
-        const { decimals } = useMintStore
-          .getState()
-          .mints.find(({ address }) => address === inputMint.toBase58()) || {
-          decimals: 0,
-        }
-        const amount = undecimalize(totalShares, decimals)
-        return Number(amount) * price
-      }),
-    )
-    const tvl = data.reduce((a, b) => a + b, 0)
-    return setTvl(tvl)
+  const mintAddressToAmount = useMemo(() => {
+    const mapping: Record<string, BN> = {}
+    Object.values(farms).forEach(({ totalShares, inputMint }) => {
+      if (!mapping[inputMint.toBase58()])
+        mapping[inputMint.toBase58()] = totalShares
+      else
+        mapping[inputMint.toBase58()] =
+          mapping[inputMint.toBase58()].add(totalShares)
+    })
+    return mapping
   }, [farms])
-
-  useDebounce(fetch, 1000, [fetch])
+  const tvl = useTvl(mintAddressToAmount)
 
   return (
     <div className="card w-full shadow-lg p-8 ring-1 ring-base-100 bg-gradient-to-br from-lime-200 to-teal-300 flex flex-row-reverse flex-wrap gap-x-2 gap-y-16 justify-center">

@@ -1,6 +1,5 @@
 'use client'
 import { Fragment, ReactNode, useCallback, useEffect, useMemo } from 'react'
-import axios from 'axios'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import Fuse from 'fuse.js'
@@ -13,10 +12,13 @@ import { produce } from 'immer'
 
 import { env } from '@/configs/env'
 import { useMpl } from '@/hooks/mpl.hook'
+import { getAllTokens, getPrice } from '@/helpers/jup.ag'
 
 export type MintStore = {
   mints: MintMetadata[]
   upsertMints: (newMints: MintMetadata[]) => void
+  prices: Record<string, number>
+  upsertPrices: (newPrices: Record<string, number>) => void
   engine?: Fuse<MintMetadata>
   setEngine: (engine?: Fuse<MintMetadata>) => void
   unmount: () => void
@@ -36,13 +38,23 @@ export const useMintStore = create<MintStore>()(
               const index = mints.findIndex(
                 ({ address }) => address === newMint.address,
               )
-              if (index >= 0)
-                mints[index] = Object.assign(mints[index], newMint)
+              if (index >= 0) Object.assign(mints[index], newMint)
               else mints.push(newMint)
             })
           }),
           false,
           'setMints',
+        ),
+      prices: {},
+      upsertPrices: (newPrices) =>
+        set(
+          produce<MintStore>(({ prices }) => {
+            Object.keys(newPrices).forEach((mintAddress) => {
+              if (!prices[mintAddress])
+                prices[mintAddress] = newPrices[mintAddress]
+              else Object.assign(prices[mintAddress], newPrices[mintAddress])
+            })
+          }),
         ),
       engine: undefined,
       setEngine: (engine?: Fuse<MintMetadata>) =>
@@ -50,7 +62,7 @@ export const useMintStore = create<MintStore>()(
       unmount: () => set({ mints: [], engine: undefined }, false, 'unmount'),
     }),
     {
-      name: 'token',
+      name: 'mint',
       enabled: env === 'development',
     },
   ),
@@ -66,7 +78,7 @@ export default function MintProvider({ children }: { children: ReactNode }) {
   const unmount = useMintStore(({ unmount }) => unmount)
 
   const fetch = useCallback(async () => {
-    const { data } = await axios.get<MintMetadata[]>('https://token.jup.ag/all')
+    const data = await getAllTokens()
     const fuse = new Fuse<MintMetadata>(data, {
       includeScore: true,
       keys: ['name', 'symbol'],
@@ -171,30 +183,34 @@ export const useSearchMint = () => {
 }
 
 /**
- * Get mint price
- * @param symbol Mint symbol
- * @returns Price
+ * Get mint prices
+ * @param mintAddresses Mint addresses
+ * @returns Prices
  */
-export const getPrice = async (mintAddress: string) => {
-  try {
-    const {
-      data: {
-        data: {
-          [mintAddress]: { price },
-        },
-      },
-    } = await axios.get<{
-      data: Record<string, { price: number }>
-      timeTake: number
-    }>(`https://price.jup.ag/v4/price?ids=${mintAddress}`)
-    return price
-  } catch (er) {
-    return 0
-  }
-}
-export const usePrice = (mintAddress: string) => {
-  const { data } = useSWR([mintAddress, 'price'], ([mintAddress]) =>
-    getPrice(mintAddress),
+export const usePrices = (mintAddresses: string[]) => {
+  const prices = useMintStore(({ prices }) => prices)
+  const upsertPrices = useMintStore(({ upsertPrices }) => upsertPrices)
+  const getPrices = useCallback(
+    async (mintAddresses: string[]) => {
+      const data = await Promise.all(
+        mintAddresses.map(async (mintAddress) => {
+          if (prices[mintAddress] !== undefined) return prices[mintAddress]
+          const price = await getPrice(mintAddress)
+          return price
+        }),
+      )
+      const mapping: Record<string, number> = {}
+      mintAddresses.forEach(
+        (mintAddress, i) => (mapping[mintAddress] = data[i]),
+      )
+      upsertPrices(mapping)
+      return data
+    },
+    [prices, upsertPrices],
   )
-  return data || 0
+  const { data } = useSWR([mintAddresses, 'prices'], ([mintAddresses]) =>
+    getPrices(mintAddresses),
+  )
+
+  return data
 }

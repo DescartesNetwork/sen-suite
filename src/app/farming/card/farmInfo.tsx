@@ -1,10 +1,10 @@
 'use client'
 
 import { MintLogo, MintSymbol } from '@/components/mint'
-import { undecimalize } from '@/helpers/decimals'
+
 import { numeric } from '@/helpers/utils'
+import { useTvl } from '@/hooks/tvl.hook'
 import { useFarmByAddress } from '@/providers/farming.provider'
-import { useMintByAddress, usePrice } from '@/providers/mint.provider'
 
 export type FarmInfoProps = {
   farmAddress: string
@@ -12,10 +12,8 @@ export type FarmInfoProps = {
 
 export default function FarmInfo({ farmAddress }: FarmInfoProps) {
   const { inputMint, totalShares, moMint } = useFarmByAddress(farmAddress)
-  const { decimals } = useMintByAddress(inputMint.toBase58()) || { decimals: 0 }
-  const price = usePrice(inputMint.toBase58())
+  const tvl = useTvl({ [inputMint.toBase58()]: totalShares })
 
-  const tvl = Number(undecimalize(totalShares, decimals)) * price
   const rewards = 0
 
   return (
