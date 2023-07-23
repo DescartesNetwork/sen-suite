@@ -21,7 +21,7 @@ import { useFarmByAddress } from '@/providers/farming.provider'
 export enum FarmAction {
   Stake = 'Stake',
   Unstake = 'Unstake',
-  Ownership = 'Ownership',
+  Admin = 'Admin',
 }
 
 export default function FarmDetails() {
@@ -71,16 +71,20 @@ export default function FarmDetails() {
       </div>
       <div className="col-span-full @2xl/main:col-span-4 grid grid-cols-12 gap-2 card bg-base-200 p-4">
         <div className="col-span-full">
-          <div className="tabs tabs-boxed">
-            {Object.values(FarmAction).map((value) => (
-              <button
-                key={value}
-                className={'tab tab-sm' + (tab === value ? ' tab-active' : '')}
-                onClick={() => setTab(value)}
-              >
-                {value}
-              </button>
-            ))}
+          <div className="flex flex-row justify-center">
+            <div className="tabs tabs-boxed flex-nowrap">
+              {Object.values(FarmAction).map((value) => (
+                <button
+                  key={value}
+                  className={
+                    'tab tab-sm' + (tab === value ? ' tab-active' : '')
+                  }
+                  onClick={() => setTab(value)}
+                >
+                  {value}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
         <div className="col-span-full">

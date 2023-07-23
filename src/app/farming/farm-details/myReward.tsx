@@ -1,4 +1,5 @@
 'use client'
+import { useMemo } from 'react'
 
 import {
   MintAmount,
@@ -17,6 +18,11 @@ export type MyRewardProps = {
 
 export default function MyReward({ farmAddress }: MyRewardProps) {
   const rewards = useUserRewards(farmAddress, 1000)
+
+  const ok = useMemo(() => {
+    for (const { amount } of rewards) if (!amount.isZero()) return true
+    return false
+  }, [rewards])
 
   return (
     <div className="grid grid-cols-12 gap-4">
@@ -55,10 +61,7 @@ export default function MyReward({ farmAddress }: MyRewardProps) {
           <Empty />
         </div>
       )}
-      <button
-        className="col-span-full btn btn-primary btn-sm"
-        disabled={!rewards.length}
-      >
+      <button className="col-span-full btn btn-primary btn-sm" disabled={!ok}>
         Harvest
       </button>
     </div>
