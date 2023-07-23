@@ -20,7 +20,7 @@ export default function MyReward({ farmAddress }: MyRewardProps) {
 
   return (
     <div className="grid grid-cols-12 gap-4">
-      <p className="col-span-full mb-4">My Rewards</p>
+      <p className="col-span-full mb-2">My Rewards</p>
       {rewards.map(({ mintAddress, amount }) => (
         <div
           key={mintAddress}

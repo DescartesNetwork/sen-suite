@@ -16,7 +16,7 @@ export default function FarmReward({ farmAddress }: FarmRewardProps) {
 
   return (
     <div className="grid grid-cols-12 gap-4">
-      <p className="col-span-full mb-4">Farm Rewards</p>
+      <p className="col-span-full mb-2">Farm Rewards</p>
       {rewards.map(({ rewardMint, totalRewards }) => (
         <div
           key={rewardMint.toBase58()}
