@@ -9,6 +9,7 @@ import {
 } from '@/components/mint'
 
 import { useUserRewards } from '../farmCard/userReward'
+import Empty from '@/components/empty'
 
 export type MyRewardProps = {
   farmAddress: string
@@ -49,7 +50,17 @@ export default function MyReward({ farmAddress }: MyRewardProps) {
           </div>
         </div>
       ))}
-      <button className="col-span-full btn btn-primary btn-sm">Harvest</button>
+      {!rewards.length && (
+        <div className="col-span-full">
+          <Empty />
+        </div>
+      )}
+      <button
+        className="col-span-full btn btn-primary btn-sm"
+        disabled={!rewards.length}
+      >
+        Harvest
+      </button>
     </div>
   )
 }

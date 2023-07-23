@@ -17,22 +17,18 @@ import {
 
 export const useUserRewards = (
   farmAddress: string,
-  defay: number | null = null,
+  delay: number | null = null,
 ) => {
   const { compensation, totalRewards: moTotalRewards } =
     useFarmByAddress(farmAddress)
-  const { shares, debtAmount, pendingRewards } = useDebtByFarmAddress(
-    farmAddress,
-  ) || {
-    shares: new BN(0),
-    debtAmount: new BN(0),
-    pendingRewards: new BN(0),
-  }
+  const { shares, debtAmount, pendingRewards } =
+    useDebtByFarmAddress(farmAddress) || {}
   const rewardAccounts = useRewardsByFarmAddress(farmAddress)
   const emissionRate = useFarmEmissionRate(farmAddress)
-  const timePassed = useFarmTimePassed(farmAddress, defay)
+  const timePassed = useFarmTimePassed(farmAddress, delay)
 
   const moRewards = useMemo(() => {
+    if (!shares || !debtAmount || !pendingRewards) return undefined
     return timePassed
       .mul(emissionRate)
       .add(compensation)
@@ -48,14 +44,13 @@ export const useUserRewards = (
     debtAmount,
     pendingRewards,
   ])
-  const rewards = useMemo<Array<{ mintAddress: string; amount: BN }>>(
-    () =>
-      rewardAccounts.map(({ rewardMint, totalRewards }) => ({
-        mintAddress: rewardMint.toBase58(),
-        amount: moRewards.mul(totalRewards).div(moTotalRewards),
-      })),
-    [rewardAccounts, moTotalRewards, moRewards],
-  )
+  const rewards = useMemo<Array<{ mintAddress: string; amount: BN }>>(() => {
+    if (!moRewards) return []
+    return rewardAccounts.map(({ rewardMint, totalRewards }) => ({
+      mintAddress: rewardMint.toBase58(),
+      amount: moRewards.mul(totalRewards).div(moTotalRewards),
+    }))
+  }, [rewardAccounts, moTotalRewards, moRewards])
   return rewards
 }
 

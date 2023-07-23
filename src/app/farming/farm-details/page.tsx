@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 
 import { MintLogo, MintSymbol } from '@/components/mint'
 import FarmTimeline from '../farmCard/farmTimeline'
+import FarmStatus from '../farmCard/farmStatus'
 import FarmReward from './farmReward'
 import MyReward from './myReward'
 import FarmApr from '../farmCard/farmApr'
@@ -30,9 +31,10 @@ export default function FarmDetails() {
       <div className="col-span-12 @2xl:col-span-8 grid grid-cols-12 gap-4">
         <div className="col-span-full flex flex-row items-center gap-2">
           <MintLogo mintAddress={inputMintAddress} />
-          <h4>
+          <h4 className="flex-auto">
             <MintSymbol mintAddress={inputMintAddress} />
           </h4>
+          <FarmStatus farmAddress={farmAddress} />
         </div>
         <div className="col-span-full -mt-2 mb-2">
           <FarmTimeline farmAddress={farmAddress} />
