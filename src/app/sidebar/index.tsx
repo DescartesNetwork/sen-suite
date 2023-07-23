@@ -78,7 +78,7 @@ export default function Sidebar() {
           <li key={route} className={disabled ? 'disabled' : ''}>
             <Link
               href={disabled ? '#' : route}
-              className={pathname === route ? 'focus' : ''}
+              className={pathname.startsWith(route) ? 'focus' : ''}
             >
               <p>
                 <Logo className="menu-logo" />
