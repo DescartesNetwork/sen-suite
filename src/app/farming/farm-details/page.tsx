@@ -18,7 +18,7 @@ import Ownership from './ownership'
 import { isAddress } from '@/helpers/utils'
 import { useFarmByAddress } from '@/providers/farming.provider'
 
-export enum FarmAction {
+enum FarmAction {
   Stake = 'Stake',
   Unstake = 'Unstake',
   Admin = 'Admin',
