@@ -11,12 +11,12 @@ import FarmApr from '../farmCard/farmApr'
 import FarmTvl from '../farmCard/farmTvl'
 import UserStake from '../farmCard/userStake'
 import UserPosition from '../farmCard/userPosition'
-
-import { isAddress } from '@/helpers/utils'
-import { useFarmByAddress } from '@/providers/farming.provider'
 import Stake from './stake'
 import Unstake from './unstake'
 import Ownership from './ownership'
+
+import { isAddress } from '@/helpers/utils'
+import { useFarmByAddress } from '@/providers/farming.provider'
 
 export enum FarmAction {
   Stake = 'Stake',
@@ -38,8 +38,8 @@ export default function FarmDetails() {
 
   if (!isAddress(farmAddress)) return push('/farming')
   return (
-    <div className="grid grid-cols-12 gap-x-4 gap-y-2 @container">
-      <div className="col-span-full @2xl:col-span-8 grid grid-cols-12 gap-4">
+    <div className="grid grid-cols-12 gap-4 @container/main">
+      <div className="col-span-full @2xl/main:col-span-8 grid grid-cols-12 gap-4 @container/left">
         <div className="col-span-full flex flex-row items-center gap-2">
           <MintLogo mintAddress={inputMintAddress} />
           <h4 className="flex-auto">
@@ -50,26 +50,26 @@ export default function FarmDetails() {
         <div className="col-span-full -mt-2 mb-2">
           <FarmTimeline farmAddress={farmAddress} />
         </div>
-        <div className="col-span-3">
+        <div className="col-span-6 @xl/left:col-span-3">
           <FarmApr farmAddress={farmAddress} />
         </div>
-        <div className="col-span-3">
+        <div className="col-span-6 @xl/left:col-span-3">
           <FarmTvl farmAddress={farmAddress} />
         </div>
-        <div className="col-span-3">
+        <div className="col-span-6 @xl/left:col-span-3">
           <UserStake farmAddress={farmAddress} />
         </div>
-        <div className="col-span-3">
+        <div className="col-span-6 @xl/left:col-span-3">
           <UserPosition farmAddress={farmAddress} />
         </div>
-        <div className="col-span-6 card bg-base-200 p-4">
+        <div className="col-span-full @xl/left:col-span-6 card bg-base-200 p-4">
           <FarmReward farmAddress={farmAddress} />
         </div>
-        <div className="col-span-6 card bg-base-200 p-4 ring-2 ring-primary">
+        <div className="col-span-full @xl/left:col-span-6 card bg-base-200 p-4 ring-2 ring-primary">
           <MyReward farmAddress={farmAddress} />
         </div>
       </div>
-      <div className="col-span-full @2xl:col-span-4 grid grid-cols-12 gap-2 card bg-base-200 p-4">
+      <div className="col-span-full @2xl/main:col-span-4 grid grid-cols-12 gap-2 card bg-base-200 p-4">
         <div className="col-span-full">
           <div className="tabs tabs-boxed">
             {Object.values(FarmAction).map((value) => (
