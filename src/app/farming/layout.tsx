@@ -2,7 +2,7 @@ import { ReactNode } from 'react'
 import type { Metadata } from 'next'
 
 import FarmingPanel from './panel'
-import Navigation from './navigation'
+import FarmingNavigation from './navigation'
 import FarmingSearch from './search'
 
 import FarmingProvider from '@/providers/farming.provider'
@@ -21,7 +21,7 @@ export default function FarmingLayout({ children }: { children: ReactNode }) {
               <FarmingPanel />
             </div>
             <div className="col-span-full flex flex-row gap-2 overflow-auto no-scrollbar">
-              <Navigation />
+              <FarmingNavigation />
             </div>
             <div className="col-span-full">
               <FarmingSearch />

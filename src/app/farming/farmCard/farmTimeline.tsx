@@ -30,7 +30,7 @@ export default function FarmTimeline({ farmAddress }: FarmTimelineProps) {
         <p className="text-sm opacity-60">Started in</p>
         <span className="join">
           <div className="badge badge-neutral join-item">
-            {startDuration.days()}d
+            {startDuration.days()}D
           </div>
           <div className="badge badge-neutral join-item">
             {startDuration.hours()}h
@@ -46,7 +46,7 @@ export default function FarmTimeline({ farmAddress }: FarmTimelineProps) {
       <p className="text-sm opacity-60">Ended in</p>
       <span className="join">
         <div className="badge badge-neutral join-item">
-          {endDuration.days()}d
+          {endDuration.days()}D
         </div>
         <div className="badge badge-neutral join-item">
           {endDuration.hours()}h

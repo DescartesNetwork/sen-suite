@@ -51,7 +51,7 @@ const TABS = [
   },
 ]
 
-export default function Navigation() {
+export default function FarmingNavigation() {
   const pathname = usePathname()
   const { publicKey } = useWallet()
 

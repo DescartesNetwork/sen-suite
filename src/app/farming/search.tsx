@@ -1,6 +1,9 @@
 'use client'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
-import { Search } from 'lucide-react'
+import { ArrowLeft, Search } from 'lucide-react'
+import Clipboard from '@/components/clipboard'
+import NewWindow from '@/components/newWindow'
 import Sort from './sort'
 
 import {
@@ -8,12 +11,41 @@ import {
   useSortedByApr,
   useSortedByLiquidity,
 } from '@/providers/farming.provider'
+import { shortenAddress } from '@/helpers/utils'
+import { solscan } from '@/helpers/explorers'
 
 export default function FarmingSearch() {
+  const { back } = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const farmAddress = searchParams.get('farmAddress')
   const { sortedByLiquidity, setSortedByLiquidity } = useSortedByLiquidity()
   const { sortedByApr, setSortedByApr } = useSortedByApr()
   const { nftBoosted, setNftBoosted } = useNftBoosted()
 
+  if (pathname === '/farming/farm-details')
+    return (
+      <div className="card bg-base-100 rounded-full p-2 flex flex-row items-center gap-2">
+        <div className="flex-auto">
+          <button className="btn btn-sm rounded-full" onClick={back}>
+            <ArrowLeft className="h-4 w-4" /> Back
+          </button>
+        </div>
+        <span className="tooltip" data-tip="Farm Address">
+          <p className="font-sm font-bold opacity-60 cursor-pointer">
+            {shortenAddress(farmAddress || '')}
+          </p>
+        </span>
+        <Clipboard
+          content={farmAddress || ''}
+          className="btn btn-sm btn-circle"
+        />
+        <NewWindow
+          href={solscan(farmAddress || '')}
+          className="btn btn-sm btn-circle"
+        />
+      </div>
+    )
   return (
     <div className="flex flex-row gap-4 items-center flex-wrap">
       <div className="flex-auto relative flex flex-row items-center min-w-[240px]">
