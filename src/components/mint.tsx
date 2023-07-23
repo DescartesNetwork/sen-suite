@@ -3,9 +3,11 @@ import { Fragment } from 'react'
 
 import { Diamond } from 'lucide-react'
 
-import { useMintByAddress } from '@/providers/mint.provider'
+import { useMintByAddress, usePrices } from '@/providers/mint.provider'
 import { shortenAddress, numeric } from '@/helpers/utils'
 import { useMyReadableBalanceByMintAddress } from '@/providers/wallet.provider'
+import BN from 'bn.js'
+import { undecimalize } from '@/helpers/decimals'
 
 export type MintLogoProps = {
   mintAddress: string
@@ -59,16 +61,47 @@ export function MintSymbol({ mintAddress }: MintSymbolProps) {
   return <Fragment>{symbol}</Fragment>
 }
 
-export type MintBalanceProps = {
+export type MintPriceProps = {
+  mintAddress: string
+  format?: string
+}
+
+export function MintPrice({
+  mintAddress,
+  format = '$0,0.[000000]',
+}: MintPriceProps) {
+  const [price] = usePrices([mintAddress]) || []
+  return <Fragment>{numeric(price || 0).format(format)}</Fragment>
+}
+
+export type MintAmountProps = {
+  amount: BN
+  mintAddress: string
+  format?: string
+}
+
+export function MintAmount({
+  amount,
+  mintAddress,
+  format = '0,0.[0000]',
+}: MintAmountProps) {
+  const { decimals } = useMintByAddress(mintAddress) || { decimals: 0 }
+  return (
+    <Fragment>
+      {numeric(undecimalize(amount, decimals)).format(format)}
+    </Fragment>
+  )
+}
+
+export type MyBalanceProps = {
   mintAddress: string
   format?: string
 }
 
 export function MyBalance({
   mintAddress,
-  format = '0,0.[0000]',
-}: MintBalanceProps) {
+  format = '$0,0.[00]',
+}: MyBalanceProps) {
   const balance = useMyReadableBalanceByMintAddress(mintAddress)
-
   return <Fragment>{numeric(balance).format(format)}</Fragment>
 }

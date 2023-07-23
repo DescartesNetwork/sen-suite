@@ -4,9 +4,10 @@ import { FarmData, DebtData, RewardData, BoostingData } from '@sentre/farming'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { produce } from 'immer'
-import { PublicKey } from '@solana/web3.js'
+import { PublicKey, SystemProgram } from '@solana/web3.js'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useUnmount } from 'react-use'
+import BN from 'bn.js'
 
 import { env } from '@/configs/env'
 import { useFarming } from '@/hooks/farming.hook'
@@ -207,7 +208,19 @@ export const useAllFarms = () => {
 }
 
 export const useFarmByAddress = (farmAddress: string) => {
-  const farm = useFarmingStore(({ farms }) => farms[farmAddress])
+  const farm = useFarmingStore(
+    ({ farms }) =>
+      farms[farmAddress] || {
+        authority: SystemProgram.programId,
+        inputMint: SystemProgram.programId,
+        moMint: SystemProgram.programId,
+        totalShares: new BN(0),
+        totalRewards: new BN(0),
+        compensation: new BN(0),
+        startDate: new BN(0),
+        endDate: new BN(1),
+      },
+  )
   return farm
 }
 
@@ -221,9 +234,21 @@ export const useAllDebts = () => {
 }
 
 /**
- * Get reward by farm address
+ * Get debt by farm address
  * @param farmAddress Farm address
- * @returns Reward
+ * @returns Debt
+ */
+export const useDebtByFarmAddress = (farmAddress: string) => {
+  const debt = useFarmingStore(({ debts }) =>
+    Object.values(debts).find(({ farm }) => farm.toBase58() === farmAddress),
+  )
+  return debt
+}
+
+/**
+ * Get rewards by farm address
+ * @param farmAddress Farm address
+ * @returns Rewards
  */
 export const useRewardsByFarmAddress = (farmAddress: string) => {
   const rewards = useFarmingStore(({ rewards }) =>

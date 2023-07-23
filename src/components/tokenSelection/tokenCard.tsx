@@ -1,8 +1,8 @@
 'use client'
 
-import Clipboard from '@/components/clipboard'
 import { MyBalance, MintLogo, MintName, MintSymbol } from '@/components/mint'
-import { ArrowUpRightSquare } from 'lucide-react'
+import Clipboard from '@/components/clipboard'
+import NewWindow from '@/components/newWindow'
 
 import { solscan } from '@/helpers/explorers'
 
@@ -39,14 +39,7 @@ export default function TokenCard({
         </div>
         <div className="invisible group-hover:visible">
           <Clipboard content={mintAddress} idleText="Copy Token Address" />
-          <a
-            className="btn btn-sm btn-ghost btn-square"
-            href={solscan(mintAddress)}
-            target="_blank"
-            rel="noreferrer"
-          >
-            <ArrowUpRightSquare className="w-4 h-4" />
-          </a>
+          <NewWindow href={solscan(mintAddress)} />
         </div>
         {showBalance && (
           <div className="flex flex-col gap-1 items-end group-hover:hidden">
