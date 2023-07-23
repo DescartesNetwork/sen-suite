@@ -7,7 +7,7 @@ import Empty from '@/components/empty'
 import TokenCard from './tokenCard'
 
 import { useAllMints, useRandomMints } from '@/providers/mint.provider'
-import { useMyTokenAccounts } from '@/providers/wallet.provider'
+import { useAllTokenAccounts } from '@/providers/wallet.provider'
 
 export type TokenListProps = {
   mints?: MintMetadata[]
@@ -22,7 +22,7 @@ export default function TokenList({
 }: TokenListProps) {
   const [hidden, setHidden] = useState(true)
   const all = useAllMints()
-  const myAccounts = useMyTokenAccounts()
+  const myAccounts = useAllTokenAccounts()
   const randMints = useRandomMints()
 
   const mintAddresses = useMemo(() => all.map(({ address }) => address), [all])

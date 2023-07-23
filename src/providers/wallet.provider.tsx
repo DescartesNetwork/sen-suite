@@ -6,7 +6,6 @@ import {
 } from '@solana/wallet-adapter-wallets'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
-import { utils } from '@coral-xyz/anchor'
 import { splTokenProgram } from '@coral-xyz/spl-token'
 import {
   ConnectionProvider,
@@ -15,16 +14,12 @@ import {
   useWallet,
 } from '@solana/wallet-adapter-react'
 import { useAsync } from 'react-use'
-import { PublicKey } from '@solana/web3.js'
 import isEqual from 'react-fast-compare'
-import { BN } from 'bn.js'
 
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui'
 
 import { env } from '@/configs/env'
 import solConfig from '@/configs/sol.config'
-import { useMintByAddress } from '@/providers/mint.provider'
-import { undecimalize } from '@/helpers/decimals'
 import { useSpl } from '@/hooks/spl.hook'
 
 export type TokenAccount = Awaited<
@@ -131,7 +126,7 @@ export default function WalletProvider({ children }: { children: ReactNode }) {
  * Get all my token accounts
  * @returns Token account list
  */
-export const useMyTokenAccounts = () => {
+export const useAllTokenAccounts = () => {
   const tokenAccounts = useWalletStore(({ tokenAccounts }) => tokenAccounts)
   return tokenAccounts
 }
@@ -141,7 +136,7 @@ export const useMyTokenAccounts = () => {
  * @param selector Filter function
  * @returns Token account list
  */
-export const useMyTokenAccountsSelector = <T,>(
+export const useTokenAccountsSelector = <T,>(
   selector: (multisigs: Record<string, TokenAccount>) => T,
 ) => {
   const tokenAccounts = useWalletStore(
@@ -149,28 +144,6 @@ export const useMyTokenAccountsSelector = <T,>(
     isEqual,
   )
   return tokenAccounts
-}
-
-/**
- * Get readable (undecimalized) token balance
- * @param mintAddress Mint Address
- * @returns Balance
- */
-export const useMyReadableBalanceByMintAddress = (mintAddress: string) => {
-  const { publicKey } = useWallet()
-  const { decimals } = useMintByAddress(mintAddress) || { decimals: 0 }
-  const balance = useMyTokenAccountsSelector<string>((tokenAccounts) => {
-    if (!publicKey || !mintAddress) return '0'
-    const tokenAccount = utils.token.associatedAddress({
-      mint: new PublicKey(mintAddress),
-      owner: publicKey,
-    })
-    const { amount } = tokenAccounts[tokenAccount.toBase58()] || {
-      amount: new BN(0),
-    }
-    return undecimalize(amount, decimals)
-  })
-  return balance
 }
 
 /**

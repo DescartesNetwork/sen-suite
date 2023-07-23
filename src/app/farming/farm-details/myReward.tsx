@@ -1,6 +1,12 @@
 'use client'
 
-import { MintLogo, MintPrice, MintSymbol } from '@/components/mint'
+import {
+  MintAmount,
+  MintLogo,
+  MintPrice,
+  MintSymbol,
+  MintValue,
+} from '@/components/mint'
 
 import { useUserRewards } from '../farmCard/userReward'
 
@@ -9,7 +15,7 @@ export type MyRewardProps = {
 }
 
 export default function MyReward({ farmAddress }: MyRewardProps) {
-  const rewards = useUserRewards(farmAddress)
+  const rewards = useUserRewards(farmAddress, true)
 
   return (
     <div className="grid grid-cols-12 gap-4">
@@ -30,6 +36,14 @@ export default function MyReward({ farmAddress }: MyRewardProps) {
               </p>
               <p className="opacity-60">
                 <MintPrice mintAddress={mintAddress} />
+              </p>
+            </span>
+            <span className="flex flex-col gap-0 items-end">
+              <p className="font-bold">
+                <MintAmount mintAddress={mintAddress} amount={amount} />
+              </p>
+              <p className="font-bold">
+                <MintValue mintAddress={mintAddress} amount={amount} />
               </p>
             </span>
           </div>

@@ -1,8 +1,9 @@
 'use client'
 
-import { MyBalance, MintLogo, MintName, MintSymbol } from '@/components/mint'
+import { MintLogo, MintName, MintSymbol } from '@/components/mint'
 import Clipboard from '@/components/clipboard'
 import NewWindow from '@/components/newWindow'
+import MyBalance from '@/components/balance'
 
 import { solscan } from '@/helpers/explorers'
 

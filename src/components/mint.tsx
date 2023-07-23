@@ -1,13 +1,13 @@
 'use client'
 import { Fragment } from 'react'
+import BN from 'bn.js'
 
 import { Diamond } from 'lucide-react'
 
 import { useMintByAddress, usePrices } from '@/providers/mint.provider'
 import { shortenAddress, numeric } from '@/helpers/utils'
-import { useMyReadableBalanceByMintAddress } from '@/providers/wallet.provider'
-import BN from 'bn.js'
 import { undecimalize } from '@/helpers/decimals'
+import { useTvl } from '@/hooks/tvl.hook'
 
 export type MintLogoProps = {
   mintAddress: string
@@ -15,7 +15,6 @@ export type MintLogoProps = {
   iconClassName?: string
   fallback?: string
 }
-
 export function MintLogo({
   mintAddress,
   className = 'w-12 h-12 rounded-full bg-base-300',
@@ -42,7 +41,6 @@ export function MintLogo({
 export type MintNameProps = {
   mintAddress: string
 }
-
 export function MintName({ mintAddress }: MintNameProps) {
   const { name } = useMintByAddress(mintAddress) || {
     name: shortenAddress(mintAddress, 6),
@@ -53,7 +51,6 @@ export function MintName({ mintAddress }: MintNameProps) {
 export type MintSymbolProps = {
   mintAddress: string
 }
-
 export function MintSymbol({ mintAddress }: MintSymbolProps) {
   const { symbol } = useMintByAddress(mintAddress) || {
     symbol: mintAddress.substring(0, 6),
@@ -65,7 +62,6 @@ export type MintPriceProps = {
   mintAddress: string
   format?: string
 }
-
 export function MintPrice({
   mintAddress,
   format = '$0,0.[000000]',
@@ -79,7 +75,6 @@ export type MintAmountProps = {
   mintAddress: string
   format?: string
 }
-
 export function MintAmount({
   amount,
   mintAddress,
@@ -93,15 +88,16 @@ export function MintAmount({
   )
 }
 
-export type MyBalanceProps = {
+export type MintValueProps = {
+  amount: BN
   mintAddress: string
   format?: string
 }
-
-export function MyBalance({
+export function MintValue({
+  amount,
   mintAddress,
   format = '$0,0.[00]',
-}: MyBalanceProps) {
-  const balance = useMyReadableBalanceByMintAddress(mintAddress)
-  return <Fragment>{numeric(balance).format(format)}</Fragment>
+}: MintAmountProps) {
+  const value = useTvl([{ mintAddress, amount }])
+  return <Fragment>{numeric(value).format(format)}</Fragment>
 }

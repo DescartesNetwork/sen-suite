@@ -2,11 +2,13 @@
 import { ChangeEvent, useCallback, useState } from 'react'
 
 import TokenSelection from '@/components/tokenSelection'
-import { MyBalance, MintLogo, MintSymbol } from '@/components/mint'
+import { MintLogo, MintSymbol } from '@/components/mint'
 import { ChevronDown } from 'lucide-react'
+import MyBalance, {
+  useMyReadableBalanceByMintAddress,
+} from '@/components/balance'
 
 import { useSwapStore } from '@/hooks/swap.hook'
-import { useMyReadableBalanceByMintAddress } from '@/providers/wallet.provider'
 
 export default function Bid() {
   const [open, setOpen] = useState(false)

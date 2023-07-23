@@ -7,6 +7,7 @@ import {
   BookPlus,
   CandlestickChart,
   Droplets,
+  Landmark,
   Leaf,
   Rocket,
 } from 'lucide-react'
@@ -22,6 +23,12 @@ const routes = [
     route: '/swap',
     name: 'Swap',
     Logo: CandlestickChart,
+  },
+  {
+    route: '/pools',
+    name: 'Liquidity Pool',
+    Logo: Landmark,
+    disabled: true,
   },
   {
     route: '/farming',
