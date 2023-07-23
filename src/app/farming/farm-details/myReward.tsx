@@ -2,36 +2,34 @@
 
 import { MintLogo, MintPrice, MintSymbol } from '@/components/mint'
 
-import { useRewardsByFarmAddress } from '@/providers/farming.provider'
-import { useFarmOracle } from '@/hooks/farming.hook'
+import { useUserRewards } from '../farmCard/userReward'
 
 export type MyRewardProps = {
   farmAddress: string
 }
 
 export default function MyReward({ farmAddress }: MyRewardProps) {
-  const rewards = useRewardsByFarmAddress(farmAddress)
-  const { lifetime } = useFarmOracle(farmAddress)
+  const rewards = useUserRewards(farmAddress)
 
   return (
     <div className="grid grid-cols-12 gap-4">
       <p className="col-span-full mb-4">My Rewards</p>
-      {rewards.map(({ rewardMint, totalRewards }) => (
+      {rewards.map(({ mintAddress, amount }) => (
         <div
-          key={rewardMint.toBase58()}
+          key={mintAddress}
           className="col-span-full grid grid-cols-12 gap-0"
         >
           <div className="col-span-full flex flex-row items-center gap-2">
             <MintLogo
-              mintAddress={rewardMint.toBase58()}
+              mintAddress={mintAddress}
               className="w-8 h-8 rounded-full bg-base-300"
             />
             <span className="flex flex-col gap-0 flex-auto">
               <p className="font-bold opacity-60">
-                <MintSymbol mintAddress={rewardMint.toBase58()} />
+                <MintSymbol mintAddress={mintAddress} />
               </p>
               <p className="opacity-60">
-                <MintPrice mintAddress={rewardMint.toBase58()} />
+                <MintPrice mintAddress={mintAddress} />
               </p>
             </span>
           </div>

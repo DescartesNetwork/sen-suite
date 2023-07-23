@@ -5,12 +5,10 @@ import { MintLogo, MintSymbol } from '@/components/mint'
 import { Crown, Info } from 'lucide-react'
 import FarmTimeline from './farmTimeline'
 import FarmStatus from './farmStatus'
-import {
-  FarmInfoApr,
-  FarmInfoMyReward,
-  FarmInfoRewardMint,
-  FarmInfoTvl,
-} from './farmInfo'
+import FarmRewardMint from './farmRewardMint'
+import FarmApr from './farmApr'
+import FarmTvl from './farmTvl'
+import UserReward from './userReward'
 
 import { useFarmByAddress } from '@/providers/farming.provider'
 
@@ -61,14 +59,14 @@ export default function FarmCard({ farmAddress }: FarmingCardProps) {
         </div>
       </div>
       <div className="col-span-4 flex flex-col">
-        <FarmInfoApr farmAddress={farmAddress} />
-        <FarmInfoRewardMint farmAddress={farmAddress} />
+        <FarmApr farmAddress={farmAddress} />
+        <FarmRewardMint farmAddress={farmAddress} />
       </div>
       <div className="col-span-4">
-        <FarmInfoTvl farmAddress={farmAddress} />
+        <FarmTvl farmAddress={farmAddress} />
       </div>
       <div className="col-span-4">
-        <FarmInfoMyReward farmAddress={farmAddress} />
+        <UserReward farmAddress={farmAddress} />
       </div>
     </div>
   )

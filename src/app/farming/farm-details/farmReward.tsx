@@ -4,7 +4,7 @@ import BN from 'bn.js'
 import { MintAmount, MintLogo, MintSymbol } from '@/components/mint'
 
 import { useRewardsByFarmAddress } from '@/providers/farming.provider'
-import { useFarmOracle } from '@/hooks/farming.hook'
+import { useFarmLifetime } from '@/hooks/farming.hook'
 
 export type FarmRewardProps = {
   farmAddress: string
@@ -12,7 +12,7 @@ export type FarmRewardProps = {
 
 export default function FarmReward({ farmAddress }: FarmRewardProps) {
   const rewards = useRewardsByFarmAddress(farmAddress)
-  const { lifetime } = useFarmOracle(farmAddress)
+  const lifetime = useFarmLifetime(farmAddress)
 
   return (
     <div className="grid grid-cols-12 gap-4">

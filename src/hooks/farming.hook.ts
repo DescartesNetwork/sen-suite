@@ -1,6 +1,7 @@
-import { useCallback, useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import SenFarmingProgram from '@sentre/farming'
 import BN from 'bn.js'
+import { useInterval } from 'react-use'
 
 import { useAnchorProvider } from '@/hooks/spl.hook'
 import solConfig from '@/configs/sol.config'
@@ -25,50 +26,68 @@ export const useFarming = () => {
 }
 
 /**
- * Parse farm statistic data to compue APR, TVL, etc.
+ * Get farm's lifetime
  * @param farmAddress Farm address
- * @returns Statistic data
+ * @returns Lifetime
  */
-export const useFarmOracle = (farmAddress: string) => {
-  const { startDate, endDate, totalShares, totalRewards, compensation } =
-    useFarmByAddress(farmAddress)
-
+export const useFarmLifetime = (farmAddress: string) => {
+  const { startDate, endDate } = useFarmByAddress(farmAddress)
   const lifetime = useMemo(() => endDate.sub(startDate), [startDate, endDate])
+  return lifetime
+}
+
+/**
+ * (Intervally) Get farm's time passed
+ * @param farmAddress Farm address
+ * @returns Time passed
+ */
+export const useFarmTimePassed = (farmAddress: string, reactive = false) => {
+  const [currentDate, setCurrentDate] = useState(Math.round(Date.now() / 1000))
+  const { startDate } = useFarmByAddress(farmAddress)
+  const lifetime = useFarmLifetime(farmAddress)
+
+  useInterval(
+    () => setCurrentDate(Math.round(Date.now() / 1000)),
+    reactive ? 1000 : null,
+  )
+
   const timePassed = useMemo(
     () =>
-      BN.min(
-        BN.max(new BN(Math.round(Date.now() / 1000)).sub(startDate), new BN(0)),
-        lifetime,
-      ),
-    [startDate, lifetime],
+      BN.min(BN.max(new BN(currentDate).sub(startDate), new BN(0)), lifetime),
+    [startDate, lifetime, currentDate],
   )
+
+  return timePassed
+}
+
+/**
+ * Get farm's velocity
+ * @param farmAddress Farm address
+ * @returns Velocity (out_tokens/seconds) with precision
+ */
+export const useFarmVelocity = (farmAddress: string) => {
+  const { totalRewards } = useFarmByAddress(farmAddress)
+  const lifetime = useFarmLifetime(farmAddress)
   const velocity = useMemo(
     () => totalRewards.mul(precision).div(lifetime),
     [totalRewards, lifetime],
   )
+  return velocity
+}
+
+/**
+ * Get farm's emission rate
+ * @param farmAddress Farm address
+ * @returns Emission rate (out_tokens/seconds/in_tokens) with precision
+ */
+export const useFarmEmissionRate = (farmAddress: string) => {
+  const { totalShares } = useFarmByAddress(farmAddress)
+  const velocity = useFarmVelocity(farmAddress)
   const emissionRate = useMemo(
     () => (totalShares.isZero() ? velocity : velocity.div(totalShares)),
     [totalShares, velocity],
   )
-  const maxCompensation = useMemo(
-    () => timePassed.mul(velocity),
-    [timePassed, velocity],
-  )
-  const getNextCompensation = useCallback(
-    (nextEmissionRate: BN) =>
-      emissionRate.sub(nextEmissionRate).mul(timePassed).add(compensation),
-    [emissionRate, timePassed, compensation],
-  )
-
-  return {
-    precision,
-    lifetime,
-    timePassed,
-    velocity,
-    emissionRate,
-    maxCompensation,
-    getNextCompensation,
-  }
+  return emissionRate
 }
 
 /**

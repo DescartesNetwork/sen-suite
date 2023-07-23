@@ -4,14 +4,12 @@ import { useRouter, useSearchParams } from 'next/navigation'
 
 import { MintLogo, MintSymbol } from '@/components/mint'
 import FarmTimeline from '../farmCard/farmTimeline'
-import {
-  FarmInfoApr,
-  FarmInfoMyPosition,
-  FarmInfoMyStake,
-  FarmInfoTvl,
-} from '../farmCard/farmInfo'
 import FarmReward from './farmReward'
 import MyReward from './myReward'
+import FarmApr from '../farmCard/farmApr'
+import FarmTvl from '../farmCard/farmTvl'
+import UserStake from '../farmCard/userStake'
+import UserPosition from '../farmCard/userPosition'
 
 import { isAddress } from '@/helpers/utils'
 import { useFarmByAddress } from '@/providers/farming.provider'
@@ -40,16 +38,16 @@ export default function FarmDetails() {
           <FarmTimeline farmAddress={farmAddress} />
         </div>
         <div className="col-span-3">
-          <FarmInfoApr farmAddress={farmAddress} />
+          <FarmApr farmAddress={farmAddress} />
         </div>
         <div className="col-span-3">
-          <FarmInfoTvl farmAddress={farmAddress} />
+          <FarmTvl farmAddress={farmAddress} />
         </div>
         <div className="col-span-3">
-          <FarmInfoMyStake farmAddress={farmAddress} />
+          <UserStake farmAddress={farmAddress} />
         </div>
         <div className="col-span-3">
-          <FarmInfoMyPosition farmAddress={farmAddress} />
+          <UserPosition farmAddress={farmAddress} />
         </div>
         <div className="col-span-6 card bg-base-200 p-4">
           <FarmReward farmAddress={farmAddress} />
