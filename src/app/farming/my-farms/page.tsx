@@ -6,7 +6,7 @@ import FarmCard from '../farmCard'
 
 import { useAllDebts, useAllFarms } from '@/providers/farming.provider'
 import { useMemo } from 'react'
-import { useSortedFarms } from '@/hooks/farming.hook'
+import { useSortedFarmsByStartDate } from '@/hooks/farming.hook'
 
 export default function MyFarms() {
   const { publicKey } = useWallet()
@@ -17,12 +17,12 @@ export default function MyFarms() {
     () => Object.values(debts).map(({ farm }) => farm.toBase58()),
     [debts],
   )
-  const sortedStakedFarms = useSortedFarms(stakedFarms)
+  const sortedStakedFarms = useSortedFarmsByStartDate(stakedFarms)
   const createdFarms = Object.keys(farms).filter(
     (farmAddress) =>
       publicKey && farms[farmAddress].authority.equals(publicKey),
   )
-  const sortedCreatedFarms = useSortedFarms(createdFarms)
+  const sortedCreatedFarms = useSortedFarmsByStartDate(createdFarms)
 
   return (
     <div className="grid grid-cols-12 gap-4 @container">

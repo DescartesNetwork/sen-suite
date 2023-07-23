@@ -5,7 +5,7 @@ import LazyLoad from 'react-lazy-load'
 import FarmingCard from '../farmCard'
 
 import { useAllFarms } from '@/providers/farming.provider'
-import { useSortedFarms } from '@/hooks/farming.hook'
+import { useSortedFarmsByStartDate } from '@/hooks/farming.hook'
 
 export default function ExpiredFarms() {
   const farms = useAllFarms()
@@ -18,7 +18,7 @@ export default function ExpiredFarms() {
       }),
     [farms],
   )
-  const sortedExpiredFarms = useSortedFarms(expiredFarms)
+  const sortedExpiredFarms = useSortedFarmsByStartDate(expiredFarms)
 
   return (
     <div className="grid grid-cols-12 gap-4 @container">

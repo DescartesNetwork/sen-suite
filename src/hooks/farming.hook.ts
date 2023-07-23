@@ -76,7 +76,7 @@ export const useFarmOracle = (farmAddress: string) => {
  * @param farmAddresses Farm addresses
  * @returns Sorted farm addresses
  */
-export const useSortedFarms = (farmAddresses: string[]) => {
+export const useSortedFarmsByStartDate = (farmAddresses: string[]) => {
   const farms = useAllFarms()
 
   const sortedFarmAddresses = useMemo(
