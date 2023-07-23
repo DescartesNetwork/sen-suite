@@ -1,37 +1,51 @@
 'use client'
 import { useWallet } from '@solana/wallet-adapter-react'
 
+import LazyLoad from 'react-lazy-load'
 import FarmCard from '../farmCard'
 
 import { useAllDebts, useAllFarms } from '@/providers/farming.provider'
+import { useMemo } from 'react'
+import { useSortedFarms } from '@/hooks/farming.hook'
 
 export default function MyFarms() {
   const { publicKey } = useWallet()
   const farms = useAllFarms()
   const debts = useAllDebts()
 
-  const jointFarms = Object.values(debts).map(({ farm }) => farm.toBase58())
-  const myFarms = Object.keys(farms).filter(
+  const stakedFarms = useMemo(
+    () => Object.values(debts).map(({ farm }) => farm.toBase58()),
+    [debts],
+  )
+  const sortedStakedFarms = useSortedFarms(stakedFarms)
+  const createdFarms = Object.keys(farms).filter(
     (farmAddress) =>
       publicKey && farms[farmAddress].authority.equals(publicKey),
   )
+  const sortedCreatedFarms = useSortedFarms(createdFarms)
 
   return (
     <div className="grid grid-cols-12 gap-4 @container">
-      <h5 className="col-span-12 opacity-60">Created Farms</h5>
-      {myFarms.map((farmAddress) => (
-        <div className="col-span-12 @2xl:col-span-6" key={farmAddress}>
-          <FarmCard farmAddress={farmAddress} />
-        </div>
-      ))}
-      <h5 className="col-span-12 opacity-60">Staked Farms</h5>
-      <div className="col-span-12">
-        {jointFarms.map((farmAddress) => (
-          <p key={farmAddress} className="">
-            {farmAddress}
-          </p>
-        ))}
+      <div className="col-span-full px-4 py-2 flex flex-row items-center gap-2">
+        <h5 className="opacity-60">Created Farms</h5>
+        <div className="divider divider-horizontal m-0" />
+        <p className="font-bold">{sortedCreatedFarms.length} Farms</p>
       </div>
+      {sortedCreatedFarms.map((farmAddress) => (
+        <LazyLoad className="col-span-full @2xl:col-span-6" key={farmAddress}>
+          <FarmCard farmAddress={farmAddress} />
+        </LazyLoad>
+      ))}
+      <div className="col-span-full px-4 py-2 flex flex-row items-center gap-2">
+        <h5 className="opacity-60">Staked Farms</h5>
+        <div className="divider divider-horizontal m-0" />
+        <p className="font-bold">{sortedStakedFarms.length} Farms</p>
+      </div>
+      {sortedStakedFarms.map((farmAddress) => (
+        <LazyLoad className="col-span-full @2xl:col-span-6" key={farmAddress}>
+          <FarmCard farmAddress={farmAddress} />
+        </LazyLoad>
+      ))}
     </div>
   )
 }

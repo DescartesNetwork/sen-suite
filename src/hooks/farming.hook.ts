@@ -4,10 +4,17 @@ import BN from 'bn.js'
 
 import { useAnchorProvider } from '@/hooks/spl.hook'
 import solConfig from '@/configs/sol.config'
-import { useFarmByAddress } from '@/providers/farming.provider'
+import { useAllFarms, useFarmByAddress } from '@/providers/farming.provider'
 
+/**
+ * Velocity precision
+ */
 export const precision = new BN(10 ** 9)
 
+/**
+ * Instantiate a farming
+ * @returns Farming instance
+ */
 export const useFarming = () => {
   const provider = useAnchorProvider()
   const farming = useMemo(
@@ -17,6 +24,11 @@ export const useFarming = () => {
   return farming
 }
 
+/**
+ * Parse farm statistic data to compue APR, TVL, etc.
+ * @param farmAddress Farm address
+ * @returns Statistic data
+ */
 export const useFarmOracle = (farmAddress: string) => {
   const { startDate, endDate, totalShares, totalRewards, compensation } =
     useFarmByAddress(farmAddress)
@@ -57,4 +69,27 @@ export const useFarmOracle = (farmAddress: string) => {
     maxCompensation,
     getNextCompensation,
   }
+}
+
+/**
+ * Sort farm in the time order
+ * @param farmAddresses Farm addresses
+ * @returns Sorted farm addresses
+ */
+export const useSortedFarms = (farmAddresses: string[]) => {
+  const farms = useAllFarms()
+
+  const sortedFarmAddresses = useMemo(
+    () =>
+      farmAddresses.sort((a, b) => {
+        const { startDate: ad } = farms[a]
+        const { startDate: bd } = farms[b]
+        if (ad.eq(bd)) return 0
+        else if (ad.lt(bd)) return 1
+        else return -1
+      }),
+    [farms, farmAddresses],
+  )
+
+  return sortedFarmAddresses
 }

@@ -5,21 +5,13 @@ import LazyLoad from 'react-lazy-load'
 import FarmingCard from './farmCard'
 
 import { useAllFarms } from '@/providers/farming.provider'
+import { useSortedFarms } from '@/hooks/farming.hook'
 
 export default function Farming() {
   const farms = useAllFarms()
 
-  const sortedFarmAddresses = useMemo(
-    () =>
-      Object.keys(farms).sort((a, b) => {
-        const { startDate: ad } = farms[a]
-        const { startDate: bd } = farms[b]
-        if (ad.eq(bd)) return 0
-        else if (ad.lt(bd)) return 1
-        else return -1
-      }),
-    [farms],
-  )
+  const farmAddresses = useMemo(() => Object.keys(farms), [farms])
+  const sortedFarmAddresses = useSortedFarms(farmAddresses)
 
   return (
     <div className="grid grid-cols-12 gap-4 @container">
