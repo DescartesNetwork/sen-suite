@@ -15,7 +15,10 @@ import {
   useRewardsByFarmAddress,
 } from '@/providers/farming.provider'
 
-export const useUserRewards = (farmAddress: string, reactive = false) => {
+export const useUserRewards = (
+  farmAddress: string,
+  defay: number | null = null,
+) => {
   const { compensation, totalRewards: moTotalRewards } =
     useFarmByAddress(farmAddress)
   const { shares, debtAmount, pendingRewards } = useDebtByFarmAddress(
@@ -27,7 +30,7 @@ export const useUserRewards = (farmAddress: string, reactive = false) => {
   }
   const rewardAccounts = useRewardsByFarmAddress(farmAddress)
   const emissionRate = useFarmEmissionRate(farmAddress)
-  const timePassed = useFarmTimePassed(farmAddress, reactive)
+  const timePassed = useFarmTimePassed(farmAddress, defay)
 
   const moRewards = useMemo(() => {
     return timePassed

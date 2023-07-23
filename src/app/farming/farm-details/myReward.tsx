@@ -15,7 +15,7 @@ export type MyRewardProps = {
 }
 
 export default function MyReward({ farmAddress }: MyRewardProps) {
-  const rewards = useUserRewards(farmAddress, true)
+  const rewards = useUserRewards(farmAddress, 1000)
 
   return (
     <div className="grid grid-cols-12 gap-4">

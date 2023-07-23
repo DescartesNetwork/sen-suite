@@ -41,15 +41,15 @@ export const useFarmLifetime = (farmAddress: string) => {
  * @param farmAddress Farm address
  * @returns Time passed
  */
-export const useFarmTimePassed = (farmAddress: string, reactive = false) => {
+export const useFarmTimePassed = (
+  farmAddress: string,
+  delay: number | null = null,
+) => {
   const [currentDate, setCurrentDate] = useState(Math.round(Date.now() / 1000))
   const { startDate } = useFarmByAddress(farmAddress)
   const lifetime = useFarmLifetime(farmAddress)
 
-  useInterval(
-    () => setCurrentDate(Math.round(Date.now() / 1000)),
-    reactive ? 1000 : null,
-  )
+  useInterval(() => setCurrentDate(Math.round(Date.now() / 1000)), delay)
 
   const timePassed = useMemo(
     () =>
