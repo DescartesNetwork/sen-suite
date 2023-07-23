@@ -1,5 +1,5 @@
 'use client'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 import { MintLogo, MintSymbol } from '@/components/mint'
@@ -14,10 +14,21 @@ import UserPosition from '../farmCard/userPosition'
 
 import { isAddress } from '@/helpers/utils'
 import { useFarmByAddress } from '@/providers/farming.provider'
+import Stake from './stake'
+import Unstake from './unstake'
+import Ownership from './ownership'
+
+export enum FarmAction {
+  Stake = 'Stake',
+  Unstake = 'Unstake',
+  Ownership = 'Ownership',
+}
 
 export default function FarmDetails() {
   const { push } = useRouter()
   const searchParams = useSearchParams()
+  const [tab, setTab] = useState(FarmAction.Stake)
+
   const farmAddress = searchParams.get('farmAddress') || ''
   const { inputMint } = useFarmByAddress(farmAddress)
   const inputMintAddress = useMemo(
@@ -27,8 +38,8 @@ export default function FarmDetails() {
 
   if (!isAddress(farmAddress)) return push('/farming')
   return (
-    <div className="grid grid-cols-12 gap-2 @container">
-      <div className="col-span-12 @2xl:col-span-8 grid grid-cols-12 gap-4">
+    <div className="grid grid-cols-12 gap-x-4 gap-y-2 @container">
+      <div className="col-span-full @2xl:col-span-8 grid grid-cols-12 gap-4">
         <div className="col-span-full flex flex-row items-center gap-2">
           <MintLogo mintAddress={inputMintAddress} />
           <h4 className="flex-auto">
@@ -58,8 +69,30 @@ export default function FarmDetails() {
           <MyReward farmAddress={farmAddress} />
         </div>
       </div>
-      <div className="divider divider-horizontal m-0" />
-      <div className="col-span-12 @2xl:col-span-4 grid grid-cols-12 gap-2"></div>
+      <div className="col-span-full @2xl:col-span-4 grid grid-cols-12 gap-2 card bg-base-200 p-4">
+        <div className="col-span-full">
+          <div className="tabs tabs-boxed">
+            {Object.values(FarmAction).map((value) => (
+              <button
+                key={value}
+                className={'tab tab-sm' + (tab === value ? ' tab-active' : '')}
+                onClick={() => setTab(value)}
+              >
+                {value}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="col-span-full">
+          {tab === FarmAction.Stake ? (
+            <Stake farmAddress={farmAddress} />
+          ) : tab === FarmAction.Unstake ? (
+            <Unstake farmAddress={farmAddress} />
+          ) : (
+            <Ownership farmAddress={farmAddress} />
+          )}
+        </div>
+      </div>
     </div>
   )
 }

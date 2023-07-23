@@ -12,7 +12,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "lint:watch": "nodemon --watch src --ext ts,tsx --exec 'next lint'",
+    "lint:watch": "nodemon --watch src --ext ts,tsx --exec 'next lint' --signal SIGTERM",
     "preserve": "yarn build",
     "serve": "serve out"
   },
