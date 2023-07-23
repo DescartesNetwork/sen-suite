@@ -1,11 +1,10 @@
 'use client'
-import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react'
+import { ChangeEvent, useCallback, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { PublicKey } from '@solana/web3.js'
 import { useWallet } from '@solana/wallet-adapter-react'
 
 import { MintLogo } from '@/components/mint'
-import Splash from '@/components/splash'
 import { ImagePlusIcon, X } from 'lucide-react'
 
 import { isAddress, numeric } from '@/helpers/utils'
@@ -17,9 +16,9 @@ import { solscan } from '@/helpers/explorers'
 import solConfig from '@/configs/sol.config'
 
 export default function TokenDetails() {
+  const { push } = useRouter()
   const searchParams = useSearchParams()
   const mintAddress = searchParams.get('mintAddress')
-  const { push } = useRouter()
   const [mintSymbol, setMintSymbol] = useState<string>()
   const [mintName, setMintName] = useState<string>()
   const [mintAuthority, setMintAuthority] = useState<string>()
@@ -77,12 +76,7 @@ export default function TokenDetails() {
     return setLogo(undefined)
   }, [ref])
 
-  useEffect(() => {
-    if (!isAddress(mintAddress))
-      return push('/token-creation/edit-token/search')
-  }, [mintAddress, push])
-
-  if (!isAddress(mintAddress)) return <Splash open />
+  if (!isAddress(mintAddress)) return push('/token-creation/edit-token/search')
   return (
     <div className="grid grid-cols-12 gap-x-2 gap-y-4">
       <div className="col-span-full flex flex-row justify-center">

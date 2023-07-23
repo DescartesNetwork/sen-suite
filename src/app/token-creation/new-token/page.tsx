@@ -13,6 +13,7 @@ import { solscan } from '@/helpers/explorers'
 import solConfig from '@/configs/sol.config'
 
 export default function NewToken() {
+  const { push } = useRouter()
   const [keypair, setKeypair] = useState<Keypair>(new Keypair())
   const [decimals, setDecimals] = useState(9)
   const { publicKey } = useWallet()
@@ -21,7 +22,6 @@ export default function NewToken() {
   const [loading, setLoading] = useState(false)
   const pushMessage = usePushMessage()
   const spl = useSpl()
-  const router = useRouter()
 
   const ok = useMemo(() => {
     if (!keypair) return false
@@ -58,7 +58,7 @@ export default function NewToken() {
             window.open(solscan(txId, solConfig.network), '_blank'),
         },
       )
-      router.push(
+      push(
         `/token-creation/edit-token/details?mintAddress=${keypair.publicKey.toBase58()}`,
       )
     } catch (er: any) {
@@ -69,7 +69,7 @@ export default function NewToken() {
   }, [
     ok,
     pushMessage,
-    router,
+    push,
     spl,
     keypair,
     decimals,

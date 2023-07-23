@@ -1,4 +1,5 @@
 'use client'
+import Link from 'next/link'
 
 import { MintLogo, MintSymbol } from '@/components/mint'
 import { Crown, Info } from 'lucide-react'
@@ -16,7 +17,10 @@ export default function FarmCard({ farmAddress }: FarmingCardProps) {
   const { inputMint } = useFarmByAddress(farmAddress)
 
   return (
-    <div className="card rounded-box shadow hover:shadow-lg p-4 bg-base-100 grid grid-cols-12 gap-2 cursor-pointer transition-all">
+    <Link
+      className="card rounded-box shadow hover:shadow-lg p-4 bg-base-100 grid grid-cols-12 gap-2 cursor-pointer transition-all"
+      href={`/farming/farm-details?farmAddress=${farmAddress}`}
+    >
       <div className="col-span-12 flex flex-row items-center gap-2">
         <MintLogo mintAddress={inputMint.toBase58()} />
         <p className="font-bold flex-auto">
@@ -49,6 +53,6 @@ export default function FarmCard({ farmAddress }: FarmingCardProps) {
       <div className="col-span-12 mt-8">
         <FarmInfo farmAddress={farmAddress} />
       </div>
-    </div>
+    </Link>
   )
 }
