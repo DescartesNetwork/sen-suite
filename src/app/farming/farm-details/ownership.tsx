@@ -62,7 +62,7 @@ export default function Ownership({ farmAddress }: OwnershipProps) {
         onClick={onTransferOwnership}
         disabled={!isAddress(owner) || loading}
       >
-        {loading && <span className="loading loading-spinner loading-sm" />}
+        {loading && <span className="loading loading-spinner loading-xs" />}
         Transfer Ownership
       </button>
     </div>

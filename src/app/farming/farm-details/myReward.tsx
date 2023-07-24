@@ -90,7 +90,7 @@ export default function MyReward({ farmAddress }: MyRewardProps) {
         onClick={onHarvest}
         disabled={!ok || loading}
       >
-        {loading && <span className="loading loading-spinner" />}
+        {loading && <span className="loading loading-spinner loading-xs" />}
         Harvest
       </button>
     </div>

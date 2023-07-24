@@ -92,7 +92,7 @@ export default function Stake({ farmAddress }: StakeProps) {
         onClick={onStake}
         disabled={!ok || loading}
       >
-        {loading && <span className="loading loading-spinner loading-sm" />}
+        {loading && <span className="loading loading-spinner loading-xs" />}
         Stake
       </button>
     </div>

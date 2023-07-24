@@ -154,8 +154,7 @@ export const useHarvest = (farmAddress: string) => {
       ComputeBudgetProgram.setComputeUnitLimit({ units: 1400000 }),
       ...txs.map(({ tx }) => tx),
     )
-    const signedTx = await signTransaction(tx)
-    const signature = await sendTransaction(signedTx, connection, {
+    const signature = await sendTransaction(tx, connection, {
       minContextSlot,
     })
     await connection.confirmTransaction({
@@ -241,8 +240,7 @@ export const useStake = (
       ComputeBudgetProgram.setComputeUnitLimit({ units: 1400000 }),
       ...txs.map(({ tx }) => tx),
     )
-    const signedTx = await signTransaction(tx)
-    const signature = await sendTransaction(signedTx, connection, {
+    const signature = await sendTransaction(tx, connection, {
       minContextSlot,
     })
     await connection.confirmTransaction({
@@ -301,8 +299,7 @@ export const useUnstake = (farmAddress: string, shares: BN) => {
       ComputeBudgetProgram.setComputeUnitLimit({ units: 1400000 }),
       ...txs.map(({ tx }) => tx),
     )
-    const signedTx = await signTransaction(tx)
-    const signature = await sendTransaction(signedTx, connection, {
+    const signature = await sendTransaction(tx, connection, {
       minContextSlot,
     })
     await connection.confirmTransaction({

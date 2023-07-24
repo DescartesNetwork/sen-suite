@@ -99,7 +99,7 @@ export default function Unstake({ farmAddress }: UnstakeProps) {
         onClick={onUnstake}
         disabled={!ok || loading}
       >
-        {loading && <span className="loading loading-spinner loading-sm" />}
+        {loading && <span className="loading loading-spinner loading-xs" />}
         Unstake
       </button>
     </div>
