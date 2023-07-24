@@ -58,6 +58,9 @@ export function MintSymbol({ mintAddress }: MintSymbolProps) {
   return <Fragment>{symbol}</Fragment>
 }
 
+/**
+ * Mint Price
+ */
 export type MintPriceProps = {
   mintAddress: string
   format?: string
@@ -70,6 +73,9 @@ export function MintPrice({
   return <Fragment>{numeric(price || 0).format(format)}</Fragment>
 }
 
+/**
+ * Mint Amount
+ */
 export type MintAmountProps = {
   amount: BN
   mintAddress: string
@@ -80,7 +86,7 @@ export function MintAmount({
   mintAddress,
   format = '0,0.[0000]',
 }: MintAmountProps) {
-  const { decimals } = useMintByAddress(mintAddress) || { decimals: 0 }
+  const { decimals } = useMintByAddress(mintAddress) || { decimals: 9 }
   return (
     <Fragment>
       {numeric(undecimalize(amount, decimals)).format(format)}
@@ -88,6 +94,9 @@ export function MintAmount({
   )
 }
 
+/**
+ * Mint Value
+ */
 export type MintValueProps = {
   amount: BN
   mintAddress: string

@@ -39,7 +39,7 @@ export default function FarmDetails() {
   if (!isAddress(farmAddress)) return push('/farming')
   return (
     <div className="grid grid-cols-12 gap-4 @container/main">
-      <div className="col-span-full @2xl/main:col-span-8 grid grid-cols-12 gap-4 @container/left">
+      <div className="col-span-full @2xl/main:col-span-7 @3xl/main:col-span-8 grid grid-cols-12 gap-4 @container/left">
         <div className="col-span-full flex flex-row items-center gap-2">
           <MintLogo mintAddress={inputMintAddress} />
           <h4 className="flex-auto">
@@ -69,32 +69,32 @@ export default function FarmDetails() {
           <MyReward farmAddress={farmAddress} />
         </div>
       </div>
-      <div className="col-span-full @2xl/main:col-span-4 grid grid-cols-12 gap-2 card bg-base-200 p-4">
-        <div className="col-span-full">
-          <div className="flex flex-row justify-center">
-            <div className="tabs tabs-boxed flex-nowrap">
-              {Object.values(FarmAction).map((value) => (
-                <button
-                  key={value}
-                  className={
-                    'tab tab-sm' + (tab === value ? ' tab-active' : '')
-                  }
-                  onClick={() => setTab(value)}
-                >
-                  {value}
-                </button>
-              ))}
+      <div className="col-span-full @2xl/main:col-span-5 @3xl/main:col-span-4 card bg-base-200 p-4">
+        <div className="grid grid-cols-12 gap-2">
+          <div className="col-span-full">
+            <div className="flex flex-row justify-center">
+              <div className="tabs tabs-boxed flex-nowrap">
+                {Object.values(FarmAction).map((value) => (
+                  <button
+                    key={value}
+                    className={'tab' + (tab === value ? ' tab-active' : '')}
+                    onClick={() => setTab(value)}
+                  >
+                    {value}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-        <div className="col-span-full">
-          {tab === FarmAction.Stake ? (
-            <Stake farmAddress={farmAddress} />
-          ) : tab === FarmAction.Unstake ? (
-            <Unstake farmAddress={farmAddress} />
-          ) : (
-            <Ownership farmAddress={farmAddress} />
-          )}
+          <div className="col-span-full">
+            {tab === FarmAction.Stake ? (
+              <Stake farmAddress={farmAddress} />
+            ) : tab === FarmAction.Unstake ? (
+              <Unstake farmAddress={farmAddress} />
+            ) : (
+              <Ownership farmAddress={farmAddress} />
+            )}
+          </div>
         </div>
       </div>
     </div>

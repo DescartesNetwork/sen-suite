@@ -1,11 +1,14 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import SenFarmingProgram from '@sentre/farming'
 import BN from 'bn.js'
 import { useInterval } from 'react-use'
+import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { ComputeBudgetProgram, Transaction } from '@solana/web3.js'
 
 import { useAnchorProvider } from '@/hooks/spl.hook'
 import solConfig from '@/configs/sol.config'
 import { useAllFarms, useFarmByAddress } from '@/providers/farming.provider'
+import { isAddress } from '@/helpers/utils'
 
 /**
  * Velocity precision
@@ -111,4 +114,165 @@ export const useSortedFarmsByStartDate = (farmAddresses: string[]) => {
   )
 
   return sortedFarmAddresses
+}
+
+/**
+ * Get farm's harvest function
+ * @param farmAddress Farm address
+ * @returns Harvest function
+ */
+export const useHarvest = (farmAddress: string) => {
+  const { publicKey, sendTransaction, signTransaction } = useWallet()
+  const { connection } = useConnection()
+  const farming = useFarming()
+
+  const harvest = useCallback(async () => {
+    if (!publicKey || !signTransaction || !sendTransaction)
+      throw new Error('Wallet is not connected yet.')
+    if (!isAddress(farmAddress)) throw new Error('Invalid farm address.')
+    const {
+      context: { slot: minContextSlot },
+      value: { blockhash, lastValidBlockHeight },
+    } = await connection.getLatestBlockhashAndContext()
+    const tx = new Transaction({
+      blockhash,
+      lastValidBlockHeight,
+      feePayer: publicKey,
+    })
+    const txs = await Promise.all([
+      farming.unstake({ farm: farmAddress, sendAndConfirm: false }),
+      farming.stake({ farm: farmAddress, sendAndConfirm: false }),
+      farming.claim({ farm: farmAddress, sendAndConfirm: false }),
+      farming.convertRewards({ farm: farmAddress, sendAndConfirm: false }),
+    ])
+    tx.add(
+      ComputeBudgetProgram.setComputeUnitLimit({ units: 1400000 }),
+      ...txs.map(({ tx }) => tx),
+    )
+    const signedTx = await signTransaction(tx)
+    const signature = await sendTransaction(signedTx, connection, {
+      minContextSlot,
+    })
+    await connection.confirmTransaction({
+      blockhash,
+      lastValidBlockHeight,
+      signature,
+    })
+    return signature
+  }, [
+    farmAddress,
+    publicKey,
+    signTransaction,
+    sendTransaction,
+    connection,
+    farming,
+  ])
+
+  return harvest
+}
+
+/**
+ * Get farm's stake function
+ * @param farmAddress Farm address
+ * @param amount Stake amount
+ * @returns Stake function
+ */
+export const useStake = (farmAddress: string, amount: BN) => {
+  const { publicKey, sendTransaction, signTransaction } = useWallet()
+  const { connection } = useConnection()
+  const farming = useFarming()
+
+  const stake = useCallback(async () => {
+    if (!publicKey || !signTransaction || !sendTransaction)
+      throw new Error('Wallet is not connected yet.')
+    if (!isAddress(farmAddress)) throw new Error('Invalid farm address.')
+    if (amount.isZero()) throw new Error('Invalid amount.')
+    const {
+      context: { slot: minContextSlot },
+      value: { blockhash, lastValidBlockHeight },
+    } = await connection.getLatestBlockhashAndContext()
+    const tx = new Transaction({
+      blockhash,
+      lastValidBlockHeight,
+      feePayer: publicKey,
+    })
+    const txs = await Promise.all([])
+    tx.add(
+      ComputeBudgetProgram.setComputeUnitLimit({ units: 1400000 }),
+      ...txs.map(({ tx }) => tx),
+    )
+    const signedTx = await signTransaction(tx)
+    const signature = await sendTransaction(signedTx, connection, {
+      minContextSlot,
+    })
+    await connection.confirmTransaction({
+      blockhash,
+      lastValidBlockHeight,
+      signature,
+    })
+    return signature
+  }, [
+    farmAddress,
+    amount,
+    publicKey,
+    signTransaction,
+    sendTransaction,
+    connection,
+    farming,
+  ])
+
+  return stake
+}
+
+/**
+ * Get farm's unstake function
+ * @param farmAddress Farm address
+ * @param amount Unstake amount
+ * @returns Unstake function
+ */
+export const useUnstake = (farmAddress: string, amount: BN) => {
+  const { publicKey, sendTransaction, signTransaction } = useWallet()
+  const { connection } = useConnection()
+  const farming = useFarming()
+
+  const unstake = useCallback(async () => {
+    if (!publicKey || !signTransaction || !sendTransaction)
+      throw new Error('Wallet is not connected yet.')
+    if (!isAddress(farmAddress)) throw new Error('Invalid farm address.')
+    if (amount.isZero()) throw new Error('Invalid amount.')
+    const {
+      context: { slot: minContextSlot },
+      value: { blockhash, lastValidBlockHeight },
+    } = await connection.getLatestBlockhashAndContext()
+    const tx = new Transaction({
+      blockhash,
+      lastValidBlockHeight,
+      feePayer: publicKey,
+    })
+    const txs = await Promise.all([])
+    tx.add(
+      ComputeBudgetProgram.setComputeUnitLimit({ units: 1400000 }),
+      ...txs.map(({ tx }) => tx),
+    )
+    const signedTx = await signTransaction(tx)
+    const signature = await sendTransaction(signedTx, connection, {
+      minContextSlot,
+    })
+    await connection.confirmTransaction({
+      blockhash,
+      lastValidBlockHeight,
+      signature,
+    })
+    return signature
+  }, [
+    farmAddress,
+    amount,
+    publicKey,
+    signTransaction,
+    sendTransaction,
+    connection,
+    farming,
+  ])
+
+  return unstake
 }
