@@ -230,7 +230,7 @@ export const useStake = (farmAddress: string, amount: BN) => {
  * @param amount Unstake amount
  * @returns Unstake function
  */
-export const useUnstake = (farmAddress: string, amount: BN) => {
+export const useUnstake = (farmAddress: string, shares: BN) => {
   const { publicKey, sendTransaction, signTransaction } = useWallet()
   const { connection } = useConnection()
   const farming = useFarming()
@@ -239,7 +239,7 @@ export const useUnstake = (farmAddress: string, amount: BN) => {
     if (!publicKey || !signTransaction || !sendTransaction)
       throw new Error('Wallet is not connected yet.')
     if (!isAddress(farmAddress)) throw new Error('Invalid farm address.')
-    if (amount.isZero()) throw new Error('Invalid amount.')
+    if (shares.isZero()) throw new Error('Invalid amount.')
     const {
       context: { slot: minContextSlot },
       value: { blockhash, lastValidBlockHeight },
@@ -249,7 +249,11 @@ export const useUnstake = (farmAddress: string, amount: BN) => {
       lastValidBlockHeight,
       feePayer: publicKey,
     })
-    const txs = await Promise.all([])
+    const txs = await Promise.all([
+      farming.unstake({ farm: farmAddress, sendAndConfirm: false }),
+      farming.withdraw({ farm: farmAddress, shares, sendAndConfirm: false }),
+      farming.stake({ farm: farmAddress, sendAndConfirm: false }),
+    ])
     tx.add(
       ComputeBudgetProgram.setComputeUnitLimit({ units: 1400000 }),
       ...txs.map(({ tx }) => tx),
@@ -266,7 +270,7 @@ export const useUnstake = (farmAddress: string, amount: BN) => {
     return signature
   }, [
     farmAddress,
-    amount,
+    shares,
     publicKey,
     signTransaction,
     sendTransaction,

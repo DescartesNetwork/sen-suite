@@ -21,6 +21,7 @@ import { WalletModalProvider } from '@solana/wallet-adapter-react-ui'
 import { env } from '@/configs/env'
 import solConfig from '@/configs/sol.config'
 import { useSpl } from '@/hooks/spl.hook'
+import { isAddress } from '@/helpers/utils'
 
 export type TokenAccount = Awaited<
   ReturnType<ReturnType<typeof splTokenProgram>['account']['account']['fetch']>
@@ -129,6 +130,25 @@ export default function WalletProvider({ children }: { children: ReactNode }) {
 export const useAllTokenAccounts = () => {
   const tokenAccounts = useWalletStore(({ tokenAccounts }) => tokenAccounts)
   return tokenAccounts
+}
+
+/**
+ * Get all my token account by mint address
+ * @param mintAddress Mint address
+ * @returns Token account
+ */
+export const useTokenAccountByMintAddress = (mintAddress: string) => {
+  const tokenAccount = useWalletStore(({ tokenAccounts }) => {
+    const tokenAccountAddress = Object.keys(tokenAccounts).find(
+      (tokenAccountAddress) => {
+        const { mint } = tokenAccounts[tokenAccountAddress]
+        return mint.toBase58() === mintAddress
+      },
+    )
+    if (!isAddress(tokenAccountAddress)) return undefined
+    return tokenAccounts[tokenAccountAddress]
+  })
+  return tokenAccount
 }
 
 /**

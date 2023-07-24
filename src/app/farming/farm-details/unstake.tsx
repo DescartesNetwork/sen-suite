@@ -24,28 +24,26 @@ export default function Unstake({ farmAddress }: UnstakeProps) {
   const pushMessage = usePushMessage()
   const { inputMint } = useFarmByAddress(farmAddress)
   const { shares, leverage } = useDebtByFarmAddress(farmAddress) || {}
-  const { decimals } = useMintByAddress(inputMint.toBase58()) || { decimals: 0 }
+  const { decimals } = useMintByAddress(inputMint.toBase58()) || { decimals: 9 }
 
-  const max = useMemo(() => {
-    if (!shares || !leverage) return new BN(0)
-    return shares.mul(precision).div(leverage)
-  }, [shares, leverage])
+  const max = useMemo(() => (!shares ? new BN(0) : shares), [shares])
   const ok = useMemo(() => {
     if (!amount) return false
+    if (!shares || shares.isZero()) return false
     return true
-  }, [amount])
+  }, [amount, shares])
 
-  const unstake = useUnstake(farmAddress, new BN(0))
   const onMax = useCallback(
     () => setAmount(undecimalize(max, decimals)),
     [max, decimals],
   )
+  const unstake = useUnstake(farmAddress, decimalize(amount, decimals))
   const onUnstake = useCallback(async () => {
     try {
       setLoading(true)
       const txId = await unstake()
       pushMessage(
-        'alert-error',
+        'alert-success',
         'Successfully unstake. Click here to view on explorer.',
         {
           onClick: () => window.open(solscan(txId), '_blank'),
@@ -62,12 +60,17 @@ export default function Unstake({ farmAddress }: UnstakeProps) {
     <div className="grid grid-cols-12 gap-2">
       <div className="col-span-full">
         <div className="card bg-base-300 p-4 grid grid-cols-12 gap-2">
-          <div className="col-span-full flex flex-row gap-2 items-baseline">
+          <div className="col-span-full flex flex-row gap-1 items-center">
             <p className="text-sm opacity-60 flex-auto">Amount</p>
             <MintAmount
               mintAddress={inputMint?.toBase58() || ''}
               amount={max}
             />
+            {leverage && !leverage.eq(precision) && (
+              <span className="badge badge-primary">
+                x{Number(undecimalize(leverage, 9))}
+              </span>
+            )}
             <p className="text-sm opacity-60 font-bold">
               <MintSymbol mintAddress={inputMint?.toBase58() || ''} />
             </p>

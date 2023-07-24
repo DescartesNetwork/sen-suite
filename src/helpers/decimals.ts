@@ -6,6 +6,7 @@ export const undecimalize = (n: BN, decimals: number): string => {
     const d = new BN(decimals)
     const a = n.div(_ten.pow(d))
     let b = n.mod(_ten.pow(d)).toString()
+    if (b === '0') return a.toString()
     while (b.length < decimals) b = '0' + b
     return `${a.toString()}.${b}`
   } catch (er) {
