@@ -54,7 +54,7 @@ export default function Unstake({ farmAddress }: UnstakeProps) {
     } finally {
       setLoading(false)
     }
-  }, [unstake])
+  }, [unstake, pushMessage])
 
   return (
     <div className="grid grid-cols-12 gap-2">
@@ -99,7 +99,7 @@ export default function Unstake({ farmAddress }: UnstakeProps) {
         onClick={onUnstake}
         disabled={!ok || loading}
       >
-        {loading && <span className="loading loading-spinner" />}
+        {loading && <span className="loading loading-spinner loading-sm" />}
         Unstake
       </button>
     </div>

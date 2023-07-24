@@ -17,6 +17,7 @@ import Ownership from './ownership'
 
 import { isAddress } from '@/helpers/utils'
 import { useFarmByAddress } from '@/providers/farming.provider'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 enum FarmAction {
   Stake = 'Stake',
@@ -28,13 +29,15 @@ export default function FarmDetails() {
   const { push } = useRouter()
   const searchParams = useSearchParams()
   const [tab, setTab] = useState(FarmAction.Stake)
+  const { publicKey } = useWallet()
 
   const farmAddress = searchParams.get('farmAddress') || ''
-  const { inputMint } = useFarmByAddress(farmAddress)
+  const { inputMint, authority } = useFarmByAddress(farmAddress)
   const inputMintAddress = useMemo(
     () => inputMint?.toBase58() || '',
     [inputMint],
   )
+  const auth = authority && publicKey && authority.equals(publicKey)
 
   if (!isAddress(farmAddress)) return push('/farming')
   return (
@@ -71,14 +74,17 @@ export default function FarmDetails() {
       </div>
       <div className="col-span-full @2xl/main:col-span-5 @3xl/main:col-span-4 card bg-base-200 p-4">
         <div className="grid grid-cols-12 gap-2">
-          <div className="col-span-full">
+          <div className="col-span-full mb-4">
             <div className="flex flex-row justify-center">
               <div className="tabs tabs-boxed flex-nowrap">
                 {Object.values(FarmAction).map((value) => (
                   <button
                     key={value}
                     className={'tab' + (tab === value ? ' tab-active' : '')}
-                    onClick={() => setTab(value)}
+                    onClick={() => {
+                      if (auth) setTab(value)
+                    }}
+                    disabled={value === FarmAction.Admin && !auth}
                   >
                     {value}
                   </button>

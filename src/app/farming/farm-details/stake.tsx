@@ -52,7 +52,7 @@ export default function Stake({ farmAddress }: StakeProps) {
     } finally {
       setLoading(false)
     }
-  }, [stake])
+  }, [stake, pushMessage])
 
   return (
     <div className="grid grid-cols-12 gap-2">
@@ -92,7 +92,7 @@ export default function Stake({ farmAddress }: StakeProps) {
         onClick={onStake}
         disabled={!ok || loading}
       >
-        {loading && <span className="loading loading-spinner" />}
+        {loading && <span className="loading loading-spinner loading-sm" />}
         Stake
       </button>
     </div>

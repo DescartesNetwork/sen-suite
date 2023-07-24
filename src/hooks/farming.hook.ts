@@ -254,6 +254,8 @@ export const useStake = (
   }, [
     farmAddress,
     amount,
+    nfts,
+    shares,
     publicKey,
     signTransaction,
     sendTransaction,
@@ -320,4 +322,28 @@ export const useUnstake = (farmAddress: string, shares: BN) => {
   ])
 
   return unstake
+}
+
+/**
+ * Get farm's transfer ownership function
+ * @param farmAddress Farm address
+ * @returns Transfer ownership function
+ */
+export const useTransferOwnership = (
+  farmAddress: string,
+  ownerAddress: string,
+) => {
+  const farming = useFarming()
+
+  const transferOwnership = useCallback(async () => {
+    if (!isAddress(farmAddress)) throw new Error('Invalid farm address.')
+    if (!isAddress(ownerAddress)) throw new Error('Invalid owner address.')
+    const { txId } = await farming.transferOwnership({
+      farm: farmAddress,
+      newOwner: ownerAddress,
+    })
+    return txId
+  }, [farmAddress, ownerAddress, farming])
+
+  return transferOwnership
 }
