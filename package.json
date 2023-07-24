@@ -24,7 +24,7 @@
     "@coral-xyz/spl-token": "^0.28.1-beta.1",
     "@mdx-js/react": "^2.3.0",
     "@metaplex-foundation/js": "^0.18.3",
-    "@sentre/farming": "^2.0.1",
+    "@sentre/farming": "^2.0.2",
     "@solana/wallet-adapter-base": "^0.9.22",
     "@solana/wallet-adapter-react": "^0.15.32",
     "@solana/wallet-adapter-react-ui": "^0.9.31",

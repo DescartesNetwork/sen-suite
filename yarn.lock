@@ -1287,10 +1287,10 @@
     bs58 "^5.0.0"
     web3.storage "^4.2.0"
 
-"@sentre/farming@^2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@sentre/farming/-/farming-2.0.1.tgz#c2e0ef8568c80fa304d379570eb7c072cdf58222"
-  integrity sha512-fxkSaLQdD+jUt0Z0CaIekM+pP02EkEm41oex+A6XVivHYACMZQgD64nRLBGlt6n4s9MI992ekzaFnjmx88n87A==
+"@sentre/farming@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@sentre/farming/-/farming-2.0.2.tgz#50868cee7a3d22608688a5ce6eb3cddeea5375b1"
+  integrity sha512-wge7vIHbofcGVISHp2gYNZI/S20XbTvhNsG5bytNSI4Yojzn8IhSmX/oRq9SywfXUxkN7VX5MR0WaPZ1/F0UWQ==
   dependencies:
     "@project-serum/anchor" "^0.24.2"
     "@sen-use/web3" "^2.0.11"
