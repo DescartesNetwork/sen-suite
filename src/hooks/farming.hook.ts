@@ -3,12 +3,17 @@ import SenFarmingProgram from '@sentre/farming'
 import BN from 'bn.js'
 import { useInterval } from 'react-use'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { ComputeBudgetProgram, Transaction } from '@solana/web3.js'
+import { ComputeBudgetProgram, PublicKey, Transaction } from '@solana/web3.js'
 
 import { useAnchorProvider } from '@/hooks/spl.hook'
 import solConfig from '@/configs/sol.config'
-import { useAllFarms, useFarmByAddress } from '@/providers/farming.provider'
+import {
+  useAllFarms,
+  useDebtByFarmAddress,
+  useFarmByAddress,
+} from '@/providers/farming.provider'
 import { isAddress } from '@/helpers/utils'
+import { useMpl } from './mpl.hook'
 
 /**
  * Velocity precision
@@ -177,10 +182,16 @@ export const useHarvest = (farmAddress: string) => {
  * @param amount Stake amount
  * @returns Stake function
  */
-export const useStake = (farmAddress: string, amount: BN) => {
+export const useStake = (
+  farmAddress: string,
+  amount: BN,
+  nfts: string[] = [],
+) => {
   const { publicKey, sendTransaction, signTransaction } = useWallet()
   const { connection } = useConnection()
   const farming = useFarming()
+  const { shares } = useDebtByFarmAddress(farmAddress) || {}
+  const mpl = useMpl()
 
   const stake = useCallback(async () => {
     if (!publicKey || !signTransaction || !sendTransaction)
@@ -196,7 +207,36 @@ export const useStake = (farmAddress: string, amount: BN) => {
       lastValidBlockHeight,
       feePayer: publicKey,
     })
-    const txs = await Promise.all([])
+    const txs = await Promise.all([
+      ...(!shares
+        ? [farming.initializeDebt({ farm: farmAddress, sendAndConfirm: false })]
+        : [
+            farming.unstake({ farm: farmAddress, sendAndConfirm: false }),
+            farming.withdraw({
+              farm: farmAddress,
+              shares,
+              sendAndConfirm: false,
+            }),
+          ]),
+      ...nfts.map(async (nft) => {
+        const { metadataAddress, collection } = await mpl
+          .nfts()
+          .findByMint({ mintAddress: new PublicKey(nft) })
+        return farming.lock({
+          farm: farmAddress,
+          nft,
+          metadata: metadataAddress,
+          collection: collection?.address || '',
+          sendAndConfirm: false,
+        })
+      }),
+      farming.deposit({
+        farm: farmAddress,
+        inAmount: amount.add(shares || new BN(0)),
+        sendAndConfirm: false,
+      }),
+      farming.stake({ farm: farmAddress, sendAndConfirm: false }),
+    ])
     tx.add(
       ComputeBudgetProgram.setComputeUnitLimit({ units: 1400000 }),
       ...txs.map(({ tx }) => tx),
@@ -219,6 +259,7 @@ export const useStake = (farmAddress: string, amount: BN) => {
     sendTransaction,
     connection,
     farming,
+    mpl,
   ])
 
   return stake
