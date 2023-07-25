@@ -1,14 +1,18 @@
 'use client'
 import { ChangeEvent, useCallback, useState } from 'react'
+import BN from 'bn.js'
 
 import TokenSelection from '@/components/tokenSelection'
-import { MintLogo, MintSymbol } from '@/components/mint'
+import {
+  MintAmount,
+  MintLogo,
+  MintSymbol,
+  useMintAmount,
+} from '@/components/mint'
 import { ChevronDown } from 'lucide-react'
-import MyBalance, {
-  useMyReadableBalanceByMintAddress,
-} from '@/components/balance'
 
 import { useSwapStore } from '@/hooks/swap.hook'
+import { useTokenAccountByMintAddress } from '@/providers/wallet.provider'
 
 export default function Bid() {
   const [open, setOpen] = useState(false)
@@ -19,6 +23,10 @@ export default function Bid() {
   )
   const bidAmount = useSwapStore(({ bidAmount }) => bidAmount)
   const setBidAmount = useSwapStore(({ setBidAmount }) => setBidAmount)
+  const { amount } = useTokenAccountByMintAddress(bidMintAddress) || {
+    amount: new BN(0),
+  }
+  const balance = useMintAmount(bidMintAddress, amount)
 
   const onBidMintAddress = useCallback(
     (mintAddress: string) => {
@@ -37,7 +45,6 @@ export default function Bid() {
     [setBidAmount],
   )
 
-  const balance = useMyReadableBalanceByMintAddress(bidMintAddress)
   const onRange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       const percentage = Number(e.target.value) / 100
@@ -75,7 +82,7 @@ export default function Bid() {
         <div className="flex flex-col">
           <p className="text-xs font-bold opacity-60">Available</p>
           <p>
-            <MyBalance mintAddress={bidMintAddress} />
+            <MintAmount mintAddress={bidMintAddress} amount={amount} />
           </p>
         </div>
         <div className="flex-auto max-w-[112px]">

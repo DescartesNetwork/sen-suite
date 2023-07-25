@@ -14,7 +14,6 @@ import {
   useWallet,
 } from '@solana/wallet-adapter-react'
 import { useAsync } from 'react-use'
-import isEqual from 'react-fast-compare'
 
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui'
 
@@ -149,21 +148,6 @@ export const useTokenAccountByMintAddress = (mintAddress: string) => {
     return tokenAccounts[tokenAccountAddress]
   })
   return tokenAccount
-}
-
-/**
- * Get some my token accounts with filter
- * @param selector Filter function
- * @returns Token account list
- */
-export const useTokenAccountsSelector = <T,>(
-  selector: (multisigs: Record<string, TokenAccount>) => T,
-) => {
-  const tokenAccounts = useWalletStore(
-    ({ tokenAccounts }) => selector(tokenAccounts),
-    isEqual,
-  )
-  return tokenAccounts
 }
 
 /**

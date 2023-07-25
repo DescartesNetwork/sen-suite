@@ -1,5 +1,5 @@
 'use client'
-import { Fragment } from 'react'
+import { Fragment, useMemo } from 'react'
 import BN from 'bn.js'
 
 import { Diamond } from 'lucide-react'
@@ -61,6 +61,10 @@ export function MintSymbol({ mintAddress }: MintSymbolProps) {
 /**
  * Mint Price
  */
+export const useMintPrice = (mintAddress: string) => {
+  const [price] = usePrices([mintAddress]) || []
+  return price
+}
 export type MintPriceProps = {
   mintAddress: string
   format?: string
@@ -69,13 +73,21 @@ export function MintPrice({
   mintAddress,
   format = '$0,0.[000000]',
 }: MintPriceProps) {
-  const [price] = usePrices([mintAddress]) || []
+  const price = useMintPrice(mintAddress)
   return <Fragment>{numeric(price || 0).format(format)}</Fragment>
 }
 
 /**
  * Mint Amount
  */
+export const useMintAmount = (mintAddress: string, amount: BN) => {
+  const { decimals } = useMintByAddress(mintAddress) || { decimals: 9 }
+  const value = useMemo(
+    () => undecimalize(amount, decimals),
+    [amount, decimals],
+  )
+  return value
+}
 export type MintAmountProps = {
   amount: BN
   mintAddress: string
@@ -86,17 +98,17 @@ export function MintAmount({
   mintAddress,
   format = '0,0.[0000]',
 }: MintAmountProps) {
-  const { decimals } = useMintByAddress(mintAddress) || { decimals: 9 }
-  return (
-    <Fragment>
-      {numeric(undecimalize(amount, decimals)).format(format)}
-    </Fragment>
-  )
+  const value = useMintAmount(mintAddress, amount)
+  return <Fragment>{numeric(value).format(format)}</Fragment>
 }
 
 /**
  * Mint Value
  */
+export const useMintValue = (mintAddress: string, amount: BN) => {
+  const value = useTvl([{ mintAddress, amount }])
+  return value
+}
 export type MintValueProps = {
   amount: BN
   mintAddress: string
@@ -107,6 +119,6 @@ export function MintValue({
   mintAddress,
   format = '$0,0.[00]',
 }: MintAmountProps) {
-  const value = useTvl([{ mintAddress, amount }])
+  const value = useMintValue(mintAddress, amount)
   return <Fragment>{numeric(value).format(format)}</Fragment>
 }

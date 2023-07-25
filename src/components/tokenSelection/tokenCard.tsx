@@ -1,11 +1,18 @@
 'use client'
+import BN from 'bn.js'
 
-import { MintLogo, MintName, MintSymbol } from '@/components/mint'
+import {
+  MintAmount,
+  MintLogo,
+  MintName,
+  MintSymbol,
+  MintValue,
+} from '@/components/mint'
 import Clipboard from '@/components/clipboard'
 import NewWindow from '@/components/newWindow'
-import MyBalance from '@/components/balance'
 
 import { solscan } from '@/helpers/explorers'
+import { useTokenAccountByMintAddress } from '@/providers/wallet.provider'
 
 export type TokenCardProps = {
   mintAddress: string
@@ -20,6 +27,9 @@ export default function TokenCard({
   active = false,
   showBalance = false,
 }: TokenCardProps) {
+  const { amount } = useTokenAccountByMintAddress(mintAddress) || {
+    amount: new BN(0),
+  }
   return (
     <div
       className={
@@ -44,15 +54,16 @@ export default function TokenCard({
         </div>
         {showBalance && (
           <div className="flex flex-col gap-1 items-end group-hover:hidden">
-            <div className="flex flex-row">
-              <div className="text-xs opacity-60">My Balance</div>
-              <div className="divider divider-horizontal mx-0 my-1" />
-              <div className="text-xs opacity-60">
+            <div className="flex flex-row gap-1">
+              <p className="text-xs">
+                <MintAmount mintAddress={mintAddress} amount={amount} />
+              </p>
+              <p className="text-xs opacity-60">
                 <MintSymbol mintAddress={mintAddress} />
-              </div>
+              </p>
             </div>
-            <div className="text-sm">
-              <MyBalance mintAddress={mintAddress} />
+            <div className="text-sm opacity-60">
+              <MintValue mintAddress={mintAddress} amount={amount} />
             </div>
           </div>
         )}
