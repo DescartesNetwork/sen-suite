@@ -7,15 +7,11 @@ import { keccak_256 } from '@noble/hashes/sha3'
 import BN from 'bn.js'
 import { v4 as uuid } from 'uuid'
 import useSWR from 'swr'
-import { PublicKey } from '@solana/web3.js'
 import { produce } from 'immer'
+import axios from 'axios'
 
 import { env } from '@/configs/env'
-import { useMpl } from '@/hooks/mpl.hook'
 import { getAllTokens, getPrice } from '@/helpers/jup.ag'
-import { getChainId } from '@/helpers/explorers'
-import { useSpl } from '@/hooks/spl.hook'
-import { shortenAddress } from '@/helpers/utils'
 
 export type MintStore = {
   mints: MintMetadata[]
@@ -143,78 +139,20 @@ export const useRandomMints = ({
  * @returns Mint
  */
 export const useMintByAddress = (mintAddress: string) => {
-  const mpl = useMpl()
-  const spl = useSpl()
   const mints = useMintStore(({ mints }) => mints)
   const upsertMints = useMintStore(({ upsertMints }) => upsertMints)
 
-  const fetchLocal = useCallback(
-    (mintAddress: string) => {
-      const mint = mints.find(({ address }) => address === mintAddress)
-      return mint
-    },
-    [mints],
-  )
-  const fetchMetaplex = useCallback(
-    async (mintAddress: string): Promise<MintMetadata | undefined> => {
-      try {
-        const {
-          mint: { decimals },
-          name,
-          symbol,
-          json,
-        } = await mpl
-          .nfts()
-          .findByMint({ mintAddress: new PublicKey(mintAddress) })
-        return {
-          address: mintAddress,
-          chainId: getChainId(),
-          decimals,
-          name,
-          symbol,
-          logoURI: json?.image || '',
-          tags: ['sft'],
-          extensions: {},
-        }
-      } catch (er) {
-        return undefined
-      }
-    },
-    [mpl],
-  )
-  const fetchSplProgram = useCallback(
-    async (mintAddress: string): Promise<MintMetadata | undefined> => {
-      try {
-        const { decimals } = await spl.account.mint.fetch(mintAddress)
-        return {
-          address: mintAddress,
-          chainId: getChainId(),
-          decimals: decimals,
-          name: shortenAddress(mintAddress),
-          symbol: mintAddress.substring(0, 6),
-          logoURI: '',
-          tags: ['spl'],
-          extensions: {},
-        }
-      } catch (er) {
-        return undefined
-      }
-    },
-    [spl],
-  )
   const fetch = useCallback(
     async (mintAddress: string) => {
-      // Local prefecth (jup.ag)
-      const offchainMint = fetchLocal(mintAddress)
-      if (offchainMint) return offchainMint
-      // Metaplex or SPL Program
-      const onchainMint =
-        (await fetchMetaplex(mintAddress)) ||
-        (await fetchSplProgram(mintAddress))
-      if (onchainMint) upsertMints([onchainMint])
-      return onchainMint
+      const mint = mints.find(({ address }) => address === mintAddress)
+      if (mint) return mint
+      const { data } = await axios.get(
+        `https://sage.sentre.io/metadata/${mintAddress}`,
+      )
+      if (data) upsertMints([data])
+      return data
     },
-    [fetchLocal, fetchMetaplex, fetchSplProgram, upsertMints],
+    [mints, upsertMints],
   )
 
   const { data: mint } = useSWR([mintAddress, 'mint'], ([mintAddress]) =>
