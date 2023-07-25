@@ -11,7 +11,7 @@ import { produce } from 'immer'
 import axios from 'axios'
 
 import { env } from '@/configs/env'
-import { getAllTokens, getPrice } from '@/helpers/jup.ag'
+import { getAllTokens, getPrice } from '@/helpers/stat'
 
 export type MintStore = {
   mints: MintMetadata[]

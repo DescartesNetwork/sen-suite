@@ -2,16 +2,9 @@ import axios from 'axios'
 
 export const getPrice = async (mintAddress: string) => {
   try {
-    const {
-      data: {
-        data: {
-          [mintAddress]: { price },
-        },
-      },
-    } = await axios.get<{
-      data: Record<string, { price: number }>
-      timeTake: number
-    }>(`https://price.jup.ag/v4/price?ids=${mintAddress}`)
+    const { data: price } = await axios.get<number>(
+      `https://sage.sentre.io/price/${mintAddress}`,
+    )
     return price
   } catch (er) {
     return 0
