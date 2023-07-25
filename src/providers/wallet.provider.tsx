@@ -119,10 +119,6 @@ export default function WalletProvider({ children }: { children: ReactNode }) {
 }
 
 /**
- * Hooks
- */
-
-/**
  * Get all my token accounts
  * @returns Token account list
  */
@@ -152,6 +148,7 @@ export const useTokenAccountByMintAddress = (mintAddress: string) => {
 
 /**
  * Get lamports balance
+ * @returns Lamports
  */
 export const useLamports = () => {
   const lamports = useWalletStore(({ lamports }) => lamports)

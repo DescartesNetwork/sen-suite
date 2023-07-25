@@ -45,18 +45,18 @@ export default function FarmTimeline({ farmAddress }: FarmTimelineProps) {
     <div className="flex flex-row items-center gap-2">
       <p className="text-sm opacity-60">Ended in</p>
       <span className="join">
-        <div className="badge badge-neutral join-item">
+        <div className="badge badge-accent join-item">
           {endDuration.days()}D
         </div>
-        <div className="badge badge-neutral join-item">
+        <div className="badge badge-accent join-item">
           {endDuration.hours()}h
         </div>
-        <div className="badge badge-neutral join-item">
+        <div className="badge badge-accent join-item">
           {endDuration.minutes()}m
         </div>
       </span>
       <div
-        className="radial-progress bg-neutral text-neutral-content border-2 border-neutral text-xs"
+        className="radial-progress bg-accent text-accent-content border-2 border-accent text-xs"
         style={
           {
             '--value': Math.round(((current - start) / (end - start)) * 100),

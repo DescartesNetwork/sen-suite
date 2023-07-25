@@ -2,6 +2,8 @@
 import { useMemo } from 'react'
 import BN from 'bn.js'
 
+import { Coins } from 'lucide-react'
+
 import { numeric } from '@/helpers/utils'
 import {
   precision,
@@ -56,15 +58,24 @@ export const useUserRewards = (
 
 export type UserRewardProps = {
   farmAddress: string
+  onClick?: () => void
 }
 
-export default function UserReward({ farmAddress }: UserRewardProps) {
+export default function UserReward({
+  farmAddress,
+  onClick = () => {},
+}: UserRewardProps) {
   const myRewards = useUserRewards(farmAddress)
   const reward = useTvl(myRewards)
   return (
     <div className="w-full flex flex-col gap-1">
       <p className="opacity-60">My Rewards</p>
-      <p className="font-bold">{numeric(reward).format('$0.[000000]')}</p>
+      <p className="font-bold">{numeric(reward).format('$0.[0000]')}</p>
+      {reward > 0 && (
+        <button className="btn btn-xs btn-primary" onClick={onClick}>
+          <Coins className="w-3 h-3" /> Harvest
+        </button>
+      )}
     </div>
   )
 }
