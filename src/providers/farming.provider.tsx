@@ -103,12 +103,7 @@ export const useFarmingStore = create<FarmingStore>()(
       nftBoosted: false,
       setNftBoosted: (nftBoosted: boolean) =>
         set({ nftBoosted }, false, 'setNftBoosted'),
-      unmount: () =>
-        set(
-          { farms: {}, debts: {}, rewards: {}, boostings: {} },
-          false,
-          'unmount',
-        ),
+      unmount: () => set({}, true, 'unmount'),
     }),
     {
       name: 'farming',

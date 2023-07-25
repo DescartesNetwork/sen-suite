@@ -10,7 +10,6 @@ import { usePushMessage } from '@/components/message/store'
 import { useSpl } from '@/hooks/spl.hook'
 import { isAddress } from '@/helpers/utils'
 import { solscan } from '@/helpers/explorers'
-import solConfig from '@/configs/sol.config'
 
 export default function NewToken() {
   const { push } = useRouter()
@@ -54,8 +53,7 @@ export default function NewToken() {
         'alert-success',
         'Successfully created a new token. Click here to view on explorer.',
         {
-          onClick: () =>
-            window.open(solscan(txId, solConfig.network), '_blank'),
+          onClick: () => window.open(solscan(txId), '_blank'),
         },
       )
       push(

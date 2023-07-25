@@ -24,7 +24,7 @@ export default function Unstake({ farmAddress }: UnstakeProps) {
   const pushMessage = usePushMessage()
   const { inputMint } = useFarmByAddress(farmAddress)
   const { shares, leverage } = useDebtByFarmAddress(farmAddress) || {}
-  const { decimals } = useMintByAddress(inputMint.toBase58()) || { decimals: 9 }
+  const { decimals } = useMintByAddress(inputMint.toBase58()) || { decimals: 0 }
 
   const max = useMemo(() => (!shares ? new BN(0) : shares), [shares])
   const ok = useMemo(() => {

@@ -21,7 +21,7 @@ export default function Stake({ farmAddress }: StakeProps) {
   const [amount, setAmount] = useState('')
   const pushMessage = usePushMessage()
   const { inputMint } = useFarmByAddress(farmAddress)
-  const { decimals } = useMintByAddress(inputMint.toBase58()) || { decimals: 9 }
+  const { decimals } = useMintByAddress(inputMint.toBase58()) || { decimals: 0 }
   const { amount: balance } =
     useTokenAccountByMintAddress(inputMint.toBase58()) || {}
 

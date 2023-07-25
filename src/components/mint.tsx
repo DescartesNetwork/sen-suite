@@ -9,6 +9,13 @@ import { shortenAddress, numeric } from '@/helpers/utils'
 import { undecimalize } from '@/helpers/decimals'
 import { useTvl } from '@/hooks/tvl.hook'
 
+/**
+ * Mint Logo
+ */
+export const useMintLogo = (mintAddress: string) => {
+  const { logoURI } = useMintByAddress(mintAddress) || { logoURI: '' }
+  return logoURI
+}
 export type MintLogoProps = {
   mintAddress: string
   className?: string
@@ -21,15 +28,12 @@ export function MintLogo({
   iconClassName = 'text-base-content',
   fallback = '',
 }: MintLogoProps) {
-  const { logoURI, name } = useMintByAddress(mintAddress) || {
-    logoURI: fallback,
-    name: '',
-  }
+  const logoURI = useMintLogo(mintAddress) || fallback
   return (
     <div className="avatar placeholder">
       <div className={className}>
         {logoURI ? (
-          <img src={logoURI} alt={name} />
+          <img src={logoURI} alt={logoURI} />
         ) : (
           <Diamond className={iconClassName} />
         )}
@@ -38,23 +42,37 @@ export function MintLogo({
   )
 }
 
+/**
+ * Mint Name
+ */
+export const useMintName = (mintAddress: string) => {
+  const { name } = useMintByAddress(mintAddress) || {
+    name: shortenAddress(mintAddress, 6),
+  }
+  return name
+}
 export type MintNameProps = {
   mintAddress: string
 }
 export function MintName({ mintAddress }: MintNameProps) {
-  const { name } = useMintByAddress(mintAddress) || {
-    name: shortenAddress(mintAddress, 6),
-  }
+  const name = useMintName(mintAddress)
   return <Fragment>{name}</Fragment>
 }
 
+/**
+ * Mint Symbol
+ */
+export const useMintSymbol = (mintAddress: string) => {
+  const { symbol } = useMintByAddress(mintAddress) || {
+    symbol: mintAddress.substring(0, 6),
+  }
+  return symbol
+}
 export type MintSymbolProps = {
   mintAddress: string
 }
 export function MintSymbol({ mintAddress }: MintSymbolProps) {
-  const { symbol } = useMintByAddress(mintAddress) || {
-    symbol: mintAddress.substring(0, 6),
-  }
+  const symbol = useMintSymbol(mintAddress)
   return <Fragment>{symbol}</Fragment>
 }
 
@@ -81,7 +99,7 @@ export function MintPrice({
  * Mint Amount
  */
 export const useMintAmount = (mintAddress: string, amount: BN) => {
-  const { decimals } = useMintByAddress(mintAddress) || { decimals: 9 }
+  const { decimals } = useMintByAddress(mintAddress) || { decimals: 0 }
   const value = useMemo(
     () => undecimalize(amount, decimals),
     [amount, decimals],

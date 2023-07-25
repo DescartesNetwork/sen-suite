@@ -13,6 +13,9 @@ import { produce } from 'immer'
 import { env } from '@/configs/env'
 import { useMpl } from '@/hooks/mpl.hook'
 import { getAllTokens, getPrice } from '@/helpers/jup.ag'
+import { getChainId } from '@/helpers/explorers'
+import { useSpl } from '@/hooks/spl.hook'
+import { shortenAddress } from '@/helpers/utils'
 
 export type MintStore = {
   mints: MintMetadata[]
@@ -55,6 +58,8 @@ export const useMintStore = create<MintStore>()(
               else Object.assign(prices[mintAddress], newPrices[mintAddress])
             })
           }),
+          false,
+          'upsertPrices',
         ),
       engine: undefined,
       setEngine: (engine?: Fuse<MintMetadata>) =>
@@ -138,32 +143,85 @@ export const useRandomMints = ({
  * @returns Mint
  */
 export const useMintByAddress = (mintAddress: string) => {
-  const mint = useMintStore(({ mints }) =>
-    mints.find(({ address }) => address === mintAddress),
-  )
-  return mint
-}
-
-export const useSftByAddress = (mintAddress: string) => {
   const mpl = useMpl()
-  const { data } = useSWR([mintAddress, 'sft'], async ([mintAddress]) => {
-    const data = await mpl
-      .nfts()
-      .findByMint({ mintAddress: new PublicKey(mintAddress) })
-    const onchainMint: MintMetadata = {
-      address: mintAddress,
-      chainId: 101,
-      decimals: data.mint.decimals,
-      name: data.name,
-      symbol: data.symbol,
-      logoURI: data.json?.image || '',
-      tags: ['sft'],
-      extensions: {},
-    }
-    return onchainMint
-  })
+  const spl = useSpl()
+  const mints = useMintStore(({ mints }) => mints)
+  const upsertMints = useMintStore(({ upsertMints }) => upsertMints)
 
-  return data
+  const fetchLocal = useCallback(
+    (mintAddress: string) => {
+      const mint = mints.find(({ address }) => address === mintAddress)
+      return mint
+    },
+    [mints],
+  )
+  const fetchMetaplex = useCallback(
+    async (mintAddress: string): Promise<MintMetadata | undefined> => {
+      try {
+        const {
+          mint: { decimals },
+          name,
+          symbol,
+          json,
+        } = await mpl
+          .nfts()
+          .findByMint({ mintAddress: new PublicKey(mintAddress) })
+        return {
+          address: mintAddress,
+          chainId: getChainId(),
+          decimals,
+          name,
+          symbol,
+          logoURI: json?.image || '',
+          tags: ['sft'],
+          extensions: {},
+        }
+      } catch (er) {
+        return undefined
+      }
+    },
+    [mpl],
+  )
+  const fetchSplProgram = useCallback(
+    async (mintAddress: string): Promise<MintMetadata | undefined> => {
+      try {
+        const { decimals } = await spl.account.mint.fetch(mintAddress)
+        return {
+          address: mintAddress,
+          chainId: getChainId(),
+          decimals: decimals,
+          name: shortenAddress(mintAddress),
+          symbol: mintAddress.substring(0, 6),
+          logoURI: '',
+          tags: ['spl'],
+          extensions: {},
+        }
+      } catch (er) {
+        return undefined
+      }
+    },
+    [spl],
+  )
+  const fetch = useCallback(
+    async (mintAddress: string) => {
+      // Local prefecth (jup.ag)
+      const offchainMint = fetchLocal(mintAddress)
+      if (offchainMint) return offchainMint
+      // Metaplex or SPL Program
+      const onchainMint =
+        (await fetchMetaplex(mintAddress)) ||
+        (await fetchSplProgram(mintAddress))
+      if (onchainMint) upsertMints([onchainMint])
+      return onchainMint
+    },
+    [fetchLocal, fetchMetaplex, fetchSplProgram, upsertMints],
+  )
+
+  const { data: mint } = useSWR([mintAddress, 'mint'], ([mintAddress]) =>
+    fetch(mintAddress),
+  )
+
+  return mint
 }
 
 /**

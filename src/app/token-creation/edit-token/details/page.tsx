@@ -13,12 +13,11 @@ import { useMint, useSpl } from '@/hooks/spl.hook'
 import { undecimalize } from '@/helpers/decimals'
 import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
-import solConfig from '@/configs/sol.config'
 
 export default function TokenDetails() {
   const { push } = useRouter()
   const searchParams = useSearchParams()
-  const mintAddress = searchParams.get('mintAddress')
+  const mintAddress = searchParams.get('mintAddress') || ''
   const [mintSymbol, setMintSymbol] = useState<string>()
   const [mintName, setMintName] = useState<string>()
   const [mintAuthority, setMintAuthority] = useState<string>()
@@ -31,8 +30,8 @@ export default function TokenDetails() {
   const spl = useSpl()
   const mpl = useMpl()
 
-  const nft = useNft(mintAddress || '')
-  const mint = useMint(mintAddress || '')
+  const nft = useNft(mintAddress)
+  const mint = useMint(mintAddress)
 
   const onUpdate = useCallback(async () => {
     try {
@@ -55,8 +54,7 @@ export default function TokenDetails() {
         'alert-success',
         'Successfully update new data to the token. Click here to view on explorer.',
         {
-          onClick: () =>
-            window.open(solscan(txId, solConfig.network), '_blank'),
+          onClick: () => window.open(solscan(txId), '_blank'),
         },
       )
     } catch (er: any) {
