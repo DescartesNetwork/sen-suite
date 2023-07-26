@@ -65,10 +65,10 @@ export default function FarmDetails() {
         <div className="col-span-6 @xl/left:col-span-3">
           <UserPosition farmAddress={farmAddress} />
         </div>
-        <div className="col-span-full @xl/left:col-span-6 card bg-base-200 p-4">
+        <div className="col-span-full @lg/left:col-span-6 card bg-base-200 p-4">
           <FarmReward farmAddress={farmAddress} />
         </div>
-        <div className="col-span-full @xl/left:col-span-6 card bg-base-200 p-4">
+        <div className="col-span-full @lg/left:col-span-6 card bg-base-200 p-4">
           <MyReward farmAddress={farmAddress} />
         </div>
       </div>
