@@ -39,7 +39,6 @@ const routes = [
     route: '/airdrop',
     name: 'Airdrop',
     Logo: Droplets,
-    disabled: true,
   },
   {
     route: '/launchpad',
