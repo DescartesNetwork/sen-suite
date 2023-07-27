@@ -46,7 +46,7 @@ export default function FarmTimeline({ farmAddress }: FarmTimelineProps) {
       <p className="text-sm opacity-60">Ended in</p>
       <span className="join">
         <div className="badge badge-accent join-item">
-          {endDuration.days()}D
+          {Math.floor(endDuration.asDays())}D
         </div>
         <div className="badge badge-accent join-item">
           {endDuration.hours()}h
