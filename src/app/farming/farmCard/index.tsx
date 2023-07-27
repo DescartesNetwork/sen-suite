@@ -22,7 +22,7 @@ export default function FarmCard({ farmAddress }: FarmingCardProps) {
 
   return (
     <div
-      className="card rounded-box shadow hover:shadow-lg p-4 bg-base-100 grid grid-cols-12 gap-2 cursor-pointer transition-all"
+      className="card rounded-box shadow hover:shadow-lg p-4 bg-base-100 grid grid-cols-12 gap-4 cursor-pointer transition-all"
       onClick={() => push(`/farming/farm-details?farmAddress=${farmAddress}`)}
     >
       <div className="col-span-full flex flex-row items-center gap-2">
@@ -32,7 +32,7 @@ export default function FarmCard({ farmAddress }: FarmingCardProps) {
         </p>
         <FarmStatus farmAddress={farmAddress} />
       </div>
-      <div className="col-span-full flex flex-row flex-wrap items-center gap-2 mb-8">
+      <div className="col-span-full flex flex-row flex-wrap items-center gap-2 mb-6">
         <div className="dropdown dropdown-hover">
           <label
             tabIndex={0}

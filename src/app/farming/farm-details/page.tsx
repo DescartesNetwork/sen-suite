@@ -2,7 +2,7 @@
 import { useMemo, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
-import { MintLogo, MintSymbol } from '@/components/mint'
+import { MintLogo, MintName, MintSymbol } from '@/components/mint'
 import FarmTimeline from '../farmCard/farmTimeline'
 import FarmStatus from '../farmCard/farmStatus'
 import FarmReward from './farmReward'
@@ -45,12 +45,17 @@ export default function FarmDetails() {
       <div className="col-span-full @2xl/main:col-span-7 @3xl/main:col-span-8 grid grid-cols-12 gap-4 @container/left">
         <div className="col-span-full flex flex-row items-center gap-2">
           <MintLogo mintAddress={inputMintAddress} />
-          <h4 className="flex-auto">
-            <MintSymbol mintAddress={inputMintAddress} />
-          </h4>
+          <span className="flex-auto flex flex-col gap-0">
+            <h4>
+              <MintSymbol mintAddress={inputMintAddress} />
+            </h4>
+            <p className="text-sm opacity-60 -mt-1">
+              <MintName mintAddress={inputMintAddress} />
+            </p>
+          </span>
           <FarmStatus farmAddress={farmAddress} />
         </div>
-        <div className="col-span-full -mt-2 mb-2">
+        <div className="col-span-full">
           <FarmTimeline farmAddress={farmAddress} />
         </div>
         <div className="col-span-6 @xl/left:col-span-3">
