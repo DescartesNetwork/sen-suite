@@ -1,13 +1,38 @@
 'use client'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import BN from 'bn.js'
 
-import { useAllFarms } from '@/providers/farming.provider'
+import { useAllDebts, useAllFarms } from '@/providers/farming.provider'
 import { numeric } from '@/helpers/utils'
 import { useTvl } from '@/hooks/tvl.hook'
+import { useUserRewards } from './farmCard/userReward'
+
+const PseudoRewardInfo = ({
+  farmAddress,
+  onChange,
+}: {
+  farmAddress: string
+  onChange: (value: Record<string, number>) => void
+}) => {
+  const rewards = useUserRewards(farmAddress)
+  const value = useTvl(rewards)
+
+  useEffect(() => {
+    onChange({ [farmAddress]: value })
+    return () => {
+      onChange({ [farmAddress]: 0 })
+    }
+  }, [farmAddress, value, onChange])
+
+  return null
+}
 
 export default function FarmingPanel() {
   const farms = useAllFarms()
+  const debts = useAllDebts()
+  const [rewards, setRewards] = useState<Record<string, number>>({})
+
+  // TVL
   const mintAddressToAmount = useMemo(
     () =>
       Object.values(farms)
@@ -29,6 +54,19 @@ export default function FarmingPanel() {
     [farms],
   )
   const tvl = useTvl(mintAddressToAmount)
+
+  // User rewards
+  const availableFarmAddresses = useMemo(
+    () =>
+      Object.keys(debts)
+        .filter((debtAddress) => {
+          const { debtAmount, pendingRewards } = debts[debtAddress]
+          return !debtAmount.isZero() || !pendingRewards.isZero()
+        })
+        .map((debtAddress) => debts[debtAddress].farm.toBase58()),
+    [debts],
+  )
+  const reward = Object.values(rewards).reduce((a, b) => a + b, 0)
 
   return (
     <div className="card w-full shadow-lg p-8 ring-1 ring-base-100 bg-gradient-to-br from-lime-200 to-teal-300 flex flex-row-reverse flex-wrap gap-x-2 gap-y-16 justify-center">
@@ -63,7 +101,16 @@ export default function FarmingPanel() {
           <span className="divider divider-horizontal m-0" />
           <div className="">
             <p className="text-sm">Your Rewards</p>
-            <h5>$2,053.38</h5>
+            <h5>{numeric(reward).format('$0,0.[00]')}</h5>
+            {availableFarmAddresses.map((availableFarmAddress) => (
+              <PseudoRewardInfo
+                key={availableFarmAddress}
+                farmAddress={availableFarmAddress}
+                onChange={(value) =>
+                  setRewards((prev) => Object.assign(prev, value))
+                }
+              />
+            ))}
           </div>
         </div>
       </div>

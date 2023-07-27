@@ -49,7 +49,7 @@ export default function FarmDetails() {
             <h4>
               <MintSymbol mintAddress={inputMintAddress} />
             </h4>
-            <p className="text-sm opacity-60 -mt-1">
+            <p className="text-sm opacity-60">
               <MintName mintAddress={inputMintAddress} />
             </p>
           </span>
