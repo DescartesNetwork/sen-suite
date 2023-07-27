@@ -9,7 +9,7 @@ import { ImagePlusIcon, X } from 'lucide-react'
 
 import { isAddress, numeric } from '@/helpers/utils'
 import { useMpl, useNft } from '@/hooks/mpl.hook'
-import { useMint, useSpl } from '@/hooks/spl.hook'
+import { useMints, useSpl } from '@/hooks/spl.hook'
 import { undecimalize } from '@/helpers/decimals'
 import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
@@ -31,7 +31,7 @@ export default function TokenDetails() {
   const mpl = useMpl()
 
   const nft = useNft(mintAddress)
-  const mint = useMint(mintAddress)
+  const [mint] = useMints([mintAddress])
 
   const onUpdate = useCallback(async () => {
     try {

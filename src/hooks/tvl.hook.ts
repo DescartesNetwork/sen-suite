@@ -1,8 +1,9 @@
 import BN from 'bn.js'
 import { useMemo } from 'react'
 
-import { useAllMints, usePrices } from '@/providers/mint.provider'
+import { usePrices } from '@/providers/mint.provider'
 import { undecimalize } from '@/helpers/decimals'
+import { useMints } from './spl.hook'
 
 export const useTvl = (
   mintAddressToAmount: Array<{
@@ -10,7 +11,6 @@ export const useTvl = (
     amount: BN
   }>,
 ) => {
-  const mints = useAllMints()
   const mintAddresses = useMemo(
     () => mintAddressToAmount.map(({ mintAddress }) => mintAddress),
     [mintAddressToAmount],
@@ -20,19 +20,14 @@ export const useTvl = (
     [mintAddressToAmount],
   )
   const prices = usePrices(mintAddresses)
-  const decimals = useMemo(
-    () =>
-      mintAddresses.map(
-        (mintAddress) =>
-          mints.find(({ address }) => address === mintAddress)?.decimals || 0,
-      ),
-    [mintAddresses, mints],
-  )
+  const mints = useMints(mintAddresses)
+  const decimals = useMemo(() => mints.map((mint) => mint?.decimals), [mints])
 
   const tvl = useMemo(() => {
     if (!prices) return 0
-    return amounts.reduce((a, b, i) => {
-      return a + Number(undecimalize(b, decimals[i])) * prices[i]
+    return decimals.reduce<number>((s, d, i) => {
+      if (d === undefined) return s
+      return s + Number(undecimalize(amounts[i], d)) * prices[i]
     }, 0)
   }, [amounts, prices, decimals])
 

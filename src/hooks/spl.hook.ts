@@ -30,16 +30,17 @@ export const useSpl = () => {
   return spl
 }
 
-export const useMint = (mintAddress: string) => {
+export const useMints = (mintAddresses: string[]) => {
   const spl = useSpl()
   const fetcher = useCallback(
-    async ([mintAddress]: [string]) => {
-      if (!isAddress(mintAddress)) return undefined
-      const data = await spl.account.mint.fetch(mintAddress)
+    async ([mintAddresses]: [string[]]) => {
+      for (const mintAddress of mintAddresses)
+        if (!isAddress(mintAddress)) return undefined
+      const data = await spl.account.mint.fetchMultiple(mintAddresses)
       return data
     },
     [spl],
   )
-  const { data } = useSWR([mintAddress, 'spl'], fetcher)
-  return data
+  const { data } = useSWR([mintAddresses, 'spl'], fetcher)
+  return data || []
 }

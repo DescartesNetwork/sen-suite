@@ -7,6 +7,7 @@ import FarmCard from '../farmCard'
 import { useAllDebts, useAllFarms } from '@/providers/farming.provider'
 import { useMemo } from 'react'
 import { useSortedFarmsByStartDate } from '@/hooks/farming.hook'
+import Empty from '@/components/empty'
 
 export default function MyFarms() {
   const { publicKey } = useWallet()
@@ -36,6 +37,11 @@ export default function MyFarms() {
           <FarmCard farmAddress={farmAddress} />
         </LazyLoad>
       ))}
+      {!sortedCreatedFarms.length && (
+        <div className="col-span-full justify-center">
+          <Empty />
+        </div>
+      )}
       <div className="col-span-full px-4 py-2 flex flex-row items-center gap-2">
         <h5 className="opacity-60">Staked Farms</h5>
         <div className="divider divider-horizontal m-0" />
@@ -46,6 +52,11 @@ export default function MyFarms() {
           <FarmCard farmAddress={farmAddress} />
         </LazyLoad>
       ))}
+      {!sortedStakedFarms.length && (
+        <div className="col-span-full justify-center">
+          <Empty />
+        </div>
+      )}
     </div>
   )
 }
