@@ -1,7 +1,8 @@
 'use client'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { redirect } from 'next/navigation'
 import BN from 'bn.js'
+import { Keypair } from '@solana/web3.js'
 
 import { MintLogo, MintSymbol } from '@/components/mint'
 import EditRowBulkSender from './row'
@@ -17,15 +18,115 @@ import { useTvl } from '@/hooks/tvl.hook'
 import { useMints } from '@/hooks/spl.hook'
 import { decimalize, undecimalize } from '@/helpers/decimals'
 
+enum RowStatus {
+  Good,
+  BadAddress,
+  Duplicated,
+  BadAmount,
+  ZeroAmount,
+}
+
 export default function EditBulkSender() {
   const [loading, setLoading] = useState(false)
   const [newAmount, setNewAmount] = useState('')
   const [newAddress, setNewAddress] = useState('')
   const { mintAddress } = useAirdropMintAddress()
-  const { data } = useAirdropData()
+  const { data, setData } = useAirdropData()
   const { decimalized, setDecimalized } = useAirdropDecimalized()
   const pushMessage = usePushMessage()
   const [mint] = useMints([mintAddress])
+
+  const decimals = useMemo(() => mint?.decimals, [mint?.decimals])
+  const amount = useMemo(
+    () =>
+      data.reduce(
+        (s, [_, a]) =>
+          decimals === undefined ? new BN(0) : decimalize(a, decimals).add(s),
+        new BN(0),
+      ),
+    [data, decimals],
+  )
+  const tvl = useTvl([{ mintAddress, amount }])
+
+  const statuses = useMemo(
+    () =>
+      data.map(([address, amount], i) => {
+        if (!isAddress(address)) return RowStatus.BadAddress
+        if (Number(amount) < 0) return RowStatus.BadAmount
+        if (Number(amount) === 0) return RowStatus.ZeroAmount
+        if (
+          data
+            .map(([next], j) => next === address && i !== j)
+            .reduce((a, b) => a || b, false)
+        )
+          return RowStatus.Duplicated
+        return RowStatus.Good
+      }),
+    [data],
+  )
+  const errors = useMemo(
+    () =>
+      statuses
+        .map((e) => e === RowStatus.BadAddress || e === RowStatus.BadAmount)
+        .map((e) => (e ? 1 : 0))
+        .reduce<number>((a, b) => a + b, 0),
+    [statuses],
+  )
+  const warnings = useMemo(
+    () =>
+      statuses
+        .map((e) => e === RowStatus.ZeroAmount || e === RowStatus.Duplicated)
+        .map((e) => (e ? 1 : 0))
+        .reduce<number>((a, b) => a + b, 0),
+    [statuses],
+  )
+
+  const onDelete = useCallback(
+    (i: number) => {
+      const newData = [...data]
+      newData.splice(i, 1)
+      return setData(newData)
+    },
+    [data, setData],
+  )
+
+  const onAdd = useCallback(() => {
+    const newData = [...data]
+    newData.push([newAddress, newAmount])
+    setData(newData)
+    setNewAddress('')
+    setNewAmount('')
+  }, [data, setData, newAddress, newAmount])
+
+  const onMergeDuplicates = useCallback(() => {
+    if (decimals === undefined)
+      return pushMessage('alert-error', 'Cannot read on-chain token data.')
+    const mapping: Record<string, string[]> = {}
+    data.forEach(([address, amount]) => {
+      if (!mapping[address]) mapping[address] = []
+      mapping[address].push(amount)
+    })
+    const newData = Object.keys(mapping).map((address) => [
+      address,
+      undecimalize(
+        mapping[address].reduce(
+          (a, b) => decimalize(b, decimals).add(a),
+          new BN(0),
+        ),
+        decimals,
+      ),
+    ])
+    return setData(newData)
+  }, [data, setData, decimals, pushMessage])
+
+  const onFilterZeros = useCallback(() => {
+    if (decimals === undefined)
+      return pushMessage('alert-error', 'Cannot read on-chain token data.')
+    const newData = data.filter(
+      ([_, amount]) => !decimalize(amount, decimals).isZero(),
+    )
+    return setData(newData)
+  }, [data, setData, decimals, pushMessage])
 
   const onSend = useCallback(() => {
     try {
@@ -37,14 +138,21 @@ export default function EditBulkSender() {
     }
   }, [pushMessage])
 
-  const amount = useMemo(() => {
-    if (mint?.decimals === undefined) return new BN(0)
-    return data.reduce(
-      (s, [_, a]) => decimalize(a, mint.decimals).add(s),
-      new BN(0),
-    )
-  }, [data, mint?.decimals])
-  const tvl = useTvl([{ mintAddress, amount }])
+  useEffect(() => {
+    if (data.length) return () => {}
+    const newData = []
+    const rand = () => Math.round(Math.random() * 10 ** 4) / 10 ** 4
+    while (newData.length < 48) {
+      let r = rand()
+      const kp = new Keypair()
+      newData.push([kp.publicKey.toBase58(), r.toString()])
+      while (r >= 0.95) {
+        r = rand()
+        newData.push([kp.publicKey.toBase58(), r.toString()])
+      }
+    }
+    setData(newData)
+  }, [data, setData])
 
   if (!isAddress(mintAddress)) return redirect('/airdrop/bulk-sender')
   return (
@@ -68,8 +176,18 @@ export default function EditBulkSender() {
         {data.map(([address, amount], i) => (
           <EditRowBulkSender
             key={`${address}-${i}`}
+            index={i.toString()}
             address={address}
             amount={amount}
+            onClick={() => onDelete(i)}
+            error={
+              statuses[i] === RowStatus.BadAddress ||
+              statuses[i] === RowStatus.BadAmount
+            }
+            warning={
+              statuses[i] === RowStatus.Duplicated ||
+              statuses[i] === RowStatus.ZeroAmount
+            }
           />
         ))}
         <EditRowBulkSender
@@ -77,6 +195,7 @@ export default function EditBulkSender() {
           onAddress={setNewAddress}
           amount={newAmount}
           onAmount={setNewAmount}
+          onClick={onAdd}
           toAdd
         />
       </div>
@@ -87,7 +206,30 @@ export default function EditBulkSender() {
             <div className="stat-value">
               {numeric(data.length).format('0,0')}
             </div>
-            <div className="stat-desc">Need to create 100k accounts</div>
+            {errors > 0 && (
+              <div className="stat-desc">
+                <span className="text-error font-bold">{`${errors} error(s)`}</span>
+              </div>
+            )}
+            {warnings > 0 && (
+              <div className="stat-desc">
+                <span className="text-warning font-bold">{`${warnings} warning(s)`}</span>
+              </div>
+            )}
+            {!errors && !warnings && (
+              <div className="stat-desc">
+                <span className="text-success font-bold">Optimized</span>
+              </div>
+            )}
+            <div className="stat-actions">
+              <button
+                className="btn btn-xs btn-accent"
+                onClick={onMergeDuplicates}
+                disabled={!statuses.find((e) => e === RowStatus.Duplicated)}
+              >
+                Merge duplicates
+              </button>
+            </div>
           </div>
           <div className="stat">
             <div className="stat-title">Total value</div>
@@ -99,6 +241,15 @@ export default function EditBulkSender() {
               <span className="ml-1">
                 <MintSymbol mintAddress={mintAddress} />
               </span>
+            </div>
+            <div className="stat-actions">
+              <button
+                className="btn btn-xs btn-accent"
+                onClick={onFilterZeros}
+                disabled={!statuses.find((e) => e === RowStatus.ZeroAmount)}
+              >
+                Remove zeros
+              </button>
             </div>
           </div>
         </div>

@@ -8,7 +8,9 @@ export const undecimalize = (n: BN, decimals: number): string => {
     let b = n.mod(_ten.pow(d)).toString()
     if (b === '0') return a.toString()
     while (b.length < decimals) b = '0' + b
-    return `${a.toString()}.${b}`
+    let c = `${a.toString()}.${b}`
+    while (c.endsWith('0')) c = c.substring(0, c.length - 2)
+    return c
   } catch (er) {
     return '0'
   }

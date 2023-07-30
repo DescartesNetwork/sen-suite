@@ -1,18 +1,22 @@
 'use client'
+import { useCallback } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 
 import { ChevronLeft } from 'lucide-react'
-import { useCallback } from 'react'
+
+import { useAirdropData } from '@/providers/airdrop.provider'
 
 export default function BulkSenderHeader() {
   const pathname = usePathname()
   const { push } = useRouter()
+  const { setData } = useAirdropData()
 
   const onBack = useCallback(() => {
     const hops = pathname.split('/')
     hops.pop()
+    setData([])
     return push(hops.join('/'))
-  }, [push, pathname])
+  }, [push, pathname, setData])
 
   return (
     <div className="flex flex-row gap-2 items-center">
