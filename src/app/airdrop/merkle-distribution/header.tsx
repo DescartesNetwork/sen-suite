@@ -4,7 +4,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { ChevronLeft } from 'lucide-react'
 import { useCallback } from 'react'
 
-export default function BulkSenderHeader() {
+export default function MerkleDistributionHeader() {
   const pathname = usePathname()
   const { push } = useRouter()
 
@@ -19,7 +19,7 @@ export default function BulkSenderHeader() {
       <button className="btn btn-sm btn-circle" onClick={onBack}>
         <ChevronLeft />
       </button>
-      <h5>Bulk Sender</h5>
+      <h5>Merkle Distribution</h5>
     </div>
   )
 }
