@@ -4,8 +4,7 @@ import type { Metadata } from 'next'
 import Navigation from './navigation'
 
 export const metadata: Metadata = {
-  title:
-    'Token Creation | Token2022 | Sentre: The suite for startups on Solana',
+  title: 'Token Creation | Sentre: The suite for startups on Solana',
 }
 
 export default function TokenCreationLayout({
