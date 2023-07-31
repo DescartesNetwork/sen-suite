@@ -131,12 +131,20 @@ export default function EditBulkSender() {
   const onSend = useCallback(() => {
     try {
       setLoading(true)
+      console.log(data)
+      if (decimals === undefined)
+        throw new Error('Cannot read on-chain token data.')
+      const ixs = data.map(([address, amount]) => [
+        address,
+        decimalize(amount, decimals),
+      ])
+      console.log(ixs)
     } catch (er: any) {
       pushMessage('alert-error', er.message)
     } finally {
       setLoading(false)
     }
-  }, [pushMessage])
+  }, [data, decimals, pushMessage])
 
   useEffect(() => {
     if (data.length) return () => {}

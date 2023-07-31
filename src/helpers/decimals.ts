@@ -9,7 +9,7 @@ export const undecimalize = (n: BN, decimals: number): string => {
     if (b === '0') return a.toString()
     while (b.length < decimals) b = '0' + b
     let c = `${a.toString()}.${b}`
-    while (c.endsWith('0')) c = c.substring(0, c.length - 2)
+    while (c.endsWith('0')) c = c.substring(0, c.length - 1)
     return c
   } catch (er) {
     return '0'
