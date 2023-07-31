@@ -15,7 +15,7 @@ export type EditRowBulkSenderProps = {
   warning?: boolean
 }
 
-export default function EditRowBulkSender({
+export default function SummaryRowBulkSender({
   index = '',
   amount = '',
   onAmount = () => {},

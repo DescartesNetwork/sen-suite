@@ -10,6 +10,8 @@ type Conf = {
   network: WalletAdapterNetwork
   balancerAddress: string
   senFarmingProgram: string
+  taxman: string
+  fee: number
 }
 
 const conf: Record<Env, Conf> = {
@@ -25,6 +27,8 @@ const conf: Record<Env, Conf> = {
     // network: WalletAdapterNetwork.Mainnet,
     // balancerAddress: 'D3BBjqUdCYuP18fNvvMbPAZ8DpcRi4io2EsYHQawJDag',
     // senFarmingProgram: 'E6Vc9wipgm8fMXHEYwgN7gYdDbyvpPBUiTNy67zPKuF4',
+    taxman: '9doo2HZQEmh2NgfT3Yx12M89aoBheycYqH1eaR5gKb3e',
+    fee: 10 ** 6, //lamports
   },
 
   /**
@@ -35,6 +39,8 @@ const conf: Record<Env, Conf> = {
     network: WalletAdapterNetwork.Mainnet,
     balancerAddress: 'D3BBjqUdCYuP18fNvvMbPAZ8DpcRi4io2EsYHQawJDag',
     senFarmingProgram: 'E6Vc9wipgm8fMXHEYwgN7gYdDbyvpPBUiTNy67zPKuF4',
+    taxman: '9doo2HZQEmh2NgfT3Yx12M89aoBheycYqH1eaR5gKb3e',
+    fee: 10 ** 6, //lamports
   },
 }
 

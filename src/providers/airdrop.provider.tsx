@@ -1,7 +1,7 @@
 'use client'
 import { Fragment, ReactNode } from 'react'
 import { create } from 'zustand'
-import { devtools } from 'zustand/middleware'
+import { createJSONStorage, devtools, persist } from 'zustand/middleware'
 
 import { env } from '@/configs/env'
 
@@ -12,7 +12,6 @@ export type AirdropStore = {
   setData: (data: string[][]) => void
   decimalized: boolean
   setDecimalized: (decimalized: boolean) => void
-  unmount: () => void
 }
 
 /**
@@ -20,17 +19,22 @@ export type AirdropStore = {
  */
 export const useAirdropStore = create<AirdropStore>()(
   devtools(
-    (set) => ({
-      mintAddress: 'SENBBKVCM7homnf5RX9zqpf1GFe935hnbU4uVzY1Y6M',
-      setMintAddress: (mintAddress) =>
-        set({ mintAddress }, false, 'setMintAddress'),
-      data: [],
-      setData: (data) => set({ data }, false, 'setData'),
-      decimalized: false,
-      setDecimalized: (decimalized) =>
-        set({ decimalized }, false, 'setDecimalized'),
-      unmount: () => set({ mintAddress: '' }, false, 'unmount'),
-    }),
+    persist(
+      (set) => ({
+        mintAddress: 'SENBBKVCM7homnf5RX9zqpf1GFe935hnbU4uVzY1Y6M',
+        setMintAddress: (mintAddress) =>
+          set({ mintAddress }, false, 'setMintAddress'),
+        data: [],
+        setData: (data) => set({ data }, false, 'setData'),
+        decimalized: false,
+        setDecimalized: (decimalized) =>
+          set({ decimalized }, false, 'setDecimalized'),
+      }),
+      {
+        name: 'airdrop',
+        storage: createJSONStorage(() => localStorage),
+      },
+    ),
     {
       name: 'airdrop',
       enabled: env === 'development',

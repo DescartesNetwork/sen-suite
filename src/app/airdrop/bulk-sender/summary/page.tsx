@@ -17,6 +17,8 @@ import { usePushMessage } from '@/components/message/store'
 import { useTvl } from '@/hooks/tvl.hook'
 import { useMints } from '@/hooks/spl.hook'
 import { decimalize, undecimalize } from '@/helpers/decimals'
+import { useSendBulk } from '@/hooks/airdrop.hook'
+import { solscan } from '@/helpers/explorers'
 
 enum RowStatus {
   Good,
@@ -26,7 +28,7 @@ enum RowStatus {
   ZeroAmount,
 }
 
-export default function EditBulkSender() {
+export default function SummaryBulkSender() {
   const [loading, setLoading] = useState(false)
   const [newAmount, setNewAmount] = useState('')
   const [newAddress, setNewAddress] = useState('')
@@ -35,6 +37,7 @@ export default function EditBulkSender() {
   const { decimalized, setDecimalized } = useAirdropDecimalized()
   const pushMessage = usePushMessage()
   const [mint] = useMints([mintAddress])
+  const sendBulk = useSendBulk(mintAddress)
 
   const decimals = useMemo(() => mint?.decimals, [mint?.decimals])
   const amount = useMemo(
@@ -100,7 +103,7 @@ export default function EditBulkSender() {
 
   const onMergeDuplicates = useCallback(() => {
     if (decimals === undefined)
-      return pushMessage('alert-error', 'Cannot read on-chain token data.')
+      return pushMessage('alert-error', 'Cannot read onchain data.')
     const mapping: Record<string, string[]> = {}
     data.forEach(([address, amount]) => {
       if (!mapping[address]) mapping[address] = []
@@ -121,35 +124,36 @@ export default function EditBulkSender() {
 
   const onFilterZeros = useCallback(() => {
     if (decimals === undefined)
-      return pushMessage('alert-error', 'Cannot read on-chain token data.')
+      return pushMessage('alert-error', 'Cannot read onchain data.')
     const newData = data.filter(
       ([_, amount]) => !decimalize(amount, decimals).isZero(),
     )
     return setData(newData)
   }, [data, setData, decimals, pushMessage])
 
-  const onSend = useCallback(() => {
+  const onSend = useCallback(async () => {
     try {
       setLoading(true)
-      if (decimals === undefined)
-        throw new Error('Cannot read on-chain token data.')
-      const ixs = data.map(([address, amount]) => [
-        address,
-        decimalize(amount, decimals),
-      ])
-      console.log(ixs)
+      const txId = await sendBulk(data)
+      pushMessage(
+        'alert-success',
+        'Successfully send bulks. Click here to view on explorer.',
+        {
+          onClick: () => window.open(solscan(txId), '_blank'),
+        },
+      )
     } catch (er: any) {
       pushMessage('alert-error', er.message)
     } finally {
       setLoading(false)
     }
-  }, [data, decimals, pushMessage])
+  }, [data, pushMessage, sendBulk])
 
   useEffect(() => {
     if (data.length) return () => {}
     const newData = []
     const rand = () => Math.round(Math.random() * 10 ** 4) / 10 ** 4
-    while (newData.length < 48) {
+    while (newData.length < 8) {
       let r = rand()
       const kp = new Keypair()
       newData.push([kp.publicKey.toBase58(), r.toString()])
@@ -183,7 +187,7 @@ export default function EditBulkSender() {
         {data.map(([address, amount], i) => (
           <EditRowBulkSender
             key={`${address}-${i}`}
-            index={i.toString()}
+            index={String(i + 1)}
             address={address}
             amount={amount}
             onClick={() => onDelete(i)}
