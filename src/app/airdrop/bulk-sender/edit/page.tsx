@@ -131,7 +131,6 @@ export default function EditBulkSender() {
   const onSend = useCallback(() => {
     try {
       setLoading(true)
-      console.log(data)
       if (decimals === undefined)
         throw new Error('Cannot read on-chain token data.')
       const ixs = data.map(([address, amount]) => [
