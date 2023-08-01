@@ -5,7 +5,7 @@ export type ThumbnailProps = {
   pageId: string
 }
 
-export default async function Thumbnail({ pageId }: ThumbnailProps) {
+export default function Thumbnail({ pageId }: ThumbnailProps) {
   return (
     <Link
       className="card bg-base-100 rounded-box shadow hover:shadow-xl"

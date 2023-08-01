@@ -4,4 +4,8 @@
 
 .notion {
   font-family: 'DM Sans', sans-serif;
+
+  & > * {
+    @apply p-0;
+  }
 }
