@@ -12,7 +12,7 @@ import {
 import { ChevronDown } from 'lucide-react'
 
 import { useSwapStore } from '@/hooks/swap.hook'
-import { useTokenAccountByMintAddress } from '@/providers/wallet.provider'
+import { useTokenAccountByMintAddress } from '@/providers/tokenAccount.provider'
 
 export default function Bid() {
   const [open, setOpen] = useState(false)

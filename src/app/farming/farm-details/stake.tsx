@@ -10,7 +10,7 @@ import { useStake } from '@/hooks/farming.hook'
 import { useFarmByAddress } from '@/providers/farming.provider'
 import { useMintByAddress } from '@/providers/mint.provider'
 import { decimalize, undecimalize } from '@/helpers/decimals'
-import { useTokenAccountByMintAddress } from '@/providers/wallet.provider'
+import { useTokenAccountByMintAddress } from '@/providers/tokenAccount.provider'
 
 export type StakeProps = {
   farmAddress: string

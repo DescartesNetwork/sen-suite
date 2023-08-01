@@ -1,5 +1,5 @@
 'use client'
-import { Fragment, ReactNode, useEffect, useMemo } from 'react'
+import { Fragment, ReactNode, useCallback, useEffect, useMemo } from 'react'
 import {
   PhantomWalletAdapter,
   TorusWalletAdapter,
@@ -56,17 +56,24 @@ function LamportsProvider({ children }: { children: ReactNode }) {
   const { publicKey } = useWallet()
   const { connection } = useConnection()
 
-  useEffect(() => {
+  const fetch = useCallback(async () => {
+    if (!publicKey) return setLamports(0)
+    const lamports = await connection.getBalance(publicKey)
+    return setLamports(lamports)
+  }, [publicKey, connection, setLamports])
+
+  const watch = useCallback(() => {
     if (!publicKey) return () => {}
-    ;(async () => {
-      const lamports = await connection.getBalance(publicKey)
-      return setLamports(lamports)
-    })()
     const watchId = connection.onAccountChange(publicKey, ({ lamports }) =>
       setLamports(lamports),
     )
     return () => connection.removeAccountChangeListener(watchId)
   }, [publicKey, connection, setLamports])
+
+  useEffect(() => {
+    fetch()
+    return watch()
+  }, [fetch, watch])
 
   return <Fragment>{children}</Fragment>
 }
