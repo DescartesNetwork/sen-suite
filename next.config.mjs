@@ -17,7 +17,7 @@ const nextConfig = {
   images: { unoptimized: true },
   webpack(config, {}) {
     // Fix Solana warning of "Module not found"
-    // https://github.com/pinojs/pino/issues/688#issuecomment-637763276
+    // https://nextjs.org/docs/messages/module-not-found
     config.externals = config.externals.concat([
       'pino-pretty',
       'lokijs',

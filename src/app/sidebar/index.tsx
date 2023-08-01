@@ -7,6 +7,7 @@ import {
   BookPlus,
   CandlestickChart,
   Droplets,
+  GraduationCap,
   Landmark,
   Leaf,
   Rocket,
@@ -19,6 +20,11 @@ import Panel from './panel'
 import './index.scss'
 
 const routes = [
+  {
+    route: '/academy',
+    name: 'Academy',
+    Logo: GraduationCap,
+  },
   {
     route: '/swap',
     name: 'Swap',
