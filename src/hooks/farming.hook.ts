@@ -8,6 +8,7 @@ import { ComputeBudgetProgram, PublicKey, Transaction } from '@solana/web3.js'
 import { useAnchorProvider } from '@/hooks/spl.hook'
 import solConfig from '@/configs/sol.config'
 import {
+  useAllBoostings,
   useAllFarms,
   useDebtByFarmAddress,
   useFarmByAddress,
@@ -101,24 +102,52 @@ export const useFarmEmissionRate = (farmAddress: string) => {
 /**
  * Sort farm in the time order
  * @param farmAddresses Farm addresses
+ * @param active Manually turn on/off the hook
  * @returns Sorted farm addresses
  */
-export const useSortedFarmsByStartDate = (farmAddresses: string[]) => {
+export const useSortedFarmsByStartDate = (
+  farmAddresses: string[],
+  active = true,
+) => {
   const farms = useAllFarms()
 
-  const sortedFarmAddresses = useMemo(
-    () =>
-      farmAddresses.sort((a, b) => {
-        const { startDate: ad } = farms[a]
-        const { startDate: bd } = farms[b]
-        if (ad.eq(bd)) return 0
-        else if (ad.lt(bd)) return 1
-        else return -1
-      }),
-    [farms, farmAddresses],
-  )
+  const sortedFarmAddresses = useMemo(() => {
+    if (!active) return farmAddresses
+    return farmAddresses.sort((a, b) => {
+      const { startDate: ad } = farms[a]
+      const { startDate: bd } = farms[b]
+      if (ad.eq(bd)) return 0
+      else if (ad.lt(bd)) return 1
+      else return -1
+    })
+  }, [farms, farmAddresses, active])
 
   return sortedFarmAddresses
+}
+
+/**
+ * Filter boosted farms
+ * @param farmAddresses Farm addresses
+ * @param active Manually turn on/off the hook
+ * @returns Filtered farm addresses
+ */
+export const useFilterFarmsByNFTBoosted = (
+  farmAddresses: string[],
+  active = true,
+) => {
+  const rewards = useAllBoostings()
+
+  const filteredFarmAddresses = useMemo(() => {
+    if (!active) return farmAddresses
+    const boostedFarmAddress = Object.values(rewards).map(({ farm }) =>
+      farm.toBase58(),
+    )
+    return farmAddresses.filter((farmAddress) =>
+      boostedFarmAddress.includes(farmAddress),
+    )
+  }, [rewards, farmAddresses, active])
+
+  return filteredFarmAddresses
 }
 
 /**
