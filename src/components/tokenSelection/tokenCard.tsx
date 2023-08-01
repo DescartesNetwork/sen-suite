@@ -12,7 +12,7 @@ import Clipboard from '@/components/clipboard'
 import NewWindow from '@/components/newWindow'
 
 import { solscan } from '@/helpers/explorers'
-import { useTokenAccountByMintAddress } from '@/providers/wallet.provider'
+import { useTokenAccountByMintAddress } from '@/providers/tokenAccount.provider'
 
 export type TokenCardProps = {
   mintAddress: string

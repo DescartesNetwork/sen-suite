@@ -5,11 +5,11 @@ import { PublicKey } from '@solana/web3.js'
 import { useWallet } from '@solana/wallet-adapter-react'
 
 import { MintLogo } from '@/components/mint'
-import { ImagePlusIcon, X } from 'lucide-react'
+import { ImagePlus, X } from 'lucide-react'
 
 import { isAddress, numeric } from '@/helpers/utils'
-import { useMpl, useNft } from '@/hooks/mpl.hook'
-import { useMints, useSpl } from '@/hooks/spl.hook'
+import { useMpl, useNfts } from '@/hooks/mpl.hook'
+import { useSpl, useMints } from '@/hooks/spl.hook'
 import { undecimalize } from '@/helpers/decimals'
 import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
@@ -30,7 +30,7 @@ export default function TokenDetails() {
   const spl = useSpl()
   const mpl = useMpl()
 
-  const nft = useNft(mintAddress)
+  const [nft] = useNfts([mintAddress])
   const [mint] = useMints([mintAddress])
 
   const onUpdate = useCallback(async () => {
@@ -92,7 +92,7 @@ export default function TokenDetails() {
             <X className="w-4 h-4" />
           </button>
           <label className="btn btn-circle btn-sm btn-secondary absolute -right-1 -bottom-1">
-            <ImagePlusIcon className="w-4 h-4" />
+            <ImagePlus className="w-4 h-4" />
             <input
               type="file"
               name="token-logo"

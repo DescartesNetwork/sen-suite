@@ -5,8 +5,8 @@ import { useInterval } from 'react-use'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { ComputeBudgetProgram, PublicKey, Transaction } from '@solana/web3.js'
 
-import { useAnchorProvider } from '@/hooks/spl.hook'
 import solConfig from '@/configs/sol.config'
+import { useAnchorProvider } from '@/providers/wallet.provider'
 import {
   useAllBoostings,
   useAllFarms,

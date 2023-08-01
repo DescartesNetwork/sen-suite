@@ -10,6 +10,10 @@ import useSWR from 'swr'
 
 import { isAddress } from '@/helpers/utils'
 
+/**
+ * Create an MPL instanse
+ * @returns MPL instance
+ */
 export const useMpl = () => {
   const { connection } = useConnection()
   const { wallet } = useWallet()
@@ -22,18 +26,26 @@ export const useMpl = () => {
   return mpl
 }
 
-export const useNft = (mintAddress: string) => {
+/**
+ * Get NFT data
+ * @param mintAddresses Mint addresses
+ * @returns NFT data
+ */
+export const useNfts = (mintAddresses: string[]) => {
   const mpl = useMpl()
   const fetcher = useCallback(
-    async ([mintAddress]: [string]) => {
-      if (!isAddress(mintAddress)) return undefined
-      const data = await mpl
-        .nfts()
-        .findByMint({ mintAddress: new PublicKey(mintAddress) })
+    async ([mintAddresses]: [string[]]) => {
+      const data = await Promise.all(
+        mintAddresses.map((mintAddress) =>
+          isAddress(mintAddress)
+            ? mpl.nfts().findByMint({ mintAddress: new PublicKey(mintAddress) })
+            : undefined,
+        ),
+      )
       return data
     },
     [mpl],
   )
-  const { data } = useSWR([mintAddress, 'mpl'], fetcher)
-  return data
+  const { data } = useSWR([mintAddresses, 'mpl'], fetcher)
+  return data || []
 }

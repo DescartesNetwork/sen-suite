@@ -1,30 +1,27 @@
 'use client'
-import { Fragment, ReactNode, useEffect } from 'react'
+import { Fragment, ReactNode, useEffect, useMemo } from 'react'
 import {
   PhantomWalletAdapter,
   TorusWalletAdapter,
 } from '@solana/wallet-adapter-wallets'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
-import { splTokenProgram } from '@coral-xyz/spl-token'
 import {
+  AnchorWallet,
   ConnectionProvider,
   WalletProvider as SolanaWalletProvider,
+  useAnchorWallet,
   useConnection,
   useWallet,
 } from '@solana/wallet-adapter-react'
-import { useAsync } from 'react-use'
+import { SystemProgram } from '@solana/web3.js'
+import { AnchorProvider } from '@coral-xyz/anchor'
 
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui'
 
 import { env } from '@/configs/env'
 import solConfig from '@/configs/sol.config'
-import { useSpl } from '@/hooks/spl.hook'
-import { isAddress } from '@/helpers/utils'
 
-export type TokenAccount = Awaited<
-  ReturnType<ReturnType<typeof splTokenProgram>['account']['account']['fetch']>
->
 const SUPPORTED_WALLETS = [new PhantomWalletAdapter(), new TorusWalletAdapter()]
 
 /**
@@ -32,8 +29,6 @@ const SUPPORTED_WALLETS = [new PhantomWalletAdapter(), new TorusWalletAdapter()]
  */
 
 export type WalletStore = {
-  tokenAccounts: Record<string, TokenAccount>
-  setTokenAccounts: (tokenAccounts: Record<string, TokenAccount>) => void
   lamports: number
   setLamports: (lamports: number) => void
 }
@@ -41,9 +36,6 @@ export type WalletStore = {
 export const useWalletStore = create<WalletStore>()(
   devtools(
     (set) => ({
-      tokenAccounts: {},
-      setTokenAccounts: (tokenAccounts: Record<string, TokenAccount>) =>
-        set({ tokenAccounts }, false, 'setTokenAccounts'),
       lamports: 0,
       setLamports: (lamports: number) =>
         set({ lamports }, false, 'setLamports'),
@@ -79,39 +71,12 @@ function LamportsProvider({ children }: { children: ReactNode }) {
   return <Fragment>{children}</Fragment>
 }
 
-function TokenAccountProvider({ children }: { children: ReactNode }) {
-  const setTokenAccounts = useWalletStore(
-    ({ setTokenAccounts }) => setTokenAccounts,
-  )
-  const spl = useSpl()
-  const { publicKey } = useWallet()
-
-  useAsync(async () => {
-    if (!publicKey) return []
-    const data = await spl.account.account.all([
-      {
-        memcmp: { offset: 32, bytes: publicKey.toBase58() },
-      },
-    ])
-    const tokenAccounts: Record<string, TokenAccount> = {}
-    data.forEach(
-      ({ publicKey, account }) =>
-        (tokenAccounts[publicKey.toBase58()] = account),
-    )
-    return setTokenAccounts(tokenAccounts)
-  }, [publicKey, spl, setTokenAccounts])
-
-  return <Fragment>{children}</Fragment>
-}
-
 export default function WalletProvider({ children }: { children: ReactNode }) {
   return (
     <ConnectionProvider endpoint={solConfig.rpc}>
       <SolanaWalletProvider wallets={SUPPORTED_WALLETS} autoConnect>
         <WalletModalProvider>
-          <LamportsProvider>
-            <TokenAccountProvider>{children}</TokenAccountProvider>
-          </LamportsProvider>
+          <LamportsProvider>{children}</LamportsProvider>
         </WalletModalProvider>
       </SolanaWalletProvider>
     </ConnectionProvider>
@@ -119,31 +84,21 @@ export default function WalletProvider({ children }: { children: ReactNode }) {
 }
 
 /**
- * Get all my token accounts
- * @returns Token account list
+ * Create an Anchor provider
+ * @returns Anchor provider
  */
-export const useAllTokenAccounts = () => {
-  const tokenAccounts = useWalletStore(({ tokenAccounts }) => tokenAccounts)
-  return tokenAccounts
-}
-
-/**
- * Get all my token account by mint address
- * @param mintAddress Mint address
- * @returns Token account
- */
-export const useTokenAccountByMintAddress = (mintAddress: string) => {
-  const tokenAccount = useWalletStore(({ tokenAccounts }) => {
-    const tokenAccountAddress = Object.keys(tokenAccounts).find(
-      (tokenAccountAddress) => {
-        const { mint } = tokenAccounts[tokenAccountAddress]
-        return mint.toBase58() === mintAddress
-      },
-    )
-    if (!isAddress(tokenAccountAddress)) return undefined
-    return tokenAccounts[tokenAccountAddress]
-  })
-  return tokenAccount
+export const useAnchorProvider = () => {
+  const wallet = useAnchorWallet()
+  const { connection } = useConnection()
+  const provider = useMemo(() => {
+    const _wallet: AnchorWallet = wallet || {
+      publicKey: SystemProgram.programId,
+      signTransaction: async (tx) => tx,
+      signAllTransactions: async (txs) => txs,
+    }
+    return new AnchorProvider(connection, _wallet, { commitment: 'confirmed' })
+  }, [connection, wallet])
+  return provider
 }
 
 /**

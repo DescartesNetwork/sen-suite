@@ -4,6 +4,7 @@ import type { Metadata } from 'next'
 import UiProvider from '@/providers/ui.provider'
 import WalletProvider from '@/providers/wallet.provider'
 import MintProvider from '@/providers/mint.provider'
+import TokenAccountProvider from '@/providers/tokenAccount.provider'
 
 import Message from '@/components/message'
 import Sidebar from '@/app/sidebar'
@@ -42,17 +43,19 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       </head>
       <body>
         <UiProvider>
-          <MintProvider>
-            <WalletProvider>
-              <main className="flex w-full">
-                <Sidebar />
-                <div className="flex flex-col flex-auto pr-2 py-2">
-                  {children}
-                </div>
-              </main>
-              <Message />
-            </WalletProvider>
-          </MintProvider>
+          <WalletProvider>
+            <MintProvider>
+              <TokenAccountProvider>
+                <main className="flex w-full">
+                  <Sidebar />
+                  <div className="flex flex-col flex-auto pr-2 py-2">
+                    {children}
+                  </div>
+                </main>
+                <Message />
+              </TokenAccountProvider>
+            </MintProvider>
+          </WalletProvider>
         </UiProvider>
       </body>
     </html>

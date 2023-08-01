@@ -1,11 +1,8 @@
 'use client'
-import { Fragment, ReactNode, useCallback, useEffect, useMemo } from 'react'
+import { Fragment, ReactNode, useCallback, useEffect } from 'react'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import Fuse from 'fuse.js'
-import { keccak_256 } from '@noble/hashes/sha3'
-import BN from 'bn.js'
-import { v4 as uuid } from 'uuid'
 import useSWR from 'swr'
 import { produce } from 'immer'
 import axios from 'axios'
@@ -14,8 +11,8 @@ import { env } from '@/configs/env'
 import { getAllTokens, getPrice } from '@/helpers/stat'
 
 export type MintStore = {
-  mints: MintMetadata[]
-  upsertMints: (newMints: MintMetadata[]) => void
+  metadata: MintMetadata[]
+  upsertMetadata: (newMints: MintMetadata[]) => void
   prices: Record<string, number>
   upsertPrices: (newPrices: Record<string, number>) => void
   engine?: Fuse<MintMetadata>
@@ -29,16 +26,16 @@ export type MintStore = {
 export const useMintStore = create<MintStore>()(
   devtools(
     (set) => ({
-      mints: [],
-      upsertMints: (newMints: MintMetadata[]) =>
+      metadata: [],
+      upsertMetadata: (newMints: MintMetadata[]) =>
         set(
-          produce<MintStore>(({ mints }) => {
+          produce<MintStore>(({ metadata }) => {
             newMints.forEach((newMint) => {
-              const index = mints.findIndex(
+              const index = metadata.findIndex(
                 ({ address }) => address === newMint.address,
               )
-              if (index >= 0) Object.assign(mints[index], newMint)
-              else mints.push(newMint)
+              if (index >= 0) Object.assign(metadata[index], newMint)
+              else metadata.push(newMint)
             })
           }),
           false,
@@ -60,7 +57,8 @@ export const useMintStore = create<MintStore>()(
       engine: undefined,
       setEngine: (engine?: Fuse<MintMetadata>) =>
         set({ engine }, false, 'setEngine'),
-      unmount: () => set({ mints: [], engine: undefined }, false, 'unmount'),
+      unmount: () =>
+        set({ metadata: [], prices: {}, engine: undefined }, false, 'unmount'),
     }),
     {
       name: 'mint',
@@ -74,7 +72,7 @@ export const useMintStore = create<MintStore>()(
  */
 
 export default function MintProvider({ children }: { children: ReactNode }) {
-  const upsertMints = useMintStore(({ upsertMints }) => upsertMints)
+  const upsertMetadata = useMintStore(({ upsertMetadata }) => upsertMetadata)
   const setEngine = useMintStore(({ setEngine }) => setEngine)
   const unmount = useMintStore(({ unmount }) => unmount)
 
@@ -84,9 +82,9 @@ export default function MintProvider({ children }: { children: ReactNode }) {
       includeScore: true,
       keys: ['name', 'symbol'],
     })
-    upsertMints(data)
+    upsertMetadata(data)
     setEngine(fuse)
-  }, [upsertMints, setEngine])
+  }, [upsertMetadata, setEngine])
 
   useEffect(() => {
     fetch()
@@ -100,37 +98,9 @@ export default function MintProvider({ children }: { children: ReactNode }) {
  * Get all mints
  * @returns Mint list
  */
-export const useAllMints = () => {
-  const mints = useMintStore(({ mints }) => mints)
-  return mints
-}
-
-/**
- * Get random mints
- * @param opt.seed Deterministic randomization
- * @param opt.limit How large the list is
- * @returns Mint list
- */
-export const useRandomMints = ({
-  seed,
-  limit = 50,
-}: {
-  seed?: string
-  limit?: number
-} = {}): MintMetadata[] => {
-  const mints = useMintStore(({ mints }) => mints)
-  const _seed = useMemo(
-    () => keccak_256(new TextEncoder().encode(seed || uuid())),
-    [seed],
-  )
-  const _limit = useMemo(() => Math.max(1, limit), [limit])
-  const randTokens = useMemo(() => {
-    if (mints.length < _limit) return mints
-    const red = BN.red(new BN(mints.length))
-    const index = new BN(_seed).toRed(red).toNumber()
-    return mints.slice(index, index + _limit)
-  }, [mints, _limit, _seed])
-  return randTokens
+export const useAllMintMetadata = () => {
+  const metadata = useMintStore(({ metadata }) => metadata)
+  return metadata
 }
 
 /**
@@ -139,20 +109,20 @@ export const useRandomMints = ({
  * @returns Mint
  */
 export const useMintByAddress = (mintAddress: string) => {
-  const mints = useMintStore(({ mints }) => mints)
-  const upsertMints = useMintStore(({ upsertMints }) => upsertMints)
+  const metadata = useMintStore(({ metadata }) => metadata)
+  const upsertMetadata = useMintStore(({ upsertMetadata }) => upsertMetadata)
 
   const fetch = useCallback(
     async (mintAddress: string) => {
-      const mint = mints.find(({ address }) => address === mintAddress)
+      const mint = metadata.find(({ address }) => address === mintAddress)
       if (mint) return mint
       const { data } = await axios.get(
         `https://sage.sentre.io/metadata/${mintAddress}`,
       )
-      if (data) upsertMints([data])
+      if (data) upsertMetadata([data])
       return data
     },
-    [mints, upsertMints],
+    [metadata, upsertMetadata],
   )
 
   const { data: mint } = useSWR([mintAddress, 'mint'], ([mintAddress]) =>

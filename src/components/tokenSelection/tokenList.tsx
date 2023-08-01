@@ -1,13 +1,44 @@
 'use client'
 import { Fragment, useMemo, useState } from 'react'
+import { keccak_256 } from '@noble/hashes/sha3'
+import BN from 'bn.js'
+import { v4 as uuid } from 'uuid'
 
 import LazyLoad from 'react-lazy-load'
 import { Dices, History, SearchCheck } from 'lucide-react'
 import Empty from '@/components/empty'
 import TokenCard from './tokenCard'
 
-import { useAllMints, useRandomMints } from '@/providers/mint.provider'
-import { useAllTokenAccounts } from '@/providers/wallet.provider'
+import { useAllMintMetadata } from '@/providers/mint.provider'
+import { useAllTokenAccounts } from '@/providers/tokenAccount.provider'
+
+/**
+ * Get random mints' metadata
+ * @param opt.seed Deterministic randomization
+ * @param opt.limit How large the list is
+ * @returns Mint list
+ */
+export const useRandomMintMetadata = ({
+  seed = '',
+  limit = 50,
+}: {
+  seed?: string
+  limit?: number
+} = {}): MintMetadata[] => {
+  const metadata = useAllMintMetadata()
+  const _seed = useMemo(
+    () => keccak_256(new TextEncoder().encode(seed || uuid())),
+    [seed],
+  )
+  const _limit = useMemo(() => Math.max(1, limit), [limit])
+  const randTokens = useMemo(() => {
+    if (metadata.length < _limit) return metadata
+    const red = BN.red(new BN(metadata.length))
+    const index = new BN(_seed).toRed(red).toNumber()
+    return metadata.slice(index, index + _limit)
+  }, [metadata, _limit, _seed])
+  return randTokens
+}
 
 export type TokenListProps = {
   mints?: MintMetadata[]
@@ -21,9 +52,9 @@ export default function TokenList({
   onChange = () => {},
 }: TokenListProps) {
   const [hidden, setHidden] = useState(true)
-  const all = useAllMints()
+  const all = useAllMintMetadata()
   const myAccounts = useAllTokenAccounts()
-  const randMints = useRandomMints()
+  const randMints = useRandomMintMetadata()
 
   const mintAddresses = useMemo(() => all.map(({ address }) => address), [all])
   const recentMintAddresses = useMemo(() => {
