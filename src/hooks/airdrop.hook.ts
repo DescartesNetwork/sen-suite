@@ -76,7 +76,6 @@ export const useSendBulk = (mintAddress: string) => {
         lastValidBlockHeight,
         feePayer: publicKey,
       }).add(...ixs)
-      console.log('tx size:', tx.serialize({ verifySignatures: false }).length)
       const signature = await sendTransaction(tx, connection, {
         minContextSlot,
       })

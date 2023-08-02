@@ -4,8 +4,6 @@ import Link from 'next/link'
 
 import { ArrowLeft, Settings } from 'lucide-react'
 
-// { mintAddress: 'SENBBKVCM7homnf5RX9zqpf1GFe935hnbU4uVzY1Y6M' }
-
 export default function TokenDetailsLayout({
   children,
 }: {

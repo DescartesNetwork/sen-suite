@@ -7,7 +7,7 @@ export default async function Post({
 }: {
   params: { postId: string }
 }) {
-  const data = await getPage(postId)
+  const map = await getPage(postId)
 
-  return <PostView data={data} />
+  return <PostView map={map} />
 }

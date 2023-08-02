@@ -20,6 +20,6 @@ export const getDatabase = async () => {
 
 export const getPage = async (pageId: string) => {
   const notion = new NotionAPI()
-  const data = await notion.getPage(pageId)
-  return data
+  const map = await notion.getPage(pageId)
+  return map
 }
