@@ -1,12 +1,12 @@
 'use client'
-import { ExtendedRecordMap, PageBlock } from 'notion-types'
+import { Block, ExtendedRecordMap } from 'notion-types'
 import dayjs from 'dayjs'
 import { getPageProperty } from 'notion-utils'
 
 import { Calendar, Tag } from 'lucide-react'
 
 export type PostCollectionProps = {
-  block: PageBlock
+  block: Block
   map: ExtendedRecordMap
 }
 

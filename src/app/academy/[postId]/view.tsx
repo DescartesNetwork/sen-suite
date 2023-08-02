@@ -1,5 +1,4 @@
 'use client'
-import { Fragment } from 'react'
 import { ExtendedRecordMap, PageBlock } from 'notion-types'
 
 import { NotionRenderer } from 'react-notion-x'
@@ -8,11 +7,6 @@ import PostHeader from './header'
 import PostCollection from './collection'
 
 import { useTheme } from '@/providers/ui.provider'
-
-export function Nothing(props: any) {
-  console.log(props)
-  return <Fragment />
-}
 
 export default function PostView({ map }: { map: ExtendedRecordMap }) {
   const { theme } = useTheme()

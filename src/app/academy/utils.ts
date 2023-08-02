@@ -15,7 +15,7 @@ export const getDatabase = async () => {
       },
     ],
   })
-  return results.map(({ id }) => id)
+  return { pageIds: results.map(({ id }) => id), database: results }
 }
 
 export const getPage = async (pageId: string) => {

@@ -10,7 +10,7 @@ export default function PostLayout({ children }: { children: ReactNode }) {
 }
 
 export async function generateStaticParams() {
-  const pageIds = await getDatabase()
+  const { pageIds } = await getDatabase()
   const params = pageIds.map((pageId) => ({ postId: pageId }))
   return params
 }
