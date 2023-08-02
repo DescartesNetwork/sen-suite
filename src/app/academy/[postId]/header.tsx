@@ -28,7 +28,7 @@ export default function PostHeader({ block, map }: PostHeaderProps) {
       <button className="btn btn-sm btn-ghost rounded-full" onClick={onBack}>
         <ArrowLeft className="w-4 h-4" /> Back
       </button>
-      <p className="font-bold flex-auto text-end truncate">{title}</p>
+      <p className="text-sm font-bold flex-auto text-end truncate">{title}</p>
     </div>
   )
 }

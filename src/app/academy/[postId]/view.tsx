@@ -3,13 +3,14 @@ import { Fragment } from 'react'
 import { ExtendedRecordMap, PageBlock } from 'notion-types'
 
 import { NotionRenderer } from 'react-notion-x'
-import { Collection } from 'react-notion-x/build/third-party/collection'
 import { Tweet } from 'react-tweet'
 import PostHeader from './header'
+import PostCollection from './collection'
 
 import { useTheme } from '@/providers/ui.provider'
 
-export function Nothing() {
+export function Nothing(props: any) {
+  console.log(props)
   return <Fragment />
 }
 
@@ -22,12 +23,14 @@ export default function PostView({ map }: { map: ExtendedRecordMap }) {
         recordMap={map}
         fullPage={true}
         darkMode={theme === 'dark'}
-        className="col-span-full overflow-clip rounded-3xl"
+        className="col-span-full overflow-clip rounded-3xl ring-1 ring-base-200"
         components={{
           Header: ({ block }: { block: PageBlock }) => (
             <PostHeader block={block} map={map} />
           ),
-          Collection,
+          Collection: ({ block }: { block: PageBlock }) => (
+            <PostCollection block={block} map={map} />
+          ),
           Tweet,
         }}
       />

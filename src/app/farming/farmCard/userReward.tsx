@@ -44,6 +44,7 @@ export const useUserRewards = (
     debtAmount,
     pendingRewards,
   ])
+  console.log('to debug:', moTotalRewards.toString())
   const rewards = useMemo<Array<{ mintAddress: string; amount: BN }>>(() => {
     if (!moRewards) return []
     return rewardAccounts.map(({ rewardMint, totalRewards }) => ({
