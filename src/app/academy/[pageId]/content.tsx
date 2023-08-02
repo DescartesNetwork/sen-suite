@@ -3,12 +3,12 @@ import { ExtendedRecordMap, PageBlock } from 'notion-types'
 
 import { NotionRenderer } from 'react-notion-x'
 import { Tweet } from 'react-tweet'
-import PostHeader from './header'
-import PostCollection from './collection'
+import PageHeader from './header'
+import PageCollection from './collection'
 
 import { useTheme } from '@/providers/ui.provider'
 
-export default function PostView({ map }: { map: ExtendedRecordMap }) {
+export default function PageContent({ map }: { map: ExtendedRecordMap }) {
   const { theme } = useTheme()
 
   return (
@@ -20,10 +20,10 @@ export default function PostView({ map }: { map: ExtendedRecordMap }) {
         className="col-span-full overflow-clip rounded-3xl ring-1 ring-base-200"
         components={{
           Header: ({ block }: { block: PageBlock }) => (
-            <PostHeader block={block} map={map} />
+            <PageHeader block={block} map={map} />
           ),
           Collection: ({ block }: { block: PageBlock }) => (
-            <PostCollection block={block} map={map} />
+            <PageCollection block={block} map={map} />
           ),
           Tweet,
         }}

@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 import { getDatabase } from '../utils'
 
-export default function PostLayout({ children }: { children: ReactNode }) {
+export default function PageLayout({ children }: { children: ReactNode }) {
   return (
     <div className="grid grid-cols-12 gap-2">
       <div className="col-span-full">{children}</div>
@@ -11,6 +11,6 @@ export default function PostLayout({ children }: { children: ReactNode }) {
 
 export async function generateStaticParams() {
   const { pageIds } = await getDatabase()
-  const params = pageIds.map((pageId) => ({ postId: pageId }))
+  const params = pageIds.map((pageId) => ({ pageId }))
   return params
 }

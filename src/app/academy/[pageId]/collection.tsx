@@ -5,12 +5,12 @@ import { getPageProperty } from 'notion-utils'
 
 import { Calendar, Tag } from 'lucide-react'
 
-export type PostCollectionProps = {
+export type PageCollectionProps = {
   block: Block
   map: ExtendedRecordMap
 }
 
-export default function PostCollection({ block, map }: PostCollectionProps) {
+export default function PageCollection({ block, map }: PageCollectionProps) {
   const updatedAt = getPageProperty<number>('Date', block, map) || Date.now()
   const tags = getPageProperty<string[]>('Tags', block, map) || []
 

@@ -6,12 +6,12 @@ import { getBlockTitle } from 'notion-utils'
 
 import { ArrowLeft } from 'lucide-react'
 
-export type PostHeaderProps = {
+export type PageHeaderProps = {
   block: PageBlock
   map: ExtendedRecordMap
 }
 
-export default function PostHeader({ block, map }: PostHeaderProps) {
+export default function PageHeader({ block, map }: PageHeaderProps) {
   const pathname = usePathname()
   const { push } = useRouter()
 
