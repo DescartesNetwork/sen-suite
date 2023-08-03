@@ -1,15 +1,25 @@
+import { BrandLogo } from '@/components/brand'
+import Banner from './banner'
 import Thumbnail from './thumbnail'
 
 import { getDatabase } from './utils'
 
 export default async function Academy() {
-  const { pageIds } = await getDatabase()
+  const {
+    pageIds: [bannerPageId, ...pageIds],
+  } = await getDatabase()
 
   return (
     <div className="flex flex-row justify-center rounded-3xl bg-swap-light dark:bg-swap-dark bg-center bg-cover transition-all p-4">
       <div className="w-full max-w-[1240px]">
         <div className="grid grid-cols-12 gap-4 @container">
-          <h2 className="col-span-full text-center py-8">Sentre Academy</h2>
+          <div className="col-span-full py-8 flex flex-col @xl:flex-row gap-2 items-center justify-center">
+            <BrandLogo size={56} />
+            <h3 className="text-center">Sentre Academy</h3>
+          </div>
+          <div className="col-span-full">
+            <Banner pageId={bannerPageId} />
+          </div>
           {pageIds.map((pageId) => (
             <div
               key={pageId}

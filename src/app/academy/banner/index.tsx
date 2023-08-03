@@ -7,24 +7,24 @@ export type ThumbnailProps = {
   pageId: string
 }
 
-export default async function Thumbnail({ pageId }: ThumbnailProps) {
+export default async function Banner({ pageId }: ThumbnailProps) {
   const { updatedAt, tags, title, description, thumbnail } =
     await getPageMetadata(pageId)
 
   return (
     <Link
-      className="card h-full bg-base-100 rounded-box shadow hover:shadow-lg transition-all"
+      className="card h-full bg-base-100 rounded-box shadow hover:shadow-lg transition-all grid grid-cols-12 gap-4 overflow-clip @container"
       href={`/academy/${pageId}`}
     >
-      <figure>
-        <img src={thumbnail} alt={pageId} />
-      </figure>
-      <div className="card-body">
+      <div className="col-span-full @2xl:col-span-6">
+        <img className="h-full object-cover" src={thumbnail} alt={pageId} />
+      </div>
+      <div className="col-span-full @2xl:col-span-6 flex flex-col gap-4 p-8">
         <p className="text-sm opacity-60">
           {dayjs(updatedAt).format('MMM DD, YYYY')}
         </p>
         <h2 className="card-title">{title}</h2>
-        <p className="opacity-60 pb-4">{description}</p>
+        <p className="opacity-60 flex-auto">{description}</p>
         {tags.map((tag) => (
           <div key={tag} className="badge badge-outline">
             {tag}
