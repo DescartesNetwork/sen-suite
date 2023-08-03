@@ -24,7 +24,6 @@
     "@coral-xyz/spl-token": "^0.28.1-beta.1",
     "@mdx-js/react": "^2.3.0",
     "@metaplex-foundation/js": "^0.18.3",
-    "@notionhq/client": "^2.2.9",
     "@sentre/farming": "^2.0.2",
     "@sentre/utility": "^1.0.3",
     "@solana/wallet-adapter-base": "^0.9.22",

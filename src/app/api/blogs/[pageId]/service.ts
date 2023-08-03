@@ -1,39 +1,22 @@
 import 'server-only'
-import { Client } from '@notionhq/client'
 import { NotionAPI } from 'notion-client'
 import { getBlockTitle, getPageProperty } from 'notion-utils'
 import { v4 as uuid } from 'uuid'
+import { ExtendedRecordMap } from 'notion-types'
 
-export const getDatabase = async () => {
-  const notion = new Client({
-    auth: process.env.NOTION_TOKEN,
-  })
-  const { results } = await notion.databases.query({
-    database_id: '677f0fd492ed4884af268db31eebb0ec',
-    sorts: [
-      {
-        property: 'Date',
-        direction: 'descending',
-      },
-    ],
-  })
-  return { pageIds: results.map(({ id }) => id), database: results }
-}
-
-export const getPage = async (pageId: string) => {
+export const getPageMap = async (pageId: string) => {
   const notion = new NotionAPI()
   const map = await notion.getPage(pageId)
   return map
 }
 
-export const getPageMetadata = async (pageId: string) => {
-  const map = await getPage(pageId)
+export const getPageMetadata = async (map: ExtendedRecordMap) => {
   const [{ value: block }] = Object.values(map.block)
 
   const updatedAt = getPageProperty<number>('Date', block, map) || Date.now()
   const tags = getPageProperty<string[]>('Tags', block, map) || []
   const title = getBlockTitle(block, map)
-  const description = getPageProperty<string[]>('Description', block, map) || []
+  const description = getPageProperty<string>('Description', block, map) || ''
   const filename =
     getPageProperty<string>('Files & media', block, map) || uuid()
   const thumbnail =

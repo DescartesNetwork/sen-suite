@@ -1,12 +1,12 @@
 import { BrandLogo } from '@/components/brand'
 import Banner from './banner'
 import Thumbnail from './thumbnail'
-
-import { getDatabase } from './utils'
+import { getDatabase } from '@/app/api/blogs/service'
 
 export default async function Academy() {
   const {
     pageIds: [bannerPageId, ...pageIds],
+    metadata,
   } = await getDatabase()
 
   return (
@@ -15,17 +15,19 @@ export default async function Academy() {
         <div className="grid grid-cols-12 gap-4 @container">
           <div className="col-span-full py-8 flex flex-col @xl:flex-row gap-2 items-center justify-center">
             <BrandLogo size={56} />
-            <h3 className="text-center">Sentre Academy</h3>
+            <h3 className="text-center">
+              <span className="font-thin">Sentre</span> Academy
+            </h3>
           </div>
           <div className="col-span-full">
-            <Banner pageId={bannerPageId} />
+            <Banner pageId={bannerPageId} metadata={metadata[bannerPageId]} />
           </div>
           {pageIds.map((pageId) => (
             <div
               key={pageId}
               className="col-span-full @xl:col-span-6 @4xl:col-span-4"
             >
-              <Thumbnail pageId={pageId} />
+              <Thumbnail pageId={pageId} metadata={metadata[pageId]} />
             </div>
           ))}
         </div>

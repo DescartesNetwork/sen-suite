@@ -1,13 +1,13 @@
 import PageContent from './content'
 
-import { getPage } from '../utils'
+import { getPageMap } from '@/app/api/blogs/[pageId]/service'
 
 export default async function Page({
   params: { pageId },
 }: {
   params: { pageId: string }
 }) {
-  const map = await getPage(pageId)
+  const map = await getPageMap(pageId)
 
   return <PageContent map={map} />
 }

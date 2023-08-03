@@ -14,3 +14,13 @@ type MintMetadata = {
     coingeckoId?: string
   }
 }
+
+type PageMetadata = {
+  title: string
+  updatedAt: number
+  tags: string[]
+  description: string
+  thumbnail: string
+}
+
+type PageMap = Record<string, PageMetadata>

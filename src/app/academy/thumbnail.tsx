@@ -1,16 +1,15 @@
 import Link from 'next/link'
 import dayjs from 'dayjs'
 
-import { getPageMetadata } from '../utils'
-
 export type ThumbnailProps = {
   pageId: string
+  metadata: PageMetadata
 }
 
-export default async function Thumbnail({ pageId }: ThumbnailProps) {
-  const { updatedAt, tags, title, description, thumbnail } =
-    await getPageMetadata(pageId)
-
+export default async function Thumbnail({
+  pageId,
+  metadata: { updatedAt, tags, title, description, thumbnail },
+}: ThumbnailProps) {
   return (
     <Link
       className="card h-full bg-base-100 rounded-box shadow hover:shadow-lg transition-all"

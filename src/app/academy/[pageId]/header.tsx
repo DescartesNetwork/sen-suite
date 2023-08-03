@@ -28,7 +28,9 @@ export default function PageHeader({ block, map }: PageHeaderProps) {
       <button className="btn btn-sm btn-ghost rounded-full" onClick={onBack}>
         <ArrowLeft className="w-4 h-4" /> Back
       </button>
-      <p className="text-sm font-bold flex-auto text-end truncate">{title}</p>
+      <p className="text-sm font-bold flex-auto text-end truncate opacity-60">
+        {title}
+      </p>
     </div>
   )
 }

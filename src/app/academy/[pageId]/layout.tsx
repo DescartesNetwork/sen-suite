@@ -1,5 +1,6 @@
 import { ReactNode } from 'react'
-import { getDatabase } from '../utils'
+
+import { getDatabase } from '@/app/api/blogs/service'
 
 export default function PageLayout({ children }: { children: ReactNode }) {
   return (
