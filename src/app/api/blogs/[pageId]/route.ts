@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getPageMap } from './service'
+import { getDatabase, getPageMap } from './service'
 
 export async function GET(
   _req: NextRequest,
@@ -8,4 +8,10 @@ export async function GET(
   const map = await getPageMap(pageId)
 
   return NextResponse.json(map)
+}
+
+export async function generateStaticParams() {
+  const { pageIds } = await getDatabase()
+  const params = pageIds.map((pageId) => ({ pageId }))
+  return params
 }
