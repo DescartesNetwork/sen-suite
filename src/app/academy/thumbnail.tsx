@@ -1,3 +1,4 @@
+'use client'
 import Link from 'next/link'
 import dayjs from 'dayjs'
 
@@ -6,7 +7,7 @@ export type ThumbnailProps = {
   metadata: PageMetadata
 }
 
-export default async function Thumbnail({
+export default function Thumbnail({
   pageId,
   metadata: { updatedAt, tags, title, description, thumbnail },
 }: ThumbnailProps) {

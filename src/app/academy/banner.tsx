@@ -1,15 +1,16 @@
+'use client'
 import Link from 'next/link'
 import dayjs from 'dayjs'
 
-export type ThumbnailProps = {
+export type BannerProps = {
   pageId: string
   metadata: PageMetadata
 }
 
-export default async function Banner({
+export default function Banner({
   pageId,
   metadata: { updatedAt, tags, title, description, thumbnail },
-}: ThumbnailProps) {
+}: BannerProps) {
   return (
     <Link
       className="card h-full bg-base-100 rounded-box shadow hover:shadow-lg transition-all grid grid-cols-12 gap-4 overflow-clip @container"
