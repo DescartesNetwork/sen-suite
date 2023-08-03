@@ -1,4 +1,5 @@
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base'
+import { DEFAULT_SEN_UTILITY_PROGRAM_ID } from '@sentre/utility'
 
 import { Env, env } from './env'
 
@@ -10,6 +11,7 @@ type Conf = {
   network: WalletAdapterNetwork
   balancerAddress: string
   senFarmingProgram: string
+  utilityProgram: string
   taxman: string
   fee: number
 }
@@ -23,10 +25,12 @@ const conf: Record<Env, Conf> = {
     // network: WalletAdapterNetwork.Devnet,
     // balancerAddress: '6SRa2Kc3G4wTG319G4Se6yrRWeS1A1Hj79BC3o7X9v6T',
     // senFarmingProgram: '6LaxnmWdYUAJvBJ4a1R8rrsvCRtaY7b43zKiNAU2k3Nx',
+    //utilityProgram: 'AKTU61s8NJ8zJATQiceREdhXbedRnKrd1BVgnCuxmD2F',,
     rpc: 'https://radial-billowing-gas.solana-mainnet.quiknode.pro/9d19e80c758eb5bd7b86d912e9345aa153db6a8f/',
     network: WalletAdapterNetwork.Mainnet,
     balancerAddress: 'D3BBjqUdCYuP18fNvvMbPAZ8DpcRi4io2EsYHQawJDag',
     senFarmingProgram: 'E6Vc9wipgm8fMXHEYwgN7gYdDbyvpPBUiTNy67zPKuF4',
+    utilityProgram: DEFAULT_SEN_UTILITY_PROGRAM_ID,
     taxman: '9doo2HZQEmh2NgfT3Yx12M89aoBheycYqH1eaR5gKb3e',
     fee: 10 ** 6, //lamports
   },
@@ -39,6 +43,7 @@ const conf: Record<Env, Conf> = {
     network: WalletAdapterNetwork.Mainnet,
     balancerAddress: 'D3BBjqUdCYuP18fNvvMbPAZ8DpcRi4io2EsYHQawJDag',
     senFarmingProgram: 'E6Vc9wipgm8fMXHEYwgN7gYdDbyvpPBUiTNy67zPKuF4',
+    utilityProgram: DEFAULT_SEN_UTILITY_PROGRAM_ID,
     taxman: '9doo2HZQEmh2NgfT3Yx12M89aoBheycYqH1eaR5gKb3e',
     fee: 10 ** 6, //lamports
   },

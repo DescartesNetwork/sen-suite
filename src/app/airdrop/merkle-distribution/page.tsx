@@ -1,7 +1,8 @@
+'use client'
+import { useMyReceivedList } from '@/providers/merkle.provider'
+
 export default function MerkleDistribution() {
-  return (
-    <div className="grid grid-cols-12 gap-2">
-      <div className="col-span-12">TBD</div>
-    </div>
-  )
+  const { receivedList } = useMyReceivedList()
+  console.log('distributors: ', receivedList)
+  return <div className="flex">Dashboard</div>
 }
