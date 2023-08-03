@@ -11,14 +11,13 @@ import { produce } from 'immer'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 
-import { env } from '@/configs/env'
 import {
-  Distribute,
   useMerkleMetadata,
   useParseMerkleType,
-  useSenUtility,
-} from '@/hooks/merkle.hook'
+  useUtility,
+} from '@/hooks/airdrop.hook'
 import { useWallet } from '@solana/wallet-adapter-react'
+import { env } from '@/configs/env'
 
 export type MerkleStore = {
   distributors: Record<string, DistributorData>
@@ -57,7 +56,7 @@ export const useMerkleStore = create<MerkleStore>()(
 )
 
 export default function MerkleProvider({ children }: { children: ReactNode }) {
-  const utility = useSenUtility()
+  const utility = useUtility()
   const { publicKey } = useWallet()
   const upsertReceipt = useMerkleStore(({ upsertReceipt }) => upsertReceipt)
   const upsertDistributor = useMerkleStore(
@@ -65,20 +64,21 @@ export default function MerkleProvider({ children }: { children: ReactNode }) {
   )
 
   const fetchDistributors = useCallback(async () => {
+    if (!utility) return
     const { account } = utility.program
     const distributors = await account.distributor.all()
     for (const { publicKey, account: distributorData } of distributors) {
       const address = publicKey.toBase58()
       upsertDistributor(address, distributorData)
     }
-  }, [upsertDistributor, utility.program])
+  }, [upsertDistributor, utility])
 
   useEffect(() => {
     fetchDistributors()
   }, [fetchDistributors])
 
   const fetchReceipts = useCallback(async () => {
-    if (!publicKey) return
+    if (!publicKey || !utility) return
     const { account } = utility.program
     const receipts = await account.receipt.all([
       { memcmp: { offset: 8, bytes: publicKey.toBase58() } },
@@ -87,7 +87,7 @@ export default function MerkleProvider({ children }: { children: ReactNode }) {
       const address = publicKey.toBase58()
       upsertReceipt(address, receiptData)
     }
-  }, [publicKey, upsertReceipt, utility.program])
+  }, [publicKey, upsertReceipt, utility])
 
   useEffect(() => {
     fetchReceipts()
@@ -114,23 +114,32 @@ export const useMyReceivedList = () => {
   const getMetadata = useMerkleMetadata()
   const parseMerkleType = useParseMerkleType()
   const { publicKey } = useWallet()
+  const utility = useUtility()
 
   const { value, error, loading } = useAsync(async () => {
-    if (!publicKey) return []
+    if (!publicKey || !utility) return {}
     const walletAddress = publicKey.toBase58()
-    const result: Leaf[][] = []
+    const result: Record<string, Array<Leaf & { receiptAddress: string }>> = {}
 
     for (const address in distributors) {
       const metadata = await getMetadata(address)
       const root = MerkleDistributor.fromBuffer(Buffer.from(metadata.data))
       const merkleType = parseMerkleType(root)
-      const types = [Distribute.Airdrop, Distribute.Vesting]
-      if (!merkleType || !types.includes(merkleType)) continue
+      if (!merkleType) continue
 
-      const recipient = root.receipients.filter(
-        ({ authority }) => authority.toBase58() === walletAddress,
+      const recipients = await Promise.all(
+        root.receipients
+          .filter(({ authority }) => authority.toBase58() === walletAddress)
+          .map(async (recipient) => {
+            const receiptAddress = await utility.deriveReceiptAddress(
+              recipient.salt,
+              address,
+            )
+            return { ...recipient, receiptAddress }
+          }),
       )
-      if (recipient.length) result.push(recipient)
+
+      if (recipients.length) result[address] = recipients
     }
 
     return result
