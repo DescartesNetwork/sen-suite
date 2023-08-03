@@ -2,7 +2,7 @@ import { BrandLogo } from '@/components/brand'
 import Banner from './banner'
 import Thumbnail from './thumbnail'
 
-import { getDatabase } from '@/app/api/blogs/service'
+import { getDatabase } from '@/app/api/blogs/[pageId]/service'
 
 export default async function Academy() {
   const {
