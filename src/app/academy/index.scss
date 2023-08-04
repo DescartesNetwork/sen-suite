@@ -21,4 +21,12 @@
     height: unset !important;
     width: unset !important;
   }
+
+  .notion-equation {
+    @apply overflow-visible;
+
+    & > span {
+      @apply flex flex-row justify-center;
+    }
+  }
 }

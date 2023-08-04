@@ -1,8 +1,13 @@
-import 'server-only'
 import { NotionAPI } from 'notion-client'
 import { getBlockTitle, getPageImageUrls, getPageProperty } from 'notion-utils'
-import { v4 as uuid } from 'uuid'
 import { ExtendedRecordMap } from 'notion-types'
+
+const normalizeImageUrl = (url: string, id: string) => {
+  if (!/^https?:\/\//.test(url)) url = `https://www.notion.so${url}`
+  return `https://www.notion.so/image/${encodeURIComponent(
+    url,
+  )}?table=block&id=${id}&cache=v2`
+}
 
 export const getDatabase = async () => {
   const api = new NotionAPI()
@@ -36,13 +41,16 @@ export const getDatabase = async () => {
     const [thumbnail] = getPageImageUrls(map, {
       mapImageUrl: (url, { id }) => {
         if (id !== pageId) return null
-        if (!/^https?:\/\//.test(url)) url = `https://www.notion.so${url}`
-        return `https://www.notion.so/image/${encodeURIComponent(
-          url,
-        )}?table=block&id=${id}&cache=v2`
+        return normalizeImageUrl(url, id)
       },
     })
-    metadata[pageId] = { title, updatedAt, tags, description, thumbnail }
+    metadata[pageId] = {
+      title,
+      updatedAt,
+      tags,
+      description,
+      thumbnail: thumbnail || 'https://placehold.co/600x400',
+    }
   })
 
   return { pageIds, metadata }
@@ -54,27 +62,39 @@ export const getPageMap = async (pageId: string) => {
   return map
 }
 
-export const getPageMetadata = async (map: ExtendedRecordMap) => {
+export const getRecommends = async (pageId: string) => {
+  const { pageIds, metadata } = await getDatabase()
+  const { tags } = metadata[pageId]
+
+  const recommends: string[] = []
+  for (const tag of tags) {
+    for (const _pageId of pageIds) {
+      const { tags: _tags } = metadata[_pageId]
+      if (_pageId === pageId) continue
+      if (recommends.includes(_pageId)) continue
+      if (_tags.includes(tag)) recommends.push(_pageId)
+      if (recommends.length >= 4) return recommends
+    }
+  }
+  return recommends
+}
+
+export const getPageMetadata = (map: ExtendedRecordMap) => {
   const [{ value: block }] = Object.values(map.block)
 
   const updatedAt = getPageProperty<number>('Date', block, map) || Date.now()
   const tags = getPageProperty<string[]>('Tags', block, map) || []
   const title = getBlockTitle(block, map)
   const description = getPageProperty<string>('Description', block, map) || ''
-  const filename =
-    getPageProperty<string>('Files & media', block, map) || uuid()
-  const thumbnail =
-    Object.values(map.signed_urls)[1] ||
-    Object.values(map.signed_urls).find((url) =>
-      url.includes(`/${filename}`),
-    ) ||
-    'https://placehold.co/600x400'
+  const [thumbnail] = getPageImageUrls(map, {
+    mapImageUrl: (url, { id }) => normalizeImageUrl(url, id),
+  })
 
   return {
     updatedAt,
     tags,
     title,
     description,
-    thumbnail,
+    thumbnail: thumbnail || 'https://placehold.co/600x400',
   }
 }

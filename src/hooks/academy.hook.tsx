@@ -1,5 +1,8 @@
 import { useSearchParams } from 'next/navigation'
 import { useMemo } from 'react'
+import useSWR from 'swr'
+import { ExtendedRecordMap } from 'notion-types'
+import axios from 'axios'
 
 const LIMIT = 9
 
@@ -31,4 +34,25 @@ export const useAcademyPaging = (pageIds: string[], metadata: PageMap) => {
     bannerId,
     thumbnailIds,
   }
+}
+
+export const useAcademyPage = (
+  pageId: string,
+): {
+  data: Partial<{
+    map: ExtendedRecordMap
+    recommends: string[]
+    metadata: PageMetadata
+  }>
+  error: Error | undefined
+} => {
+  const { data, error } = useSWR<
+    { map: ExtendedRecordMap; recommends: string[] },
+    Error
+  >([pageId, 'blog'], async ([pageId]: [string]) => {
+    const { data } = await axios.get(`/api/blogs/${pageId}`)
+    return data
+  })
+
+  return { data: data || {}, error }
 }
