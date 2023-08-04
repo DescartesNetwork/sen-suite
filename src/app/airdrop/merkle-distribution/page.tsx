@@ -1,13 +1,13 @@
 'use client'
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { Leaf } from '@sentre/utility'
 
-import AirdropRow from './airdropRow'
-import { ChevronDown } from 'lucide-react'
+import AirdropList from './airdropList'
 
 import { useDistributors, useMyReceivedList } from '@/providers/merkle.provider'
 import { useReceiptStatus } from '@/hooks/airdrop.hook'
 import { ReceiptState } from './statusTag'
+import VestingList from './vestingList'
 
 export type ReceiveItem = {
   endedAt: number
@@ -19,16 +19,13 @@ export type ReceiveItem = {
 }
 
 export const FORMAT_DATE = 'DD/MM/YYYY, h:mm A'
-const DEFAULT_AMOUNT = 4
 
 export default function MerkleDistribution() {
-  const [showAirdrop, setAmountAirdrop] = useState(DEFAULT_AMOUNT)
-
   const distributors = useDistributors()
   const { receivedList } = useMyReceivedList()
   const getReceiptStatus = useReceiptStatus()
-  const { airdrop } = useMemo(() => {
-    const airdrop: ReceiveItem[] = []
+  const { airdrops, vesting } = useMemo(() => {
+    const airdrops: ReceiveItem[] = []
     const vesting: ReceiveItem[][] = []
 
     for (const address in receivedList) {
@@ -40,7 +37,7 @@ export default function MerkleDistribution() {
         const { startedAt, receiptAddress } = leafs[0]
         const status = getReceiptStatus(address, receiptAddress, startedAt)
         const method = status === ReceiptState.ready ? 'unshift' : 'push'
-        airdrop[method]({
+        airdrops[method]({
           status,
           distributor: address,
           mintAddress: mint.toBase58(),
@@ -67,47 +64,14 @@ export default function MerkleDistribution() {
         vesting.push(vestingItem)
       }
     }
-    return { airdrop, vesting }
+    return { airdrops, vesting }
   }, [distributors, getReceiptStatus, receivedList])
 
   return (
     <div className="flex flex-col gap-6">
       <h4>Dashboard</h4>
-      <div className="card bg-base-100 p-4 gap-6">
-        <div className="flex">
-          <p>
-            Airdrop receive
-            <span className="ml-2">{airdrop.length}</span>
-          </p>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="table">
-            <thead>
-              <tr>
-                <th>UNLOCK TIME</th>
-                <th>EXPIRATION TIME</th>
-                <th>SENDER</th>
-                <th>TOKEN</th>
-                <th>AMOUNT</th>
-                <th>STATUS</th>
-                <th>ACTION</th>
-              </tr>
-            </thead>
-            <tbody>
-              {airdrop.slice(0, showAirdrop).map((props, i) => (
-                <AirdropRow key={i} {...props} />
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <button
-          onClick={() => setAmountAirdrop(showAirdrop + DEFAULT_AMOUNT)}
-          disabled={showAirdrop >= airdrop.length}
-          className="btn btn-ghost flex self-center"
-        >
-          <ChevronDown className="h-4 w-4" /> View more
-        </button>
-      </div>
+      <AirdropList airdrops={airdrops} />
+      <VestingList vesting={vesting} />
     </div>
   )
 }

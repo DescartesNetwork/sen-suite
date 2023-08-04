@@ -12,6 +12,7 @@ import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 
 import {
+  Distribute,
   useMerkleMetadata,
   useParseMerkleType,
   useUtility,
@@ -19,11 +20,29 @@ import {
 import { useWallet } from '@solana/wallet-adapter-react'
 import { env } from '@/configs/env'
 
+export type RecipientData = {
+  address: string
+  amount: string
+  unlockTime: number
+}
+
+export type Configs = {
+  unlockTime: string
+  expirationTime: string
+}
+
 export type MerkleStore = {
   distributors: Record<string, DistributorData>
   upsertDistributor: (address: string, newDistributor: DistributorData) => void
   receipts: Record<string, ReceiptData>
   upsertReceipt: (address: string, newReceipt: ReceiptData) => void
+  recipients: RecipientData[]
+  upsertRecipient: (newRecipient: RecipientData) => void
+  removeRecipient: (address: string) => void
+  mintAddress: string
+  setMintAddress: (mintAddress: string) => void
+  configs: Configs
+  upsertConfigs: (data: Partial<Configs>) => void
 }
 
 export const useMerkleStore = create<MerkleStore>()(
@@ -46,6 +65,40 @@ export const useMerkleStore = create<MerkleStore>()(
           }),
           false,
           'upsertReceipt',
+        ),
+      recipients: [],
+      upsertRecipient: (newRecipient: RecipientData) =>
+        set(
+          produce<MerkleStore>(({ recipients }) => {
+            const i = recipients.findIndex(
+              ({ address }) => address === newRecipient.address,
+            )
+            if (i !== -1)
+              recipients[i].amount = recipients[i].amount + newRecipient.amount
+            else recipients.push(newRecipient)
+          }),
+        ),
+      removeRecipient: (address: string) =>
+        set(
+          produce<MerkleStore>(({ recipients }) => {
+            const i = recipients.findIndex(
+              (recipient) => address === recipient.address,
+            )
+            if (i !== -1) recipients.splice(i, 1)
+          }),
+        ),
+      mintAddress: '',
+      setMintAddress: (mintAddress) =>
+        set({ mintAddress }, false, 'setMintAddress'),
+      configs: {
+        unlockTime: '',
+        expirationTime: '',
+      },
+      upsertConfigs: (data: Partial<Configs>) =>
+        set(
+          produce<MerkleStore>(({ configs }) => {
+            Object.assign(configs, data)
+          }),
         ),
     }),
     {
@@ -106,8 +159,42 @@ export const useDistributors = () => {
 }
 
 /**
- * Get all distributors
- * @returns Distributors list
+ * Get all my distributes
+ * @returns Distributes list
+ */
+export const useMyDistributes = () => {
+  const distributors = useMerkleStore(({ distributors }) => distributors)
+  const { publicKey } = useWallet()
+  const getMetadata = useMerkleMetadata()
+  const parseMerkleType = useParseMerkleType()
+
+  const { value } = useAsync(async () => {
+    const airdrops: string[] = []
+    const vesting: string[] = []
+    if (!publicKey) return { airdrops, vesting }
+    const walletAddress = publicKey.toBase58()
+
+    for (const address in distributors) {
+      const { authority } = distributors[address]
+      if (authority.toBase58() !== walletAddress) continue
+
+      const metadata = await getMetadata(address)
+      const root = MerkleDistributor.fromBuffer(Buffer.from(metadata.data))
+      const merkleType = parseMerkleType(root)
+      if (!merkleType) continue
+
+      if (merkleType === Distribute.Airdrop) airdrops.push(address)
+      if (merkleType === Distribute.Vesting) vesting.push(address)
+    }
+
+    return { airdrops, vesting }
+  }, [publicKey, distributors])
+  return value
+}
+
+/**
+ * Get my reward received list
+ * @returns Reward received list
  */
 export const useMyReceivedList = () => {
   const distributors = useDistributors()
@@ -155,4 +242,40 @@ export const useMyReceivedList = () => {
 export const useMyReceipts = () => {
   const myReceipts = useMerkleStore(({ receipts }) => receipts)
   return myReceipts
+}
+
+/**
+ * Get all recipients
+ * @returns Recipients list && upsert a recipient to list
+ */
+export const useRecipients = () => {
+  const recipients = useMerkleStore(({ recipients }) => recipients)
+  const upsertRecipient = useMerkleStore(
+    ({ upsertRecipient }) => upsertRecipient,
+  )
+  const removeRecipient = useMerkleStore(
+    ({ removeRecipient }) => removeRecipient,
+  )
+
+  return { upsertRecipient, removeRecipient, recipients }
+}
+
+/**
+ * Get/Set airdropped mint address
+ * @returns Like-useState object
+ */
+export const useDistributeMintAddress = () => {
+  const mintAddress = useMerkleStore(({ mintAddress }) => mintAddress)
+  const setMintAddress = useMerkleStore(({ setMintAddress }) => setMintAddress)
+  return { mintAddress, setMintAddress }
+}
+
+/**
+ * Get/Set distribute configs
+ * @returns Like-useState object
+ */
+export const useDistributeConfigs = () => {
+  const configs = useMerkleStore(({ configs }) => configs)
+  const upsertConfigs = useMerkleStore(({ upsertConfigs }) => upsertConfigs)
+  return { configs, upsertConfigs }
 }

@@ -10,7 +10,7 @@ import { useClaim } from '@/hooks/airdrop.hook'
 import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
 
-const AirdropRow = (props: ReceiveItem) => {
+const RewardCard = (props: ReceiveItem) => {
   const { leaf, endedAt, mintAddress, sender, status } = props
   const [loading, setLoading] = useState(false)
   const pushMessage = usePushMessage()
@@ -72,4 +72,4 @@ const AirdropRow = (props: ReceiveItem) => {
   )
 }
 
-export default AirdropRow
+export default RewardCard

@@ -1,5 +1,24 @@
+'use client'
+import { Plus } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+
 const Airdrop = () => {
-  return <div>Airdrop</div>
+  const { push } = useRouter()
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="flex">
+        <h4 className="flex-auto">Airdrop</h4>
+        <button
+          className="btn btn-primary"
+          onClick={() => push('/airdrop/merkle-distribution/airdrop/add-new')}
+        >
+          <Plus className="h-4 w-4" />
+          Add New
+        </button>
+      </div>
+    </div>
+  )
 }
 
 export default Airdrop
