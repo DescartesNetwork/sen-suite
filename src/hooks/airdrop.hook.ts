@@ -15,7 +15,7 @@ import { decimalize } from '@/helpers/decimals'
 import { useMints } from './spl.hook'
 import { isAddress } from '@/helpers/utils'
 import { useDistributors, useMyReceipts } from '@/providers/merkle.provider'
-import { MetadataBackup, toFilename } from '@/helpers/ipfs'
+import { MetadataBackup, toFilename } from '@/helpers/aws'
 import { ReceiptState } from '@/app/airdrop/merkle-distribution/statusTag'
 
 /**

@@ -1,6 +1,5 @@
 import numbro from 'numbro'
 import { PublicKey } from '@solana/web3.js'
-import axios from 'axios'
 
 /**
  * Delay by async/await
@@ -53,21 +52,4 @@ export const numeric = (
 ): ReturnType<typeof numbro> => {
   if (!value) return numbro('0')
   return numbro(value)
-}
-
-export const uploadFileToAws = async (file: File) => {
-  const formData = new FormData()
-  formData.append('file', file)
-
-  const { data } = await axios.post(
-    'https://api.sentre.io/storage/upload',
-    formData,
-    {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-      withCredentials: true,
-    },
-  )
-  return data.cid
 }
