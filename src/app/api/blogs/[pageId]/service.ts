@@ -36,6 +36,7 @@ export const getDatabase = async () => {
     const [thumbnail] = getPageImageUrls(map, {
       mapImageUrl: (url, { id }) => {
         if (id !== pageId) return null
+        if (!/^https?:\/\//.test(url)) url = `https://www.notion.so${url}`
         return `https://www.notion.so/image/${encodeURIComponent(
           url,
         )}?table=block&id=${id}&cache=v2`

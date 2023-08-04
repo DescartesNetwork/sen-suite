@@ -14,11 +14,15 @@ export default function Signature({
 }: SignatureProps) {
   return (
     <Link
-      className="card h-full bg-base-100 rounded-box shadow hover:shadow-lg transition-all grid grid-cols-12 gap-4 overflow-clip @container"
+      className="card h-full bg-base-100 rounded-box shadow transition-all grid grid-cols-12 gap-4 overflow-clip @container"
       href={`/academy/${pageId}`}
     >
       <div className="col-span-full @2xl:col-span-6">
-        <img className="h-full object-cover" src={thumbnail} alt={pageId} />
+        <img
+          className="h-full w-full object-cover"
+          src={thumbnail}
+          alt={pageId}
+        />
       </div>
       <div className="col-span-full @2xl:col-span-6 flex flex-col gap-4 p-8">
         <div className="flex flex-row gap-2 items-center">

@@ -13,7 +13,7 @@ export default function Thumbnail({
 }: ThumbnailProps) {
   return (
     <Link
-      className="card h-full bg-base-100 rounded-box shadow hover:shadow-lg transition-all"
+      className="card h-full bg-base-100 rounded-box"
       href={`/academy/${pageId}`}
     >
       <figure>
