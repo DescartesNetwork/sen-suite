@@ -23,7 +23,7 @@
       @apply place-content-end;
     }
     .menu {
-      @apply min-w-[172px] md:min-w-[240px];
+      @apply md:min-w-[240px];
     }
     .menu-option {
       display: inherit;
