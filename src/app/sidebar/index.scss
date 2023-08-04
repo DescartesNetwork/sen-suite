@@ -1,14 +1,11 @@
-.sidebar {
-  height: 100dvh;
+@tailwind utilities;
 
-  @apply transition-all;
-  .swap {
-    @apply place-content-start;
-  }
+.sidebar {
+  @apply sticky top-0 transition-all;
+
   .menu {
     .menu-option {
-      @apply text-sm;
-      display: none;
+      @apply text-sm hidden;
     }
     .menu-logo {
       @apply h-5 w-5;
@@ -17,16 +14,30 @@
       @apply cursor-not-allowed;
     }
   }
+}
+
+.sidebar.vertical {
+  @apply h-[100dvh];
 
   &.open {
-    .swap {
-      @apply place-content-end;
-    }
     .menu {
-      @apply min-w-[13rem];
-    }
-    .menu-option {
-      display: inherit;
+      @apply min-w-[14rem];
+      .menu-option {
+        display: inherit;
+      }
     }
   }
+
+  @responsive {
+    &.mobile {
+      @apply fixed -translate-x-full top-0;
+    }
+    &.mobile.open {
+      @apply translate-x-0;
+    }
+  }
+}
+
+.sidebar.horizontal {
+  @apply w-[100dvw];
 }
