@@ -151,7 +151,7 @@ export default function Navigation({ pageIds, metadata }: NavigationProps) {
               <Search className="pointer-events-none w-4 h-4 absolute right-3" />
             )}
           </div>
-          <div className="col-span-full grid grid-cols-12 gap-2 max-h-[75vh] overflow-y-auto no-scrollbar">
+          <div className="col-span-full grid grid-cols-12 gap-2 max-h-[75dvh] overflow-y-auto no-scrollbar">
             {!results.length && (
               <div className="col-span-full flex flex-row justify-center p-4">
                 <Empty />
