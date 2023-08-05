@@ -65,6 +65,22 @@ const routes = [
   },
 ]
 
+function WalletIsland() {
+  return (
+    <Island
+      loading={
+        <li>
+          <a href="#">
+            <span className="menu-logo loading loading-ring loading-xs" />
+          </a>
+        </li>
+      }
+    >
+      <WalletButton />
+    </Island>
+  )
+}
+
 export type SidebarProps = { children: ReactNode }
 
 export default function Sidebar({ children }: SidebarProps) {
@@ -116,19 +132,9 @@ export default function Sidebar({ children }: SidebarProps) {
               </Link>
             </li>
           ))}
-          <li className="flex-auto invisible"></li>
-          <Island
-            loading={
-              <li>
-                <a href="#">
-                  <span className="menu-logo loading loading-ring loading-xs" />
-                </a>
-              </li>
-            }
-          >
-            <WalletButton />
-          </Island>
-          <span className="divider mx-4 mt-0 -mb-2"></span>
+          <div className="flex-auto" />
+          <WalletIsland />
+          <span className="divider mx-4 my-0"></span>
           <li>
             <a
               href="https://twitter.com/SentreProtocol"
@@ -192,6 +198,7 @@ export default function Sidebar({ children }: SidebarProps) {
               <Brand size={24} named />
             </a>
             <div className="flex-auto" />
+            <WalletIsland />
             <li>
               <a onClick={() => setOpen(true)}>
                 <Menu className="menu-logo" />
