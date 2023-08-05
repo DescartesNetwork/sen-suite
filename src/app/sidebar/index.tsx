@@ -81,7 +81,7 @@ export default function Sidebar({ children }: SidebarProps) {
       {/* Overlay */}
       <div
         className={
-          'absolute w-full h-full top-0 left-0 z-10 bg-base-300 opacity-60 backdrop-blur-xl cursor-pointer transition-all' +
+          'fixed w-[100vw] h-[100dvh] top-0 left-0 z-10 bg-base-300 opacity-60 backdrop-blur-xl cursor-pointer transition-all' +
           (!open ? ' hidden' : '')
         }
         onClick={() => setOpen(false)}
