@@ -1,18 +1,25 @@
 'use client'
 import dynamic from 'next/dynamic'
-import { Fragment, ReactNode } from 'react'
+import { Fragment, ReactElement, ReactNode } from 'react'
 
-import Splash from '@/components/splash'
+export type IslandProps = {
+  children: ReactNode
+  loading?: ReactElement
+}
 
-const Island = dynamic(
-  () =>
-    Promise.resolve(({ children }: { children: ReactNode }) => {
-      return <Fragment>{children}</Fragment>
-    }),
-  {
-    ssr: false,
-    loading: () => <Splash open />,
-  },
-)
-
-export default Island
+export default function Island({
+  children,
+  loading = <Fragment />,
+}: IslandProps) {
+  const Lazy = dynamic(
+    () =>
+      Promise.resolve(({ children }: { children: ReactNode }) => {
+        return <Fragment>{children}</Fragment>
+      }),
+    {
+      ssr: false,
+      loading: () => loading,
+    },
+  )
+  return <Lazy>{children}</Lazy>
+}

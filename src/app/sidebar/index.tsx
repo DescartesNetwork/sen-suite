@@ -1,5 +1,5 @@
 'use client'
-import { Fragment, useState } from 'react'
+import { ReactNode, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useKey } from 'react-use'
@@ -65,7 +65,9 @@ const routes = [
   },
 ]
 
-export default function Sidebar() {
+export type SidebarProps = { children: ReactNode }
+
+export default function Sidebar({ children }: SidebarProps) {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
 
@@ -75,24 +77,7 @@ export default function Sidebar() {
   )
 
   return (
-    <Fragment>
-      {/* Mobile header */}
-      <div className="sidebar horizontal z-10 bg-base-100 pl-3 py-2 md:hidden">
-        <ul className="w-full menu menu-horizontal menu-md flex flex-row items-center">
-          <a href="/">
-            <Brand size={24} named />
-          </a>
-          <div className="flex-auto" />
-          {/* <Island>
-          <WalletButton />
-        </Island> */}
-          <li>
-            <a onClick={() => setOpen(true)}>
-              <Menu className="menu-logo" />
-            </a>
-          </li>
-        </ul>
-      </div>
+    <div className="flex flex-row">
       {/* Sidebar */}
       <aside
         className={
@@ -124,7 +109,15 @@ export default function Sidebar() {
             </li>
           ))}
           <li className="flex-auto invisible"></li>
-          <Island>
+          <Island
+            loading={
+              <li>
+                <a href="#">
+                  <span className="menu-logo loading loading-ring loading-xs" />
+                </a>
+              </li>
+            }
+          >
             <WalletButton />
           </Island>
           <span className="divider mx-4 mt-0 -mb-2"></span>
@@ -145,7 +138,13 @@ export default function Sidebar() {
             </a>
           </li>
           <li>
-            <Island>
+            <Island
+              loading={
+                <a href="#">
+                  <span className="menu-logo loading loading-ring loading-xs" />
+                </a>
+              }
+            >
               <ThemeSwitch />
             </Island>
           </li>
@@ -177,6 +176,25 @@ export default function Sidebar() {
           </li>
         </ul>
       </aside>
-    </Fragment>
+      {/* Mobile header & Page content */}
+      <div className="flex-auto flex flex-col min-h-[100dvh]">
+        <div className="sidebar horizontal bg-base-100 z-[9] pl-3 py-2 md:hidden">
+          <ul className="w-full menu menu-horizontal menu-md flex flex-row items-center">
+            <a href="/">
+              <Brand size={24} named />
+            </a>
+            <div className="flex-auto" />
+            <li>
+              <a onClick={() => setOpen(true)}>
+                <Menu className="menu-logo" />
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div className="flex-auto max-md:px-2 max-md:pb-2 md:pr-2 md:py-2">
+          {children}
+        </div>
+      </div>
+    </div>
   )
 }

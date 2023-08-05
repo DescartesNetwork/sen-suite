@@ -46,11 +46,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <WalletProvider>
             <MintProvider>
               <TokenAccountProvider>
-                <main className="flex flex-row flex-wrap w-full">
-                  <Sidebar />
-                  <div className="flex-auto flex flex-col max-md:px-2 max-md:pb-2 md:pr-2 md:py-2">
-                    {children}
-                  </div>
+                <main className="w-full">
+                  <Sidebar>{children}</Sidebar>
                 </main>
                 <Message />
               </TokenAccountProvider>
