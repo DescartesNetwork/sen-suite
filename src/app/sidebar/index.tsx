@@ -78,6 +78,14 @@ export default function Sidebar({ children }: SidebarProps) {
 
   return (
     <div className="flex flex-row">
+      {/* Overlay */}
+      <div
+        className={
+          'absolute w-full h-full top-0 left-0 z-10 bg-base-300 opacity-60 backdrop-blur-xl cursor-pointer transition-all' +
+          (!open ? ' hidden' : '')
+        }
+        onClick={() => setOpen(false)}
+      />
       {/* Sidebar */}
       <aside
         className={
