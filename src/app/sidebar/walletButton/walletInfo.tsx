@@ -3,6 +3,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { Wallet } from '@solana/wallet-adapter-react'
 import copy from 'copy-to-clipboard'
 import { BN } from 'bn.js'
+import { useFloating, offset, flip, shift } from '@floating-ui/react'
 
 import { ArrowUpRightSquare, Copy, LogOut } from 'lucide-react'
 import { WalletIcon } from '@solana/wallet-adapter-react-ui'
@@ -23,6 +24,12 @@ export default function WalletInfo({
   onDisconnect = () => {},
 }: WalletInfoProps) {
   const [copied, setCopied] = useState(false)
+  const {
+    refs: { setReference, setFloating },
+    floatingStyles,
+  } = useFloating({
+    middleware: [offset(5), flip(), shift()],
+  })
   const lamports = useLamports()
 
   const address = useMemo(
@@ -41,14 +48,16 @@ export default function WalletInfo({
   const tolltipText = copied ? 'Copied' : 'Copy'
 
   return (
-    <li className="dropdown dropdown-top">
-      <label tabIndex={0}>
+    <li className="dropdown">
+      <label tabIndex={0} ref={setReference}>
         <WalletIcon className="avatar h-5 w-5" wallet={wallet} />
         <p className="menu-option font-semibold">{shortenAddress(address)}</p>
       </label>
       <ul
         tabIndex={0}
-        className="dropdown-content !menu-md p-2 shadow-xl bg-base-100 rounded-box !w-64"
+        className="dropdown-content menu menu-md p-2 shadow-xl bg-base-100 rounded-box !w-64 z-10 m-0"
+        style={floatingStyles}
+        ref={setFloating}
       >
         <li>
           <div className="active flex flex-col gap-1">

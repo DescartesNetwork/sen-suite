@@ -41,14 +41,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           rel="stylesheet"
         />
       </head>
-      <body>
+      <body className="w-full flex flex-row">
         <UiProvider>
           <WalletProvider>
             <MintProvider>
               <TokenAccountProvider>
-                <main className="w-full">
-                  <Sidebar>{children}</Sidebar>
-                </main>
+                <Sidebar>{children}</Sidebar>
                 <Message />
               </TokenAccountProvider>
             </MintProvider>

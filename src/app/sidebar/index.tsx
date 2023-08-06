@@ -1,5 +1,5 @@
 'use client'
-import { ReactNode, useState } from 'react'
+import { Fragment, ReactNode, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useKey } from 'react-use'
@@ -93,21 +93,10 @@ export default function Sidebar({ children }: SidebarProps) {
   )
 
   return (
-    <div className="flex flex-row">
-      {/* Overlay */}
-      <div
-        className={
-          'fixed w-[100vw] h-[100dvh] top-0 left-0 z-10 bg-base-300 opacity-60 backdrop-blur-xl cursor-pointer transition-all' +
-          (!open ? ' hidden' : '')
-        }
-        onClick={() => setOpen(false)}
-      />
+    <Fragment>
       {/* Sidebar */}
       <aside
-        className={
-          'sidebar vertical z-10 bg-base-100 max-md:mobile' +
-          (open ? ' open' : '')
-        }
+        className={'sidebar vertical max-md:mobile' + (open ? ' open' : '')}
       >
         <ul className="h-full menu menu-vertical menu-md">
           <li className="mb-8">
@@ -191,8 +180,8 @@ export default function Sidebar({ children }: SidebarProps) {
         </ul>
       </aside>
       {/* Mobile header & Page content */}
-      <div className="flex-auto flex flex-col min-h-[100dvh]">
-        <div className="sidebar horizontal bg-base-100 z-[9] pl-3 py-2 md:hidden">
+      <main className="flex-auto flex flex-col min-h-[100dvh]">
+        <header className="sidebar horizontal pl-3 py-2 md:hidden">
           <ul className="w-full menu menu-horizontal menu-md flex flex-row items-center">
             <a href="/">
               <Brand size={24} named />
@@ -205,11 +194,11 @@ export default function Sidebar({ children }: SidebarProps) {
               </a>
             </li>
           </ul>
-        </div>
-        <div className="flex-auto max-md:px-2 max-md:pb-2 md:pr-2 md:py-2">
+        </header>
+        <section className="flex-auto max-md:px-2 max-md:pb-2 md:pr-2 md:py-2">
           {children}
-        </div>
-      </div>
-    </div>
+        </section>
+      </main>
+    </Fragment>
   )
 }

@@ -1,7 +1,7 @@
 @tailwind utilities;
 
 .sidebar {
-  @apply sticky top-0 transition-all;
+  @apply sticky top-0 bg-base-100 transition-all z-40;
 
   .menu {
     .menu-option {
