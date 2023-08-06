@@ -78,7 +78,7 @@ export default function WalletInfo({
           </div>
         </li>
         <li>
-          <a className="flex" onClick={onCopy}>
+          <a className="flex" onClick={onCopy} href="#">
             <span className="flex-auto">Copy Address</span>
             <span className={tolltipClassName} data-tip={tolltipText}>
               <Copy className="h-4 w-4" />
@@ -97,7 +97,7 @@ export default function WalletInfo({
           </a>
         </li>
         <li>
-          <a className="flex link-error" onClick={onDisconnect}>
+          <a className="flex link-error" onClick={onDisconnect} href="#">
             <span className="flex-auto">Disconnect</span>
             <LogOut className="h-4 w-4" />
           </a>

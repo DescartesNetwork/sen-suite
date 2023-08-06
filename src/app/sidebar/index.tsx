@@ -187,7 +187,7 @@ export default function Sidebar({ children }: SidebarProps) {
               <WalletButton />
             </Island>
             <li>
-              <a onClick={() => setOpen(true)}>
+              <a onClick={() => setOpen(true)} href="#">
                 <Menu className="menu-logo" />
               </a>
             </li>
