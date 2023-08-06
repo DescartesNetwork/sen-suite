@@ -2,6 +2,8 @@ import { NotionAPI } from 'notion-client'
 import { getBlockTitle, getPageImageUrls, getPageProperty } from 'notion-utils'
 import { ExtendedRecordMap } from 'notion-types'
 
+import deplConfig from '@/configs/depl.config'
+
 const normalizeImageUrl = (url: string, id: string) => {
   if (!/^https?:\/\//.test(url)) url = `https://www.notion.so${url}`
   return `https://www.notion.so/image/${encodeURIComponent(
@@ -11,7 +13,7 @@ const normalizeImageUrl = (url: string, id: string) => {
 
 export const getDatabase = async () => {
   const api = new NotionAPI()
-  const map = await api.getPage(process.env.NOTION_DATABASE_ID as string)
+  const map = await api.getPage(deplConfig.notionDatabaseId)
   const block = { ...map.block }
   Object.keys(block).forEach((pageId) => {
     const {
