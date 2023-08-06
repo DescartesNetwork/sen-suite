@@ -183,9 +183,9 @@ export default function Sidebar({ children }: SidebarProps) {
               <Brand size={24} named />
             </a>
             <div className="flex-auto" />
-            {/* <Island Loading={MenuLoading}>
+            <Island Loading={MenuLoading}>
               <WalletButton />
-            </Island> */}
+            </Island>
             <li>
               <a onClick={() => setOpen(true)}>
                 <Menu className="menu-logo" />
