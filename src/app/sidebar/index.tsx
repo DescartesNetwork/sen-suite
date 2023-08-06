@@ -65,19 +65,13 @@ const routes = [
   },
 ]
 
-function WalletIsland() {
+function MenuLoading() {
   return (
-    <Island
-      loading={
-        <li>
-          <a href="#">
-            <span className="menu-logo loading loading-ring loading-xs" />
-          </a>
-        </li>
-      }
-    >
-      <WalletButton />
-    </Island>
+    <li>
+      <a href="#">
+        <span className="menu-logo loading loading-ring loading-xs" />
+      </a>
+    </li>
   )
 }
 
@@ -130,8 +124,10 @@ export default function Sidebar({ children }: SidebarProps) {
             </li>
           ))}
           <div className="flex-auto" />
-          <WalletIsland />
-          <span className="divider mx-4 my-0"></span>
+          <Island Loading={MenuLoading}>
+            <WalletButton />
+          </Island>
+          <div className="divider mx-4 my-0" />
           <li>
             <a
               href="https://twitter.com/SentreProtocol"
@@ -148,17 +144,9 @@ export default function Sidebar({ children }: SidebarProps) {
               <p className="menu-option">Telegram</p>
             </a>
           </li>
-          <li>
-            <Island
-              loading={
-                <a href="#">
-                  <span className="menu-logo loading loading-ring loading-xs" />
-                </a>
-              }
-            >
-              <ThemeSwitch />
-            </Island>
-          </li>
+          <Island Loading={MenuLoading}>
+            <ThemeSwitch />
+          </Island>
           <li onClick={() => setOpen(!open)}>
             <span className="flex flex-row gap-1 items-center justify-between">
               <div className="menu-option pl-6 gap-1">
@@ -195,7 +183,9 @@ export default function Sidebar({ children }: SidebarProps) {
               <Brand size={24} named />
             </a>
             <div className="flex-auto" />
-            <WalletIsland />
+            {/* <Island Loading={MenuLoading}>
+              <WalletButton />
+            </Island> */}
             <li>
               <a onClick={() => setOpen(true)}>
                 <Menu className="menu-logo" />
