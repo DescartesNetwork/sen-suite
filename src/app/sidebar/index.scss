@@ -1,7 +1,7 @@
 @tailwind utilities;
 
 .sidebar {
-  @apply sticky top-0 bg-base-100 transition-all z-40;
+  @apply sticky top-0 bg-base-100 transition-all;
 
   .menu {
     .menu-option {
@@ -17,7 +17,7 @@
 }
 
 .sidebar.vertical {
-  @apply h-[100dvh];
+  @apply h-[100dvh] z-40;
 
   &.open {
     .menu {
@@ -39,5 +39,5 @@
 }
 
 .sidebar.horizontal {
-  @apply w-full;
+  @apply w-full z-30;
 }

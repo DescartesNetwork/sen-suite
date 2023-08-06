@@ -94,6 +94,14 @@ export default function Sidebar({ children }: SidebarProps) {
 
   return (
     <Fragment>
+      {/* Overlay */}
+      <div
+        className={
+          'fixed w-[100vw] h-[100dvh] top-0 left-0 bg-base-300 opacity-60 backdrop-blur-xl cursor-pointer transition-all z-40' +
+          (!open ? ' hidden' : '')
+        }
+        onClick={() => setOpen(false)}
+      />
       {/* Sidebar */}
       <aside
         className={'sidebar vertical max-md:mobile' + (open ? ' open' : '')}
