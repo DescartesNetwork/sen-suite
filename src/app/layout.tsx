@@ -1,6 +1,5 @@
 import { ReactNode } from 'react'
 import type { Metadata } from 'next'
-import Script from 'next/script'
 
 import UiProvider from '@/providers/ui.provider'
 import WalletProvider from '@/providers/wallet.provider'
@@ -43,28 +42,22 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           rel="stylesheet"
         />
       </head>
-      <body className="w-full flex flex-row">
+      <body>
         <UiProvider>
           <WalletProvider>
             <MintProvider>
               <TokenAccountProvider>
-                <Sidebar>{children}</Sidebar>
+                <main className="flex w-full">
+                  <Sidebar />
+                  <div className="flex flex-col flex-auto pr-2 py-2">
+                    {children}
+                  </div>
+                </main>
                 <Message />
               </TokenAccountProvider>
             </MintProvider>
           </WalletProvider>
         </UiProvider>
-        {/* Google Analytics */}
-        <Script
-          async
-          src="https://www.googletagmanager.com/gtag/js?id=G-G57JYZBDBP"
-        />
-        <Script id="google-analytics">
-          {`window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-G57JYZBDBP');`}
-        </Script>
       </body>
     </html>
   )

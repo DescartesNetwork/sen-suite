@@ -1,20 +1,18 @@
 'use client'
 import { useEffect } from 'react'
-import { PageBlock } from 'notion-types'
+import useSWR from 'swr'
+import axios from 'axios'
+import { ExtendedRecordMap, PageBlock } from 'notion-types'
 import { useRouter } from 'next/navigation'
-import { Code } from 'react-notion-x/build/third-party/code'
-import { Equation } from 'react-notion-x/build/third-party/equation'
 
 import { NotionRenderer } from 'react-notion-x'
 import { Tweet } from 'react-tweet'
 import Skeleton from './skeleton'
 import PageHeader from './header'
 import PageCollection from './collection'
-import PageFooter from './footer'
 
 import { usePushMessage } from '@/components/message/store'
 import { useTheme } from '@/providers/ui.provider'
-import { useAcademyPage } from '@/hooks/academy.hook'
 
 export default function Page({
   params: { pageId },
@@ -24,10 +22,14 @@ export default function Page({
   const { push } = useRouter()
   const { theme } = useTheme()
   const pushMessage = usePushMessage()
-  const {
-    data: { map, recommends },
-    error,
-  } = useAcademyPage(pageId)
+
+  const { data: map, error } = useSWR<ExtendedRecordMap, Error>(
+    [pageId, 'blog'],
+    async ([pageId]: [string]) => {
+      const { data } = await axios.get(`/api/blogs/${pageId}`)
+      return data
+    },
+  )
 
   useEffect(() => {
     if (error) {
@@ -36,7 +38,7 @@ export default function Page({
     }
   }, [error, pushMessage, push])
 
-  if (!map || !recommends) return <Skeleton />
+  if (!map) return <Skeleton />
   return (
     <div className="grid grid-cols-12 gap-8">
       <NotionRenderer
@@ -52,10 +54,7 @@ export default function Page({
             <PageCollection block={block} map={map} />
           ),
           Tweet,
-          Code,
-          Equation,
         }}
-        footer={<PageFooter pageIds={recommends} />}
       />
     </div>
   )

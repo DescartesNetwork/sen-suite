@@ -20,7 +20,7 @@ export const getChainId = () => {
  * @returns Solcan URL
  */
 export const solscan = (addressOrTxId: string): string => {
-  if (!addressOrTxId) return '#'
+  if (!addressOrTxId) return ''
   if (isAddress(addressOrTxId)) {
     return `https://solscan.io/account/${addressOrTxId}?cluster=${solConfig.network}`
   }

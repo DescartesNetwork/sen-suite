@@ -9,11 +9,11 @@ export type ThumbnailProps = {
 
 export default function Thumbnail({
   pageId,
-  metadata: { publishedAt, tags, title, description, thumbnail },
+  metadata: { updatedAt, tags, title, description, thumbnail },
 }: ThumbnailProps) {
   return (
     <Link
-      className="card h-full bg-base-100 rounded-box"
+      className="card h-full bg-base-100 rounded-box shadow hover:shadow-lg transition-all"
       href={`/academy/${pageId}`}
     >
       <figure>
@@ -21,17 +21,15 @@ export default function Thumbnail({
       </figure>
       <div className="card-body">
         <p className="text-sm opacity-60">
-          {dayjs(publishedAt).format('MMM DD, YYYY')}
+          {dayjs(updatedAt).format('MMM DD, YYYY')}
         </p>
         <h2 className="card-title">{title}</h2>
         <p className="opacity-60 pb-4">{description}</p>
-        <div className="flex flex-row flex-wrap gap-2 items-center">
-          {tags.map((tag) => (
-            <span key={tag} className="badge badge-outline">
-              {tag}
-            </span>
-          ))}
-        </div>
+        {tags.map((tag) => (
+          <div key={tag} className="badge badge-outline">
+            {tag}
+          </div>
+        ))}
       </div>
     </Link>
   )

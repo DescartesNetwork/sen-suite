@@ -17,11 +17,10 @@ type MintMetadata = {
 
 type PageMetadata = {
   title: string
-  publishedAt: number
+  updatedAt: number
   tags: string[]
   description: string
   thumbnail: string
-  pinned: boolean
 }
 
 type PageMap = Record<string, PageMetadata>
