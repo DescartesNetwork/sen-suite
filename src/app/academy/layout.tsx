@@ -4,7 +4,8 @@ import type { Metadata } from 'next'
 import './index.scss'
 
 export const metadata: Metadata = {
-  title: 'SenAcademy | From Zero To Hero in Solana',
+  title: 'Sentre Academy',
+  description: 'From Zero To Hero in Solana.',
 }
 
 export default function AcademyLayout({ children }: { children: ReactNode }) {

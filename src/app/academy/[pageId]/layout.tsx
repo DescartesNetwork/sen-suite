@@ -1,6 +1,25 @@
 import { ReactNode } from 'react'
+import type { Metadata } from 'next'
 
 import { getDatabase } from '@/app/api/blogs/[pageId]/service'
+import deplConfig from '@/configs/depl.config'
+
+export async function generateMetadata({
+  params: { pageId },
+}: {
+  params: { pageId: string }
+}): Promise<Metadata> {
+  const { metadata } = await getDatabase()
+  const { title, description, thumbnail } = metadata[pageId]
+  return {
+    title: `Sentre Academy | ${title}`,
+    description,
+    metadataBase: new URL(deplConfig.host),
+    openGraph: {
+      images: [thumbnail],
+    },
+  }
+}
 
 export default function PageLayout({ children }: { children: ReactNode }) {
   return (

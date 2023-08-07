@@ -1,14 +1,11 @@
-.sidebar {
-  height: 100dvh;
+@tailwind utilities;
 
-  @apply transition-all;
-  .swap {
-    @apply place-content-start;
-  }
+.sidebar {
+  @apply sticky top-0 bg-base-100 transition-all;
+
   .menu {
     .menu-option {
-      @apply text-sm;
-      display: none;
+      @apply text-sm hidden;
     }
     .menu-logo {
       @apply h-5 w-5;
@@ -17,16 +14,43 @@
       @apply cursor-not-allowed;
     }
   }
+}
+
+.sidebar.vertical {
+  @apply h-[100dvh] z-40;
 
   &.open {
-    .swap {
-      @apply place-content-end;
-    }
     .menu {
-      @apply min-w-[172px] md:min-w-[240px];
+      @apply min-w-[14rem];
+      .menu-option {
+        display: inherit;
+      }
     }
-    .menu-option {
-      display: inherit;
+  }
+
+  @responsive {
+    &.mobile {
+      @apply fixed -translate-x-full top-0;
+    }
+    &.mobile.open {
+      @apply translate-x-0;
+    }
+  }
+}
+
+.sidebar.horizontal {
+  @apply w-full z-30;
+}
+
+.overlay {
+  @apply fixed w-[100vw] h-[100dvh] top-0 left-0 bg-base-300 opacity-60 backdrop-blur-xl cursor-pointer transition-all z-40 hidden;
+
+  @responsive {
+    &.mobile {
+      @apply hidden;
+    }
+    &.mobile.open {
+      @apply block;
     }
   }
 }
