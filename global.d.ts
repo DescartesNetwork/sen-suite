@@ -21,6 +21,7 @@ type PageMetadata = {
   tags: string[]
   description: string
   thumbnail: string
+  pinned: boolean
 }
 
 type PageMap = Record<string, PageMetadata>

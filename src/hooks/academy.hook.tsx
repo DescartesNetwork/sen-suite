@@ -11,27 +11,33 @@ export const useAcademyPaging = (pageIds: string[], metadata: PageMap) => {
   const tag = params.get('tag') || ''
   const page = Number(params.get('page')) || 1
 
-  const [bannerId, ...otherIds] = useMemo(() => {
-    const taggedIds = pageIds.filter((pageId) => {
-      if (!tag) return true
-      if (metadata[pageId].tags.includes(tag)) return true
-      return false
+  const pinnedIds = useMemo(() => {
+    return pageIds.filter((pageId) => {
+      const { pinned } = metadata[pageId]
+      return pinned
     })
-    return taggedIds
-  }, [pageIds, tag, metadata])
+  }, [pageIds, metadata])
 
-  const total = useMemo(() => otherIds.length, [otherIds])
-
+  const total = useMemo(() => pageIds.length, [pageIds])
+  const taggedIds = useMemo(
+    () =>
+      pageIds.filter((pageId) => {
+        if (!tag) return true
+        if (metadata[pageId].tags.includes(tag)) return true
+        return false
+      }),
+    [pageIds, tag, metadata],
+  )
   const thumbnailIds = useMemo(() => {
-    return otherIds.slice((page - 1) * LIMIT, Math.min(page * LIMIT, total))
-  }, [page, otherIds, total])
+    return taggedIds.slice((page - 1) * LIMIT, Math.min(page * LIMIT, total))
+  }, [taggedIds, page, total])
 
   return {
     tag,
     page,
     total,
     limit: LIMIT,
-    bannerId,
+    pinnedIds,
     thumbnailIds,
   }
 }

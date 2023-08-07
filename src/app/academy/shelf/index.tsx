@@ -1,8 +1,10 @@
 'use client'
+import { useMemo } from 'react'
 
+import Empty from '@/components/empty'
 import Signature from './signature'
 import Thumbnail from './thumbnail'
-import Empty from '@/components/empty'
+import Lite from './lite'
 
 import { useAcademyPaging } from '@/hooks/academy.hook'
 
@@ -12,7 +14,11 @@ export type ShelfProps = {
 }
 
 export default function Shelf({ pageIds, metadata }: ShelfProps) {
-  const { bannerId, thumbnailIds } = useAcademyPaging(pageIds, metadata)
+  const { pinnedIds, thumbnailIds } = useAcademyPaging(pageIds, metadata)
+  const { bannerId, otherIds } = useMemo(() => {
+    const [bannerId, ...otherIds] = pinnedIds
+    return { bannerId, otherIds }
+  }, [pinnedIds])
 
   return (
     <div className="grid grid-cols-12 gap-6 @container">
@@ -21,6 +27,15 @@ export default function Shelf({ pageIds, metadata }: ShelfProps) {
           <Signature pageId={bannerId} metadata={metadata[bannerId]} />
         </div>
       )}
+      {otherIds.map((pageId) => (
+        <div
+          key={pageId}
+          className="col-span-full @lg:col-span-6 @2xl:col-span-4 @4xl:col-span-3"
+        >
+          <Lite pageId={pageId} metadata={metadata[pageId]} />
+        </div>
+      ))}
+      <div className="col-span-full" />
       {thumbnailIds.map((pageId) => (
         <div
           key={pageId}

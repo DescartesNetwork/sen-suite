@@ -1,15 +1,8 @@
 import { NotionAPI } from 'notion-client'
-import { getBlockTitle, getPageImageUrls, getPageProperty } from 'notion-utils'
 import { ExtendedRecordMap } from 'notion-types'
 
 import deplConfig from '@/configs/depl.config'
-
-const normalizeImageUrl = (url: string, id: string) => {
-  if (!/^https?:\/\//.test(url)) url = `https://www.notion.so${url}`
-  return `https://www.notion.so/image/${encodeURIComponent(
-    url,
-  )}?table=block&id=${id}&cache=v2`
-}
+import { extractProperties } from './utils'
 
 export const getDatabase = async () => {
   const api = new NotionAPI()
@@ -36,23 +29,8 @@ export const getDatabase = async () => {
   const metadata: PageMap = {}
   pageIds.forEach((pageId) => {
     const { value } = block[pageId]
-    const title = getBlockTitle(value, map)
-    const updatedAt = getPageProperty<number>('Date', value, map) || Date.now()
-    const tags = getPageProperty<string[]>('Tags', value, map) || []
-    const description = getPageProperty<string>('Description', value, map) || ''
-    const [thumbnail] = getPageImageUrls(map, {
-      mapImageUrl: (url, { id }) => {
-        if (id !== pageId) return null
-        return normalizeImageUrl(url, id)
-      },
-    })
-    metadata[pageId] = {
-      title,
-      updatedAt,
-      tags,
-      description,
-      thumbnail: thumbnail || 'https://placehold.co/600x400',
-    }
+    const page = extractProperties(value, map, pageId)
+    metadata[pageId] = page
   })
 
   return { pageIds, metadata }
@@ -82,21 +60,7 @@ export const getRecommends = async (pageId: string) => {
 }
 
 export const getPageMetadata = (map: ExtendedRecordMap) => {
-  const [{ value: block }] = Object.values(map.block)
-
-  const updatedAt = getPageProperty<number>('Date', block, map) || Date.now()
-  const tags = getPageProperty<string[]>('Tags', block, map) || []
-  const title = getBlockTitle(block, map)
-  const description = getPageProperty<string>('Description', block, map) || ''
-  const [thumbnail] = getPageImageUrls(map, {
-    mapImageUrl: (url, { id }) => normalizeImageUrl(url, id),
-  })
-
-  return {
-    updatedAt,
-    tags,
-    title,
-    description,
-    thumbnail: thumbnail || 'https://placehold.co/600x400',
-  }
+  const [{ value }] = Object.values(map.block)
+  const page = extractProperties(value, map)
+  return page
 }

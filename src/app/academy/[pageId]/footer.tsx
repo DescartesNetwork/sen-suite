@@ -17,7 +17,7 @@ function Recommend({ pageId }: { pageId: string }) {
       href={`/academy/${pageId}`}
     >
       <figure>
-        <img src={metadata.thumbnail} alt={pageId} />
+        <img src={metadata.thumbnail} alt={pageId} className="blur-sm" />
       </figure>
       <div className="card-body">
         <p>{dayjs(metadata.updatedAt).format('MMM DD, YYYY')}</p>
