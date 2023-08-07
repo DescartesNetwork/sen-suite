@@ -25,11 +25,13 @@ export default function Thumbnail({
         </p>
         <h2 className="card-title">{title}</h2>
         <p className="opacity-60 pb-4">{description}</p>
-        {tags.map((tag) => (
-          <div key={tag} className="badge badge-outline">
-            {tag}
-          </div>
-        ))}
+        <div className="flex flex-row gap-2 items-center">
+          {tags.map((tag) => (
+            <span key={tag} className="badge badge-outline">
+              {tag}
+            </span>
+          ))}
+        </div>
       </div>
     </Link>
   )

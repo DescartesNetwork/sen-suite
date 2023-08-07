@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
 import dayjs from 'dayjs'
+
 import { Pin } from 'lucide-react'
 
 export type SignatureProps = {
@@ -14,7 +15,7 @@ export default function Signature({
 }: SignatureProps) {
   return (
     <Link
-      className="card card-side h-full bg-base-100 rounded-box shadow grid grid-cols-12 gap-4 overflow-clip @container"
+      className="card card-side h-full w-full bg-base-100 rounded-box shadow grid grid-cols-12 gap-4 overflow-clip @container"
       href={`/academy/${pageId}`}
     >
       <figure className="col-span-full @2xl:col-span-6">
@@ -33,11 +34,13 @@ export default function Signature({
         </div>
         <h2 className="card-title">{title}</h2>
         <p className="opacity-60 flex-auto">{description}</p>
-        {tags.map((tag) => (
-          <div key={tag} className="badge badge-outline">
-            {tag}
-          </div>
-        ))}
+        <div className="flex flex-row gap-2 items-center">
+          {tags.map((tag) => (
+            <span key={tag} className="badge badge-outline">
+              {tag}
+            </span>
+          ))}
+        </div>
       </div>
     </Link>
   )
