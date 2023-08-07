@@ -4,7 +4,33 @@ import useSWR from 'swr'
 import { ExtendedRecordMap } from 'notion-types'
 import axios from 'axios'
 
-const LIMIT = 9
+export const LIMIT = 9
+export const TAGS = [
+  {
+    title: '🔥 Recent',
+    tag: '',
+  },
+  {
+    title: 'Ecosystem',
+    tag: 'Ecosystem',
+  },
+  {
+    title: '🎉 Event',
+    tag: 'Event',
+  },
+  {
+    title: 'Coding Camp 2',
+    tag: 'Camp 2',
+  },
+  {
+    title: 'Coding Camp 1',
+    tag: 'Camp 1',
+  },
+  {
+    title: 'Others',
+    tag: 'Others',
+  },
+]
 
 export const useAcademyPaging = (pageIds: string[], metadata: PageMap) => {
   const params = useSearchParams()
@@ -29,9 +55,14 @@ export const useAcademyPaging = (pageIds: string[], metadata: PageMap) => {
   const taggedIds = useMemo(
     () =>
       availableIds.filter((pageId) => {
+        const { tags } = metadata[pageId]
         if (!tag) return true
-        if (metadata[pageId].tags.includes(tag)) return true
-        return false
+        if (tag === 'Others')
+          return !TAGS.map(({ tag }) => tags.includes(tag)).reduce(
+            (a, b) => a || b,
+            false,
+          )
+        return tags.includes(tag)
       }),
     [availableIds, tag, metadata],
   )

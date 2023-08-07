@@ -20,7 +20,7 @@ export default function PageCollection({ block, map }: PageCollectionProps) {
         <Calendar className="w-4 h-4 opacity-60" />
         <p>{dayjs(publishedAt).format('MMMM DD, YYYY')}</p>
       </div>
-      <div className="col-span-full flex flex-row gap-2 items-center">
+      <div className="col-span-full flex flex-row flex-wrap gap-2 items-center">
         <Tag className="w-4 h-4 opacity-60" />
         {tags.map((tag) => (
           <div key={tag} className="badge badge-outline">

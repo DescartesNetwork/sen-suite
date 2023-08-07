@@ -16,39 +16,7 @@ import { ChevronDown, Search } from 'lucide-react'
 import Empty from '@/components/empty'
 import Modal from '@/components/modal'
 
-import { useAcademyPaging } from '@/hooks/academy.hook'
-
-const LIMIT = 5
-export const TAGS = {
-  Recent: {
-    title: '🔥 Recent',
-    tag: '',
-  },
-  LabUpdates: {
-    title: 'Lab Updates',
-    tag: 'Lab Updates',
-  },
-  Technology: {
-    title: '🧑‍💻 Technology',
-    tag: 'Technology',
-  },
-  Desig101: {
-    title: 'Desig 1️⃣ 0️⃣ 1️⃣',
-    tag: 'Desig 101',
-  },
-  Campaigns: {
-    title: 'Campaigns',
-    tag: 'Campaigns',
-  },
-  PressReleases: {
-    title: '📰 Press Releases',
-    tag: 'Press Releases',
-  },
-  Others: {
-    title: 'Others',
-    tag: 'Others',
-  },
-}
+import { LIMIT, TAGS, useAcademyPaging } from '@/hooks/academy.hook'
 
 export type NavigationProps = {
   pageIds: string[]
@@ -117,7 +85,7 @@ export default function Navigation({ pageIds, metadata }: NavigationProps) {
   return (
     <div className="flex flex-row items-center">
       <div className="flex-auto flex flex-row gap-2 overflow-auto no-scrollbar">
-        {Object.values(TAGS).map(({ title, tag }) => (
+        {TAGS.map(({ title, tag }) => (
           <Link
             key={tag}
             className={

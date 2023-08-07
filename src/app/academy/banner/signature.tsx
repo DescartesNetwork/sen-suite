@@ -34,7 +34,7 @@ export default function Signature({
         </div>
         <h2 className="card-title">{title}</h2>
         <p className="opacity-60 flex-auto">{description}</p>
-        <div className="flex flex-row gap-2 items-center">
+        <div className="flex flex-row flex-wrap gap-2 items-center">
           {tags.map((tag) => (
             <span key={tag} className="badge badge-outline">
               {tag}

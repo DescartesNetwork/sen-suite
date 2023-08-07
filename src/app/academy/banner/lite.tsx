@@ -25,7 +25,7 @@ export default function Lite({
           <Pin className="w-4 h-4" />
         </div>
         <p className="flex-auto font-bold">{title}</p>
-        <div className="flex flex-row gap-2 items-center">
+        <div className="flex flex-row flex-wrap gap-2 items-center">
           {tags.map((tag) => (
             <span key={tag} className="badge badge-outline">
               {tag}
