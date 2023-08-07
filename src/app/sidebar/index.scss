@@ -41,3 +41,16 @@
 .sidebar.horizontal {
   @apply w-full z-30;
 }
+
+.overlay {
+  @apply fixed w-[100vw] h-[100dvh] top-0 left-0 bg-base-300 opacity-60 backdrop-blur-xl cursor-pointer transition-all z-40 hidden;
+
+  @responsive {
+    &.mobile {
+      @apply hidden;
+    }
+    &.mobile.open {
+      @apply block;
+    }
+  }
+}

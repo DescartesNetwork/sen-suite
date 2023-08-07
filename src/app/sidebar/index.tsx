@@ -90,10 +90,7 @@ export default function Sidebar({ children }: SidebarProps) {
     <Fragment>
       {/* Overlay */}
       <div
-        className={
-          'fixed w-[100vw] h-[100dvh] top-0 left-0 bg-base-300 opacity-60 backdrop-blur-xl cursor-pointer transition-all z-40' +
-          (!open ? ' hidden' : '')
-        }
+        className={'overlay max-md:mobile' + (open ? ' open' : '')}
         onClick={() => setOpen(false)}
       />
       {/* Sidebar */}
