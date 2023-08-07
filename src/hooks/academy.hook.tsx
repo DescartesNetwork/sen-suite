@@ -19,6 +19,10 @@ export const TAGS = [
     tag: 'Event',
   },
   {
+    title: 'SenSwap',
+    tag: 'SenSwap',
+  },
+  {
     title: '🧑‍💻 Coding Camp II',
     tag: 'Camp 2',
   },
