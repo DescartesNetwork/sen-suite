@@ -41,17 +41,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap"
           rel="stylesheet"
         />
-        {/* Google Analytics */}
-        <Script
-          async
-          src="https://www.googletagmanager.com/gtag/js?id=G-G57JYZBDBP"
-        />
-        <Script id="google-analytics">
-          {`window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-G57JYZBDBP');`}
-        </Script>
       </head>
       <body className="w-full flex flex-row">
         <UiProvider>
@@ -64,6 +53,17 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             </MintProvider>
           </WalletProvider>
         </UiProvider>
+        {/* Google Analytics */}
+        <Script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-G57JYZBDBP"
+        />
+        <Script id="google-analytics">
+          {`window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-G57JYZBDBP');`}
+        </Script>
       </body>
     </html>
   )
