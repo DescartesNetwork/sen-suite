@@ -8,7 +8,8 @@ import FarmingSearch from './search'
 import FarmingProvider from '@/providers/farming.provider'
 
 export const metadata: Metadata = {
-  title: 'SenFarming - v2 | Boost your TVL and NFT utility along each other.',
+  title: 'SenFarming',
+  description: 'Boost your TVL and NFT utility along each other.',
 }
 
 export default function FarmingLayout({ children }: { children: ReactNode }) {
