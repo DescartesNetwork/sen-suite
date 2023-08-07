@@ -4,7 +4,7 @@ import dayjs from 'dayjs'
 import { MintAmount, MintLogo, MintSymbol } from '@/components/mint'
 import StatusTag, { ReceiptState } from './statusTag'
 
-import { ReceiveItem, FORMAT_DATE } from './page'
+import { ReceiveItem } from './page'
 import { shortenAddress } from '@/helpers/utils'
 import { useClaim } from '@/hooks/airdrop.hook'
 import { usePushMessage } from '@/components/message/store'
@@ -39,9 +39,13 @@ const RewardCard = (props: ReceiveItem) => {
   return (
     <tr className="hover cursor-pointer">
       <td>
-        {!startTime ? 'Immediately' : dayjs(startTime).format(FORMAT_DATE)}
+        {!startTime
+          ? 'Immediately'
+          : dayjs(startTime).format('DD/MM/YYYY, hh:mm')}
       </td>
-      <td>{!endedAt ? 'Unlimited' : dayjs(endedAt).format(FORMAT_DATE)}</td>
+      <td>
+        {!endedAt ? 'Unlimited' : dayjs(endedAt).format('DD/MM/YYYY, hh:mm')}
+      </td>
       <td>{shortenAddress(sender)}</td>
       <td>
         <div className="flex gap-2 items-center">

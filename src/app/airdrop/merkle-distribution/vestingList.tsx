@@ -15,7 +15,7 @@ const data: ReceiveItem[][] = [
   [
     {
       status: ReceiptState.waiting,
-      distributor: '5gHxpdyoirFphGW8kprP63AqiAxYTB2PdUqUQUosUeUJ',
+      distributor: '23423423',
       mintAddress: 'SENBBKVCM7homnf5RX9zqpf1GFe935hnbU4uVzY1Y6M',
       endedAt: 0,
       sender: 'Cs6jYywHTAgdvjxn8xG4VkJJH8DXXy7zbtatzMUWoCMG',
@@ -34,7 +34,7 @@ const data: ReceiveItem[][] = [
     },
     {
       status: ReceiptState.expired,
-      distributor: '5gHxpdyoirFphGW8kprP63AqiAxYTB2PdUqUQUosUeUJ',
+      distributor: '342',
       mintAddress: 'SENBBKVCM7homnf5RX9zqpf1GFe935hnbU4uVzY1Y6M',
       endedAt: 0,
       sender: 'Cs6jYywHTAgdvjxn8xG4VkJJH8DXXy7zbtatzMUWoCMG',
@@ -74,7 +74,7 @@ const data: ReceiveItem[][] = [
     },
     {
       status: ReceiptState.claimed,
-      distributor: '5gHxpdyoirFphGW8kprP63AqiAxYTB2PdUqUQUosUeUJ',
+      distributor: '23423555',
       mintAddress: 'SENBBKVCM7homnf5RX9zqpf1GFe935hnbU4uVzY1Y6M',
       endedAt: 0,
       sender: 'Cs6jYywHTAgdvjxn8xG4VkJJH8DXXy7zbtatzMUWoCMG',

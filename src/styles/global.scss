@@ -19,3 +19,14 @@ html {
     font-size: 16px;
   }
 }
+
+// Custom css Date picker
+.react-datepicker__calendar-icon {
+  padding: 0 !important;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 8px;
+}
+.react-datepicker__view-calendar-icon input {
+  padding: 8px;
+}

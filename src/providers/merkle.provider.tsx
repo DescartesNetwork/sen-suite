@@ -27,8 +27,8 @@ export type RecipientData = {
 }
 
 export type Configs = {
-  unlockTime: string
-  expirationTime: string
+  unlockTime: number
+  expiration: number
 }
 
 export type MerkleStore = {
@@ -37,12 +37,12 @@ export type MerkleStore = {
   receipts: Record<string, ReceiptData>
   upsertReceipt: (address: string, newReceipt: ReceiptData) => void
   recipients: RecipientData[]
-  upsertRecipient: (newRecipient: RecipientData) => void
-  removeRecipient: (address: string) => void
+  setRecipients: (newRecipient: RecipientData[]) => void
   mintAddress: string
   setMintAddress: (mintAddress: string) => void
   configs: Configs
   upsertConfigs: (data: Partial<Configs>) => void
+  destroy: () => void
 }
 
 export const useMerkleStore = create<MerkleStore>()(
@@ -67,38 +67,30 @@ export const useMerkleStore = create<MerkleStore>()(
           'upsertReceipt',
         ),
       recipients: [],
-      upsertRecipient: (newRecipient: RecipientData) =>
-        set(
-          produce<MerkleStore>(({ recipients }) => {
-            const i = recipients.findIndex(
-              ({ address }) => address === newRecipient.address,
-            )
-            if (i !== -1)
-              recipients[i].amount = recipients[i].amount + newRecipient.amount
-            else recipients.push(newRecipient)
-          }),
-        ),
-      removeRecipient: (address: string) =>
-        set(
-          produce<MerkleStore>(({ recipients }) => {
-            const i = recipients.findIndex(
-              (recipient) => address === recipient.address,
-            )
-            if (i !== -1) recipients.splice(i, 1)
-          }),
-        ),
+      setRecipients: (newRecipients: RecipientData[]) =>
+        set({ recipients: newRecipients }, false, 'setRecipients'),
       mintAddress: '',
       setMintAddress: (mintAddress) =>
         set({ mintAddress }, false, 'setMintAddress'),
       configs: {
-        unlockTime: '',
-        expirationTime: '',
+        unlockTime: Date.now(),
+        expiration: 0,
       },
       upsertConfigs: (data: Partial<Configs>) =>
         set(
           produce<MerkleStore>(({ configs }) => {
             Object.assign(configs, data)
           }),
+        ),
+      destroy: () =>
+        set(
+          {
+            recipients: [],
+            configs: { unlockTime: Date.now(), expiration: 0 },
+            mintAddress: '',
+          },
+          false,
+          'destroy',
         ),
     }),
     {
@@ -172,11 +164,10 @@ export const useMyDistributes = () => {
     const airdrops: string[] = []
     const vesting: string[] = []
     if (!publicKey) return { airdrops, vesting }
-    const walletAddress = publicKey.toBase58()
 
     for (const address in distributors) {
       const { authority } = distributors[address]
-      if (authority.toBase58() !== walletAddress) continue
+      if (!authority.equals(publicKey)) continue
 
       const metadata = await getMetadata(address)
       const root = MerkleDistributor.fromBuffer(Buffer.from(metadata.data))
@@ -205,18 +196,19 @@ export const useMyReceivedList = () => {
 
   const { value, error, loading } = useAsync(async () => {
     if (!publicKey || !utility) return {}
-    const walletAddress = publicKey.toBase58()
     const result: Record<string, Array<Leaf & { receiptAddress: string }>> = {}
 
     for (const address in distributors) {
       const metadata = await getMetadata(address)
-      const root = MerkleDistributor.fromBuffer(Buffer.from(metadata.data))
+      if (!metadata.data) continue
+      const root = MerkleDistributor.fromBuffer(
+        Buffer.from(metadata.data || metadata.data.data),
+      )
       const merkleType = parseMerkleType(root)
       if (!merkleType) continue
-
       const recipients = await Promise.all(
         root.receipients
-          .filter(({ authority }) => authority.toBase58() === walletAddress)
+          .filter(({ authority }) => authority.equals(publicKey))
           .map(async (recipient) => {
             const receiptAddress = await utility.deriveReceiptAddress(
               recipient.salt,
@@ -228,7 +220,6 @@ export const useMyReceivedList = () => {
 
       if (recipients.length) result[address] = recipients
     }
-
     return result
   }, [distributors, publicKey])
 
@@ -250,14 +241,27 @@ export const useMyReceipts = () => {
  */
 export const useRecipients = () => {
   const recipients = useMerkleStore(({ recipients }) => recipients)
-  const upsertRecipient = useMerkleStore(
-    ({ upsertRecipient }) => upsertRecipient,
-  )
-  const removeRecipient = useMerkleStore(
-    ({ removeRecipient }) => removeRecipient,
+  const setRecipients = useMerkleStore(({ setRecipients }) => setRecipients)
+
+  const upsertRecipient = useCallback(
+    (recipient: RecipientData) => {
+      const nextRecipients = [...recipients]
+      nextRecipients.push(recipient)
+      return setRecipients(nextRecipients)
+    },
+    [recipients, setRecipients],
   )
 
-  return { upsertRecipient, removeRecipient, recipients }
+  const removeRecipient = useCallback(
+    (index: number) => {
+      const nextRecipients = [...recipients]
+      nextRecipients.splice(index, 1)
+      return setRecipients(nextRecipients)
+    },
+    [recipients, setRecipients],
+  )
+
+  return { upsertRecipient, removeRecipient, setRecipients, recipients }
 }
 
 /**

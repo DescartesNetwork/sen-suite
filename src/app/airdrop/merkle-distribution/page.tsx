@@ -18,8 +18,6 @@ export type ReceiveItem = {
   leaf: Leaf
 }
 
-export const FORMAT_DATE = 'DD/MM/YYYY, h:mm A'
-
 export default function MerkleDistribution() {
   const distributors = useDistributors()
   const { receivedList } = useMyReceivedList()

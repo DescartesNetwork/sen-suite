@@ -1,8 +1,8 @@
 'use client'
-import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 
+import Link from 'next/link'
 import {
   ChevronLeft,
   DownloadCloud,
@@ -10,20 +10,29 @@ import {
   ScrollText,
 } from 'lucide-react'
 
+enum MenuKey {
+  Dashboard,
+  Airdrop,
+  Vesting,
+}
+
 const menus = [
   {
     route: '/airdrop/merkle-distribution',
     name: 'Dashboard',
+    key: MenuKey.Dashboard,
     Logo: LayoutDashboard,
   },
   {
     route: '/airdrop/merkle-distribution/airdrop',
     name: 'Airdrop',
+    key: MenuKey.Airdrop,
     Logo: DownloadCloud,
   },
   {
     route: '/airdrop/merkle-distribution/vesting',
     name: 'Vesting',
+    key: MenuKey.Vesting,
     Logo: ScrollText,
   },
 ]
@@ -38,15 +47,22 @@ export default function MerkleDistributionHeader() {
     return push(hops.join('/'))
   }, [push, pathname])
 
+  const activeKey = useMemo(() => {
+    if (pathname === '/airdrop/merkle-distribution') return MenuKey.Dashboard
+    const hops = pathname.split('/')
+    if (hops.slice(2, hops.length).includes('airdrop')) return MenuKey.Airdrop
+    return MenuKey.Vesting
+  }, [pathname])
+
   return (
     <div className="card bg-base-100 p-4 flex-row items-center">
       <div className="flex-auto flex gap-10">
-        {menus.map(({ Logo, name, route }, i) => (
+        {menus.map(({ Logo, name, route, key }, i) => (
           <Link
             href={route}
             key={i}
             className={
-              pathname === route
+              activeKey === key
                 ? 'border-b-2 border-primary pb-2 text-primary'
                 : 'hover:border-b-2 border-primary pb-2'
             }

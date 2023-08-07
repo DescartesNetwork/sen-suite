@@ -5,8 +5,8 @@ import {
   useConnection,
   useWallet,
 } from '@solana/wallet-adapter-react'
-import { Transaction } from '@solana/web3.js'
-import { encode } from 'bs58'
+import { PublicKey, Transaction } from '@solana/web3.js'
+import { decode, encode } from 'bs58'
 import BN from 'bn.js'
 import axios from 'axios'
 
@@ -14,9 +14,16 @@ import solConfig from '@/configs/sol.config'
 import { decimalize } from '@/helpers/decimals'
 import { useMints } from './spl.hook'
 import { isAddress } from '@/helpers/utils'
-import { useDistributors, useMyReceipts } from '@/providers/merkle.provider'
-import { MetadataBackup, toFilename } from '@/helpers/aws'
+import {
+  useDistributeConfigs,
+  useDistributeMintAddress,
+  useDistributors,
+  useMyReceipts,
+  useRecipients,
+} from '@/providers/merkle.provider'
+import { MetadataBackup, toFilename, uploadFileToAws } from '@/helpers/aws'
 import { ReceiptState } from '@/app/airdrop/merkle-distribution/statusTag'
+import { useMintByAddress } from '@/providers/mint.provider'
 
 /**
  * Instantiate a utility
@@ -142,14 +149,18 @@ export const useMerkleMetadata = () => {
   const distributors = useDistributors()
   const getMetadata = useCallback(
     async (distributor: string) => {
-      const { metadata } = distributors[distributor]
-      let cid = encode(Buffer.from(metadata))
-      if (MetadataBackup[distributor]) cid = MetadataBackup[distributor]
+      try {
+        const { metadata } = distributors[distributor]
+        let cid = encode(Buffer.from(metadata))
+        if (MetadataBackup[distributor]) cid = MetadataBackup[distributor]
 
-      const fileName = toFilename(cid)
-      const url = 'https://sen-storage.s3.us-west-2.amazonaws.com/' + fileName
-      const { data } = await axios.get(url)
-      return data
+        const fileName = toFilename(cid)
+        const url = 'https://sen-storage.s3.us-west-2.amazonaws.com/' + fileName
+        const { data } = await axios.get(url)
+        return data
+      } catch (error) {
+        return { data: '', createdAt: 0 }
+      }
     },
     [distributors],
   )
@@ -188,6 +199,28 @@ export const useReceiptStatus = () => {
   return getReceiptStatus
 }
 
+/**
+ * Get total value distribute and quantity of recipients
+ * @returns quantity of recipients & total distribute
+ */
+export const useTotalDistribute = () => {
+  const { recipients } = useRecipients()
+  const { mintAddress } = useDistributeMintAddress()
+
+  const { decimals } = useMintByAddress(mintAddress) || { decimals: 0 }
+
+  const total = useMemo(
+    () =>
+      recipients.reduce(
+        (pre, curr) => pre.add(decimalize(curr.amount, decimals)),
+        new BN(0),
+      ),
+    [decimals, recipients],
+  )
+
+  return { total, quantity: recipients.length }
+}
+
 export const useClaim = (distributor: string, recipientData: Leaf) => {
   const getMetadata = useMerkleMetadata()
   const utility = useUtility()
@@ -212,4 +245,66 @@ export const useClaim = (distributor: string, recipientData: Leaf) => {
   }, [distributor, getMetadata, recipientData, utility])
 
   return onClaim
+}
+
+export const useInitMerkleTree = () => {
+  const { recipients } = useRecipients()
+  const {
+    configs: { expiration },
+  } = useDistributeConfigs()
+  const { mintAddress } = useDistributeMintAddress()
+  const { decimals } = useMintByAddress(mintAddress) || { decimals: 0 }
+  const utility = useUtility()
+
+  const toUnitTime = useCallback((time: number) => {
+    const unitDate = new Date(time).toUTCString()
+    const unitTime = new Date(unitDate).getTime()
+    return unitTime
+  }, [])
+
+  const onInitMerkleTree = useCallback(async () => {
+    if (!utility) return
+
+    // Build tree
+    const leafs: Leaf[] = recipients.map(
+      ({ address, unlockTime, amount }, i) => {
+        const unitTime = toUnitTime(unlockTime)
+        return {
+          amount: decimalize(amount, decimals),
+          authority: new PublicKey(address),
+          startedAt: new BN(unitTime / 1000),
+          salt: MerkleDistributor.salt(
+            `lightning_tunnel/airdrop/${i.toString()}`,
+          ),
+        }
+      },
+    )
+    const merkleDistributor = new MerkleDistributor(leafs)
+    const data = {
+      createAt: Math.floor(Date.now() / 1000),
+      data: merkleDistributor.toBuffer(),
+    }
+    const blob = [
+      new Blob([JSON.stringify({ ...data }, null, 2)], {
+        type: 'application/json',
+      }),
+    ]
+
+    const file = new File(blob, 'metadata.txt')
+    const cid = await uploadFileToAws(file)
+    const { txId } = await utility.initializeDistributor({
+      tokenAddress: mintAddress,
+      total: merkleDistributor.getTotal(),
+      merkleRoot: merkleDistributor.deriveMerkleRoot(),
+      metadata: decode(cid),
+      endedAt: expiration / 1000,
+      feeOptions: {
+        fee: new BN(solConfig.fee),
+        feeCollectorAddress: solConfig.taxman,
+      },
+    })
+    return txId || ''
+  }, [decimals, expiration, mintAddress, recipients, toUnitTime, utility])
+
+  return onInitMerkleTree
 }

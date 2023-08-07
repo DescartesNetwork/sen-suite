@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react'
 
 import InputMetadata from './inputMetadata'
 import InputRecipient from './inputRecipient'
-import Confirm from './confirm'
+import CreateMerkle from '../../createMerkle'
 
 export enum CreateStep {
   InputMetadata,
@@ -19,9 +19,9 @@ const AddNew = () => {
       case CreateStep.InputMetadata:
         return <InputMetadata setStep={setStep} />
       case CreateStep.InputRecipients:
-        return <InputRecipient />
+        return <InputRecipient setStep={setStep} />
       case CreateStep.Confirm:
-        return <Confirm />
+        return <CreateMerkle setStep={setStep} />
     }
   }, [step])
 

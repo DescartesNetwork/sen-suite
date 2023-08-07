@@ -7,8 +7,9 @@ import { isAddress } from '@/helpers/utils'
 type EditRecipientProps = {
   index?: string
   amount?: string
-  onAmount?: (amount: string) => void
   address?: string
+  warning?: boolean
+  onAmount?: (amount: string) => void
   onAddress?: (address: string) => void
   onAdd?: () => void
   onRemove?: () => void
@@ -17,14 +18,20 @@ type EditRecipientProps = {
 const EditRecipient = ({
   index = '',
   amount = '',
-  onAmount = () => {},
   address = '',
+  warning = false,
+  onAmount = () => {},
   onAddress = () => {},
   onAdd = () => {},
   onRemove = () => {},
 }: EditRecipientProps) => {
   const Icon = useMemo(() => (!index ? UserPlus : Trash), [index])
   const onHandle = index ? onRemove : onAdd
+
+  const color = useMemo(() => {
+    if (warning) return ' bg-warning text-warning-content'
+    else return ' bg-base-200'
+  }, [warning])
 
   return (
     <div className="flex flex-col gap-2">
@@ -34,14 +41,14 @@ const EditRecipient = ({
           <input
             type="text"
             placeholder="Receiver address"
-            className="col-span-8 join-item input focus:outline-0 p-3 bg-base-200"
+            className={'col-span-8 join-item input focus:outline-0 p-3' + color}
             value={address}
             onChange={(e) => onAddress(e.target.value)}
           />
           <input
             type="number"
             placeholder="Amount"
-            className="col-span-4 join-item input focus:outline-0 p-3 bg-base-200"
+            className={'col-span-4 join-item input focus:outline-0 p-3' + color}
             value={amount}
             onChange={(e) => onAmount(e.target.value)}
           />
