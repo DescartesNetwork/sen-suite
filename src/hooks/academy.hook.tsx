@@ -20,7 +20,7 @@ export const useAcademyPaging = (pageIds: string[], metadata: PageMap) => {
   )
 
   const pinnedIds = useMemo(() => {
-    return pageIds.filter((pageId) => {
+    return availableIds.filter((pageId) => {
       const { pinned } = metadata[pageId]
       return pinned
     })

@@ -40,6 +40,10 @@ export const TAGS = {
     title: 'Campaigns',
     tag: 'Campaigns',
   },
+  PressReleases: {
+    title: '📰 Press Releases',
+    tag: 'Press Releases',
+  },
   Others: {
     title: 'Others',
     tag: 'Others',
