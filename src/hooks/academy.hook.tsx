@@ -15,8 +15,8 @@ export const TAGS = [
     tag: 'Ecosystem',
   },
   {
-    title: '🎉 Event',
-    tag: 'Event',
+    title: '🎉 Events',
+    tag: 'Events',
   },
   {
     title: 'SenSwap',
