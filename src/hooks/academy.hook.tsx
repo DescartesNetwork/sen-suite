@@ -10,24 +10,32 @@ export const useAcademyPaging = (pageIds: string[], metadata: PageMap) => {
   const params = useSearchParams()
   const tag = params.get('tag') || ''
   const page = Number(params.get('page')) || 1
+  const availableIds = useMemo(
+    () =>
+      pageIds.filter((pageId) => {
+        const { publishedAt } = metadata[pageId]
+        return publishedAt < Date.now()
+      }),
+    [pageIds, metadata],
+  )
 
   const pinnedIds = useMemo(() => {
     return pageIds.filter((pageId) => {
       const { pinned } = metadata[pageId]
       return pinned
     })
-  }, [pageIds, metadata])
+  }, [availableIds, metadata])
 
-  const total = useMemo(() => pageIds.length, [pageIds])
   const taggedIds = useMemo(
     () =>
-      pageIds.filter((pageId) => {
+      availableIds.filter((pageId) => {
         if (!tag) return true
         if (metadata[pageId].tags.includes(tag)) return true
         return false
       }),
-    [pageIds, tag, metadata],
+    [availableIds, tag, metadata],
   )
+  const total = useMemo(() => taggedIds.length, [taggedIds])
   const thumbnailIds = useMemo(() => {
     return taggedIds.slice((page - 1) * LIMIT, Math.min(page * LIMIT, total))
   }, [taggedIds, page, total])
