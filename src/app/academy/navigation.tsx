@@ -32,7 +32,7 @@ export default function Navigation({ pageIds, metadata }: NavigationProps) {
     [],
   )
   const ref = useRef<HTMLInputElement>(null)
-  const { tag: activeTag, page } = useAcademyPaging(pageIds, metadata)
+  const { tag: activeTag } = useAcademyPaging(pageIds, metadata)
 
   const engine = useMemo(() => {
     const data = Object.keys(metadata).map((id) => ({ id, ...metadata[id] }))
@@ -42,14 +42,6 @@ export default function Navigation({ pageIds, metadata }: NavigationProps) {
     })
     return fuse
   }, [metadata])
-
-  const onHref = useCallback(
-    (tag: string) =>
-      !tag
-        ? { pathname: '/academy', query: { page } }
-        : { pathname: '/academy', query: { tag, page } },
-    [page],
-  )
 
   const onKeyword = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     setKeyword(e.target.value)
@@ -92,7 +84,10 @@ export default function Navigation({ pageIds, metadata }: NavigationProps) {
               'btn rounded-full ' +
               (tag === activeTag ? 'btn-neutral' : 'btn-ghost')
             }
-            href={onHref(tag)}
+            href={{
+              pathname: '/academy',
+              query: !tag ? { page: 1 } : { tag, page: 1 },
+            }}
           >
             {title}
           </Link>

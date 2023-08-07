@@ -19,11 +19,11 @@ export const TAGS = [
     tag: 'Event',
   },
   {
-    title: 'Coding Camp 2',
+    title: '🧑‍💻 Coding Camp II',
     tag: 'Camp 2',
   },
   {
-    title: 'Coding Camp 1',
+    title: 'Coding Camp I',
     tag: 'Camp 1',
   },
   {
