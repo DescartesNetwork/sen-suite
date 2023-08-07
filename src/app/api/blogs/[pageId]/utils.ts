@@ -30,7 +30,7 @@ export const extractProperties = (
     tags,
     title,
     description,
-    thumbnail: thumbnail || 'https://placehold.co/600x400',
+    thumbnail: thumbnail || 'https://placehold.co/1600x900',
     pinned,
   }
 }
