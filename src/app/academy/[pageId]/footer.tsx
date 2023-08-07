@@ -20,7 +20,7 @@ function Recommend({ pageId }: { pageId: string }) {
         <img src={metadata.thumbnail} alt={pageId} className="blur-sm" />
       </figure>
       <div className="card-body">
-        <p>{dayjs(metadata.updatedAt).format('MMM DD, YYYY')}</p>
+        <p>{dayjs(metadata.publishedAt).format('MMM DD, YYYY')}</p>
         <h2 className="card-title">{metadata.title}</h2>
         <p>{metadata.description}</p>
       </div>

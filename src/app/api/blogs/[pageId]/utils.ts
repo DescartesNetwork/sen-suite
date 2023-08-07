@@ -14,7 +14,7 @@ export const extractProperties = (
   pageId?: string,
 ): PageMetadata => {
   const title = getBlockTitle(block, map)
-  const updatedAt = getPageProperty<number>('Date', block, map) || Date.now()
+  const publishedAt = getPageProperty<number>('Date', block, map) || Date.now()
   const tags = getPageProperty<string[]>('Tags', block, map) || []
   const description = getPageProperty<string>('Description', block, map) || ''
   const [thumbnail] = getPageImageUrls(map, {
@@ -26,7 +26,7 @@ export const extractProperties = (
   const pinned = getPageProperty<boolean>('Pinned', block, map) || false
 
   return {
-    updatedAt,
+    publishedAt,
     tags,
     title,
     description,

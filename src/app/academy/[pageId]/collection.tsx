@@ -11,14 +11,14 @@ export type PageCollectionProps = {
 }
 
 export default function PageCollection({ block, map }: PageCollectionProps) {
-  const updatedAt = getPageProperty<number>('Date', block, map) || Date.now()
+  const publishedAt = getPageProperty<number>('Date', block, map) || Date.now()
   const tags = getPageProperty<string[]>('Tags', block, map) || []
 
   return (
     <div className="grid grid-cols-12 gap-2 w-full">
       <div className="col-span-full flex flex-row gap-2 items-center">
         <Calendar className="w-4 h-4 opacity-60" />
-        <p>{dayjs(updatedAt).format('MMMM DD, YYYY')}</p>
+        <p>{dayjs(publishedAt).format('MMMM DD, YYYY')}</p>
       </div>
       <div className="col-span-full flex flex-row gap-2 items-center">
         <Tag className="w-4 h-4 opacity-60" />

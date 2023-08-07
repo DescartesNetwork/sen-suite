@@ -14,23 +14,22 @@ export const getDatabase = async () => {
     } = block[pageId]
     if (type !== 'page' || parent_table !== 'collection') delete block[pageId]
   })
-  const pageIds = Object.keys(block).sort((prevPageId, nextPageId) => {
-    const {
-      value: { created_time: prevCreatedTime },
-    } = block[prevPageId]
-    const {
-      value: { created_time: nextCreatedTime },
-    } = block[nextPageId]
-    if (prevCreatedTime < nextCreatedTime) return 1
-    else if (prevCreatedTime > nextCreatedTime) return -1
-    else return 0
-  })
 
+  // Metadata
   const metadata: PageMap = {}
-  pageIds.forEach((pageId) => {
+  Object.keys(block).forEach((pageId) => {
     const { value } = block[pageId]
     const page = extractProperties(value, map, pageId)
     metadata[pageId] = page
+  })
+
+  // Sorted pages
+  const pageIds = Object.keys(block).sort((prevPageId, nextPageId) => {
+    const { publishedAt: prevPublishedTime } = metadata[prevPageId]
+    const { publishedAt: nextPublishedTime } = metadata[nextPageId]
+    if (prevPublishedTime < nextPublishedTime) return 1
+    else if (prevPublishedTime > nextPublishedTime) return -1
+    else return 0
   })
 
   return { pageIds, metadata }

@@ -11,7 +11,7 @@ export type SignatureProps = {
 
 export default function Signature({
   pageId,
-  metadata: { updatedAt, tags, title, description, thumbnail },
+  metadata: { publishedAt, tags, title, description, thumbnail },
 }: SignatureProps) {
   return (
     <Link
@@ -28,7 +28,7 @@ export default function Signature({
       <div className="col-span-full @2xl:col-span-6 flex flex-col gap-4 p-8">
         <div className="flex flex-row gap-2 items-center">
           <p className="flex-auto text-sm opacity-60">
-            {dayjs(updatedAt).format('MMM DD, YYYY')}
+            {dayjs(publishedAt).format('MMM DD, YYYY')}
           </p>
           <Pin className="w-4 h-4" />
         </div>

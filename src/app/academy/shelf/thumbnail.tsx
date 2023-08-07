@@ -9,7 +9,7 @@ export type ThumbnailProps = {
 
 export default function Thumbnail({
   pageId,
-  metadata: { updatedAt, tags, title, description, thumbnail },
+  metadata: { publishedAt, tags, title, description, thumbnail },
 }: ThumbnailProps) {
   return (
     <Link
@@ -21,7 +21,7 @@ export default function Thumbnail({
       </figure>
       <div className="card-body">
         <p className="text-sm opacity-60">
-          {dayjs(updatedAt).format('MMM DD, YYYY')}
+          {dayjs(publishedAt).format('MMM DD, YYYY')}
         </p>
         <h2 className="card-title">{title}</h2>
         <p className="opacity-60 pb-4">{description}</p>

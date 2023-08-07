@@ -17,7 +17,7 @@ type MintMetadata = {
 
 type PageMetadata = {
   title: string
-  updatedAt: number
+  publishedAt: number
   tags: string[]
   description: string
   thumbnail: string

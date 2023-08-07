@@ -159,7 +159,7 @@ export default function Navigation({ pageIds, metadata }: NavigationProps) {
             )}
             {results
               .slice(0, limit)
-              .map(({ id, title, description, updatedAt }) => (
+              .map(({ id, title, description, publishedAt }) => (
                 <Link
                   key={id}
                   className="col-span-full bg-base-200 rounded-xl p-4"
@@ -168,7 +168,7 @@ export default function Navigation({ pageIds, metadata }: NavigationProps) {
                   <p className="font-bold">{title}</p>
                   <p className="opacity-60 text-sm">{description}</p>
                   <p className="w-full text-end opacity-60 text-xs">
-                    {dayjs(updatedAt).format('MMM DD, YYYY')}
+                    {dayjs(publishedAt).format('MMM DD, YYYY')}
                   </p>
                 </Link>
               ))}

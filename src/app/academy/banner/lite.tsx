@@ -10,7 +10,7 @@ export type LiteProps = {
 
 export default function Lite({
   pageId,
-  metadata: { updatedAt, tags, title },
+  metadata: { publishedAt, tags, title },
 }: LiteProps) {
   return (
     <Link
@@ -20,7 +20,7 @@ export default function Lite({
       <div className="w-full flex flex-col gap-4 p-6">
         <div className="flex flex-row gap-2 items-center">
           <p className="flex-auto text-sm opacity-60">
-            {dayjs(updatedAt).format('MMM DD, YYYY')}
+            {dayjs(publishedAt).format('MMM DD, YYYY')}
           </p>
           <Pin className="w-4 h-4" />
         </div>
