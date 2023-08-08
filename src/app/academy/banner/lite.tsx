@@ -22,7 +22,7 @@ export default function Lite({
           <p className="flex-auto text-sm opacity-60">
             {dayjs(publishedAt).format('MMM DD, YYYY')}
           </p>
-          <Pin className="w-4 h-4" />
+          <Pin className="w-4 h-4 fill-inherit" />
         </div>
         <p className="flex-auto font-bold">{title}</p>
         <div className="flex flex-row flex-wrap gap-2 items-center">

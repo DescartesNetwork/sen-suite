@@ -29,13 +29,13 @@ export default function Shelf({ pageIds, metadata }: BannerProps) {
         <div className="col-span-full flex flex-row items-center">
           <Signature pageId={bannerId} metadata={metadata[bannerId]} />
           <button
-            className="btn btn-circle absolute left-4"
+            className="btn btn-circle absolute left-4 shadow-xl"
             onClick={() => setIndex(index - 1)}
           >
             <ArrowLeft />
           </button>
           <button
-            className="btn btn-circle absolute right-4"
+            className="btn btn-circle absolute right-4 shadow-xl"
             onClick={() => setIndex(index + 1)}
           >
             <ArrowRight />
