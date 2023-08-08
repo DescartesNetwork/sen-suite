@@ -1,24 +1,23 @@
+'use client'
+import { useRouter } from 'next/navigation'
+
+import { Plus } from 'lucide-react'
+
 const Vesting = () => {
+  const { push } = useRouter()
+
   return (
-    <div>
-      Vesting
-      <details className="collapse bg-base-100">
-        <summary className="collapse-title text-xl font-medium">
-          Click to open/close
-        </summary>
-        <div className="collapse-content">
-          <table className="table">
-            <tbody>
-              <tr>
-                <th>2</th>
-                <td>Hart Hagerty</td>
-                <td>Desktop Support Technician</td>
-                <td>Purple</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </details>
+    <div className="flex flex-col gap-6">
+      <div className="flex">
+        <h4 className="flex-auto">Vesting</h4>
+        <button
+          className="btn btn-primary"
+          onClick={() => push('/airdrop/merkle-distribution/vesting/add-new')}
+        >
+          <Plus className="h-4 w-4" />
+          Add New
+        </button>
+      </div>
     </div>
   )
 }

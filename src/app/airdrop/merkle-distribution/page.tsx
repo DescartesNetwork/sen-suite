@@ -3,11 +3,11 @@ import { useMemo } from 'react'
 import { Leaf } from '@sentre/utility'
 
 import AirdropList from './airdropList'
+import VestingList from './vestingList'
 
 import { useDistributors, useMyReceivedList } from '@/providers/merkle.provider'
 import { useReceiptStatus } from '@/hooks/airdrop.hook'
-import { ReceiptState } from './statusTag'
-import VestingList from './vestingList'
+import { ReceiptState } from './rewardCard'
 
 export type ReceiveItem = {
   endedAt: number

@@ -3,11 +3,9 @@ import { PublicKey } from '@solana/web3.js'
 import { BN } from 'bn.js'
 
 import { ChevronDown } from 'lucide-react'
+import RewardCard, { ReceiptState } from './rewardCard'
 
 import { ReceiveItem } from './page'
-import { ReceiptState } from './statusTag'
-
-import RewardCard from './rewardCard'
 
 const DEFAULT_AMOUNT = 4
 

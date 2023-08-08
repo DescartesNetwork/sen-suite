@@ -127,7 +127,7 @@ const InputRecipient = ({ setStep }: InputRecipientProps) => {
       <div className="grid grid-cols-2 gap-6">
         <button
           className="btn"
-          onClick={() => setStep(CreateStep.InputMetadata)}
+          onClick={() => setStep(CreateStep.InputConfigs)}
         >
           Cancel
         </button>

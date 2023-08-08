@@ -1,23 +1,23 @@
 'use client'
 import { useMemo, useState } from 'react'
 
-import InputMetadata from './inputMetadata'
+import InputConfigs from './inputConfigs'
 import InputRecipient from './inputRecipient'
 import CreateMerkle from '../../createMerkle'
 
 export enum CreateStep {
-  InputMetadata,
+  InputConfigs,
   InputRecipients,
   Confirm,
 }
 
 const AddNew = () => {
-  const [step, setStep] = useState(CreateStep.InputMetadata)
+  const [step, setStep] = useState(CreateStep.InputConfigs)
 
   const renderPage = useMemo(() => {
     switch (step) {
-      case CreateStep.InputMetadata:
-        return <InputMetadata setStep={setStep} />
+      case CreateStep.InputConfigs:
+        return <InputConfigs setStep={setStep} />
       case CreateStep.InputRecipients:
         return <InputRecipient setStep={setStep} />
       case CreateStep.Confirm:

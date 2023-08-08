@@ -22,8 +22,8 @@ import {
   useRecipients,
 } from '@/providers/merkle.provider'
 import { MetadataBackup, toFilename, uploadFileToAws } from '@/helpers/aws'
-import { ReceiptState } from '@/app/airdrop/merkle-distribution/statusTag'
 import { useMintByAddress } from '@/providers/mint.provider'
+import { ReceiptState } from '@/app/airdrop/merkle-distribution/rewardCard'
 
 /**
  * Instantiate a utility

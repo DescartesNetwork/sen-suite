@@ -18,7 +18,7 @@ import {
 import { isAddress } from '@/helpers/utils'
 import { usePushMessage } from '@/components/message/store'
 
-const InputMetadata = ({ setStep }: { setStep: (val: CreateStep) => void }) => {
+const InputConfigs = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
   const [open, setOpen] = useState(false)
   const [file, setFile] = useState<File>()
   const [unlimited, setUnlimited] = useState(true)
@@ -159,4 +159,4 @@ const InputMetadata = ({ setStep }: { setStep: (val: CreateStep) => void }) => {
   )
 }
 
-export default InputMetadata
+export default InputConfigs
