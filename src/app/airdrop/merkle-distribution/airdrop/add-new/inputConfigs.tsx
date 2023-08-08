@@ -71,7 +71,7 @@ const InputConfigs = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
       <div className="grid md:grid-cols-2 grid-cols-1 gap-6">
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-3">
-            <p>Select a token and template</p>
+            <p className="text-xs opacity-60">Select a token and template</p>
             <div
               className="flex items-center border cursor-pointer rounded-lg p-2"
               onClick={() => setOpen(true)}
@@ -96,9 +96,9 @@ const InputConfigs = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
               onChange={onMintAddress}
             />
           </div>
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-2 gap-6 items-center">
             <div className="flex flex-col gap-3">
-              <p>Unlock time</p>
+              <p className="text-xs opacity-60">Unlock time</p>
               <DatePicker
                 showIcon
                 selected={new Date(unlockTime)}
@@ -113,14 +113,14 @@ const InputConfigs = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
 
             <div className="flex flex-col gap-3">
               <div className="flex items-center">
-                <p className="flex-auto">Expiration time</p>
-                <p className="mr-2">Unlimited</p>
+                <p className="flex-auto text-xs opacity-60">Expiration time</p>
+                <p className="mr-2 text-xs opacity-60">Unlimited</p>
                 <input
                   onChange={(e) => {
                     setUnlimited(e.target.checked)
                     upsertConfigs({ expiration: 0 })
                   }}
-                  className="toggle toggle-sm"
+                  className="toggle toggle-xs"
                   type="checkbox"
                   checked={unlimited}
                 />
