@@ -3,8 +3,7 @@
 @import 'katex/dist/katex.min.css';
 
 .notion {
-  font-family: 'DM Sans', sans-serif;
-
+  font-family: inherit;
   & > * {
     @apply p-0;
   }
