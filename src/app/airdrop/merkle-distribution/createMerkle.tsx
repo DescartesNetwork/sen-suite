@@ -1,11 +1,15 @@
 'use client'
-import { useCallback, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useCallback, useMemo, useState } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 
 import { MintAmount, MintSymbol } from '@/components/mint'
 import CardOverview from './cardOverview'
 
-import { useInitMerkleTree, useTotalDistribute } from '@/hooks/airdrop.hook'
+import {
+  Distribute,
+  useInitMerkleTree,
+  useTotalDistribute,
+} from '@/hooks/airdrop.hook'
 import {
   useDistributeMintAddress,
   useMerkleStore,
@@ -22,8 +26,16 @@ const CreateMerkle = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
 
   const pushMessage = usePushMessage()
   const { push } = useRouter()
+  const pathname = usePathname()
 
-  const initMerkle = useInitMerkleTree()
+  const type = useMemo(() => {
+    const hops = pathname.split('/')
+    if (hops.slice(2, hops.length).includes('airdrop'))
+      return Distribute.Airdrop
+    return Distribute.Vesting
+  }, [pathname])
+
+  const initMerkle = useInitMerkleTree(type)
   const onInitMerkleTree = useCallback(async () => {
     try {
       setLoading(true)
@@ -54,7 +66,7 @@ const CreateMerkle = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
           <MintSymbol mintAddress={mintAddress} />
         </p>
       </div>
-      <CardOverview showExpiration />
+      <CardOverview showUnlock />
       <div className="grid grid-cols-2 gap-6">
         <button
           className="btn"
@@ -62,7 +74,11 @@ const CreateMerkle = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
         >
           Cancel
         </button>
-        <button onClick={onInitMerkleTree} className="btn btn-primary">
+        <button
+          disabled={loading}
+          onClick={onInitMerkleTree}
+          className="btn btn-primary"
+        >
           {loading && <span className="loading loading-spinner loading-xs" />}
           Transfer
         </button>

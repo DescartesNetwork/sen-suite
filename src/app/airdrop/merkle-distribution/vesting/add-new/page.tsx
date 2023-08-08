@@ -18,7 +18,7 @@ const NewVesting = () => {
       case CreateStep.InputConfigs:
         return <InputConfigs setStep={setStep} />
       case CreateStep.InputRecipients:
-        return <InputRecipients />
+        return <InputRecipients setStep={setStep} />
       case CreateStep.Confirm:
         return <CreateMerkle setStep={setStep} />
     }

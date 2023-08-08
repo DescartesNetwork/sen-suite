@@ -247,7 +247,7 @@ export const useClaim = (distributor: string, recipientData: Leaf) => {
   return onClaim
 }
 
-export const useInitMerkleTree = () => {
+export const useInitMerkleTree = (type: Distribute) => {
   const { recipients } = useRecipients()
   const {
     configs: { expiration },
@@ -264,6 +264,7 @@ export const useInitMerkleTree = () => {
 
   const onInitMerkleTree = useCallback(async () => {
     if (!utility) return
+    if (![Distribute.Airdrop, Distribute.Vesting].includes(type)) return
 
     // Build tree
     const leafs: Leaf[] = recipients.map(
@@ -274,7 +275,7 @@ export const useInitMerkleTree = () => {
           authority: new PublicKey(address),
           startedAt: new BN(unitTime / 1000),
           salt: MerkleDistributor.salt(
-            `lightning_tunnel/airdrop/${i.toString()}`,
+            `lightning_tunnel/${type}/${i.toString()}`,
           ),
         }
       },
@@ -304,7 +305,7 @@ export const useInitMerkleTree = () => {
       },
     })
     return txId || ''
-  }, [decimals, expiration, mintAddress, recipients, toUnitTime, utility])
+  }, [decimals, expiration, mintAddress, recipients, toUnitTime, utility, type])
 
   return onInitMerkleTree
 }

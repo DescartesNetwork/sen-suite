@@ -54,6 +54,8 @@ export type MerkleStore = {
   upsertReceipt: (address: string, newReceipt: ReceiptData) => void
   recipients: RecipientData[]
   setRecipients: (newRecipient: RecipientData[]) => void
+  upsertRecipient: (newRecipient: RecipientData) => void
+  removeRecipient: (index: number) => void
   mintAddress: string
   setMintAddress: (mintAddress: string) => void
   configs: Configs
@@ -85,6 +87,22 @@ export const useMerkleStore = create<MerkleStore>()(
       recipients: [],
       setRecipients: (newRecipients: RecipientData[]) =>
         set({ recipients: newRecipients }, false, 'setRecipients'),
+      upsertRecipient: (newRecipient: RecipientData) =>
+        set(
+          produce<MerkleStore>(({ recipients }) => {
+            recipients.push(newRecipient)
+          }),
+          false,
+          'upsertRecipient',
+        ),
+      removeRecipient: (index: number) =>
+        set(
+          produce<MerkleStore>(({ recipients }) => {
+            recipients.splice(index, 1)
+          }),
+          false,
+          'removeRecipient',
+        ),
       mintAddress: '',
       setMintAddress: (mintAddress) =>
         set({ mintAddress }, false, 'setMintAddress'),
@@ -255,23 +273,11 @@ export const useMyReceipts = () => {
 export const useRecipients = () => {
   const recipients = useMerkleStore(({ recipients }) => recipients)
   const setRecipients = useMerkleStore(({ setRecipients }) => setRecipients)
-
-  const upsertRecipient = useCallback(
-    (recipient: RecipientData) => {
-      const nextRecipients = [...recipients]
-      nextRecipients.push(recipient)
-      return setRecipients(nextRecipients)
-    },
-    [recipients, setRecipients],
+  const upsertRecipient = useMerkleStore(
+    ({ upsertRecipient }) => upsertRecipient,
   )
-
-  const removeRecipient = useCallback(
-    (index: number) => {
-      const nextRecipients = [...recipients]
-      nextRecipients.splice(index, 1)
-      return setRecipients(nextRecipients)
-    },
-    [recipients, setRecipients],
+  const removeRecipient = useMerkleStore(
+    ({ removeRecipient }) => removeRecipient,
   )
 
   return { upsertRecipient, removeRecipient, setRecipients, recipients }

@@ -12,10 +12,10 @@ import { useTotalDistribute } from '@/hooks/airdrop.hook'
 
 type CardOverviewProps = {
   showTotal?: boolean
-  showExpiration?: boolean
+  showUnlock?: boolean
 }
 
-const CardOverview = ({ showTotal, showExpiration }: CardOverviewProps) => {
+const CardOverview = ({ showTotal, showUnlock }: CardOverviewProps) => {
   const { mintAddress } = useDistributeMintAddress()
   const {
     configs: { unlockTime, expiration },
@@ -32,20 +32,21 @@ const CardOverview = ({ showTotal, showExpiration }: CardOverviewProps) => {
           <p className="text-sm opacity-60">Recipients</p>
           <p>{quantity}</p>
         </div>
-        <div className="flex flex-col gap-2">
-          <p className="text-sm opacity-60">Unlock time</p>
-          <p> {dayjs(unlockTime).format('DD/MM/YYYY, HH:mm')}</p>
-        </div>
-        {showExpiration && (
+        {showUnlock && (
           <div className="flex flex-col gap-2">
-            <p className="text-sm opacity-60">Expiration time</p>
-            <p>
-              {!expiration
-                ? 'Unlimited'
-                : dayjs(expiration).format('DD/MM/YYYY, HH:mm')}
-            </p>
+            <p className="text-sm opacity-60">Unlock time</p>
+            <p> {dayjs(unlockTime).format('DD/MM/YYYY, HH:mm')}</p>
           </div>
         )}
+
+        <div className="flex flex-col gap-2">
+          <p className="text-sm opacity-60">Expiration time</p>
+          <p>
+            {!expiration
+              ? 'Unlimited'
+              : dayjs(expiration).format('DD/MM/YYYY, HH:mm')}
+          </p>
+        </div>
       </div>
 
       <div className="flex gap-12">

@@ -60,6 +60,15 @@ const InputRecipient = ({ setStep }: InputRecipientProps) => {
     [recipients],
   )
 
+  const errors = useMemo(
+    () =>
+      statuses
+        .map((e) => e === RowStatus.BadAddress || e === RowStatus.BadAmount)
+        .map((e) => (e ? 1 : 0))
+        .reduce<number>((a, b) => a + b, 0),
+    [statuses],
+  )
+
   const onAdd = () => {
     if (!isAddress(address) || !amount) return
     upsertRecipient({ address, amount, unlockTime: configs.unlockTime })
@@ -84,8 +93,8 @@ const InputRecipient = ({ setStep }: InputRecipientProps) => {
   }, [decimals, pushMessage, recipients, setRecipients])
 
   const ok = useMemo(
-    () => quantity && myAmount.gte(total),
-    [myAmount, quantity, total],
+    () => quantity && myAmount.gte(total) && !errors,
+    [errors, myAmount, quantity, total],
   )
 
   return (
@@ -127,11 +136,14 @@ const InputRecipient = ({ setStep }: InputRecipientProps) => {
           />
         ))}
       </div>
-      <CardOverview showExpiration showTotal />
+      <CardOverview showUnlock showTotal />
       <div className="grid grid-cols-2 gap-6">
         <button
           className="btn"
-          onClick={() => setStep(CreateStep.InputConfigs)}
+          onClick={() => {
+            setStep(CreateStep.InputConfigs)
+            setRecipients([])
+          }}
         >
           Cancel
         </button>
