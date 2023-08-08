@@ -9,6 +9,7 @@ import TokenAccountProvider from '@/providers/tokenAccount.provider'
 import Message from '@/components/message'
 import Sidebar from '@/app/sidebar'
 
+import { DMSans } from '@/fonts'
 import '@/styles/global.scss'
 import 'react-datepicker/dist/react-datepicker.css'
 
@@ -29,18 +30,19 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" data-theme="light">
+    <html lang="en" data-theme="light" className={DMSans.className}>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
+        {/* Google Analytics */}
+        <Script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-G57JYZBDBP"
         />
-        <link
-          href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap"
-          rel="stylesheet"
-        />
+        <Script id="google-analytics">
+          {`window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-G57JYZBDBP');`}
+        </Script>
       </head>
       <body>
         <UiProvider>

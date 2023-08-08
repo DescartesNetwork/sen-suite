@@ -45,7 +45,7 @@ export default function Page({
         recordMap={map}
         fullPage={true}
         darkMode={theme === 'dark'}
-        className="col-span-full overflow-clip rounded-3xl ring-1 ring-base-200"
+        className="col-span-full overflow-clip rounded-3xl border border-base-200"
         components={{
           Header: ({ block }: { block: PageBlock }) => (
             <PageHeader block={block} map={map} />

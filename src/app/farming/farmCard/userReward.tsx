@@ -44,14 +44,15 @@ export const useUserRewards = (
     debtAmount,
     pendingRewards,
   ])
-  console.log('to debug:', moTotalRewards.toString())
+
   const rewards = useMemo<Array<{ mintAddress: string; amount: BN }>>(() => {
-    if (!moRewards) return []
+    if (!moRewards || moTotalRewards.isZero()) return []
     return rewardAccounts.map(({ rewardMint, totalRewards }) => ({
       mintAddress: rewardMint.toBase58(),
       amount: moRewards.mul(totalRewards).div(moTotalRewards),
     }))
   }, [rewardAccounts, moTotalRewards, moRewards])
+
   return rewards
 }
 
