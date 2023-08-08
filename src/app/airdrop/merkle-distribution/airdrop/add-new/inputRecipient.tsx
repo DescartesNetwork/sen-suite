@@ -120,6 +120,10 @@ const InputRecipient = ({ setStep }: InputRecipientProps) => {
               statuses[i] === RowStatus.Duplicated ||
               statuses[i] === RowStatus.ZeroAmount
             }
+            error={
+              statuses[i] === RowStatus.BadAddress ||
+              statuses[i] === RowStatus.BadAmount
+            }
           />
         ))}
       </div>

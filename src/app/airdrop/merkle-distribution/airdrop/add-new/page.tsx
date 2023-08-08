@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react'
 
 import InputConfigs from './inputConfigs'
 import InputRecipient from './inputRecipient'
-import CreateMerkle from '../../createMerkle'
+import CreateMerkle from '@/app/airdrop/merkle-distribution/createMerkle'
 
 export enum CreateStep {
   InputConfigs,

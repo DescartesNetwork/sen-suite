@@ -10,6 +10,7 @@ import {
 import { produce } from 'immer'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
+import parseDuration from 'parse-duration'
 
 import {
   Distribute,
@@ -29,6 +30,21 @@ export type RecipientData = {
 export type Configs = {
   unlockTime: number
   expiration: number
+  tgePercent: number
+  tgeTime: number
+  frequency: number
+  distributeIn: number
+  cliff: number
+}
+
+const defaultConfigs: Configs = {
+  cliff: parseDuration('1month')!,
+  distributeIn: parseDuration('6months')!,
+  expiration: 0,
+  frequency: parseDuration('1month')!,
+  tgePercent: 0,
+  tgeTime: 0,
+  unlockTime: Date.now(),
 }
 
 export type MerkleStore = {
@@ -72,10 +88,7 @@ export const useMerkleStore = create<MerkleStore>()(
       mintAddress: '',
       setMintAddress: (mintAddress) =>
         set({ mintAddress }, false, 'setMintAddress'),
-      configs: {
-        unlockTime: Date.now(),
-        expiration: 0,
-      },
+      configs: defaultConfigs,
       upsertConfigs: (data: Partial<Configs>) =>
         set(
           produce<MerkleStore>(({ configs }) => {
@@ -86,7 +99,7 @@ export const useMerkleStore = create<MerkleStore>()(
         set(
           {
             recipients: [],
-            configs: { unlockTime: Date.now(), expiration: 0 },
+            configs: defaultConfigs,
             mintAddress: '',
           },
           false,

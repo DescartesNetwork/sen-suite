@@ -10,13 +10,13 @@ import TokenSelection from '@/components/tokenSelection'
 import { MintLogo, MintSymbol } from '@/components/mint'
 
 import { CreateStep } from './page'
+import { isAddress } from '@/helpers/utils'
+import { usePushMessage } from '@/components/message/store'
 import {
   useDistributeConfigs,
   useDistributeMintAddress,
   useRecipients,
 } from '@/providers/merkle.provider'
-import { isAddress } from '@/helpers/utils'
-import { usePushMessage } from '@/components/message/store'
 
 const InputConfigs = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
   const [open, setOpen] = useState(false)
@@ -25,9 +25,10 @@ const InputConfigs = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
   const { push } = useRouter()
   const { mintAddress, setMintAddress } = useDistributeMintAddress()
   const { configs, upsertConfigs } = useDistributeConfigs()
-  const { expiration, unlockTime } = configs
-  const pushMessage = usePushMessage()
   const { setRecipients } = useRecipients()
+  const pushMessage = usePushMessage()
+
+  const { expiration, unlockTime } = configs
 
   const onMintAddress = useCallback(
     (value: string) => {

@@ -36,9 +36,9 @@ export default function Dropzone({
   }, [inputRef, onChange])
 
   return (
-    <div className="grid grid-cols-12 gap-2">
+    <div className="flex flex-col gap-2">
       <div
-        className="col-span-12 card bg-base-200 p-8 cursor-pointer flex flex-col gap-4 items-center"
+        className=" h-full card bg-base-200 p-8 cursor-pointer flex flex-col gap-4 items-center"
         {...getRootProps()}
       >
         <FileUp
@@ -70,7 +70,7 @@ export default function Dropzone({
           </button>
         )}
       </div>
-      <div className="col-span-12 flex flex-row gap-1 items-center">
+      <div className=" flex flex-row gap-1 items-center">
         <Download className="w-3 h-3 opacity-60" />
         <p className="text-xs opacity-60">Download templates</p>
         <a className="text-xs underline" href="#">

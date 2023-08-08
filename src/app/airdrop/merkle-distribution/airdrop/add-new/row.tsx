@@ -9,6 +9,7 @@ type EditRecipientProps = {
   amount?: string
   address?: string
   warning?: boolean
+  error?: boolean
   onAmount?: (amount: string) => void
   onAddress?: (address: string) => void
   onAdd?: () => void
@@ -20,6 +21,7 @@ const EditRecipient = ({
   amount = '',
   address = '',
   warning = false,
+  error = false,
   onAmount = () => {},
   onAddress = () => {},
   onAdd = () => {},
@@ -30,8 +32,9 @@ const EditRecipient = ({
 
   const color = useMemo(() => {
     if (warning) return ' bg-warning text-warning-content'
+    if (error) return ' bg-error text-error-content'
     else return ' bg-base-200'
-  }, [warning])
+  }, [warning, error])
 
   return (
     <div className="flex flex-col gap-2">
