@@ -10,6 +10,7 @@ import TokenAccountProvider from '@/providers/tokenAccount.provider'
 import Message from '@/components/message'
 import Sidebar from '@/app/sidebar'
 
+import { DMSans } from '@/fonts/localFont'
 import '@/styles/global.scss'
 
 export const metadata: Metadata = {
@@ -29,7 +30,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" data-theme="light">
+    <html lang="en" data-theme="light" className={DMSans.className}>
       <head>
         {/* Google Fonts */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
