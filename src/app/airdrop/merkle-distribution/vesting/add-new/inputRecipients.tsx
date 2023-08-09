@@ -2,8 +2,8 @@ import { useCallback, useMemo, useState } from 'react'
 import { BN } from 'bn.js'
 import dayjs from 'dayjs'
 
-import EditRecipient from '../../airdrop/add-new/row'
-import CardOverview from '../../cardOverview'
+import EditRecipient from './row'
+import CardOverview from '@/app/airdrop/merkle-distribution/cardOverview'
 import { Trash } from 'lucide-react'
 
 import {
@@ -18,15 +18,24 @@ import { shortenAddress } from '@/helpers/utils'
 import { useTotalDistribute } from '@/hooks/airdrop.hook'
 import { useTokenAccountByMintAddress } from '@/providers/tokenAccount.provider'
 import { CreateStep } from './page'
+import { isAddress } from '@sentre/utility'
 
 const RecipientsList = () => {
   const { recipients, setRecipients } = useRecipients()
 
   const formatRecipient = useMemo(() => {
-    const result: Record<string, Array<Omit<RecipientData, 'address'>>> = {}
+    const result: Record<
+      string,
+      Array<Omit<RecipientData, 'address'> & { er: boolean }>
+    > = {}
     recipients.forEach(({ address, amount, unlockTime }) => {
-      if (!result[address]) return (result[address] = [{ amount, unlockTime }])
-      return result[address].push({ amount, unlockTime })
+      let er = false
+      if (!Number(amount) || Number(amount) < 0) er = true
+      if (!new Date(unlockTime).getTime()) er = true
+
+      if (!result[address])
+        return (result[address] = [{ amount, unlockTime, er }])
+      return result[address].push({ amount, unlockTime, er })
     })
     return result
   }, [recipients])
@@ -62,11 +71,20 @@ const RecipientsList = () => {
             <p className="text-sm">#{index + 1}</p>
           </div>
           <div className="col-span-2">
-            <p className="text-sm">{shortenAddress(address)}</p>
+            <p
+              className="text-sm"
+              style={!isAddress(address) ? { color: 'red' } : {}}
+            >
+              {shortenAddress(address)}
+            </p>
           </div>
           <div className="col-span-8 flex gap-2 flex-wrap">
-            {formatRecipient[address].map(({ amount, unlockTime }) => (
-              <p key={unlockTime} className="border px-2 py-1 text-sm">
+            {formatRecipient[address].map(({ amount, unlockTime, er }) => (
+              <p
+                key={unlockTime}
+                style={er ? { color: 'red', borderColor: 'red' } : {}}
+                className="border px-2 py-1 text-sm"
+              >
                 {amount} / {dayjs(unlockTime).format('MMM DD, YYYY HH:mm')}
               </p>
             ))}
@@ -90,6 +108,7 @@ type InputRecipientProps = {
 export default function InputRecipients({ setStep }: InputRecipientProps) {
   const [address, setAddress] = useState('')
   const [amount, setAmount] = useState('')
+  const [time, setTime] = useState(0)
 
   const { configs } = useDistributeConfigs()
   const { mintAddress } = useDistributeMintAddress()
@@ -100,22 +119,27 @@ export default function InputRecipients({ setStep }: InputRecipientProps) {
     amount: new BN(0),
   }
 
-  const onRemoveOld = useCallback(
-    (address: string) => {
-      const nextRecipients = [...recipients].filter(
-        (recipient) => recipient.address !== address,
-      )
-      setRecipients(nextRecipients)
-    },
-    [recipients, setRecipients],
-  )
+  const removeExistedAddress = useCallback(() => {
+    const nextRecipients = [...recipients].filter(
+      (recipient) => recipient.address !== address,
+    )
+    setRecipients(nextRecipients)
+  }, [address, recipients, setRecipients])
 
   const onAdd = useCallback(() => {
+    // Input file methods
+    if (time) {
+      setAddress('')
+      setAmount('')
+      setTime(0)
+      return upsertRecipient({ address, amount, unlockTime: time })
+    }
+
     if (decimals === undefined) return
     const existed = recipients.find(
       (recipient) => recipient.address === address,
     )
-    if (existed) onRemoveOld(address)
+    if (existed) removeExistedAddress()
     const { distributeIn, frequency, tgePercent, tgeTime, cliff } = configs
     const rewardAmount = Math.floor(distributeIn / frequency)
     let unlockTime = tgeTime
@@ -150,19 +174,29 @@ export default function InputRecipients({ setStep }: InputRecipientProps) {
     setAddress('')
     setAmount('')
   }, [
-    address,
-    amount,
-    configs,
     decimals,
-    onRemoveOld,
+    time,
     recipients,
+    removeExistedAddress,
+    configs,
+    amount,
     upsertRecipient,
+    address,
   ])
 
-  const ok = useMemo(
-    () => !!quantity && myAmount.gte(total),
-    [myAmount, quantity, total],
-  )
+  const ok = useMemo(() => {
+    let error = false
+    for (const { address, amount, unlockTime } of recipients) {
+      const validAmount = Number(amount) > 0
+      const validAddress = isAddress(address)
+      const validTime = !!unlockTime
+      if (!validAddress || !validAmount || !validTime) {
+        error = true
+        break
+      }
+    }
+    return !!quantity && myAmount.gte(total) && !error
+  }, [myAmount, quantity, recipients, total])
 
   return (
     <div className="grid grid-cols-12 gap-6">
@@ -173,6 +207,8 @@ export default function InputRecipients({ setStep }: InputRecipientProps) {
           address={address}
           onAddress={setAddress}
           onAdd={onAdd}
+          time={time}
+          onTime={setTime}
         />
       </div>
       <div className="col-span-12">

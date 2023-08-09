@@ -15,6 +15,7 @@ import { decimalize } from '@/helpers/decimals'
 import { useMints } from './spl.hook'
 import { isAddress } from '@/helpers/utils'
 import {
+  RecipientData,
   useDistributeConfigs,
   useDistributeMintAddress,
   useDistributors,
@@ -218,7 +219,13 @@ export const useTotalDistribute = () => {
     [decimals, recipients],
   )
 
-  return { total, quantity: recipients.length }
+  const quantity = useMemo(() => {
+    const mapping: Record<string, RecipientData> = {}
+    recipients.forEach((recipient) => (mapping[recipient.address] = recipient))
+    return Object.keys(mapping).length
+  }, [recipients])
+
+  return { total, quantity }
 }
 
 export const useClaim = (distributor: string, recipientData: Leaf) => {

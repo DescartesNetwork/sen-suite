@@ -56,7 +56,6 @@ const EditRecipient = ({
             onChange={(e) => onAmount(e.target.value)}
           />
         </div>
-
         <button
           onClick={onHandle}
           disabled={!isAddress(address) || !amount}

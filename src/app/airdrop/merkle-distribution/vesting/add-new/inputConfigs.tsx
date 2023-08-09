@@ -1,6 +1,14 @@
 'use client'
-import { ChangeEvent, Fragment, useCallback, useMemo, useState } from 'react'
-import parse from 'parse-duration'
+import {
+  ChangeEvent,
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
+import { parse } from 'papaparse'
+import parseDuration from 'parse-duration'
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -14,8 +22,10 @@ import Dropzone from '@/app/airdrop/bulk-sender/dropzone'
 import {
   useDistributeConfigs,
   useDistributeMintAddress,
+  useRecipients,
 } from '@/providers/merkle.provider'
 import { CreateStep } from './page'
+import { usePushMessage } from '@/components/message/store'
 
 dayjs.extend(duration)
 dayjs.extend(relativeTime)
@@ -60,10 +70,10 @@ const TEGTime = () => {
 }
 
 const cliffItems = [
-  parse('1month')!,
-  parse('3months')!,
-  parse('6months')!,
-  parse('12months')!,
+  parseDuration('1month')!,
+  parseDuration('3months')!,
+  parseDuration('6months')!,
+  parseDuration('12months')!,
 ]
 const CliffTime = () => {
   const { configs, upsertConfigs } = useDistributeConfigs()
@@ -97,10 +107,10 @@ const CliffTime = () => {
 }
 
 const distributesIn = [
-  parse('6months')!,
-  parse('1y')!,
-  parse('2y')!,
-  parse('4y')!,
+  parseDuration('6months')!,
+  parseDuration('1y')!,
+  parseDuration('2y')!,
+  parseDuration('4y')!,
 ]
 const DistributeIn = () => {
   const { configs, upsertConfigs } = useDistributeConfigs()
@@ -137,10 +147,10 @@ const DistributeIn = () => {
 }
 
 const frequencies = [
-  parse('1month')!,
-  parse('3months')!,
-  parse('6months')!,
-  parse('12months')!,
+  parseDuration('1month')!,
+  parseDuration('3months')!,
+  parseDuration('6months')!,
+  parseDuration('12months')!,
 ]
 const DistributeFrequency = () => {
   const { configs, upsertConfigs } = useDistributeConfigs()
@@ -228,7 +238,7 @@ const MintSelection = () => {
 
   return (
     <div className="col-span-12 flex flex-col gap-3">
-      <p>Select a token and template</p>
+      <p>Select a token and input configs or drop the file</p>
       <div
         className="flex items-center border cursor-pointer rounded-lg p-2"
         onClick={() => setOpen(true)}
@@ -258,13 +268,35 @@ const MintSelection = () => {
 
 const InputConfigs = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
   const [file, setFile] = useState<File>()
-  const { mintAddress } = useDistributeMintAddress()
-  const { configs } = useDistributeConfigs()
 
-  const ok = useMemo(
-    () => !!mintAddress && !!configs.tgeTime,
-    [mintAddress, configs],
-  )
+  const { mintAddress } = useDistributeMintAddress()
+  const { configs, upsertConfigs } = useDistributeConfigs()
+  const { setRecipients, recipients } = useRecipients()
+  const pushMessage = usePushMessage()
+
+  const ok = useMemo(() => {
+    if (file) return !!recipients && !!mintAddress
+    return !!mintAddress && !!configs.tgeTime
+  }, [file, recipients, mintAddress, configs.tgeTime])
+
+  useEffect(() => {
+    if (!file) return setRecipients([])
+    parse<string[]>(file, {
+      complete: ({ data, errors }) => {
+        if (errors.length)
+          errors.forEach((er) => pushMessage('alert-error', er.message))
+        else {
+          const recipients = data.map(([address, amount, time]) => ({
+            address,
+            amount,
+            unlockTime: new Date(time).getTime(),
+          }))
+          upsertConfigs({ tgeTime: 0 }) //use to check user input by file or not?
+          setRecipients(recipients)
+        }
+      },
+    })
+  }, [file, pushMessage, setRecipients, upsertConfigs])
 
   return (
     <div className="flex flex-col gap-6">

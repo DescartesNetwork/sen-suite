@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { BN } from 'bn.js'
 
 import EditRecipient from './row'
-import CardOverview from '../../cardOverview'
+import CardOverview from '@/app/airdrop/merkle-distribution/cardOverview'
 
 import {
   RecipientData,
