@@ -43,9 +43,16 @@ const InputConfigs = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
     upsertConfigs({ [name]: new Date(value).getTime() })
   }
 
+  const timeError = useMemo(() => {
+    if (unlimited) return ''
+    if (expiration < Date.now()) return 'Must be greater than current time.'
+    if (expiration < unlockTime) return 'Must be greater than unlock time.'
+    return ''
+  }, [expiration, unlimited, unlockTime])
+
   const ok = useMemo(
-    () => configs.unlockTime && isAddress(mintAddress),
-    [configs.unlockTime, mintAddress],
+    () => unlockTime && isAddress(mintAddress) && !timeError,
+    [unlockTime, mintAddress, timeError],
   )
 
   useEffect(() => {
@@ -136,6 +143,9 @@ const InputConfigs = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
                 showTimeSelect
                 disabled={unlimited}
               />
+              {timeError && (
+                <p className="text-xs text-[#F9575E]">{timeError}</p>
+              )}
             </div>
           </div>
         </div>

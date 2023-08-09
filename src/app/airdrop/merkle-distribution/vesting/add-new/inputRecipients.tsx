@@ -30,7 +30,7 @@ const RecipientsList = () => {
     > = {}
     recipients.forEach(({ address, amount, unlockTime }) => {
       let er = false
-      if (!Number(amount) || Number(amount) < 0) er = true
+      if (Number(amount) < 0) er = true
       if (!new Date(unlockTime).getTime()) er = true
 
       if (!result[address])
@@ -73,7 +73,7 @@ const RecipientsList = () => {
           <div className="col-span-2">
             <p
               className="text-sm"
-              style={!isAddress(address) ? { color: 'red' } : {}}
+              style={!isAddress(address) ? { color: '#F9575E' } : {}}
             >
               {shortenAddress(address)}
             </p>
@@ -82,7 +82,7 @@ const RecipientsList = () => {
             {formatRecipient[address].map(({ amount, unlockTime, er }) => (
               <p
                 key={unlockTime}
-                style={er ? { color: 'red', borderColor: 'red' } : {}}
+                style={er ? { color: '#F9575E', borderColor: '#F9575E' } : {}}
                 className="border px-2 py-1 text-sm"
               >
                 {amount} / {dayjs(unlockTime).format('MMM DD, YYYY HH:mm')}

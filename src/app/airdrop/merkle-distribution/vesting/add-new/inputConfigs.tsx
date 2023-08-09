@@ -114,7 +114,16 @@ const distributesIn = [
 ]
 const DistributeIn = () => {
   const { configs, upsertConfigs } = useDistributeConfigs()
-  const { distributeIn } = configs
+  const { distributeIn, expiration, frequency } = configs
+
+  const error = useMemo(() => {
+    if (expiration < distributeIn && expiration)
+      return 'Must be less than the expiration time.'
+    if (distributeIn < frequency)
+      return 'Must be greater than the distribution frequency.'
+    return ''
+  }, [distributeIn, expiration, frequency])
+
   return (
     <div className="flex flex-col gap-3">
       <p className="flex-auto text-xs opacity-60">Distribute in</p>
@@ -142,6 +151,7 @@ const DistributeIn = () => {
           ))}
         </ul>
       </div>
+      {error && <p className="text-xs text-[#F9575E]">{error}</p>}
     </div>
   )
 }
@@ -184,15 +194,25 @@ const DistributeFrequency = () => {
   )
 }
 
-const Expiration = () => {
-  const [unlimited, setUnlimited] = useState(true)
+const Expiration = ({
+  unlimited,
+  onChange,
+}: {
+  unlimited: boolean
+  onChange: (val: boolean) => void
+}) => {
   const { configs, upsertConfigs } = useDistributeConfigs()
   const expiration = configs.expiration
 
-  const onTimeChange = (name: keyof typeof configs, value: Date | null) => {
-    if (!value) return
-    upsertConfigs({ [name]: new Date(value).getTime() })
-  }
+  const error = useMemo(() => {
+    const { cliff, tgeTime, distributeIn } = configs
+    if (unlimited || !expiration || !tgeTime) return ''
+    if (expiration < Date.now()) return 'Must be greater than current time.'
+    const lastVestingTime = tgeTime + cliff + distributeIn
+    if (expiration < lastVestingTime)
+      return 'Must be greater than the total vesting time.'
+    return ''
+  }, [configs, expiration, unlimited])
 
   return (
     <div className="flex flex-col gap-3 ">
@@ -201,7 +221,7 @@ const Expiration = () => {
         <p className="mr-2 text-xs opacity-60">Unlimited</p>
         <input
           onChange={(e) => {
-            setUnlimited(e.target.checked)
+            onChange(e.target.checked)
             upsertConfigs({ expiration: 0 })
           }}
           className="toggle toggle-xs"
@@ -212,7 +232,7 @@ const Expiration = () => {
       <DatePicker
         showIcon
         selected={expiration ? new Date(expiration) : null}
-        onChange={(date) => onTimeChange('expiration', date)}
+        onChange={(date) => upsertConfigs({ expiration: date?.getTime() })}
         className="bg-base-200 !p-3 rounded-lg w-full"
         placeholderText="Select time"
         dateFormat={'dd/MM/yyyy, HH:mm'}
@@ -220,6 +240,7 @@ const Expiration = () => {
         showTimeSelect
         disabled={unlimited}
       />
+      {error && <p className="text-xs text-[#F9575E]">{error}</p>}
     </div>
   )
 }
@@ -268,6 +289,7 @@ const MintSelection = () => {
 
 const InputConfigs = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
   const [file, setFile] = useState<File>()
+  const [unlimited, setUnlimited] = useState(true)
 
   const { mintAddress } = useDistributeMintAddress()
   const { configs, upsertConfigs } = useDistributeConfigs()
@@ -275,9 +297,16 @@ const InputConfigs = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
   const pushMessage = usePushMessage()
 
   const ok = useMemo(() => {
-    if (file) return !!recipients && !!mintAddress
-    return !!mintAddress && !!configs.tgeTime
-  }, [file, recipients, mintAddress, configs.tgeTime])
+    const { expiration, tgeTime, distributeIn, frequency } = configs
+    const lastVestingTime = distributeIn + tgeTime
+    const validExpiration = unlimited
+      ? unlimited
+      : expiration > Date.now() && expiration > lastVestingTime
+    if (file) return !!recipients && !!mintAddress && validExpiration
+
+    const validDistributeIn = distributeIn >= frequency
+    return !!mintAddress && !!tgeTime && validExpiration && validDistributeIn
+  }, [file, recipients, mintAddress, configs, unlimited])
 
   useEffect(() => {
     if (!file) return setRecipients([])
@@ -322,7 +351,7 @@ const InputConfigs = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
             </Fragment>
           )}
           <div className="col-span-6">
-            <Expiration />
+            <Expiration unlimited={unlimited} onChange={setUnlimited} />
           </div>
         </div>
         <Dropzone file={file} onChange={setFile} />
