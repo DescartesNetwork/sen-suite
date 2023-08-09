@@ -211,7 +211,8 @@ export const useMyDistributes = () => {
 
     return { airdrops, vesting }
   }, [publicKey, distributors])
-  return value
+
+  return { airdrops: value?.airdrops || [], vesting: value?.vesting || [] }
 }
 
 /**

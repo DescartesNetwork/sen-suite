@@ -74,10 +74,10 @@ const RewardCard = (props: ReceiveItem) => {
       <td>
         {!startTime
           ? 'Immediately'
-          : dayjs(startTime).format('DD/MM/YYYY, hh:mm')}
+          : dayjs(startTime).format('DD/MM/YYYY, HH:mm')}
       </td>
       <td>
-        {!endedAt ? 'Unlimited' : dayjs(endedAt).format('DD/MM/YYYY, hh:mm')}
+        {!endedAt ? 'Unlimited' : dayjs(endedAt).format('DD/MM/YYYY, HH:mm')}
       </td>
       <td>{shortenAddress(sender)}</td>
       <td>
