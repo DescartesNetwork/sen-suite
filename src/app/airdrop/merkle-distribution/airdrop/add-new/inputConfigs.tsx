@@ -15,6 +15,7 @@ import { usePushMessage } from '@/components/message/store'
 import {
   useDistributeConfigs,
   useDistributeMintAddress,
+  useMerkleStore,
   useRecipients,
 } from '@/providers/merkle.provider'
 
@@ -22,11 +23,13 @@ const InputConfigs = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
   const [open, setOpen] = useState(false)
   const [file, setFile] = useState<File>()
   const [unlimited, setUnlimited] = useState(true)
+
   const { push } = useRouter()
+  const pushMessage = usePushMessage()
   const { mintAddress, setMintAddress } = useDistributeMintAddress()
   const { configs, upsertConfigs } = useDistributeConfigs()
   const { setRecipients } = useRecipients()
-  const pushMessage = usePushMessage()
+  const destroy = useMerkleStore(({ destroy }) => destroy)
 
   const { expiration, unlockTime } = configs
 
@@ -41,6 +44,11 @@ const InputConfigs = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
   const onTimeChange = (name: keyof typeof configs, value: Date | null) => {
     if (!value) return
     upsertConfigs({ [name]: new Date(value).getTime() })
+  }
+
+  const onBack = () => {
+    destroy()
+    return push('/airdrop/merkle-distribution/airdrop')
   }
 
   const timeError = useMemo(() => {
@@ -110,7 +118,7 @@ const InputConfigs = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
                 showIcon
                 selected={new Date(unlockTime)}
                 onChange={(date) => onTimeChange('unlockTime', date)}
-                className="border rounded-lg w-full"
+                className="bg-base-200 !p-3 rounded-lg w-full"
                 dateFormat={'dd/MM/yyyy, HH:mm'}
                 showTimeInput
                 showTimeSelect
@@ -136,7 +144,7 @@ const InputConfigs = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
                 showIcon
                 selected={expiration ? new Date(expiration) : null}
                 onChange={(date) => onTimeChange('expiration', date)}
-                className="border rounded-lg w-full"
+                className="bg-base-200 !p-3 rounded-lg w-full"
                 placeholderText="Select time"
                 dateFormat={'dd/MM/yyyy, HH:mm'}
                 showTimeInput
@@ -152,10 +160,7 @@ const InputConfigs = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
         <Dropzone file={file} onChange={setFile} />
       </div>
       <div className="grid grid-cols-2 gap-6">
-        <button
-          className="btn"
-          onClick={() => push('/airdrop/merkle-distribution/airdrop')}
-        >
+        <button className="btn" onClick={onBack}>
           Cancel
         </button>
         <button

@@ -8,6 +8,7 @@ import {
   useState,
 } from 'react'
 import { parse } from 'papaparse'
+import { useRouter } from 'next/navigation'
 import parseDuration from 'parse-duration'
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
@@ -22,6 +23,7 @@ import Dropzone from '@/app/airdrop/bulk-sender/dropzone'
 import {
   useDistributeConfigs,
   useDistributeMintAddress,
+  useMerkleStore,
   useRecipients,
 } from '@/providers/merkle.provider'
 import { CreateStep } from './page'
@@ -69,14 +71,26 @@ const TEGTime = () => {
   )
 }
 
-const cliffItems = [
+const listCliff = [
   parseDuration('1month')!,
   parseDuration('3months')!,
   parseDuration('6months')!,
   parseDuration('12months')!,
 ]
 const CliffTime = () => {
+  const [custom, setCustom] = useState<string>()
+  const [cliffTimes, setCliffTimes] = useState(listCliff)
+
   const { configs, upsertConfigs } = useDistributeConfigs()
+
+  const onAdd = () => {
+    if (!custom || !parseDuration(custom)) return
+    const next = [...cliffTimes]
+    next.push(parseDuration(custom)!)
+    setCliffTimes(next)
+    upsertConfigs({ cliff: parseDuration(custom)! })
+    setCustom('')
+  }
 
   return (
     <div className="flex flex-col gap-3">
@@ -95,11 +109,28 @@ const CliffTime = () => {
           tabIndex={0}
           className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-full"
         >
-          {cliffItems.map((cliff) => (
+          {cliffTimes.map((cliff) => (
             <li key={cliff} onClick={() => upsertConfigs({ cliff })}>
               <p>{dayjs.duration(cliff, 'milliseconds').humanize()}</p>
             </li>
           ))}
+          <li className="relative">
+            <input
+              onChange={(e) => setCustom(e.target.value)}
+              value={custom}
+              placeholder="E.g: 1d, 1months, 1y,..."
+              className="border mt-1"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') return onAdd()
+              }}
+            />
+            <button
+              onClick={onAdd}
+              className="absolute btn btn-ghost btn-xs right-0 top-1/2 -translate-y-1/2"
+            >
+              Add
+            </button>
+          </li>
         </ul>
       </div>
     </div>
@@ -113,6 +144,9 @@ const distributesIn = [
   parseDuration('4y')!,
 ]
 const DistributeIn = () => {
+  const [custom, setCustom] = useState<string>()
+  const [distributesTime, setDistributesTime] = useState(distributesIn)
+
   const { configs, upsertConfigs } = useDistributeConfigs()
   const { distributeIn, expiration, frequency } = configs
 
@@ -123,6 +157,15 @@ const DistributeIn = () => {
       return 'Must be greater than the distribution frequency.'
     return ''
   }, [distributeIn, expiration, frequency])
+
+  const onAdd = () => {
+    if (!custom || !parseDuration(custom)) return
+    const next = [...distributesTime]
+    next.push(parseDuration(custom)!)
+    setDistributesTime(next)
+    upsertConfigs({ distributeIn: parseDuration(custom)! })
+    setCustom('')
+  }
 
   return (
     <div className="flex flex-col gap-3">
@@ -141,7 +184,7 @@ const DistributeIn = () => {
           tabIndex={0}
           className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-full"
         >
-          {distributesIn.map((time) => (
+          {distributesTime.map((time) => (
             <li
               key={time}
               onClick={() => upsertConfigs({ distributeIn: time })}
@@ -149,6 +192,23 @@ const DistributeIn = () => {
               <p>{dayjs.duration(time, 'milliseconds').humanize()}</p>
             </li>
           ))}
+          <li className="relative">
+            <input
+              onChange={(e) => setCustom(e.target.value)}
+              value={custom}
+              placeholder="E.g: 1d, 1months, 1y,..."
+              className="border mt-1"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') return onAdd()
+              }}
+            />
+            <button
+              onClick={onAdd}
+              className="absolute btn btn-ghost btn-xs right-0 top-1/2 -translate-y-1/2"
+            >
+              Add
+            </button>
+          </li>
         </ul>
       </div>
       {error && <p className="text-xs text-[#F9575E]">{error}</p>}
@@ -163,8 +223,20 @@ const frequencies = [
   parseDuration('12months')!,
 ]
 const DistributeFrequency = () => {
+  const [custom, setCustom] = useState<string>()
+  const [frequenciesTime, setFrequenciesTime] = useState(frequencies)
+
   const { configs, upsertConfigs } = useDistributeConfigs()
   const { frequency } = configs
+
+  const onAdd = () => {
+    if (!custom || !parseDuration(custom)) return
+    const next = [...frequenciesTime]
+    next.push(parseDuration(custom)!)
+    setFrequenciesTime(next)
+    upsertConfigs({ frequency: parseDuration(custom)! })
+    setCustom('')
+  }
 
   return (
     <div className="flex flex-col gap-3">
@@ -183,11 +255,28 @@ const DistributeFrequency = () => {
           tabIndex={0}
           className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-full"
         >
-          {frequencies.map((frequency) => (
+          {frequenciesTime.map((frequency) => (
             <li key={frequency} onClick={() => upsertConfigs({ frequency })}>
               <p>{dayjs.duration(frequency, 'milliseconds').humanize()}</p>
             </li>
           ))}
+          <li className="relative">
+            <input
+              onChange={(e) => setCustom(e.target.value)}
+              value={custom}
+              placeholder="E.g: 1d, 1months, 1y,..."
+              className="border mt-1"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') return onAdd()
+              }}
+            />
+            <button
+              onClick={onAdd}
+              className="absolute btn btn-ghost btn-xs right-0 top-1/2 -translate-y-1/2"
+            >
+              Add
+            </button>
+          </li>
         </ul>
       </div>
     </div>
@@ -291,10 +380,17 @@ const InputConfigs = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
   const [file, setFile] = useState<File>()
   const [unlimited, setUnlimited] = useState(true)
 
+  const { push } = useRouter()
+  const pushMessage = usePushMessage()
   const { mintAddress } = useDistributeMintAddress()
   const { configs, upsertConfigs } = useDistributeConfigs()
   const { setRecipients, recipients } = useRecipients()
-  const pushMessage = usePushMessage()
+  const destroy = useMerkleStore(({ destroy }) => destroy)
+
+  const onBack = () => {
+    destroy()
+    return push('/airdrop/merkle-distribution/vesting')
+  }
 
   const ok = useMemo(() => {
     const { expiration, tgeTime, distributeIn, frequency } = configs
@@ -357,7 +453,9 @@ const InputConfigs = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
         <Dropzone file={file} onChange={setFile} />
       </div>
       <div className="grid grid-cols-2 gap-6">
-        <button className="btn">Cancel</button>
+        <button className="btn" onClick={onBack}>
+          Cancel
+        </button>
         <button
           onClick={() => setStep(CreateStep.InputRecipients)}
           disabled={!ok}

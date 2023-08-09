@@ -47,7 +47,7 @@ const RecipientsList = () => {
     setRecipients(nextRecipients)
   }
 
-  return (
+  return recipients.length ? (
     <div className="grid grid-cols-12 bg-base-200 rounded-lg">
       {/* Header */}
       <div className="col-span-12 grid grid-cols-12 gap-3 p-4 ">
@@ -99,6 +99,10 @@ const RecipientsList = () => {
           </div>
         </div>
       ))}
+    </div>
+  ) : (
+    <div className="bg-base-200 rounded-lg flex justify-center items-center p-3">
+      Please input recipient information
     </div>
   )
 }

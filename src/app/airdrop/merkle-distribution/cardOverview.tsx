@@ -70,7 +70,7 @@ const CardOverview = ({ showTotal, showUnlock }: CardOverviewProps) => {
           <p className="text-sm opacity-60">Remaining</p>
           <p>
             <MintAmount
-              amount={amount.sub(total).isNeg() ? amount : amount.sub(total)}
+              amount={amount.sub(total).isNeg() ? new BN(0) : amount.sub(total)}
               mintAddress={mintAddress}
             />{' '}
             <MintSymbol mintAddress={mintAddress} />
