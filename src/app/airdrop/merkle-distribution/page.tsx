@@ -50,7 +50,8 @@ export default function MerkleDistribution() {
         for (const leaf of leafs) {
           const { startedAt, receiptAddress } = leaf
           const status = getReceiptStatus(address, receiptAddress, startedAt)
-          vestingItem.push({
+          const method = status === ReceiptState.ready ? 'unshift' : 'push'
+          vestingItem[method]({
             status,
             distributor: address,
             mintAddress: mint.toBase58(),
@@ -59,7 +60,11 @@ export default function MerkleDistribution() {
             leaf,
           })
         }
-        vesting.push(vestingItem)
+        const isReady = vestingItem.find(
+          ({ status }) => status === ReceiptState.ready,
+        )
+        const method = isReady ? 'unshift' : 'push'
+        vesting[method](vestingItem)
       }
     }
     return { airdrops, vesting }
