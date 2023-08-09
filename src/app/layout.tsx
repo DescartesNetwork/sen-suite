@@ -10,7 +10,7 @@ import TokenAccountProvider from '@/providers/tokenAccount.provider'
 import Message from '@/components/message'
 import Sidebar from '@/app/sidebar'
 
-import { DMSans } from '@/fonts/localFont'
+import { DMSans } from '@/fonts'
 import '@/styles/global.scss'
 
 export const metadata: Metadata = {
