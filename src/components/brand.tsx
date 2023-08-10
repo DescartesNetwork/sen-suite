@@ -38,7 +38,7 @@ export default function Brand({
   return (
     <div
       style={style}
-      className="flex shrink items-center gap-2 hover:cursor-pointer"
+      className="flex flex-row items-center gap-2 cursor-pointer"
       onClick={onClick}
     >
       <BrandLogo size={size} />
