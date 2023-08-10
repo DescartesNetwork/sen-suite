@@ -8,18 +8,6 @@
     @apply p-0;
   }
 
-  .notion-page {
-    img,
-    iframe,
-    video {
-      @apply rounded-xl;
-    }
-  }
-
-  .notion-asset-wrapper > div {
-    height: unset !important;
-  }
-
   .notion-equation {
     @apply overflow-visible;
 
