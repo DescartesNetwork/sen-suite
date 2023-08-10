@@ -13,6 +13,7 @@ import parseDuration from 'parse-duration'
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import { useFloating, offset, flip, shift } from '@floating-ui/react'
 
 import { ChevronDown } from 'lucide-react'
 import { MintLogo, MintSymbol } from '@/components/mint'
@@ -146,7 +147,12 @@ const distributesIn = [
 const DistributeIn = () => {
   const [custom, setCustom] = useState<string>()
   const [distributesTime, setDistributesTime] = useState(distributesIn)
-
+  const {
+    refs: { setReference, setFloating },
+    floatingStyles,
+  } = useFloating({
+    middleware: [offset(5), flip(), shift()],
+  })
   const { configs, upsertConfigs } = useDistributeConfigs()
   const { distributeIn, expiration, frequency } = configs
 
@@ -174,6 +180,7 @@ const DistributeIn = () => {
         <label
           tabIndex={0}
           className="flex items-center bg-base-200 p-3 rounded-lg"
+          ref={setReference}
         >
           <p className="flex-auto">
             {dayjs.duration(distributeIn, 'milliseconds').humanize()}
@@ -183,6 +190,8 @@ const DistributeIn = () => {
         <ul
           tabIndex={0}
           className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-full"
+          style={floatingStyles}
+          ref={setFloating}
         >
           {distributesTime.map((time) => (
             <li
