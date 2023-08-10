@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useAsync } from 'react-use'
 import { BN } from 'bn.js'
 import { utils } from '@coral-xyz/anchor'
@@ -11,7 +11,14 @@ import { ChevronDown } from 'lucide-react'
 import { MintAmount, MintLogo, MintSymbol } from '@/components/mint'
 
 import { useDistributors, useMyDistributes } from '@/providers/merkle.provider'
-import { Distribute, useMerkleMetadata, useUtility } from '@/hooks/airdrop.hook'
+import {
+  Distribute,
+  useMerkleMetadata,
+  useRevoke,
+  useUtility,
+} from '@/hooks/airdrop.hook'
+import { usePushMessage } from '@/components/message/store'
+import { solscan } from '@/helpers/explorers'
 
 const DEFAULT_AMOUNT = 4
 
@@ -60,13 +67,36 @@ const History = ({ type }: { type: Distribute }) => {
 export default History
 
 const HistoryItem = ({ address }: { address: string }) => {
+  const [loading, setLoading] = useState(false)
+  const [disabled, setDisabled] = useState(false)
+
   const distributors = useDistributors()
+  const pushMessage = usePushMessage()
   const getMetadata = useMerkleMetadata()
+  const { mint, total, endedAt } = distributors[address]
 
   const { connection } = useConnection()
   const utility = useUtility()
 
-  const { mint, total } = distributors[address]
+  const revoke = useRevoke(address)
+  const onRevoke = useCallback(async () => {
+    try {
+      setLoading(true)
+      const txId = (await revoke()) || ''
+      setDisabled(true)
+      pushMessage(
+        'alert-success',
+        'Successfully revoke token. Click here to view on explorer.',
+        {
+          onClick: () => window.open(solscan(txId || ''), '_blank'),
+        },
+      )
+    } catch (er: any) {
+      pushMessage('alert-error', er.message)
+    } finally {
+      setLoading(false)
+    }
+  }, [pushMessage, revoke])
 
   const { value } = useAsync(async () => {
     const metadata = await getMetadata(address)
@@ -84,9 +114,16 @@ const HistoryItem = ({ address }: { address: string }) => {
       owner: new PublicKey(treasurerAddress),
     })
     const { value } = await connection.getParsedAccountInfo(associated)
-
-    return value?.data as ParsedAccountData
+    if (!value) return '0'
+    const data = value.data as ParsedAccountData
+    return data.parsed.info.tokenAmount.amount || '0'
   }, [address, utility])
+
+  const ok = useMemo(() => {
+    const isEmptyTreasury = new BN(remaining).isZero()
+    const validTime = endedAt.toNumber() * 1000 < Date.now()
+    return !isEmptyTreasury && validTime
+  }, [endedAt, remaining])
 
   return (
     <tr className="hover cursor-pointer">
@@ -109,13 +146,20 @@ const HistoryItem = ({ address }: { address: string }) => {
         <MintAmount mintAddress={mint.toBase58()} amount={total} />
       </td>
       <td>
-        <MintAmount
-          mintAddress={mint.toBase58()}
-          amount={new BN(remaining?.parsed.info.tokenAmount.amount || 0)}
-        />
+        <MintAmount mintAddress={mint.toBase58()} amount={new BN(remaining)} />
       </td>
-      <td>
+      <td className="flex gap-2">
         <button className="btn btn-sm btn-ghost text-info">SHARE</button>
+        {!endedAt.isZero() && (
+          <button
+            disabled={!ok || disabled || loading}
+            className="btn btn-sm btn-ghost text-info"
+            onClick={onRevoke}
+          >
+            {loading && <span className="loading loading-spinner loading-xs" />}
+            REVOKE
+          </button>
+        )}
       </td>
     </tr>
   )

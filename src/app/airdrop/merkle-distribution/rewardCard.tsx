@@ -1,4 +1,7 @@
 import { useCallback, useMemo, useState } from 'react'
+import { BN } from 'bn.js'
+import { ReceiptData } from '@sentre/utility'
+import { PublicKey } from '@solana/web3.js'
 import dayjs from 'dayjs'
 
 import { MintAmount, MintLogo, MintSymbol } from '@/components/mint'
@@ -8,6 +11,7 @@ import { shortenAddress } from '@/helpers/utils'
 import { useClaim } from '@/hooks/airdrop.hook'
 import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
+import { useMerkleStore } from '@/providers/merkle.provider'
 
 export enum ReceiptState {
   waiting = 'Waiting',
@@ -44,9 +48,10 @@ const StatusTag = ({ state }: { state?: ReceiptState }) => {
 }
 
 const RewardCard = (props: ReceiveItem) => {
-  const { leaf, endedAt, mintAddress, sender, status } = props
+  const { leaf, endedAt, mintAddress, sender, status, receiptAddress } = props
   const [loading, setLoading] = useState(false)
   const pushMessage = usePushMessage()
+  const upsertReceipt = useMerkleStore(({ upsertReceipt }) => upsertReceipt)
 
   const startTime = leaf.startedAt.toNumber() * 1000
 
@@ -55,6 +60,17 @@ const RewardCard = (props: ReceiveItem) => {
     try {
       setLoading(true)
       const txId = await claim()
+
+      const receiptData: ReceiptData = {
+        amount: leaf.amount,
+        authority: leaf.authority,
+        salt: Array.from(leaf.salt),
+        startedAt: leaf.startedAt,
+        claimedAt: new BN(Date.now() / 1000),
+        distributor: new PublicKey(props.distributor),
+      }
+      upsertReceipt(receiptAddress, receiptData)
+
       pushMessage(
         'alert-success',
         'Successfully claim. Click here to view on explorer.',
@@ -67,7 +83,14 @@ const RewardCard = (props: ReceiveItem) => {
     } finally {
       setLoading(false)
     }
-  }, [claim, pushMessage])
+  }, [
+    claim,
+    leaf,
+    props.distributor,
+    pushMessage,
+    receiptAddress,
+    upsertReceipt,
+  ])
 
   return (
     <tr className="hover cursor-pointer">

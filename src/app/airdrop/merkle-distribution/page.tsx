@@ -4,6 +4,7 @@ import { Leaf } from '@sentre/utility'
 
 import AirdropList from './airdropList'
 import VestingList from './vestingList'
+import Heros from './heros'
 
 import { useDistributors, useMyReceivedList } from '@/providers/merkle.provider'
 import { useReceiptStatus } from '@/hooks/airdrop.hook'
@@ -13,6 +14,7 @@ export type ReceiveItem = {
   endedAt: number
   sender: string
   mintAddress: string
+  receiptAddress: string
   status: ReceiptState
   distributor: string
   leaf: Leaf
@@ -42,6 +44,7 @@ export default function MerkleDistribution() {
           endedAt: endedAt.toNumber() * 1000,
           sender: authority.toBase58(),
           leaf: leafs[0],
+          receiptAddress,
         })
       }
       // Vesting list
@@ -58,6 +61,7 @@ export default function MerkleDistribution() {
             endedAt: endedAt.toNumber() * 1000,
             sender: authority.toBase58(),
             leaf,
+            receiptAddress,
           })
         }
         const isReady = vestingItem.find(
@@ -73,6 +77,7 @@ export default function MerkleDistribution() {
   return (
     <div className="flex flex-col gap-6">
       <h4>Dashboard</h4>
+      <Heros />
       <AirdropList airdrops={airdrops} />
       <VestingList vesting={vesting} />
     </div>

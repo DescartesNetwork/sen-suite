@@ -228,19 +228,25 @@ export const useTotalDistribute = () => {
   return { total, quantity }
 }
 
-export const useClaim = (distributor: string, recipientData: Leaf) => {
+/**
+ * Claim reward
+ * @param address distributor's address
+ * @param recipientData recipient's information
+ * @returns Claim reward function
+ */
+export const useClaim = (address: string, recipientData: Leaf) => {
   const getMetadata = useMerkleMetadata()
   const utility = useUtility()
 
   const onClaim = useCallback(async () => {
     if (!utility) return ''
-    const { data } = await getMetadata(distributor)
+    const { data } = await getMetadata(address)
     const merkle = MerkleDistributor.fromBuffer(Buffer.from(data))
     const proof = merkle.deriveProof(recipientData)
     const validProof = merkle.verifyProof(proof, recipientData)
     if (!validProof) throw "You don't belong this merkle tree!"
     const { txId } = await utility.claim({
-      distributorAddress: distributor,
+      distributorAddress: address,
       proof,
       data: recipientData,
       feeOptions: {
@@ -249,11 +255,17 @@ export const useClaim = (distributor: string, recipientData: Leaf) => {
       },
     })
     return txId
-  }, [distributor, getMetadata, recipientData, utility])
+  }, [address, getMetadata, recipientData, utility])
 
   return onClaim
 }
 
+/**
+ *
+ * Init new airdrop or vesting by merkle tree
+ * @param type Vesting or Airdrop type
+ * @returns Init new merkle tree function
+ */
 export const useInitMerkleTree = (type: Distribute) => {
   const { recipients } = useRecipients()
   const {
@@ -315,4 +327,28 @@ export const useInitMerkleTree = (type: Distribute) => {
   }, [decimals, expiration, mintAddress, recipients, toUnitTime, utility, type])
 
   return onInitMerkleTree
+}
+
+/**
+ *
+ * Revoke reward
+ * @param address distributor's address
+ * @returns revoke function
+ */
+export const useRevoke = (address: string) => {
+  const utility = useUtility()
+
+  const onRevoke = useCallback(async () => {
+    if (!utility) return
+    const { txId } = await utility.revoke({
+      distributorAddress: address,
+      feeOptions: {
+        fee: new BN(solConfig.fee),
+        feeCollectorAddress: solConfig.taxman,
+      },
+    })
+    return txId
+  }, [address, utility])
+
+  return onRevoke
 }
