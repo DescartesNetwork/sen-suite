@@ -60,7 +60,7 @@ export default function TokenKeypair({ keypair, onChange }: TokenKeypairProps) {
             <label tabIndex={0} className="btn btn-sm btn-square">
               <Settings className="h-4 w-4" />
             </label>
-            <div tabIndex={0} className="dropdown-content z-[10]">
+            <div tabIndex={0} className="dropdown-content z-10">
               <div className="card bg-base-100 shadow-xl p-4 flex flex-col gap-2 w-[256px]">
                 <div className="form-control w-full">
                   <label className="label">
