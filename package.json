@@ -22,6 +22,7 @@
   "dependencies": {
     "@coral-xyz/anchor": "^0.28.1-beta.1",
     "@coral-xyz/spl-token": "^0.28.1-beta.1",
+    "@floating-ui/react": "^0.25.0",
     "@mdx-js/react": "^2.3.0",
     "@metaplex-foundation/js": "^0.18.3",
     "@sentre/farming": "^2.0.2",
@@ -36,7 +37,7 @@
     "bn.js": "^5.2.1",
     "bs58": "^5.0.0",
     "copy-to-clipboard": "^3.3.3",
-    "daisyui": "^3.2.1",
+    "daisyui": "^3.5.1",
     "dayjs": "^1.11.9",
     "fuse.js": "^6.6.2",
     "immer": "^10.0.2",

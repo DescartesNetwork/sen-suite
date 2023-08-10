@@ -19,4 +19,12 @@
   .notion-asset-wrapper > div {
     height: unset !important;
   }
+
+  .notion-equation {
+    @apply overflow-visible;
+
+    & > span {
+      @apply flex flex-row justify-center;
+    }
+  }
 }

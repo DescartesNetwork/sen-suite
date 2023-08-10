@@ -31,7 +31,7 @@ export default function SwapSettings() {
       <label tabIndex={0} className="btn btn-sm btn-ghost btn-circle">
         <Settings className="h-5 w-5" />
       </label>
-      <div tabIndex={0} className="dropdown-content z-[1]">
+      <div tabIndex={0} className="dropdown-content z-[10]">
         <div className="card bg-base-100 shadow-xl p-4 flex flex-col gap-2">
           <p className="text-sm font-bold">Slippage Tolerance</p>
           <div className="join">

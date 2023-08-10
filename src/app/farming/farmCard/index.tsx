@@ -44,7 +44,7 @@ export default function FarmCard({ farmAddress }: FarmingCardProps) {
           </label>
           <ul
             tabIndex={0}
-            className="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52"
+            className="p-2 shadow menu dropdown-content z-[10] bg-base-100 rounded-box w-52"
           >
             <li>
               <a className="flex flex-row items-center" href="/pools">

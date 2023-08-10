@@ -45,17 +45,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             gtag('config', 'G-G57JYZBDBP');`}
         </Script>
       </head>
-      <body>
+      <body className="w-full flex flex-row">
         <UiProvider>
           <WalletProvider>
             <MintProvider>
               <TokenAccountProvider>
-                <main className="flex w-full">
-                  <Sidebar />
-                  <div className="flex flex-col flex-auto pr-2 py-2">
-                    {children}
-                  </div>
-                </main>
+                <Sidebar>{children}</Sidebar>
                 <Message />
               </TokenAccountProvider>
             </MintProvider>
