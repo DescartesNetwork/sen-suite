@@ -2,6 +2,7 @@ import { useAsync } from 'react-use'
 import { MerkleDistributor } from '@sentre/utility'
 
 import { MonitorDown, Send, Users } from 'lucide-react'
+import HeroCard from '@/app/airdrop/merkle-distribution/heroCard'
 
 import { undecimalize } from '@/helpers/decimals'
 import { getPrice } from '@/helpers/stat'
@@ -25,16 +26,11 @@ export default Heros
 const TotalCampaign = () => {
   const { vesting } = useMyDistributes()
   return (
-    <div className="card flex flex-row py-4 px-6 rounded-xl bg-base-100 items-center">
-      <div className="flex-auto flex flex-col gap-2 ">
-        <p className="text-sm opacity-60">Total Campaigns</p>
-
-        <h5>{vesting.length}</h5>
-      </div>
-      <div className="bg-[#f9575e1a] p-3">
-        <Send className="text-primary" />
-      </div>
-    </div>
+    <HeroCard
+      Icon={Send}
+      label="Total Campaigns"
+      value={vesting.length.toString()}
+    />
   )
 }
 
@@ -59,20 +55,12 @@ const TotalVesting = () => {
   }, [vesting, distributors])
 
   return (
-    <div className="card flex flex-row py-4 px-6 rounded-xl bg-base-100 items-center">
-      <div className="flex-auto flex flex-col gap-2 ">
-        <p className="text-sm opacity-60">Total Airdrop</p>
-
-        {loading ? (
-          <span className="loading loading-bars loading-xs" />
-        ) : (
-          <h5>{numeric(totalUSD || 0).format('$0,0.[0000]')}</h5>
-        )}
-      </div>
-      <div className="bg-[#f9575e1a] p-3">
-        <MonitorDown className="text-primary" />
-      </div>
-    </div>
+    <HeroCard
+      Icon={MonitorDown}
+      label="Total Vesting"
+      loading={loading}
+      value={numeric(totalUSD || 0).format('$0,0.[0000]')}
+    />
   )
 }
 
@@ -93,15 +81,10 @@ const TotalRecipients = () => {
   }, [vesting])
 
   return (
-    <div className="card flex flex-row py-4 px-6 rounded-xl bg-base-100 items-center">
-      <div className="flex-auto flex flex-col gap-2 ">
-        <p className="text-sm opacity-60">Total Recipients</p>
-
-        <h5>{amountRecipient || 0}</h5>
-      </div>
-      <div className="bg-[#f9575e1a] p-3">
-        <Users className="text-primary" />
-      </div>
-    </div>
+    <HeroCard
+      Icon={Users}
+      label="Total Recipients"
+      value={(amountRecipient || 0).toString()}
+    />
   )
 }

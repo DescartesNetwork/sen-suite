@@ -56,7 +56,12 @@ export default function MerkleDistributionHeader() {
 
   return (
     <div className="card bg-base-100 p-4 flex-row items-center">
-      <div className="flex-auto flex gap-10">
+      <div className="flex-auto">
+        <button className="btn btn-sm btn-circle" onClick={onBack}>
+          <ChevronLeft />
+        </button>
+      </div>
+      <div className=" flex gap-10">
         {menus.map(({ Logo, name, route, key }, i) => (
           <Link
             href={route}
@@ -74,9 +79,6 @@ export default function MerkleDistributionHeader() {
           </Link>
         ))}
       </div>
-      <button className="btn btn-sm btn-circle" onClick={onBack}>
-        <ChevronLeft />
-      </button>
     </div>
   )
 }

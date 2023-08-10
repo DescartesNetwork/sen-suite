@@ -2,6 +2,7 @@ import { useAsync } from 'react-use'
 import { MerkleDistributor } from '@sentre/utility'
 
 import { MonitorDown, Send, Users } from 'lucide-react'
+import HeroCard from '@/app/airdrop/merkle-distribution/heroCard'
 
 import { undecimalize } from '@/helpers/decimals'
 import { getPrice } from '@/helpers/stat'
@@ -13,7 +14,7 @@ import { useMintStore } from '@/providers/mint.provider'
 const Heros = () => {
   return (
     <div className="grid md:grid-cols-3 grid-col-1 gap-6">
-      <TotalAirdrops />
+      <TotalAirdrop />
       <TotalCampaign />
       <TotalRecipients />
     </div>
@@ -25,20 +26,15 @@ export default Heros
 const TotalCampaign = () => {
   const { airdrops } = useMyDistributes()
   return (
-    <div className="card flex flex-row py-4 px-6 rounded-xl bg-base-100 items-center">
-      <div className="flex-auto flex flex-col gap-2 ">
-        <p className="text-sm opacity-60">Total Campaigns</p>
-
-        <h5>{airdrops.length}</h5>
-      </div>
-      <div className="bg-[#f9575e1a] p-3">
-        <Send className="text-primary" />
-      </div>
-    </div>
+    <HeroCard
+      Icon={Send}
+      label="Total Campaigns"
+      value={airdrops.length.toString()}
+    />
   )
 }
 
-const TotalAirdrops = () => {
+const TotalAirdrop = () => {
   const { airdrops } = useMyDistributes()
   const distributors = useDistributors()
   const metadata = useMintStore(({ metadata }) => metadata)
@@ -59,20 +55,12 @@ const TotalAirdrops = () => {
   }, [airdrops, distributors])
 
   return (
-    <div className="card flex flex-row py-4 px-6 rounded-xl bg-base-100 items-center">
-      <div className="flex-auto flex flex-col gap-2 ">
-        <p className="text-sm opacity-60">Total Airdrop</p>
-
-        {loading ? (
-          <span className="loading loading-bars loading-xs" />
-        ) : (
-          <h5>{numeric(totalUSD || 0).format('$0,0.[0000]')}</h5>
-        )}
-      </div>
-      <div className="bg-[#f9575e1a] p-3">
-        <MonitorDown className="text-primary" />
-      </div>
-    </div>
+    <HeroCard
+      Icon={MonitorDown}
+      label="Total Airdrop"
+      loading={loading}
+      value={numeric(totalUSD || 0).format('$0,0.[0000]')}
+    />
   )
 }
 
@@ -93,15 +81,10 @@ const TotalRecipients = () => {
   }, [airdrops])
 
   return (
-    <div className="card flex flex-row py-4 px-6 rounded-xl bg-base-100 items-center">
-      <div className="flex-auto flex flex-col gap-2 ">
-        <p className="text-sm opacity-60">Total Recipients</p>
-
-        <h5>{amountRecipient || 0}</h5>
-      </div>
-      <div className="bg-[#f9575e1a] p-3">
-        <Users className="text-primary" />
-      </div>
-    </div>
+    <HeroCard
+      Icon={Users}
+      label="Total Recipients"
+      value={(amountRecipient || 0).toString()}
+    />
   )
 }

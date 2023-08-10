@@ -1,6 +1,7 @@
 import { useAsync } from 'react-use'
 
 import { ArrowDownLeftFromCircle } from 'lucide-react'
+import HeroCard from '../heroCard'
 
 import { undecimalize } from '@/helpers/decimals'
 import { getPrice } from '@/helpers/stat'
@@ -29,19 +30,12 @@ const TotalReceived = () => {
   }, [myReceipts, distributors])
 
   return (
-    <div className="card flex flex-row py-4 px-6 rounded-xl bg-base-100 items-center">
-      <div className="flex-auto flex flex-col gap-2 ">
-        <p className="text-sm opacity-60">Total Received</p>
-        {loading ? (
-          <span className="loading loading-bars loading-xs" />
-        ) : (
-          <h5>{numeric(totalUSD || 0).format('$0,0.[0000]')}</h5>
-        )}
-      </div>
-      <div className="bg-[#f9575e1a] p-3">
-        <ArrowDownLeftFromCircle className="text-primary" />
-      </div>
-    </div>
+    <HeroCard
+      Icon={ArrowDownLeftFromCircle}
+      label="Total Received"
+      loading={loading}
+      value={numeric(totalUSD || 0).format('$0,0.[0000]')}
+    />
   )
 }
 
