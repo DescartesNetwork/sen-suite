@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react'
-import { Utility, Leaf, MerkleDistributor } from '@sentre/utility'
+import { useAsync } from 'react-use'
+import { Utility, Leaf, MerkleDistributor, ReceiptData } from '@sentre/utility'
 import {
   useAnchorWallet,
   useConnection,
@@ -351,4 +352,29 @@ export const useRevoke = (address: string) => {
   }, [address, utility])
 
   return onRevoke
+}
+
+/**
+ * Get all receipts by distributor address
+ * @param address distributor address
+ * @returns Receipts list
+ */
+export const useReceiptByDistributorAddress = (address: string) => {
+  const utility = useUtility()
+
+  const { value: receipts } = useAsync(async () => {
+    if (!utility) return
+    const result: Record<string, ReceiptData> = {}
+    const { account } = utility.program
+    const receipts = await account.receipt.all([
+      { memcmp: { offset: 40, bytes: address } },
+    ])
+    for (const { publicKey, account: receiptData } of receipts) {
+      const address = publicKey.toBase58()
+      result[address] = receiptData
+    }
+    return result
+  }, [utility])
+
+  return receipts
 }

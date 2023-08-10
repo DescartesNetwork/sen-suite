@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation'
 
 import { Plus } from 'lucide-react'
 import History from '../history'
+import Heros from './heros'
 
 import { Distribute } from '@/hooks/airdrop.hook'
 
@@ -21,6 +22,7 @@ const Airdrop = () => {
           Add New
         </button>
       </div>
+      <Heros />
       <History type={Distribute.Airdrop} />
     </div>
   )

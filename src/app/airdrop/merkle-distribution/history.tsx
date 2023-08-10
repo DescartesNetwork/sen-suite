@@ -19,6 +19,7 @@ import {
 } from '@/hooks/airdrop.hook'
 import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
+import UnclaimList from './unclaimList'
 
 const DEFAULT_AMOUNT = 4
 
@@ -149,7 +150,6 @@ const HistoryItem = ({ address }: { address: string }) => {
         <MintAmount mintAddress={mint.toBase58()} amount={new BN(remaining)} />
       </td>
       <td className="flex gap-2">
-        <button className="btn btn-sm btn-ghost text-info">SHARE</button>
         {!endedAt.isZero() && (
           <button
             disabled={!ok || disabled || loading}
@@ -160,6 +160,7 @@ const HistoryItem = ({ address }: { address: string }) => {
             REVOKE
           </button>
         )}
+        <UnclaimList distributeAddress={address} />
       </td>
     </tr>
   )

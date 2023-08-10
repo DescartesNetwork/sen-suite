@@ -34,8 +34,11 @@ const VestingList = ({ vesting }: { vesting: ReceiveItem[][] }) => {
           <tbody>
             {vesting.slice(0, showAirdrop).map((campaign, i) => (
               <Fragment key={i}>
-                {campaign.map((props: ReceiveItem) => (
-                  <RewardCard key={`${props.distributor}${i}`} {...props} />
+                {campaign.map((props: ReceiveItem, index) => (
+                  <RewardCard
+                    key={`${props.distributor}-${index}`}
+                    {...props}
+                  />
                 ))}
               </Fragment>
             ))}
