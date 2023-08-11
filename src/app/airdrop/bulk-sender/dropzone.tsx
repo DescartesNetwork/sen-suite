@@ -1,6 +1,7 @@
 'use client'
 import { useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
+import classNames from 'classnames'
 
 import { Download, FileUp, Info, X } from 'lucide-react'
 
@@ -42,11 +43,10 @@ export default function Dropzone({
         {...getRootProps()}
       >
         <FileUp
-          className={
-            'w-8 h-8' +
-            (isDragActive ? ' animate-bounce' : '') +
-            (file ? ' stroke-lime-500' : '')
-          }
+          className={classNames('w-8 h-8', {
+            'animate-bounce': isDragActive,
+            'stroke-lime-500': !!file,
+          })}
         />
         <input {...getInputProps()} />
         {!file ? (

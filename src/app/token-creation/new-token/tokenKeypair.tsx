@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { Keypair } from '@solana/web3.js'
 import { encode } from 'bs58'
 import copy from 'copy-to-clipboard'
+import classNames from 'classnames'
 
 import { Copy, Info, Settings, Shuffle } from 'lucide-react'
 import { SmActionInput } from './actionInput'
@@ -52,10 +53,9 @@ export default function TokenKeypair({ keypair, onChange }: TokenKeypairProps) {
             <Shuffle className="w-4 h-4" />
           </button>
           <div
-            className={
-              'absolute right-2 dropdown dropdown-end' +
-              (loading ? ' dropdown-open' : '')
-            }
+            className={classNames('absolute right-2 dropdown dropdown-end', {
+              'dropdown-open': loading,
+            })}
           >
             <label tabIndex={0} className="btn btn-sm btn-square">
               <Settings className="h-4 w-4" />

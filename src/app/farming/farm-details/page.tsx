@@ -1,6 +1,7 @@
 'use client'
 import { useMemo, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import classNames from 'classnames'
 
 import { MintLogo, MintName, MintSymbol } from '@/components/mint'
 import FarmTimeline from '../farmCard/farmTimeline'
@@ -85,7 +86,9 @@ export default function FarmDetails() {
                 {Object.values(FarmAction).map((value) => (
                   <button
                     key={value}
-                    className={'tab' + (tab === value ? ' tab-active' : '')}
+                    className={classNames('tab', {
+                      'tab-active': tab === value,
+                    })}
                     onClick={() => {
                       if (auth) setTab(value)
                     }}

@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import classNames from 'classnames'
 
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 
@@ -39,10 +40,9 @@ export default function Pagination({ pageIds, metadata }: PaginationProps) {
   return (
     <div className="join">
       <Link
-        className={
-          'join-item btn btn-square' +
-          (page === min ? ' btn-disabled cursor-not-allowed' : '')
-        }
+        className={classNames('join-item btn btn-square', {
+          'btn-disabled cursor-not-allowed': page === min,
+        })}
         href={{
           pathname: page === min ? '#' : '/academy',
           query: !tag ? { page: prev } : { tag, page: prev },
@@ -60,10 +60,9 @@ export default function Pagination({ pageIds, metadata }: PaginationProps) {
         ))}
       </select>
       <Link
-        className={
-          'join-item btn btn-square' +
-          (page === max ? ' btn-disabled cursor-not-allowed' : '')
-        }
+        className={classNames('join-item btn btn-square', {
+          'btn-disabled cursor-not-allowed': page === max,
+        })}
         href={{
           pathname: page === max ? '#' : '/academy',
           query: !tag ? { page: next } : { tag, page: next },

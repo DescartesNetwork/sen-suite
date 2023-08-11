@@ -1,6 +1,7 @@
 'use client'
 import { Fragment, useMemo } from 'react'
 import { BN } from 'bn.js'
+import classNames from 'classnames'
 
 import { MintSymbol } from '@/components/mint'
 import { ChevronRight, Diamond } from 'lucide-react'
@@ -65,15 +66,16 @@ function Price() {
 function SlippageTolerance() {
   const slippage = useSwapStore(({ slippage }) => slippage)
   const value = slippage === 1 ? 'Free' : `${slippage * 100}%`
-  let className = 'badge'
-  if (slippage >= 1) className = className + ' badge-error'
-  else if (slippage >= 0.05) className = className + ' badge-warning'
-  else className = className + ' badge-success'
-
   return (
     <div className="flex flex-row gap-2 items-baseline">
       <p className="flex-auto text-sm opacity-60">Slippage Tolerance</p>
-      <div className={className}>
+      <div
+        className={classNames('badge', {
+          'badge-error': slippage >= 1,
+          'badge-warning': slippage >= 0.05 && slippage < 1,
+          'badge-success': slippage < 0.05,
+        })}
+      >
         <p className="text-sm font-bold">{value}</p>
       </div>
     </div>
