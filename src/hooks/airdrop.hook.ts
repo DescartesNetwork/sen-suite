@@ -34,7 +34,10 @@ import { ReceiptState } from '@/app/airdrop/merkle-distribution/rewardCard'
 export const useUtility = () => {
   const wallet = useAnchorWallet()
   const utility = useMemo(
-    () => (wallet ? new Utility(wallet, solConfig.rpc) : undefined),
+    () =>
+      wallet
+        ? new Utility(wallet, solConfig.rpc, solConfig.utilityProgram)
+        : undefined,
     [wallet],
   )
   return utility

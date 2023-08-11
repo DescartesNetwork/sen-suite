@@ -4,8 +4,8 @@ import type { Metadata } from 'next'
 import AirdropProvider from '@/providers/airdrop.provider'
 
 export const metadata: Metadata = {
-  title:
-    'Airdrop | Build your effective airdrop, vesting, bucksender campaigns',
+  title: 'Sentre Airdrop',
+  description: 'Build your effective airdrop, vesting, bulk sender campaigns.',
 }
 
 export default function FarmingLayout({ children }: { children: ReactNode }) {
