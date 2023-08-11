@@ -10,15 +10,15 @@ import Dropzone from '@/components/dropzone'
 
 import {
   useBulkSenderData,
-  useAirdropMintAddress,
-} from '@/providers/airdrop.provider'
+  useBulkSenderMint,
+} from '@/providers/bulkSender.provider'
 import { isAddress } from '@/helpers/utils'
 import { usePushMessage } from '@/components/message/store'
 
 export default function BulkSender() {
   const [open, setOpen] = useState(false)
   const [file, setFile] = useState<File>()
-  const { mintAddress, setMintAddress } = useAirdropMintAddress()
+  const { mintAddress, setMintAddress } = useBulkSenderMint()
   const { setData } = useBulkSenderData()
   const { push } = useRouter()
   const pushMessage = usePushMessage()

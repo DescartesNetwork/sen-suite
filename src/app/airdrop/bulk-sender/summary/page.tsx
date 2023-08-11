@@ -10,8 +10,8 @@ import EditRowBulkSender from './row'
 import {
   useBulkSenderData,
   useBulkSenderDecimalized,
-  useAirdropMintAddress,
-} from '@/providers/airdrop.provider'
+  useBulkSenderMint,
+} from '@/providers/bulkSender.provider'
 import { isAddress, numeric } from '@/helpers/utils'
 import { usePushMessage } from '@/components/message/store'
 import { useTvl } from '@/hooks/tvl.hook'
@@ -32,7 +32,7 @@ export default function SummaryBulkSender() {
   const [loading, setLoading] = useState(false)
   const [newAmount, setNewAmount] = useState('')
   const [newAddress, setNewAddress] = useState('')
-  const { mintAddress } = useAirdropMintAddress()
+  const { mintAddress } = useBulkSenderMint()
   const { data, setData } = useBulkSenderData()
   const { decimalized, setDecimalized } = useBulkSenderDecimalized()
   const pushMessage = usePushMessage()

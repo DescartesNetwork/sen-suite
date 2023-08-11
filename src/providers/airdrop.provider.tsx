@@ -62,11 +62,6 @@ export type AirdropStore = {
   configs: Configs
   upsertConfigs: (data: Partial<Configs>) => void
   destroy: () => void
-  // Bulk sender
-  data: string[][]
-  setData: (data: string[][]) => void
-  decimalized: boolean
-  setDecimalized: (decimalized: boolean) => void
 }
 
 export const useAirdropStore = create<AirdropStore>()(
@@ -129,11 +124,6 @@ export const useAirdropStore = create<AirdropStore>()(
           false,
           'destroy',
         ),
-      data: [],
-      setData: (data) => set({ data }, false, 'setData'),
-      decimalized: false,
-      setDecimalized: (decimalized) =>
-        set({ decimalized }, false, 'setDecimalized'),
     }),
     {
       name: 'airdrop',
@@ -313,25 +303,4 @@ export const useAirdropMintAddress = () => {
   const mintAddress = useAirdropStore(({ mintAddress }) => mintAddress)
   const setMintAddress = useAirdropStore(({ setMintAddress }) => setMintAddress)
   return { mintAddress, setMintAddress }
-}
-
-//================ Bulk Sender data section ===================//
-/**
- * Get/Set airdropped data
- * @returns Like-useState object
- */
-export const useBulkSenderData = () => {
-  const data = useAirdropStore(({ data }) => data)
-  const setData = useAirdropStore(({ setData }) => setData)
-  return { data, setData }
-}
-
-/**
- * Get/Set airdropped decimalized
- * @returns Like-useState object
- */
-export const useBulkSenderDecimalized = () => {
-  const decimalized = useAirdropStore(({ decimalized }) => decimalized)
-  const setDecimalized = useAirdropStore(({ setDecimalized }) => setDecimalized)
-  return { decimalized, setDecimalized }
 }

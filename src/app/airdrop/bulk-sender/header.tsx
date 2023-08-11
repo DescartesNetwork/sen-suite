@@ -4,7 +4,7 @@ import { usePathname, useRouter } from 'next/navigation'
 
 import { ChevronLeft } from 'lucide-react'
 
-import { useBulkSenderData } from '@/providers/airdrop.provider'
+import { useBulkSenderData } from '@/providers/bulkSender.provider'
 
 export default function BulkSenderHeader() {
   const pathname = usePathname()

@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from 'react'
+import { isAddress } from '@sentre/utility'
 import { BN } from 'bn.js'
 import dayjs from 'dayjs'
 
@@ -18,7 +19,6 @@ import { shortenAddress } from '@/helpers/utils'
 import { useTotalDistribute } from '@/hooks/airdrop.hook'
 import { useTokenAccountByMintAddress } from '@/providers/tokenAccount.provider'
 import { CreateStep } from './page'
-import { isAddress } from '@sentre/utility'
 
 const RecipientsList = () => {
   const { recipients, setRecipients } = useRecipients()
@@ -106,6 +106,7 @@ const RecipientsList = () => {
     </div>
   )
 }
+
 type InputRecipientProps = {
   setStep: (step: CreateStep) => void
 }
