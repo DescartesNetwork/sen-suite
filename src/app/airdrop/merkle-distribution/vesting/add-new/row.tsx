@@ -1,9 +1,10 @@
+import { useMemo } from 'react'
+
 import { UserPlus } from 'lucide-react'
 import DatePicker from 'react-datepicker'
 
 import { isAddress } from '@/helpers/utils'
-import { useDistributeConfigs } from '@/providers/merkle.provider'
-import { useMemo } from 'react'
+import { useDistributeConfigs } from '@/providers/airdrop.provider'
 
 type EditRecipientProps = {
   index?: string

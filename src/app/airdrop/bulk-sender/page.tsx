@@ -6,10 +6,10 @@ import { parse } from 'papaparse'
 import { MintLogo, MintSymbol } from '@/components/mint'
 import TokenSelection from '@/components/tokenSelection'
 import { ChevronDown, Search } from 'lucide-react'
-import Dropzone from './dropzone'
+import Dropzone from '../../../components/dropzone'
 
 import {
-  useAirdropData,
+  useBulkSenderData,
   useAirdropMintAddress,
 } from '@/providers/airdrop.provider'
 import { isAddress } from '@/helpers/utils'
@@ -19,7 +19,7 @@ export default function BulkSender() {
   const [open, setOpen] = useState(false)
   const [file, setFile] = useState<File>()
   const { mintAddress, setMintAddress } = useAirdropMintAddress()
-  const { setData } = useAirdropData()
+  const { setData } = useBulkSenderData()
   const { push } = useRouter()
   const pushMessage = usePushMessage()
 

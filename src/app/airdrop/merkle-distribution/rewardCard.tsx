@@ -11,7 +11,7 @@ import { shortenAddress } from '@/helpers/utils'
 import { useClaim } from '@/hooks/airdrop.hook'
 import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
-import { useMerkleStore } from '@/providers/merkle.provider'
+import { useAirdropStore } from '@/providers/airdrop.provider'
 
 export enum ReceiptState {
   waiting = 'Waiting',
@@ -51,7 +51,7 @@ const RewardCard = (props: ReceiveItem) => {
   const { leaf, endedAt, mintAddress, sender, status, receiptAddress } = props
   const [loading, setLoading] = useState(false)
   const pushMessage = usePushMessage()
-  const upsertReceipt = useMerkleStore(({ upsertReceipt }) => upsertReceipt)
+  const upsertReceipt = useAirdropStore(({ upsertReceipt }) => upsertReceipt)
 
   const startTime = leaf.startedAt.toNumber() * 1000
 

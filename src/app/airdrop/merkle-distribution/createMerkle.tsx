@@ -11,9 +11,9 @@ import {
   useTotalDistribute,
 } from '@/hooks/airdrop.hook'
 import {
-  useDistributeMintAddress,
-  useMerkleStore,
-} from '@/providers/merkle.provider'
+  useAirdropMintAddress,
+  useAirdropStore,
+} from '@/providers/airdrop.provider'
 import { CreateStep } from './airdrop/add-new/page'
 import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
@@ -21,8 +21,8 @@ import { solscan } from '@/helpers/explorers'
 const CreateMerkle = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
   const [loading, setLoading] = useState(false)
   const { total } = useTotalDistribute()
-  const { mintAddress } = useDistributeMintAddress()
-  const destroy = useMerkleStore(({ destroy }) => destroy)
+  const { mintAddress } = useAirdropMintAddress()
+  const destroy = useAirdropStore(({ destroy }) => destroy)
 
   const pushMessage = usePushMessage()
   const { push } = useRouter()

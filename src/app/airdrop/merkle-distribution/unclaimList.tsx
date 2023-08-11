@@ -13,7 +13,7 @@ import {
   useUtility,
 } from '@/hooks/airdrop.hook'
 import { shortenAddress } from '@/helpers/utils'
-import { useDistributors } from '@/providers/merkle.provider'
+import { useDistributors } from '@/providers/airdrop.provider'
 
 type UnclaimListProps = {
   distributeAddress: string

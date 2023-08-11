@@ -18,11 +18,11 @@ import { isAddress } from '@/helpers/utils'
 import {
   RecipientData,
   useDistributeConfigs,
-  useDistributeMintAddress,
+  useAirdropMintAddress,
   useDistributors,
   useMyReceipts,
   useRecipients,
-} from '@/providers/merkle.provider'
+} from '@/providers/airdrop.provider'
 import { MetadataBackup, toFilename, uploadFileToAws } from '@/helpers/aws'
 import { useMintByAddress } from '@/providers/mint.provider'
 import { ReceiptState } from '@/app/airdrop/merkle-distribution/rewardCard'
@@ -207,7 +207,7 @@ export const useReceiptStatus = () => {
  */
 export const useTotalDistribute = () => {
   const { recipients } = useRecipients()
-  const { mintAddress } = useDistributeMintAddress()
+  const { mintAddress } = useAirdropMintAddress()
 
   const { decimals } = useMintByAddress(mintAddress) || { decimals: 0 }
 
@@ -272,7 +272,7 @@ export const useInitMerkleTree = (type: Distribute) => {
   const {
     configs: { expiration },
   } = useDistributeConfigs()
-  const { mintAddress } = useDistributeMintAddress()
+  const { mintAddress } = useAirdropMintAddress()
   const { decimals } = useMintByAddress(mintAddress) || { decimals: 0 }
   const utility = useUtility()
 

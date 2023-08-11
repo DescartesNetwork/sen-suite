@@ -5,8 +5,8 @@ import { MintAmount, MintSymbol } from '@/components/mint'
 
 import {
   useDistributeConfigs,
-  useDistributeMintAddress,
-} from '@/providers/merkle.provider'
+  useAirdropMintAddress,
+} from '@/providers/airdrop.provider'
 import { useTokenAccountByMintAddress } from '@/providers/tokenAccount.provider'
 import { useTotalDistribute } from '@/hooks/airdrop.hook'
 
@@ -16,7 +16,7 @@ type CardOverviewProps = {
 }
 
 const CardOverview = ({ showTotal, showUnlock }: CardOverviewProps) => {
-  const { mintAddress } = useDistributeMintAddress()
+  const { mintAddress } = useAirdropMintAddress()
   const {
     configs: { unlockTime, expiration },
   } = useDistributeConfigs()

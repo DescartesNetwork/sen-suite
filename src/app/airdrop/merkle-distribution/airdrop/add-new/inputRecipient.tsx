@@ -7,9 +7,9 @@ import CardOverview from '@/app/airdrop/merkle-distribution/cardOverview'
 import {
   RecipientData,
   useDistributeConfigs,
-  useDistributeMintAddress,
+  useAirdropMintAddress,
   useRecipients,
-} from '@/providers/merkle.provider'
+} from '@/providers/airdrop.provider'
 import { isAddress } from '@/helpers/utils'
 import { CreateStep } from './page'
 import { useTokenAccountByMintAddress } from '@/providers/tokenAccount.provider'
@@ -32,7 +32,7 @@ type InputRecipientProps = {
 const InputRecipient = ({ setStep }: InputRecipientProps) => {
   const [address, setAddress] = useState('')
   const [amount, setAmount] = useState('')
-  const { mintAddress } = useDistributeMintAddress()
+  const { mintAddress } = useAirdropMintAddress()
   const { recipients, upsertRecipient, removeRecipient, setRecipients } =
     useRecipients()
   const { configs } = useDistributeConfigs()

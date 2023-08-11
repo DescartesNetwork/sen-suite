@@ -9,7 +9,6 @@ import {
 } from 'react'
 import { parse } from 'papaparse'
 import { useRouter } from 'next/navigation'
-import parseDuration from 'parse-duration'
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -19,19 +18,39 @@ import { ChevronDown } from 'lucide-react'
 import { MintLogo, MintSymbol } from '@/components/mint'
 import DatePicker from 'react-datepicker'
 import TokenSelection from '@/components/tokenSelection'
-import Dropzone from '@/app/airdrop/bulk-sender/dropzone'
+import Dropzone from '@/components/dropzone'
 
 import {
   useDistributeConfigs,
-  useDistributeMintAddress,
-  useMerkleStore,
+  useAirdropMintAddress,
+  useAirdropStore,
   useRecipients,
-} from '@/providers/merkle.provider'
+} from '@/providers/airdrop.provider'
 import { CreateStep } from './page'
 import { usePushMessage } from '@/components/message/store'
 
 dayjs.extend(duration)
 dayjs.extend(relativeTime)
+
+const IOS_STANDARD: Record<string, string> = {
+  y: 'Y',
+  year: 'Y',
+  years: 'Y',
+  month: 'M',
+  months: 'M',
+  d: 'D',
+  day: 'D',
+  days: 'D',
+  h: 'H',
+  hour: 'H',
+  hours: 'H',
+  m: 'M',
+  minute: 'M',
+  minutes: 'M',
+  s: 'S',
+  second: 'S',
+  seconds: 'S',
+}
 
 const TEGTime = () => {
   const { configs, upsertConfigs } = useDistributeConfigs()
@@ -73,10 +92,10 @@ const TEGTime = () => {
 }
 
 const listCliff = [
-  parseDuration('1month')!,
-  parseDuration('3months')!,
-  parseDuration('6months')!,
-  parseDuration('12months')!,
+  dayjs.duration({ months: 1 }).asMilliseconds(),
+  dayjs.duration({ months: 3 }).asMilliseconds(),
+  dayjs.duration({ months: 6 }).asMilliseconds(),
+  dayjs.duration({ months: 12 }).asMilliseconds(),
 ]
 const CliffTime = () => {
   const [custom, setCustom] = useState<string>()
@@ -85,11 +104,17 @@ const CliffTime = () => {
   const { configs, upsertConfigs } = useDistributeConfigs()
 
   const onAdd = () => {
-    if (!custom || !parseDuration(custom)) return
+    if (!custom) return
+
+    const [duration, uint] = custom.split(/(\d+)/).filter(Boolean)
+    const iosKey = IOS_STANDARD[uint.toLowerCase()]
+    if (!Number(duration) || !iosKey) return
+
+    const time = dayjs.duration(`P${duration + iosKey}`).asMilliseconds()
     const next = [...cliffTimes]
-    next.push(parseDuration(custom)!)
+    next.push(time)
     setCliffTimes(next)
-    upsertConfigs({ cliff: parseDuration(custom)! })
+    upsertConfigs({ cliff: time })
     setCustom('')
   }
 
@@ -139,10 +164,10 @@ const CliffTime = () => {
 }
 
 const distributesIn = [
-  parseDuration('6months')!,
-  parseDuration('1y')!,
-  parseDuration('2y')!,
-  parseDuration('4y')!,
+  dayjs.duration({ months: 6 }).asMilliseconds(),
+  dayjs.duration({ years: 1 }).asMilliseconds(),
+  dayjs.duration({ years: 2 }).asMilliseconds(),
+  dayjs.duration({ years: 4 }).asMilliseconds(),
 ]
 const DistributeIn = () => {
   const [custom, setCustom] = useState<string>()
@@ -165,11 +190,17 @@ const DistributeIn = () => {
   }, [distributeIn, expiration, frequency])
 
   const onAdd = () => {
-    if (!custom || !parseDuration(custom)) return
+    if (!custom) return
+
+    const [duration, uint] = custom.split(/(\d+)/).filter(Boolean)
+    const iosKey = IOS_STANDARD[uint.toLowerCase()]
+    if (!Number(duration) || !iosKey) return
+
+    const time = dayjs.duration(`P${duration + iosKey}`).asMilliseconds()
     const next = [...distributesTime]
-    next.push(parseDuration(custom)!)
+    next.push(time)
     setDistributesTime(next)
-    upsertConfigs({ distributeIn: parseDuration(custom)! })
+    upsertConfigs({ distributeIn: time })
     setCustom('')
   }
 
@@ -226,10 +257,10 @@ const DistributeIn = () => {
 }
 
 const frequencies = [
-  parseDuration('1month')!,
-  parseDuration('3months')!,
-  parseDuration('6months')!,
-  parseDuration('12months')!,
+  dayjs.duration({ months: 1 }).asMilliseconds(),
+  dayjs.duration({ months: 3 }).asMilliseconds(),
+  dayjs.duration({ months: 6 }).asMilliseconds(),
+  dayjs.duration({ months: 12 }).asMilliseconds(),
 ]
 const DistributeFrequency = () => {
   const [custom, setCustom] = useState<string>()
@@ -239,11 +270,17 @@ const DistributeFrequency = () => {
   const { frequency } = configs
 
   const onAdd = () => {
-    if (!custom || !parseDuration(custom)) return
+    if (!custom) return
+
+    const [duration, uint] = custom.split(/(\d+)/).filter(Boolean)
+    const iosKey = IOS_STANDARD[uint.toLowerCase()]
+    if (!Number(duration) || !iosKey) return
+
+    const time = dayjs.duration(`P${duration + iosKey}`).asMilliseconds()
     const next = [...frequenciesTime]
-    next.push(parseDuration(custom)!)
+    next.push(time)
     setFrequenciesTime(next)
-    upsertConfigs({ frequency: parseDuration(custom)! })
+    upsertConfigs({ frequency: time })
     setCustom('')
   }
 
@@ -345,7 +382,7 @@ const Expiration = ({
 
 const MintSelection = () => {
   const [open, setOpen] = useState(false)
-  const { mintAddress, setMintAddress } = useDistributeMintAddress()
+  const { mintAddress, setMintAddress } = useAirdropMintAddress()
 
   const onMintAddress = useCallback(
     (value: string) => {
@@ -391,10 +428,10 @@ const InputConfigs = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
 
   const { push } = useRouter()
   const pushMessage = usePushMessage()
-  const { mintAddress } = useDistributeMintAddress()
+  const { mintAddress } = useAirdropMintAddress()
   const { configs, upsertConfigs } = useDistributeConfigs()
   const { setRecipients, recipients } = useRecipients()
-  const destroy = useMerkleStore(({ destroy }) => destroy)
+  const destroy = useAirdropStore(({ destroy }) => destroy)
 
   const onBack = () => {
     destroy()

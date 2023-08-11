@@ -10,7 +10,7 @@ import dayjs from 'dayjs'
 import { ChevronDown } from 'lucide-react'
 import { MintAmount, MintLogo, MintSymbol } from '@/components/mint'
 
-import { useDistributors, useMyDistributes } from '@/providers/merkle.provider'
+import { useDistributors, useMyDistributes } from '@/providers/airdrop.provider'
 import {
   Distribute,
   useMerkleMetadata,

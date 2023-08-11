@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import { parse } from 'papaparse'
 
 import { ChevronDown } from 'lucide-react'
-import Dropzone from '@/app/airdrop/bulk-sender/dropzone'
+import Dropzone from '@/components/dropzone'
 import DatePicker from 'react-datepicker'
 import TokenSelection from '@/components/tokenSelection'
 import { MintLogo, MintSymbol } from '@/components/mint'
@@ -14,10 +14,10 @@ import { isAddress } from '@/helpers/utils'
 import { usePushMessage } from '@/components/message/store'
 import {
   useDistributeConfigs,
-  useDistributeMintAddress,
-  useMerkleStore,
+  useAirdropMintAddress,
+  useAirdropStore,
   useRecipients,
-} from '@/providers/merkle.provider'
+} from '@/providers/airdrop.provider'
 
 const InputConfigs = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
   const [open, setOpen] = useState(false)
@@ -26,10 +26,10 @@ const InputConfigs = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
 
   const { push } = useRouter()
   const pushMessage = usePushMessage()
-  const { mintAddress, setMintAddress } = useDistributeMintAddress()
+  const { mintAddress, setMintAddress } = useAirdropMintAddress()
   const { configs, upsertConfigs } = useDistributeConfigs()
   const { setRecipients } = useRecipients()
-  const destroy = useMerkleStore(({ destroy }) => destroy)
+  const destroy = useAirdropStore(({ destroy }) => destroy)
 
   const { expiration, unlockTime } = configs
 

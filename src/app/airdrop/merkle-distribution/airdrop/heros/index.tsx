@@ -8,7 +8,7 @@ import { undecimalize } from '@/helpers/decimals'
 import { getPrice } from '@/helpers/stat'
 import { numeric } from '@/helpers/utils'
 import { useMerkleMetadata } from '@/hooks/airdrop.hook'
-import { useDistributors, useMyDistributes } from '@/providers/merkle.provider'
+import { useDistributors, useMyDistributes } from '@/providers/airdrop.provider'
 import { useMintStore } from '@/providers/mint.provider'
 
 const Heros = () => {

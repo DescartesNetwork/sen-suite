@@ -6,7 +6,7 @@ import HeroCard from '../heroCard'
 import { undecimalize } from '@/helpers/decimals'
 import { getPrice } from '@/helpers/stat'
 import { numeric } from '@/helpers/utils'
-import { useDistributors, useMyReceipts } from '@/providers/merkle.provider'
+import { useDistributors, useMyReceipts } from '@/providers/airdrop.provider'
 import { useMintStore } from '@/providers/mint.provider'
 
 const TotalReceived = () => {

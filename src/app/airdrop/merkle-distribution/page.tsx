@@ -6,7 +6,10 @@ import AirdropList from './airdropList'
 import VestingList from './vestingList'
 import Heros from './heros'
 
-import { useDistributors, useMyReceivedList } from '@/providers/merkle.provider'
+import {
+  useDistributors,
+  useMyReceivedList,
+} from '@/providers/airdrop.provider'
 import { useReceiptStatus } from '@/hooks/airdrop.hook'
 import { ReceiptState } from './rewardCard'
 
@@ -24,10 +27,10 @@ export default function MerkleDistribution() {
   const distributors = useDistributors()
   const { receivedList } = useMyReceivedList()
   const getReceiptStatus = useReceiptStatus()
+
   const { airdrops, vesting } = useMemo(() => {
     const airdrops: ReceiveItem[] = []
     const vesting: ReceiveItem[][] = []
-
     for (const address in receivedList) {
       const { mint, endedAt, authority } = distributors[address]
       const leafs = receivedList[address]

@@ -9,9 +9,9 @@ import { Trash } from 'lucide-react'
 import {
   RecipientData,
   useDistributeConfigs,
-  useDistributeMintAddress,
+  useAirdropMintAddress,
   useRecipients,
-} from '@/providers/merkle.provider'
+} from '@/providers/airdrop.provider'
 import { decimalize, undecimalize } from '@/helpers/decimals'
 import { useMintByAddress } from '@/providers/mint.provider'
 import { shortenAddress } from '@/helpers/utils'
@@ -115,7 +115,7 @@ export default function InputRecipients({ setStep }: InputRecipientProps) {
   const [time, setTime] = useState(0)
 
   const { configs } = useDistributeConfigs()
-  const { mintAddress } = useDistributeMintAddress()
+  const { mintAddress } = useAirdropMintAddress()
   const { decimals } = useMintByAddress(mintAddress)
   const { upsertRecipient, setRecipients, recipients } = useRecipients()
   const { total, quantity } = useTotalDistribute()

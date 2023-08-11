@@ -3,7 +3,7 @@ import { useAsync } from 'react-use'
 import { ArrowUpRightFromCircle } from 'lucide-react'
 import HeroCard from '../heroCard'
 
-import { useDistributors } from '@/providers/merkle.provider'
+import { useDistributors } from '@/providers/airdrop.provider'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useMintStore } from '@/providers/mint.provider'
 import { undecimalize } from '@/helpers/decimals'
