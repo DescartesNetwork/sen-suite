@@ -6,7 +6,7 @@ import { parse } from 'papaparse'
 import { MintLogo, MintSymbol } from '@/components/mint'
 import TokenSelection from '@/components/tokenSelection'
 import { ChevronDown, Search } from 'lucide-react'
-import Dropzone from '../../../components/dropzone'
+import Dropzone from '@/components/dropzone'
 
 import {
   useBulkSenderData,
