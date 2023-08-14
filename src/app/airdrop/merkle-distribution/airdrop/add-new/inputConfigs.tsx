@@ -9,7 +9,7 @@ import DatePicker from 'react-datepicker'
 import TokenSelection from '@/components/tokenSelection'
 import { MintLogo, MintSymbol } from '@/components/mint'
 
-import { CreateStep } from './page'
+import { CreateStep } from '@/app/airdrop/merkle-distribution/constants'
 import { isAddress } from '@/helpers/utils'
 import { usePushMessage } from '@/components/message/store'
 import {

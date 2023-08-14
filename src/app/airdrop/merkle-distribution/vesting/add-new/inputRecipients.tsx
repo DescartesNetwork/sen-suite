@@ -18,7 +18,7 @@ import { useMintByAddress } from '@/providers/mint.provider'
 import { shortenAddress } from '@/helpers/utils'
 import { useTotalDistribute } from '@/hooks/airdrop.hook'
 import { useTokenAccountByMintAddress } from '@/providers/tokenAccount.provider'
-import { CreateStep } from './page'
+import { CreateStep } from '@/app/airdrop/merkle-distribution/constants'
 
 const RecipientsList = () => {
   const { recipients, setRecipients } = useRecipients()

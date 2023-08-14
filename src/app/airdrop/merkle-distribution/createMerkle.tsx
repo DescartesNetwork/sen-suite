@@ -14,7 +14,7 @@ import {
   useAirdropMintAddress,
   useAirdropStore,
 } from '@/providers/airdrop.provider'
-import { CreateStep } from './airdrop/add-new/page'
+import { CreateStep } from '@/app/airdrop/merkle-distribution/constants'
 import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
 
