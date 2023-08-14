@@ -11,7 +11,7 @@ import {
   useRecipients,
 } from '@/providers/airdrop.provider'
 import { isAddress } from '@/helpers/utils'
-import { CreateStep } from './page'
+import { CreateStep } from '@/app/airdrop/merkle-distribution/constants'
 import { useTokenAccountByMintAddress } from '@/providers/tokenAccount.provider'
 import { useTotalDistribute } from '@/hooks/airdrop.hook'
 import { useMintByAddress } from '@/providers/mint.provider'

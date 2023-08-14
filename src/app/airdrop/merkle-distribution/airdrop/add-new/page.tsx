@@ -5,11 +5,7 @@ import InputConfigs from './inputConfigs'
 import InputRecipient from './inputRecipient'
 import CreateMerkle from '@/app/airdrop/merkle-distribution/createMerkle'
 
-export enum CreateStep {
-  InputConfigs,
-  InputRecipients,
-  Confirm,
-}
+import { CreateStep } from '@/app/airdrop/merkle-distribution/constants'
 
 const AddNew = () => {
   const [step, setStep] = useState(CreateStep.InputConfigs)
