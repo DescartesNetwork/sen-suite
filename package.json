@@ -25,6 +25,7 @@
     "@floating-ui/react": "^0.25.0",
     "@mdx-js/react": "^2.3.0",
     "@metaplex-foundation/js": "^0.18.3",
+    "@senswap/balancer": "^3.0.1",
     "@sentre/farming": "^2.0.2",
     "@sentre/utility": "^1.0.3",
     "@solana/wallet-adapter-base": "^0.9.22",

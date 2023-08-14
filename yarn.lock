@@ -1367,6 +1367,13 @@
     bs58 "^5.0.0"
     web3.storage "^4.2.0"
 
+"@senswap/balancer@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@senswap/balancer/-/balancer-3.0.1.tgz#8bb23897ec092204851a64381d89ce5e7acec1e3"
+  integrity sha512-rYdsEiNQXaSOB0ckzl1zsFgd4tchQdazQd3HEXUAtTwtOo1FdKkc3p6WlFi6uGnVU+o2RsuY+Sw/OP2bQadItw==
+  dependencies:
+    "@project-serum/anchor" "^0.24.2"
+
 "@sentre/farming@^2.0.2":
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/@sentre/farming/-/farming-2.0.2.tgz#50868cee7a3d22608688a5ce6eb3cddeea5375b1"
