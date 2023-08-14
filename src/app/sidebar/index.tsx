@@ -41,7 +41,6 @@ const routes = [
     route: '/pools',
     name: 'Liquidity Pool',
     Logo: Landmark,
-    disabled: true,
   },
   {
     route: '/farming',

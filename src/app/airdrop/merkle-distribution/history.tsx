@@ -9,6 +9,7 @@ import dayjs from 'dayjs'
 
 import { ChevronDown } from 'lucide-react'
 import { MintAmount, MintLogo, MintSymbol } from '@/components/mint'
+import UnclaimList from './unclaimList'
 
 import { useDistributors, useMyDistributes } from '@/providers/airdrop.provider'
 import {
@@ -19,7 +20,6 @@ import {
 } from '@/hooks/airdrop.hook'
 import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
-import UnclaimList from './unclaimList'
 
 const DEFAULT_AMOUNT = 4
 
