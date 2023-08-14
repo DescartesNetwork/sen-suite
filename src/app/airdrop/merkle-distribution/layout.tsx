@@ -13,11 +13,9 @@ export default function MerkleDistributionLayout({
   children: ReactNode
 }) {
   return (
-    <div className="card bg-base-100 p-4 rounded-box shadow-xl grid grid-cols-12 gap-6 max-w-[480px]">
-      <div className="col-span-12">
-        <MerkleDistributionHeader />
-      </div>
-      <div className="col-span-12">{children}</div>
+    <div className="flex w-full h-full flex-col gap-8 ">
+      <MerkleDistributionHeader />
+      <div>{children}</div>
     </div>
   )
 }

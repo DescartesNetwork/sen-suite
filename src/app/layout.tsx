@@ -12,6 +12,7 @@ import Sidebar from '@/app/sidebar'
 
 import { DMSans } from '@/fonts'
 import '@/styles/global.scss'
+import 'react-datepicker/dist/react-datepicker.css'
 
 export const metadata: Metadata = {
   title: 'Sentre: The suite for startups on Solana',

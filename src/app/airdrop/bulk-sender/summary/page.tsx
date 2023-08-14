@@ -8,10 +8,10 @@ import { MintLogo, MintSymbol } from '@/components/mint'
 import EditRowBulkSender from './row'
 
 import {
-  useAirdropData,
-  useAirdropDecimalized,
-  useAirdropMintAddress,
-} from '@/providers/airdrop.provider'
+  useBulkSenderData,
+  useBulkSenderDecimalized,
+  useBulkSenderMint,
+} from '@/providers/bulkSender.provider'
 import { isAddress, numeric } from '@/helpers/utils'
 import { usePushMessage } from '@/components/message/store'
 import { useTvl } from '@/hooks/tvl.hook'
@@ -32,9 +32,9 @@ export default function SummaryBulkSender() {
   const [loading, setLoading] = useState(false)
   const [newAmount, setNewAmount] = useState('')
   const [newAddress, setNewAddress] = useState('')
-  const { mintAddress } = useAirdropMintAddress()
-  const { data, setData } = useAirdropData()
-  const { decimalized, setDecimalized } = useAirdropDecimalized()
+  const { mintAddress } = useBulkSenderMint()
+  const { data, setData } = useBulkSenderData()
+  const { decimalized, setDecimalized } = useBulkSenderDecimalized()
   const pushMessage = usePushMessage()
   const [mint] = useMints([mintAddress])
   const sendBulk = useSendBulk(mintAddress)
