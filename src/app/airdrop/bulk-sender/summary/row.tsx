@@ -1,5 +1,6 @@
 'use client'
 import { useMemo } from 'react'
+import classNames from 'classnames'
 
 import { Trash, UserPlus } from 'lucide-react'
 
@@ -40,20 +41,20 @@ export default function SummaryRowBulkSender({
         <input
           type="text"
           placeholder="Receiver address"
-          className={
-            'col-span-8 join-item input input-sm rounded-full focus:outline-0 pl-8' +
-            color
-          }
+          className={classNames(
+            'col-span-8 join-item input input-sm rounded-full focus:outline-0 pl-8',
+            color,
+          )}
           value={address}
           onChange={(e) => onAddress(e.target.value)}
         />
         <input
           type="number"
           placeholder="Amount"
-          className={
-            'col-span-4 join-item input input-sm rounded-full focus:outline-0 pr-8' +
-            color
-          }
+          className={classNames(
+            'col-span-4 join-item input input-sm rounded-full focus:outline-0 pr-8',
+            color,
+          )}
           value={amount}
           onChange={(e) => onAmount(e.target.value)}
         />
@@ -64,10 +65,9 @@ export default function SummaryRowBulkSender({
         </button>
       )}
       <button
-        className={
-          'btn btn-xs btn-circle absolute right-1' +
-          (toAdd ? ' btn-primary' : '')
-        }
+        className={classNames('btn btn-xs btn-circle absolute right-1', {
+          'btn-primary': toAdd,
+        })}
         onClick={onClick}
       >
         <Icon className="w-3 h-3" />

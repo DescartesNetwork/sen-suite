@@ -3,6 +3,7 @@ import { Fragment, ReactNode, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useKey } from 'react-use'
+import classNames from 'classnames'
 
 import {
   BookPlus,
@@ -90,13 +91,11 @@ export default function Sidebar({ children }: SidebarProps) {
     <Fragment>
       {/* Overlay */}
       <div
-        className={'overlay max-md:mobile' + (open ? ' open' : '')}
+        className={classNames('overlay max-md:mobile', { open })}
         onClick={() => setOpen(false)}
       />
       {/* Sidebar */}
-      <aside
-        className={'sidebar vertical max-md:mobile' + (open ? ' open' : '')}
-      >
+      <aside className={classNames('sidebar vertical max-md:mobile', { open })}>
         <ul className="h-full menu menu-vertical menu-md">
           <li className="mb-8">
             <a href="/">
@@ -108,10 +107,10 @@ export default function Sidebar({ children }: SidebarProps) {
             </a>
           </li>
           {routes.map(({ route, name, Logo, disabled }) => (
-            <li key={route} className={disabled ? 'disabled' : ''}>
+            <li key={route} className={classNames({ disabled: disabled })}>
               <Link
                 href={disabled ? '#' : route}
-                className={pathname.startsWith(route) ? 'focus' : ''}
+                className={classNames({ focus: pathname.startsWith(route) })}
               >
                 <p>
                   <Logo className="menu-logo" />

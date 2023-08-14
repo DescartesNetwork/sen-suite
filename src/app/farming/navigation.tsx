@@ -2,6 +2,7 @@
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { useWallet } from '@solana/wallet-adapter-react'
+import classNames from 'classnames'
 
 function Tab({
   title,
@@ -16,11 +17,10 @@ function Tab({
 }) {
   return (
     <Link
-      className={
-        'btn btn-ghost btn-sm' +
-        (active ? ' btn-active' : '') +
-        (disabled ? ' btn-disabled' : '')
-      }
+      className={classNames('btn btn-ghost btn-sm', {
+        'btn-active': active,
+        'btn-disabled': disabled,
+      })}
       href={!disabled ? to : '#'}
     >
       {title}

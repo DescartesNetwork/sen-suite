@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Keypair, PublicKey, SYSVAR_RENT_PUBKEY } from '@solana/web3.js'
 import { useRouter } from 'next/navigation'
 import { useWallet } from '@solana/wallet-adapter-react'
+import classNames from 'classnames'
 
 import TokenKeypair from './tokenKeypair'
 
@@ -102,10 +103,9 @@ export default function NewToken() {
       <div className="col-span-full flex flex-col gap-2">
         <p className="text-sm font-bold">Mint Authority</p>
         <input
-          className={
-            'input w-full bg-base-200' +
-            (!isAddress(mintAuthority) ? ' ring-2 ring-primary' : '')
-          }
+          className={classNames('input w-full bg-base-200', {
+            'ring-2 ring-primary': !isAddress(mintAuthority),
+          })}
           type="text"
           name="mint-authority"
           placeholder="Mint Authority"
@@ -116,10 +116,9 @@ export default function NewToken() {
       <div className="col-span-full flex flex-col gap-2">
         <p className="text-sm font-bold">Freeze Authority</p>
         <input
-          className={
-            'input w-full bg-base-200' +
-            (!isAddress(freezeAuthority) ? ' ring-2 ring-primary' : '')
-          }
+          className={classNames('input w-full bg-base-200', {
+            'ring-2 ring-primary': !isAddress(freezeAuthority),
+          })}
           type="text"
           name="freeze-authority"
           placeholder="Freeze Authority"

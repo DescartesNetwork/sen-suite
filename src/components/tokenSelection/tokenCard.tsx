@@ -1,5 +1,6 @@
 'use client'
 import BN from 'bn.js'
+import classNames from 'classnames'
 
 import {
   MintAmount,
@@ -32,10 +33,10 @@ export default function TokenCard({
   }
   return (
     <div
-      className={
-        'group card w-full p-2 hover:bg-base-200 cursor-pointer' +
-        (active ? ' bg-accent' : '')
-      }
+      className={classNames(
+        'group card w-full p-2 hover:bg-base-200 cursor-pointer',
+        { 'bg-accent': active },
+      )}
       onClick={onClick}
     >
       <div className="flex gap-2">

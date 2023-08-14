@@ -1,4 +1,5 @@
 'use client'
+import classNames from 'classnames'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -21,7 +22,7 @@ export default function Navigation() {
       {Tabs.map(({ title, route }) => (
         <Link
           key={route}
-          className={'tab' + (pathname === route ? ' tab-active' : '')}
+          className={classNames('tab', { 'tab-active': pathname === route })}
           href={route}
         >
           {title}
