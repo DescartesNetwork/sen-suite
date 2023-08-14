@@ -26,7 +26,7 @@ import {
   useAirdropStore,
   useRecipients,
 } from '@/providers/airdrop.provider'
-import { CreateStep } from './page'
+import { CreateStep } from '@/app/airdrop/merkle-distribution/constants'
 import { usePushMessage } from '@/components/message/store'
 
 dayjs.extend(duration)
