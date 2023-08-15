@@ -1,4 +1,5 @@
 'use client'
+import { useRouter } from 'next/navigation'
 
 import { MintLogo } from '@/components/mint'
 import Withdraw from './withdraw'
@@ -9,6 +10,7 @@ import Volume24h from './volume24h'
 import PoolWeights from './poolWeights'
 
 import { usePoolByAddress } from '@/providers/pools.provider'
+import { isAddress } from '@/helpers/utils'
 
 const PoolDetails = ({
   params: { poolAddress },
@@ -16,7 +18,9 @@ const PoolDetails = ({
   params: { poolAddress: string }
 }) => {
   const pool = usePoolByAddress(poolAddress)
+  const { push } = useRouter()
 
+  if (!isAddress(poolAddress)) return push('/farming')
   return (
     <div className="grid grid-cols-12 gap-6">
       <div className="col-span-full">
@@ -32,14 +36,14 @@ const PoolDetails = ({
         </div>
         <div className="flex gap-2 items-center">
           <Withdraw />
-          <Deposit />
+          <Deposit poolAddress={poolAddress} />
         </div>
       </div>
       <div className="col-span-full">
         <Heros poolAddress={poolAddress} />
       </div>
       <div className="md:col-span-6 col-span-12">
-        <Volume24h poolAddress={poolAddress} />
+        <Volume24h />
       </div>
       <div className="md:col-span-6 col-span-12">
         <PoolWeights poolAddress={poolAddress} />

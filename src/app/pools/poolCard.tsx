@@ -46,7 +46,7 @@ const PoolCard = ({ poolAddress }: PoolCardProps) => {
   return (
     <Link
       href={`/pools/${poolAddress}`}
-      className="card p-4 border border-[#fffc] bg-[#F2F4FA] dark:bg-[#212C4C] dark:border-[#394360] flex flex-col rounded-3xl gap-3"
+      className="card p-4 border border-[#fffc] bg-[#F2F4FA] dark:bg-[#212C4C] dark:border-[#394360] flex flex-col rounded-3xl gap-3 hover:border-[#63E0B3] dark:hover:border-[#63E0B3]"
     >
       <div className="flex flex-row items-center">
         <div className="flex-auto">

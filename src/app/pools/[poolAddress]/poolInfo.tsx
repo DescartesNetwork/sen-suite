@@ -17,7 +17,7 @@ const PoolInfo = ({ poolAddress }: PoolInfoProps) => {
   const { mintLpt } = usePoolByAddress(poolAddress)
 
   return (
-    <div className="card bg-base-100 rounded-full p-2 flex flex-row items-center gap-2">
+    <div className="card bg-[#F2F4FA] dark:bg-[#212C4C] rounded-full p-2 flex flex-row items-center gap-2">
       <div className="flex-auto">
         <button
           onClick={() => push('/pools')}

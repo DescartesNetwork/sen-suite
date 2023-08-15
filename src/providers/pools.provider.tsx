@@ -153,6 +153,8 @@ export const usePoolByAddress = (poolAddress: string) => {
     mints: [SystemProgram.programId],
     weights: [new BN(0)],
     treasuries: [new BN(0)],
+    fee: new BN(0),
+    taxFee: new BN(0),
   }
   return pool
 }

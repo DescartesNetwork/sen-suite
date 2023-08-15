@@ -25,6 +25,13 @@ export enum FilterPools {
 }
 export type VolumeData = { data: number; label: string }
 
+export type PoolPairLpData = {
+  balanceIn: BN
+  balanceOut: BN
+  weightIn: number
+  decimalIn: number
+  swapFee: BN
+}
 export const useBalancer = () => {
   const provider = useAnchorProvider()
   const balancer = useMemo(
@@ -186,5 +193,110 @@ export const useOracles = () => {
     [calcNormalizedWeight],
   )
 
-  return { calcNormalizedWeight, getMintInfo }
+  const calcLptOut = useCallback(
+    (
+      tokenAmountIns: BN[],
+      balanceIns: BN[],
+      weightIns: BN[],
+      totalSupply: BN,
+      decimalIns: number[],
+      swapFee: BN,
+    ) => {
+      const fee = Number(undecimalize(swapFee, GENERAL_DECIMALS))
+      const numTotalSupply = Number(undecimalize(totalSupply, LPT_DECIMALS))
+      const numBalanceIns = balanceIns.map((value, idx) =>
+        Number(undecimalize(value, decimalIns[idx])),
+      )
+      const numAmountIns = tokenAmountIns.map((value, idx) =>
+        Number(undecimalize(value, decimalIns[idx])),
+      )
+      const balanceRatiosWithFee = new Array(tokenAmountIns.length)
+
+      let invariantRatioWithFees = 0
+      for (let i = 0; i < tokenAmountIns.length; i++) {
+        const nomalizedWeight = calcNormalizedWeight(weightIns, weightIns[i])
+
+        balanceRatiosWithFee[i] =
+          (numBalanceIns[i] + numAmountIns[i]) / numBalanceIns[i]
+
+        invariantRatioWithFees += balanceRatiosWithFee[i] * nomalizedWeight
+      }
+
+      let invariantRatio = 1
+
+      for (let i = 0; i < tokenAmountIns.length; i++) {
+        const nomalizedWeight = calcNormalizedWeight(weightIns, weightIns[i])
+        let amountInWithoutFee = numAmountIns[i]
+        if (balanceRatiosWithFee[i] > invariantRatioWithFees) {
+          const nonTaxableAmount =
+            numBalanceIns[i] * (invariantRatioWithFees - 1)
+          const taxableAmount = numAmountIns[i] - nonTaxableAmount
+          amountInWithoutFee = nonTaxableAmount + taxableAmount * (1 - fee)
+        }
+        const balanceRatio =
+          (numBalanceIns[i] + amountInWithoutFee) / numBalanceIns[i]
+        invariantRatio = invariantRatio * balanceRatio ** nomalizedWeight
+      }
+      if (invariantRatio > 1) return numTotalSupply * (invariantRatio - 1)
+      return 0
+    },
+    [calcNormalizedWeight],
+  )
+
+  const spotPriceAfterSwapTokenInForExactLPTOut = useCallback(
+    (poolPairData: PoolPairLpData) => {
+      const { balanceOut, balanceIn, swapFee, decimalIn } = poolPairData
+      const Bo = Number(undecimalize(balanceOut, LPT_DECIMALS))
+      const Ao = Number(undecimalize(new BN(0), LPT_DECIMALS))
+      const wi = poolPairData.weightIn
+      const Bi = Number(undecimalize(balanceIn, decimalIn))
+      const f = Number(undecimalize(swapFee, GENERAL_DECIMALS))
+
+      return (
+        (Math.pow((Ao + Bo) / Bo, 1 / wi) * Bi) /
+        ((Ao + Bo) * (1 + f * (-1 + wi)) * wi)
+      )
+    },
+    [],
+  )
+
+  const calcLpForTokensZeroPriceImpact = useCallback(
+    (
+      tokenAmountIns: BN[],
+      balanceIns: BN[],
+      weightIns: BN[],
+      totalSupply: BN,
+      decimalIns: number[],
+    ) => {
+      const numTokenAmountIns = tokenAmountIns.map((value, idx) =>
+        Number(undecimalize(value, decimalIns[idx])),
+      )
+      const amountLpOut = numTokenAmountIns.reduce(
+        (totalBptOut, amountIn, i) => {
+          const normalizedWeight = calcNormalizedWeight(weightIns, weightIns[i])
+          const poolPairData: PoolPairLpData = {
+            balanceIn: balanceIns[i],
+            balanceOut: totalSupply,
+            weightIn: normalizedWeight,
+            decimalIn: decimalIns[i],
+            swapFee: new BN(0),
+          }
+          const LpPrice = spotPriceAfterSwapTokenInForExactLPTOut(poolPairData)
+          const LpOut = amountIn / LpPrice
+          return totalBptOut + LpOut
+        },
+        0,
+      )
+
+      return amountLpOut
+    },
+    [calcNormalizedWeight, spotPriceAfterSwapTokenInForExactLPTOut],
+  )
+
+  return {
+    calcNormalizedWeight,
+    getMintInfo,
+    calcLptOut,
+    calcLpForTokensZeroPriceImpact,
+  }
 }

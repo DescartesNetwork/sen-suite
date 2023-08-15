@@ -6,24 +6,25 @@ import { MintAmount } from '@/components/mint'
 
 import { numeric } from '@/helpers/utils'
 import { useTvl } from '@/hooks/tvl.hook'
-import {
-  usePoolByAddress,
-  useStatByPoolAddress,
-  useStatLoading,
-} from '@/providers/pools.provider'
+import { usePoolByAddress } from '@/providers/pools.provider'
 import { useTokenAccountByMintAddress } from '@/providers/tokenAccount.provider'
 
 const HeroCard = ({
   label,
   content,
   loading = false,
+  bg,
 }: {
   label: string
   content: string | ReactNode
+  bg: string
   loading?: boolean
 }) => {
   return (
-    <div className="card px-6 py-4 rounded-3xl bg-base-100 flex flex-col gap-2">
+    <div
+      className="card px-6 py-4 rounded-3xl flex flex-col gap-2 border border-[#fffc] dark:border-[#394360]"
+      style={{ background: `url(${bg})`, backgroundSize: 'cover' }}
+    >
       <p className="opacity-60 text-sm">{label}</p>
       <h5
         className={classNames({
@@ -38,8 +39,6 @@ const HeroCard = ({
 
 const Heros = ({ poolAddress }: { poolAddress: string }) => {
   const pool = usePoolByAddress(poolAddress)
-  const apyLoading = useStatLoading()
-  const dailyInfo = useStatByPoolAddress(poolAddress)
   const { amount } = useTokenAccountByMintAddress(pool.mintLpt.toBase58()) || {
     amount: new BN(0),
   }
@@ -54,27 +53,17 @@ const Heros = ({ poolAddress }: { poolAddress: string }) => {
   )
   const tvl = useTvl(poolReserves)
 
-  const poolApy = useMemo(() => {
-    if (!poolAddress || !tvl || !dailyInfo) return 0
-    let totalFee = 0
-    let dateCount = 0
-    for (const date in dailyInfo) {
-      totalFee += dailyInfo[date].fee
-      dateCount++
-    }
-    const feePerDay = totalFee / dateCount
-    const roi = feePerDay / tvl
-    const apy: number = Math.pow(1 + roi, 365) - 1
-    return Number.isFinite(apy) ? apy : 0
-  }, [dailyInfo, poolAddress, tvl])
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <HeroCard label="TVL" content={numeric(tvl).format('0,0.[00]$')} />{' '}
+      <HeroCard
+        bg="/pool-tvl.svg"
+        label="TVL"
+        content={numeric(tvl).format('0,0.[00]$')}
+      />
       <HeroCard
         label="APY"
-        loading={apyLoading}
-        content={numeric(poolApy).format('0,0.[00]a%')}
+        content={numeric(0).format('0,0.[00]a%')}
+        bg="/pool-apy.svg"
       />
       <HeroCard
         label="My Contribution"
@@ -84,6 +73,7 @@ const Heros = ({ poolAddress }: { poolAddress: string }) => {
             <p className="opacity-60">LP</p>
           </div>
         }
+        bg="/pool-lp.svg"
       />
     </div>
   )

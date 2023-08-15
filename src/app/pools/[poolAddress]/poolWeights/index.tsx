@@ -30,7 +30,7 @@ const PoolWeights = ({ poolAddress }: { poolAddress: string }) => {
   }, [getMintInfo, metadata, poolData])
 
   return (
-    <div className="card rounded-3xl p-6 bg-base-100 flex flex-col ">
+    <div className="card rounded-3xl p-6 bg-[#F2F4FA] dark:bg-[#212C4C] flex flex-col ">
       <p>Pool Weights</p>
       <div className="flex items-center justify-center h-[306px]">
         <DoughnutChart data={poolWeights} />
