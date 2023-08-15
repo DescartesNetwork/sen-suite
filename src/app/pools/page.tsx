@@ -34,48 +34,55 @@ const Pools = () => {
   const IconSearch = text.length ? X : Search
 
   return (
-    <div className="grid grid-cols-12 gap-4 @container">
-      <div className="col-span-12 grid grid-cols-12 gap-2">
-        <div className="col-span-3">
-          <select
-            value={filterKey}
-            onChange={(e) => setFilterKey(e.target.value as FilterPools)}
-            className="select select-sm w-full max-w-xs bg-base-200 rounded-full"
-          >
-            <option value={FilterPools.AllPools}>All pools</option>
-            <option value={FilterPools.DepositedPools}>Deposited pools</option>
-            <option value={FilterPools.YourPools}>Your pools</option>
-          </select>
+    <div className="flex w-full max-w-[660px]">
+      <div className="grid grid-cols-12 gap-4 @container w-full">
+        <div className="col-span-12 grid grid-cols-12 gap-2">
+          <div className="col-span-3">
+            <select
+              value={filterKey}
+              onChange={(e) => setFilterKey(e.target.value as FilterPools)}
+              className="select select-sm w-full max-w-xs bg-base-200 rounded-full"
+            >
+              <option value={FilterPools.AllPools}>All pools</option>
+              <option value={FilterPools.DepositedPools}>
+                Deposited pools
+              </option>
+              <option value={FilterPools.YourPools}>Your pools</option>
+            </select>
+          </div>
+          <div className="col-span-6 relative">
+            <input
+              type="text"
+              className="w-full input-sm input bg-base-200 rounded-full"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder="Search"
+            />
+            <IconSearch
+              size={16}
+              className={classNames(
+                'absolute right-3 top-1/2 -translate-y-1/2',
+                {
+                  'cursor-pointer': !!text,
+                },
+              )}
+              onClick={() => {
+                if (text) setText('')
+              }}
+            />
+          </div>
         </div>
-        <div className="col-span-6 relative">
-          <input
-            type="text"
-            className="w-full input-sm input bg-base-200 rounded-full"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="Search"
-          />
-          <IconSearch
-            size={16}
-            className={classNames('absolute right-3 top-1/2 -translate-y-1/2', {
-              'cursor-pointer': !!text,
-            })}
-            onClick={() => {
-              if (text) setText('')
-            }}
-          />
-        </div>
+        {sortedPool.map((poolAddress) => (
+          <LazyLoad key={poolAddress} className="col-span-full">
+            <PoolCard poolAddress={poolAddress} />
+          </LazyLoad>
+        ))}
+        {!sortedPool.length && (
+          <div className="col-span-full justify-center p-4">
+            <Empty />
+          </div>
+        )}
       </div>
-      {sortedPool.map((poolAddress) => (
-        <LazyLoad key={poolAddress} className="col-span-full">
-          <PoolCard poolAddress={poolAddress} />
-        </LazyLoad>
-      ))}
-      {!sortedPool.length && (
-        <div className="col-span-full justify-center p-4">
-          <Empty />
-        </div>
-      )}
     </div>
   )
 }

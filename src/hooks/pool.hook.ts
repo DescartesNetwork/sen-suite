@@ -2,12 +2,14 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import Balancer, { PoolData } from '@senswap/balancer'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { utils } from '@coral-xyz/anchor'
+import { PublicKey } from '@solana/web3.js'
 import BN from 'bn.js'
+import dayjs from 'dayjs'
 
 import { useAnchorProvider } from '@/providers/wallet.provider'
 import { undecimalize } from '@/helpers/decimals'
 import { useSearchMint } from '@/providers/mint.provider'
-import { usePools } from '@/providers/pools.provider'
+import { usePools, useStatByPoolAddress } from '@/providers/pools.provider'
 import { useAllTokenAccounts } from '@/providers/tokenAccount.provider'
 import solConfig from '@/configs/sol.config'
 
@@ -21,6 +23,7 @@ export enum FilterPools {
   DepositedPools = 'deposited-pools',
   YourPools = 'your-pools',
 }
+export type VolumeData = { data: number; label: string }
 
 export const useBalancer = () => {
   const provider = useAnchorProvider()
@@ -126,6 +129,34 @@ export const useFilterPools = (key = FilterPools.AllPools) => {
   return poolsFilter
 }
 
+export const useVolume24h = (poolAddress: string) => {
+  const [chartData, setChartData] = useState<VolumeData[]>([])
+  const dailyInfo = useStatByPoolAddress(poolAddress)
+
+  const buildChartData = useCallback(async () => {
+    if (!poolAddress || !dailyInfo) return setChartData([])
+    const chartData = Object.keys(dailyInfo).map((time) => {
+      return {
+        data: dailyInfo[time].volume,
+        label: dayjs(time, 'YYYYMMDD').format('MM/DD'),
+      }
+    })
+    return setChartData(chartData)
+  }, [dailyInfo, poolAddress])
+  useEffect(() => {
+    buildChartData()
+  }, [buildChartData])
+
+  const vol24h = useMemo(() => {
+    const today = chartData[chartData.length - 1]?.data || 0
+    const yesterday = chartData[chartData.length - 2]?.data || 0
+    const house = new Date().getHours()
+    return today + (house * yesterday) / 24
+  }, [chartData])
+
+  return { chartData, vol24h }
+}
+
 export const useOracles = () => {
   const calcNormalizedWeight = useCallback((weights: BN[], weightToken: BN) => {
     const numWeightsIn = weights.map((value) =>
@@ -135,5 +166,25 @@ export const useOracles = () => {
     const weightSum = numWeightsIn.reduce((pre, curr) => pre + curr, 0)
     return numWeightToken / weightSum
   }, [])
-  return { calcNormalizedWeight }
+
+  const getMintInfo = useCallback(
+    (poolData: PoolData, inputMint: PublicKey) => {
+      const mintIdx = poolData.mints.findIndex((mint) => mint.equals(inputMint))
+
+      if (mintIdx === -1) throw new Error('Can not find mint in pool')
+
+      const normalizedWeight = calcNormalizedWeight(
+        poolData.weights,
+        poolData.weights[mintIdx],
+      )
+      return {
+        reserve: poolData.reserves[mintIdx],
+        normalizedWeight: normalizedWeight,
+        treasury: poolData.treasuries[mintIdx],
+      }
+    },
+    [calcNormalizedWeight],
+  )
+
+  return { calcNormalizedWeight, getMintInfo }
 }

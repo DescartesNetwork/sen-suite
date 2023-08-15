@@ -12,6 +12,7 @@ import { usePoolByAddress } from '@/providers/pools.provider'
 import { useTokenAccountByMintAddress } from '@/providers/tokenAccount.provider'
 import { useOracles } from '@/hooks/pool.hook'
 import { useTvl } from '@/hooks/tvl.hook'
+import Link from 'next/link'
 
 type PoolCardProps = {
   poolAddress: string
@@ -43,7 +44,10 @@ const PoolCard = ({ poolAddress }: PoolCardProps) => {
   }, [calcNormalizedWeight, pool])
 
   return (
-    <div className="card p-4 border border-[#fffc] bg-[#F2F4FA] dark:bg-[#212C4C] dark:border-[#394360] flex flex-col rounded-3xl gap-3">
+    <Link
+      href={`/pools/${poolAddress}`}
+      className="card p-4 border border-[#fffc] bg-[#F2F4FA] dark:bg-[#212C4C] dark:border-[#394360] flex flex-col rounded-3xl gap-3"
+    >
       <div className="flex flex-row items-center">
         <div className="flex-auto">
           <MintLogo
@@ -96,7 +100,7 @@ const PoolCard = ({ poolAddress }: PoolCardProps) => {
           </p>
         </div>
       </div>
-    </div>
+    </Link>
   )
 }
 
