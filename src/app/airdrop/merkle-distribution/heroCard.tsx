@@ -9,17 +9,21 @@ type HeroCardProps = {
 
 const HeroCard = ({ Icon, label, value, loading }: HeroCardProps) => {
   return (
-    <div className="card flex flex-row py-4 px-6 rounded-xl bg-base-100 items-center">
+    <div className="card flex flex-row py-4 px-5 md:px-6 rounded-xl bg-base-100 md:items-center">
       <div className="flex-auto flex flex-col gap-2">
-        <p className="text-sm opacity-60">{label}</p>
+        <p className="text-base leading-[45px] md:leading-0 md:text-sm opacity-60">
+          {label}
+        </p>
         {loading ? (
           <span className="loading loading-bars loading-xs" />
         ) : (
-          <h5>{value}</h5>
+          <h4 className="md:text-xl">{value}</h4>
         )}
       </div>
-      <div className="bg-[#f9575e1a] p-3 rounded-xl">
-        <Icon className="text-primary" />
+      <div>
+        <div className="bg-[#f9575e1a] p-3 rounded-xl">
+          <Icon className="text-primary" />
+        </div>
       </div>
     </div>
   )

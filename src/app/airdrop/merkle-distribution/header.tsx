@@ -74,7 +74,7 @@ export default function MerkleDistributionHeader() {
           >
             <div className="flex gap-2">
               <Logo />
-              <p>{name}</p>
+              <p className="hidden md:flex">{name}</p>
             </div>
           </Link>
         ))}

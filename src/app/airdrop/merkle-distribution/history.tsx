@@ -8,6 +8,7 @@ import { useConnection } from '@solana/wallet-adapter-react'
 import dayjs from 'dayjs'
 
 import { ChevronDown } from 'lucide-react'
+import HistoryCard from './historyCard'
 import { MintAmount, MintLogo, MintSymbol } from '@/components/mint'
 
 import { useDistributors, useMyDistributes } from '@/providers/airdrop.provider'
@@ -20,6 +21,7 @@ import {
 import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
 import UnclaimList from './unclaimList'
+import Empty from '@/components/empty'
 
 const DEFAULT_AMOUNT = 4
 
@@ -30,30 +32,39 @@ const History = ({ type }: { type: Distribute }) => {
   return (
     <div className="card bg-base-100 p-4 gap-6">
       <div className="flex">
-        <p>
+        <p className="text-[16px]">
           History
           <span className="ml-2">{history.length}</span>
         </p>
       </div>
-      <div className="overflow-x-auto">
-        <table className="table">
-          <thead>
-            <tr>
-              <th>CREATED AT</th>
-              <th>UNLOCK DATE</th>
-              <th>TOKEN</th>
-              <th>TOTAL</th>
-              <th>REMAINING</th>
-              <th>ACTION</th>
-            </tr>
-          </thead>
-          <tbody>
-            {history.slice(0, showAirdrop).map((address) => (
-              <HistoryItem address={address} key={address} />
-            ))}
-          </tbody>
-        </table>
-      </div>
+
+      {history.length === 0 ? (
+        <Empty />
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="hidden md:table">
+            <thead>
+              <tr>
+                <th>CREATED AT</th>
+                <th>UNLOCK DATE</th>
+                <th>TOKEN</th>
+                <th>TOTAL</th>
+                <th>REMAINING</th>
+                <th>ACTION</th>
+              </tr>
+            </thead>
+            <tbody>
+              {history.slice(0, showAirdrop).map((address) => (
+                <HistoryItem address={address} key={address} />
+              ))}
+            </tbody>
+          </table>
+          {history.slice(0, showAirdrop).map((address) => (
+            <HistoryCard address={address} key={address} />
+          ))}
+        </div>
+      )}
+
       <button
         onClick={() => setAmountAirdrop(showAirdrop + DEFAULT_AMOUNT)}
         disabled={showAirdrop >= history.length}
@@ -127,7 +138,7 @@ const HistoryItem = ({ address }: { address: string }) => {
   }, [endedAt, remaining])
 
   return (
-    <tr className="hover cursor-pointer">
+    <tr className="hover cursor-pointer hidden">
       <td>{dayjs(value?.createdAt).format('DD/MM/YYYY, HH:mm')}</td>
       <td>
         {value?.unlockTime

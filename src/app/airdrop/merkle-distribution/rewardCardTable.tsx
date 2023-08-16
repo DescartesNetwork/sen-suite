@@ -1,10 +1,9 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { BN } from 'bn.js'
 import { ReceiptData } from '@sentre/utility'
 import { PublicKey } from '@solana/web3.js'
 import dayjs from 'dayjs'
 
-import { ChevronUp } from 'lucide-react'
 import { MintAmount, MintLogo, MintSymbol } from '@/components/mint'
 
 import { ReceiveItem } from './page'
@@ -13,42 +12,9 @@ import { useClaim } from '@/hooks/airdrop.hook'
 import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
 import { useAirdropStore } from '@/providers/airdrop.provider'
+import { ReceiptState, StatusTag } from './rewardCard'
 
-export enum ReceiptState {
-  waiting = 'Waiting',
-  ready = 'Ready',
-  claimed = 'Claimed',
-  expired = 'Expired',
-  loading = 'Loading',
-}
-
-const STATUS_COLOR: Record<ReceiptState, string> = {
-  Waiting: '#D4B106',
-  Ready: '#03A326',
-  Claimed: '#40A9FF',
-  Expired: '#F9575E',
-  Loading: '#F4F5F5',
-}
-
-export const StatusTag = ({ state }: { state?: ReceiptState }) => {
-  const tagColor = useMemo(() => {
-    const color = !state
-      ? STATUS_COLOR[ReceiptState.loading]
-      : STATUS_COLOR[state]
-    return color
-  }, [state])
-
-  return (
-    <div
-      className="px-2 py-1 border rounded-lg text-center"
-      style={{ color: tagColor, borderColor: tagColor }}
-    >
-      {state}
-    </div>
-  )
-}
-
-const RewardCard = (props: ReceiveItem) => {
+const RewardCardTable = (props: ReceiveItem) => {
   const { leaf, endedAt, mintAddress, sender, status, receiptAddress } = props
   const [loading, setLoading] = useState(false)
   const pushMessage = usePushMessage()
@@ -94,27 +60,32 @@ const RewardCard = (props: ReceiveItem) => {
   ])
 
   return (
-    <div className="card flex flex-col gap-4 bg-base-100 md:hidden">
-      <div className="flex flex-row justify-between">
+    <tr className="hover cursor-pointer">
+      <td>
+        {!startTime
+          ? 'Immediately'
+          : dayjs(startTime).format('DD/MM/YYYY, HH:mm')}
+      </td>
+      <td>
+        {!endedAt ? 'Unlimited' : dayjs(endedAt).format('DD/MM/YYYY, HH:mm')}
+      </td>
+      <td>{shortenAddress(sender)}</td>
+      <td>
         <div className="flex gap-2 items-center">
           <MintLogo
             mintAddress={mintAddress}
-            className="w-7 h-7 rounded-full bg-base-300"
+            className="w-6 h-6 rounded-full bg-base-300"
           />
-          <div className="flex flex-row gap-1 text-base leading-[22px]">
-            <p>
-              <MintAmount mintAddress={mintAddress} amount={leaf.amount} />
-            </p>
-            <MintSymbol mintAddress={mintAddress} />
-          </div>
+          <MintSymbol mintAddress={mintAddress} />
         </div>
-
+      </td>
+      <td>
+        <MintAmount mintAddress={mintAddress} amount={leaf.amount} />
+      </td>
+      <td>
         <StatusTag state={status} />
-      </div>
-      <div className="flex flex-row justify-between mb-4">
-        <div className="flex items-center">
-          <p>Sender: {shortenAddress(sender)}</p>
-        </div>
+      </td>
+      <td>
         <button
           className="col-span-full btn btn-primary btn-sm"
           onClick={onClaim}
@@ -123,27 +94,9 @@ const RewardCard = (props: ReceiveItem) => {
           {loading && <span className="loading loading-spinner loading-xs" />}
           Claim
         </button>
-      </div>
-      <div className="flex flex-row justify-between">
-        <p>Unlock time</p>
-        <p>
-          {!startTime
-            ? 'Immediately'
-            : dayjs(startTime).format('DD/MM/YYYY, HH:mm')}
-        </p>
-      </div>
-      <div className="flex flex-row justify-between">
-        <p>Expiration time</p>
-        <p>
-          {!endedAt ? 'Unlimited' : dayjs(endedAt).format('DD/MM/YYYY, HH:mm')}
-        </p>
-      </div>
-      <div className="flex h-4 hover cursor-pointer justify-center">
-        <ChevronUp className="h-6 w-6" />
-      </div>
-      <div className="bg-base-300 w-full h-[1px] my-4" />
-    </div>
+      </td>
+    </tr>
   )
 }
 
-export default RewardCard
+export default RewardCardTable
