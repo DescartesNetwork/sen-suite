@@ -4,7 +4,7 @@ import { ReceiptData } from '@sentre/utility'
 import { PublicKey } from '@solana/web3.js'
 import dayjs from 'dayjs'
 
-import { ChevronUp } from 'lucide-react'
+import { ChevronDown, ChevronUp } from 'lucide-react'
 import { MintAmount, MintLogo, MintSymbol } from '@/components/mint'
 
 import { ReceiveItem } from './page'
@@ -94,54 +94,60 @@ const RewardCard = (props: ReceiveItem) => {
   ])
 
   return (
-    <div className="card flex flex-col gap-4 bg-base-100 md:hidden">
-      <div className="flex flex-row justify-between">
-        <div className="flex gap-2 items-center">
-          <MintLogo
-            mintAddress={mintAddress}
-            className="w-7 h-7 rounded-full bg-base-300"
-          />
-          <div className="flex flex-row gap-1 text-base leading-[22px]">
-            <p>
-              <MintAmount mintAddress={mintAddress} amount={leaf.amount} />
-            </p>
-            <MintSymbol mintAddress={mintAddress} />
+    <div className="collapse bg-base-100 md:hidden rounded-none">
+      <input type="checkbox" className="peer" />
+      <div className="collapse-title p-0 flex flex-col gap-4">
+        <div className="flex flex-row justify-between">
+          <div className="flex gap-2 items-center">
+            <MintLogo
+              mintAddress={mintAddress}
+              className="w-7 h-7 rounded-full bg-base-300"
+            />
+            <div className="flex flex-row gap-1 text-base">
+              <p>
+                <MintAmount mintAddress={mintAddress} amount={leaf.amount} />
+              </p>
+              <MintSymbol mintAddress={mintAddress} />
+            </div>
           </div>
-        </div>
 
-        <StatusTag state={status} />
-      </div>
-      <div className="flex flex-row justify-between mb-4">
-        <div className="flex items-center">
-          <p>Sender: {shortenAddress(sender)}</p>
+          <StatusTag state={status} />
         </div>
-        <button
-          className="col-span-full btn btn-primary btn-sm"
-          onClick={onClaim}
-          disabled={status !== ReceiptState.ready || loading}
-        >
-          {loading && <span className="loading loading-spinner loading-xs" />}
-          Claim
-        </button>
+        <div className="flex flex-row justify-between">
+          <div className="flex items-center">
+            <p>Sender: {shortenAddress(sender)}</p>
+          </div>
+          <button
+            className="col-span-full btn btn-primary btn-sm"
+            onClick={onClaim}
+            disabled={status !== ReceiptState.ready || loading}
+          >
+            {loading && <span className="loading loading-spinner loading-xs" />}
+            Claim
+          </button>
+        </div>
       </div>
-      <div className="flex flex-row justify-between">
-        <p>Unlock time</p>
-        <p>
-          {!startTime
-            ? 'Immediately'
-            : dayjs(startTime).format('DD/MM/YYYY, HH:mm')}
-        </p>
+      <div className="collapse-content p-0 gap-4 mt-5">
+        <div className="flex flex-row justify-between">
+          <p>Unlock time</p>
+          <p>
+            {!startTime
+              ? 'Immediately'
+              : dayjs(startTime).format('DD/MM/YYYY, HH:mm')}
+          </p>
+        </div>
+        <div className="flex flex-row justify-between">
+          <p>Expiration time</p>
+          <p>
+            {!endedAt
+              ? 'Unlimited'
+              : dayjs(endedAt).format('DD/MM/YYYY, HH:mm')}
+          </p>
+        </div>
       </div>
-      <div className="flex flex-row justify-between">
-        <p>Expiration time</p>
-        <p>
-          {!endedAt ? 'Unlimited' : dayjs(endedAt).format('DD/MM/YYYY, HH:mm')}
-        </p>
-      </div>
-      <div className="flex h-4 hover cursor-pointer justify-center">
-        <ChevronUp className="h-6 w-6" />
-      </div>
-      <div className="bg-base-300 w-full h-[1px] my-4" />
+      <ChevronUp className="hidden peer-checked:block h-6 w-6 mx-auto" />
+      <ChevronDown className="peer-checked:hidden h-6 w-6 mx-auto" />
+      <div className=" bg-base-300 w-full h-[1px] my-4" />
     </div>
   )
 }
