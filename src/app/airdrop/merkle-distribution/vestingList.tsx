@@ -1,4 +1,3 @@
-import Empty from '@/components/empty'
 import VestingTable from './vestingTable'
 import VestingListCard from './vestingListCard'
 
@@ -13,18 +12,13 @@ const VestingList = ({ vesting }: { vesting: ReceiveItem[][] }) => {
           <span className="ml-2">{vesting.length}</span>
         </p>
       </div>
-      {!vesting.length ? (
-        <div>
-          <Empty />
-        </div>
-      ) : (
-        <div className="overflow-x-auto">
-          {/* UI desktop */}
-          <VestingTable vesting={vesting} />
-          {/* UI Mobile */}
-          <VestingListCard vesting={vesting} />
-        </div>
-      )}
+
+      <div className="overflow-x-auto">
+        {/* UI desktop */}
+        <VestingTable vesting={vesting} />
+        {/* UI Mobile */}
+        <VestingListCard vesting={vesting} />
+      </div>
     </div>
   )
 }

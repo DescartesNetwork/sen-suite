@@ -1,7 +1,5 @@
 import AirdropTable from './airdropTable'
-
 import AirdropListCard from './airdropListCard'
-import Empty from '@/components/empty'
 
 import { ReceiveItem } from './page'
 
@@ -15,16 +13,12 @@ const AirdropList = ({ airdrops }: { airdrops: ReceiveItem[] }) => {
         </p>
       </div>
 
-      {!airdrops.length ? (
-        <Empty />
-      ) : (
-        <div className="overflow-x-auto">
-          {/* UI desktop */}
-          <AirdropTable airdrops={airdrops} />
-          {/* UI Mobile */}
-          <AirdropListCard airdrops={airdrops} />
-        </div>
-      )}
+      <div className="overflow-x-auto">
+        {/* UI desktop */}
+        <AirdropTable airdrops={airdrops} />
+        {/* UI Mobile */}
+        <AirdropListCard airdrops={airdrops} />
+      </div>
     </div>
   )
 }
