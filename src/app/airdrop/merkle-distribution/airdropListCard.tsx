@@ -11,7 +11,7 @@ const AirdropListCard = ({ airdrops }: { airdrops: ReceiveItem[] }) => {
   const [showAirdrop, setAmountAirdrop] = useState(DEFAULT_AMOUNT)
 
   return (
-    <div className="flex flex-col gap-6 justify-center md:hidden">
+    <div className="flex md:hidden flex-col gap-6 justify-center ">
       {airdrops.slice(0, showAirdrop).map((props, i) => (
         <RewardCard key={i} {...props} />
       ))}

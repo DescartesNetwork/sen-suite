@@ -11,7 +11,7 @@ const VestingTable = ({ vesting }: { vesting: ReceiveItem[][] }) => {
   const [showAirdrop, setAmountAirdrop] = useState(DEFAULT_AMOUNT)
 
   return (
-    <div className="hidden md:flex flex-col justify-center gap-4 overflow-x-auto">
+    <div className="hidden md:flex flex-col justify-center gap-4">
       <table className="table">
         <thead>
           <tr>

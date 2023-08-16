@@ -94,7 +94,7 @@ const RewardCard = (props: ReceiveItem) => {
   ])
 
   return (
-    <div className="collapse bg-base-100 md:hidden rounded-none">
+    <div className="collapse bg-base-100 rounded-none">
       <input type="checkbox" className="peer" />
       <div className="collapse-title p-0 flex flex-col gap-4">
         <div className="flex flex-row justify-between">

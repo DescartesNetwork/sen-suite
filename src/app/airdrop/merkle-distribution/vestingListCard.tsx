@@ -11,7 +11,7 @@ const VestingListCard = ({ vesting }: { vesting: ReceiveItem[][] }) => {
   const [showAirdrop, setAmountAirdrop] = useState(DEFAULT_AMOUNT)
 
   return (
-    <div className="flex flex-col justify-center gap-6">
+    <div className="flex md:hidden flex-col justify-center gap-6">
       {vesting.slice(0, showAirdrop).map((campaign, i) => (
         <Fragment key={i}>
           {campaign.map((props: ReceiveItem, index) => (

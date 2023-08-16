@@ -22,7 +22,7 @@ const HistoryListCard = ({ history }: { history: string[] }) => {
   const [showAirdrop, setAmountAirdrop] = useState(DEFAULT_AMOUNT)
 
   return (
-    <div className="md:flex hidden flex-col justify-center gap-4">
+    <div className="md:hidden flex flex-col justify-center gap-4">
       {history.slice(0, showAirdrop).map((address) => (
         <HistoryCard address={address} key={address} />
       ))}
