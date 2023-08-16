@@ -7,6 +7,7 @@ import {
   GridComponent,
   TitleComponent,
   LegendComponent,
+  TooltipComponent,
 } from 'echarts/components'
 
 import { CanvasRenderer } from 'echarts/renderers'
@@ -16,6 +17,7 @@ import { useTheme } from '@/providers/ui.provider'
 echarts.use([
   TitleComponent,
   GridComponent,
+  TooltipComponent,
   PieChart,
   CanvasRenderer,
   LegendComponent,

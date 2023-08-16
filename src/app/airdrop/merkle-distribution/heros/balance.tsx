@@ -11,12 +11,11 @@ import { numeric } from '@/helpers/utils'
 import { useLamports } from '@/providers/wallet.provider'
 import { useMintPrice } from '@/components/mint'
 import { getPrice } from '@/helpers/stat'
-
-export const WSOL_ADDRESS = 'So11111111111111111111111111111111111111112'
+import { WRAPPED_SOL_MINT } from '@metaplex-foundation/js'
 
 const TotalBalance = () => {
   const myAccounts = useAllTokenAccounts()
-  const solPrice = useMintPrice(WSOL_ADDRESS)
+  const solPrice = useMintPrice(WRAPPED_SOL_MINT.toBase58())
   const metadata = useMintStore(({ metadata }) => metadata)
   const lamports = useLamports()
 

@@ -2,14 +2,17 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import Balancer, { PoolData } from '@senswap/balancer'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { utils } from '@coral-xyz/anchor'
-import { PublicKey } from '@solana/web3.js'
+import { PublicKey, SystemProgram, Transaction } from '@solana/web3.js'
+import { WRAPPED_SOL_MINT } from '@metaplex-foundation/js'
 import BN from 'bn.js'
 
 import { useAnchorProvider } from '@/providers/wallet.provider'
-import { undecimalize } from '@/helpers/decimals'
+import { decimalize, undecimalize } from '@/helpers/decimals'
 import { useSearchMint } from '@/providers/mint.provider'
-import { usePools } from '@/providers/pools.provider'
+import { usePoolByAddress, usePools } from '@/providers/pools.provider'
 import { useAllTokenAccounts } from '@/providers/tokenAccount.provider'
+import { useUtility } from './airdrop.hook'
+import { useInitPDAAccount, useMints, useSpl } from './spl.hook'
 import solConfig from '@/configs/sol.config'
 
 export const GENERAL_NORMALIZED_NUMBER = 10 ** 9
@@ -31,6 +34,7 @@ export type PoolPairLpData = {
   decimalIn: number
   swapFee: BN
 }
+
 export const useBalancer = () => {
   const provider = useAnchorProvider()
   const balancer = useMemo(
@@ -133,6 +137,90 @@ export const useFilterPools = (key = FilterPools.AllPools) => {
   }, [filterListPools])
 
   return poolsFilter
+}
+
+export const useDeposit = (poolAddress: string, amountIns: string[]) => {
+  const balancer = useBalancer()
+  const { publicKey } = useWallet()
+  const accounts = useAllTokenAccounts()
+  const utility = useUtility()
+  const pool = usePoolByAddress(poolAddress)
+  const mints = useMints(pool.mints.map((mint) => mint.toBase58()))
+  const decimals = mints.map((mint) => mint?.decimals || 0)
+  const provider = useAnchorProvider()
+  const onInitAccount = useInitPDAAccount()
+  const spl = useSpl()
+
+  const createWrapSol = useCallback(
+    async (amount: BN) => {
+      if (!publicKey || !utility) return
+      const tx = new Transaction()
+      const ataSol = utils.token.associatedAddress({
+        mint: WRAPPED_SOL_MINT,
+        owner: publicKey,
+      })
+      if (!accounts[ataSol.toBase58()]) {
+        const txInitAcc = await onInitAccount(WRAPPED_SOL_MINT, publicKey)
+        tx.add(txInitAcc)
+      }
+      const txSolTransfer = await SystemProgram.transfer({
+        fromPubkey: publicKey,
+        toPubkey: ataSol,
+        lamports: BigInt(amount.toString()),
+      })
+      const txSync = await spl.methods
+        .syncNative()
+        .accounts({ account: ataSol })
+        .instruction()
+      tx.add(txSolTransfer, txSync)
+
+      return tx
+    },
+    [accounts, onInitAccount, publicKey, spl.methods, utility],
+  )
+
+  const onDeposit = useCallback(async () => {
+    if (!publicKey) return
+    const transaction = new Transaction()
+    const dAmountIns = amountIns.map((amount, i) =>
+      decimalize(amount, decimals[i]),
+    )
+    // Wrap sol token if needed
+    for (const i in pool.mints) {
+      const mint = pool.mints[i]
+      const ataAddress = utils.token.associatedAddress({
+        mint,
+        owner: publicKey,
+      })
+      const { amount } = accounts[ataAddress.toBase58()] || {
+        amount: new BN(0),
+      }
+      if (mint.equals(WRAPPED_SOL_MINT) && dAmountIns[i].gt(amount)) {
+        const txWrapSol = await createWrapSol(dAmountIns[i].sub(amount))
+        if (txWrapSol) transaction.add(txWrapSol)
+      }
+    }
+    const { tx: txDeposit } = await balancer.addLiquidity(
+      poolAddress,
+      dAmountIns,
+      false,
+    )
+    transaction.add(txDeposit)
+    const txId = await provider.sendAndConfirm(transaction)
+    return txId
+  }, [
+    accounts,
+    amountIns,
+    balancer,
+    createWrapSol,
+    decimals,
+    pool.mints,
+    poolAddress,
+    provider,
+    publicKey,
+  ])
+
+  return onDeposit
 }
 
 export const useOracles = () => {

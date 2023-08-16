@@ -1,123 +1,85 @@
 'use client'
-import { ChangeEvent, Fragment, useCallback, useMemo, useState } from 'react'
+import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
 import BN from 'bn.js'
 import classNames from 'classnames'
+import { WRAPPED_SOL_MINT } from '@metaplex-foundation/js'
+import { utils } from '@coral-xyz/anchor'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 import Modal from '@/components/modal'
-import {
-  MintAmount,
-  MintLogo,
-  MintSymbol,
-  useMintAmount,
-} from '@/components/mint'
+import MintInput from './mintInput'
 
-import {
-  useAllTokenAccounts,
-  useTokenAccountByMintAddress,
-} from '@/providers/tokenAccount.provider'
+import { useAllTokenAccounts } from '@/providers/tokenAccount.provider'
 import { usePoolByAddress } from '@/providers/pools.provider'
-import { useOracles } from '@/hooks/pool.hook'
+import { useDeposit, useOracles } from '@/hooks/pool.hook'
 import { numeric } from '@/helpers/utils'
 import { useMints } from '@/hooks/spl.hook'
-import { decimalize } from '@/helpers/decimals'
-
-type MintInputProps = {
-  mintAddress: string
-  amount: string
-  onAmount: (val: string) => void
-  weights: BN[]
-  index: number
-}
-
-const MintInput = ({
-  mintAddress,
-  amount,
-  onAmount,
-  weights,
-  index,
-}: MintInputProps) => {
-  const [range, setRange] = useState('0')
-  const { amount: mintAmount } = useTokenAccountByMintAddress(mintAddress) || {
-    amount: new BN(0),
-  }
-  const balance = useMintAmount(mintAddress, mintAmount)
-  const { calcNormalizedWeight } = useOracles()
-  const normalizedWeight = calcNormalizedWeight(weights, weights[index])
-
-  const onRange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      const percentage = Number(e.target.value) / 100
-      if (percentage > 0) onAmount(String(percentage * Number(balance)))
-      setRange(e.target.value)
-    },
-    [balance, onAmount],
-  )
-  return (
-    <div className="card bg-base-200 p-4 rounded-3xl grid grid-cols-12 gap-x-2 gap-y-4">
-      <div className="col-span-12 flex flex-row gap-2 items-center">
-        <div className="card bg-base-100 p-2 rounded-full flex flex-row gap-2 items-center cursor-pointer">
-          <MintLogo
-            mintAddress={mintAddress}
-            className="w-6 h-6 rounded-full"
-          />
-          <h5 className="text-sm">
-            <MintSymbol mintAddress={mintAddress} />{' '}
-            {numeric(normalizedWeight).format('0,0.[0000]%')}
-          </h5>
-        </div>
-        <input
-          type="number"
-          placeholder="0"
-          className="input input-ghost flex-auto max-w-sm rounded-full focus:outline-none text-right text-xl"
-          value={amount}
-          onChange={(e) => onAmount(e.target.value)}
-        />
-      </div>
-      <div className="col-span-12 flex flex-row gap-2 items-start justify-between">
-        <div className="flex flex-col">
-          <p className="text-xs font-bold opacity-60">Available</p>
-          <p>
-            <MintAmount mintAddress={mintAddress} amount={mintAmount} />
-          </p>
-        </div>
-        <div className="flex-auto max-w-[112px]">
-          <input
-            type="range"
-            min={0}
-            max={100}
-            step={50}
-            className="range range-xs range-primary"
-            value={range}
-            onChange={onRange}
-          />
-          <div className="w-full flex flex-row justify-between px-1 text-[9px] opacity-60">
-            <span>|</span>
-            <span>50%</span>
-            <span>100%</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
+import { decimalize, undecimalize } from '@/helpers/decimals'
+import { usePushMessage } from '@/components/message/store'
+import { solscan } from '@/helpers/explorers'
+import { useLamports } from '@/providers/wallet.provider'
 
 const Deposit = ({ poolAddress }: { poolAddress: string }) => {
   const pool = usePoolByAddress(poolAddress)
   const [open, setOpen] = useState(false)
-  const [amounts, setAmounts] = useState<string[]>(
-    new Array(pool.mints.length).fill('0'),
-  )
+  const [acceptAnyway, setAcceptAnyway] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [amounts, setAmounts] = useState<string[]>([])
+  const [activeIndx, setActiveIndx] = useState<number>()
+
   const { calcLptOut, calcLpForTokensZeroPriceImpact } = useOracles()
   const accounts = useAllTokenAccounts()
+  const { publicKey } = useWallet()
   const mints = useMints(pool.mints.map((mint) => mint.toBase58()))
-  const [mintLpt] = useMints([pool.mintLpt.toBase58()])
   const decimals = mints.map((mint) => mint?.decimals || 0)
+  const [mintLpt] = useMints([pool.mintLpt.toBase58()])
+  const lamports = useLamports()
+  const pushMessage = usePushMessage()
+
+  const deposit = useDeposit(poolAddress, amounts)
+  const onDeposit = useCallback(async () => {
+    try {
+      setLoading(true)
+      const txId = await deposit()
+      pushMessage(
+        'alert-success',
+        'Successfully airdrop. Click here to view on explorer.',
+        {
+          onClick: () => window.open(solscan(txId || ''), '_blank'),
+        },
+      )
+      setOpen(false)
+    } catch (er: any) {
+      pushMessage('alert-error', er.message)
+    } finally {
+      setLoading(false)
+    }
+  }, [deposit, pushMessage])
 
   const onAmounts = (index: number, amount: string) => {
     const nextAmounts = [...amounts]
     nextAmounts[index] = amount
+    setActiveIndx(index)
     setAmounts(nextAmounts)
   }
+
+  const amountsSuggestion = useMemo(() => {
+    if (activeIndx === undefined) return []
+    const result = pool.reserves.map((reserve, index) => {
+      if (index === activeIndx) return ''
+      const activeBalance = Number(
+        undecimalize(pool.reserves[activeIndx], decimals[activeIndx]),
+      )
+      const reserveBalance = Number(undecimalize(reserve, decimals[index]))
+      const balanceRatio =
+        (activeBalance + Number(amounts[activeIndx])) / activeBalance
+      const suggestedAmount = (reserveBalance * (balanceRatio - 1)).toFixed(
+        decimals[index],
+      )
+      return suggestedAmount
+    })
+    return result
+  }, [activeIndx, amounts, decimals, pool.reserves])
 
   const { lptOut, priceImpact } = useMemo(() => {
     const { reserves, weights, fee, taxFee } = pool
@@ -143,6 +105,7 @@ const Deposit = ({ poolAddress }: { poolAddress: string }) => {
       ).toFixed(9),
     )
     const priceImpact = 1 - out / lpOutZeroPriceImpact
+
     return { lptOut: out, priceImpact: priceImpact || 0 }
   }, [
     amounts,
@@ -155,15 +118,37 @@ const Deposit = ({ poolAddress }: { poolAddress: string }) => {
 
   const ok = useMemo(() => {
     for (const index in amounts) {
-      const { amount: mintAmount } = Object.values(accounts).find(({ mint }) =>
-        mint.equals(pool.mints[index]),
-      ) || { amount: new BN(0) }
+      const mint = pool.mints[index]
+      const ataAddress = utils.token.associatedAddress({
+        mint,
+        owner: publicKey!,
+      })
+      let { amount: mintAmount } = accounts[ataAddress.toBase58()] || {
+        amount: new BN(0),
+      }
+
+      if (WRAPPED_SOL_MINT.equals(mint))
+        mintAmount = mintAmount.add(new BN(lamports))
 
       const amount = decimalize(amounts[index], decimals[index])
       if (mintAmount.lt(amount)) return false
     }
-    return !!lptOut && priceImpact < 0.05
-  }, [accounts, amounts, decimals, lptOut, pool.mints, priceImpact])
+    return !!lptOut && (priceImpact <= 0.05 || acceptAnyway)
+  }, [
+    accounts,
+    amounts,
+    decimals,
+    lamports,
+    lptOut,
+    pool.mints,
+    priceImpact,
+    publicKey,
+    acceptAnyway,
+  ])
+
+  useEffect(() => {
+    if (pool.mints.length) setAmounts(new Array(pool.mints.length).fill('0'))
+  }, [pool.mints])
 
   return (
     <Fragment>
@@ -182,6 +167,13 @@ const Deposit = ({ poolAddress }: { poolAddress: string }) => {
                 onAmount={(amount) => onAmounts(index, amount)}
                 index={index}
                 weights={pool.weights}
+                suggestAmount={amountsSuggestion[index]}
+                visibleSuggest={
+                  activeIndx !== undefined &&
+                  !!amounts[activeIndx] &&
+                  !!amountsSuggestion[index] &&
+                  Number(amountsSuggestion[index]) > Number(amounts[index])
+                }
               />
             ))}
           </div>
@@ -190,8 +182,8 @@ const Deposit = ({ poolAddress }: { poolAddress: string }) => {
               <p className="flex-auto text-sm opacity-60">Price Impact</p>
               <p
                 className={classNames('text-[#FA8C16]', {
-                  'text-[#14E041]': !priceImpact || priceImpact < 0.01,
-                  'text-[#D72311]': priceImpact > 0.05,
+                  '!text-[#14E041]': !priceImpact || priceImpact < 0.01,
+                  '!text-[#D72311]': priceImpact > 0.05,
                 })}
               >
                 {numeric(priceImpact).format('0,0.[0000]%')}
@@ -207,7 +199,27 @@ const Deposit = ({ poolAddress }: { poolAddress: string }) => {
               </p>
             </div>
           </div>
-          <button disabled={!ok} className="btn btn-primary col-span-12">
+          {priceImpact > 0.05 && (
+            <div
+              onClick={() => setAcceptAnyway(!acceptAnyway)}
+              className="col-span-12 flex gap-2 items-center cursor-pointer"
+            >
+              <input
+                type="checkbox"
+                className="checkbox"
+                checked={acceptAnyway}
+              />
+              <p className="text-sm">
+                I agree to execute this trade with the high price impact.
+              </p>
+            </div>
+          )}
+          <button
+            onClick={onDeposit}
+            disabled={!ok}
+            className="btn btn-primary col-span-12"
+          >
+            {loading && <span className="loading loading-spinner loading-xs" />}
             Deposit
           </button>
         </div>
