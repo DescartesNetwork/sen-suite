@@ -49,6 +49,8 @@ const defaultConfigs: Configs = {
 }
 
 export type AirdropStore = {
+  loadingAirdrop: boolean
+  setLoadingAirdrop: (loading: boolean) => void
   distributors: Record<string, DistributorData>
   upsertDistributor: (address: string, newDistributor: DistributorData) => void
   receipts: Record<string, ReceiptData>
@@ -67,6 +69,8 @@ export type AirdropStore = {
 export const useAirdropStore = create<AirdropStore>()(
   devtools(
     (set) => ({
+      loadingAirdrop: false,
+      setLoadingAirdrop: (loadingAirdrop) => set({ loadingAirdrop }),
       distributors: {},
       upsertDistributor: (address: string, distributor: DistributorData) =>
         set(
@@ -132,6 +136,16 @@ export const useAirdropStore = create<AirdropStore>()(
   ),
 )
 
+export const useLoadingAirdrop = () => {
+  const { loadingAirdrop, setLoadingAirdrop } = useAirdropStore(
+    ({ loadingAirdrop, setLoadingAirdrop }) => ({
+      loadingAirdrop,
+      setLoadingAirdrop,
+    }),
+  )
+  return { loadingAirdrop, setLoadingAirdrop }
+}
+
 export default function AirdropProvider({ children }: { children: ReactNode }) {
   const utility = useUtility()
   const { publicKey } = useWallet()
@@ -139,16 +153,24 @@ export default function AirdropProvider({ children }: { children: ReactNode }) {
   const upsertDistributor = useAirdropStore(
     ({ upsertDistributor }) => upsertDistributor,
   )
+  const { setLoadingAirdrop } = useLoadingAirdrop()
 
   const fetchDistributors = useCallback(async () => {
-    if (!utility) return
-    const { account } = utility.program
-    const distributors = await account.distributor.all()
-    for (const { publicKey, account: distributorData } of distributors) {
-      const address = publicKey.toBase58()
-      upsertDistributor(address, distributorData)
+    try {
+      setLoadingAirdrop(true)
+      if (!utility) return
+      const { account } = utility.program
+      const distributors = await account.distributor.all()
+      for (const { publicKey, account: distributorData } of distributors) {
+        const address = publicKey.toBase58()
+        upsertDistributor(address, distributorData)
+      }
+    } catch (er: any) {
+      console.log('alert-error', er.message)
+    } finally {
+      setLoadingAirdrop(false)
     }
-  }, [upsertDistributor, utility])
+  }, [upsertDistributor, utility, setLoadingAirdrop])
 
   useEffect(() => {
     fetchDistributors()

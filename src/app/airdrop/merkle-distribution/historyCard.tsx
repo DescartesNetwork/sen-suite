@@ -7,53 +7,28 @@ import { ParsedAccountData, PublicKey } from '@solana/web3.js'
 import { useConnection } from '@solana/wallet-adapter-react'
 import dayjs from 'dayjs'
 
-import { ChevronDown } from 'lucide-react'
+import UnclaimList from './unclaimList'
 import { MintAmount, MintLogo, MintSymbol } from '@/components/mint'
 
 import { useDistributors } from '@/providers/airdrop.provider'
 import { useMerkleMetadata, useRevoke, useUtility } from '@/hooks/airdrop.hook'
 import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
-import UnclaimList from './unclaimList'
 
-const DEFAULT_AMOUNT = 4
-
-const HistoryTable = ({ history }: { history: string[] }) => {
-  const [showAirdrop, setAmountAirdrop] = useState(DEFAULT_AMOUNT)
-
-  return (
-    <div className="md:flex hidden flex-col justify-center gap-4">
-      <table className="table">
-        <thead>
-          <tr>
-            <th>CREATED AT</th>
-            <th>UNLOCK DATE</th>
-            <th>TOKEN</th>
-            <th>TOTAL</th>
-            <th>REMAINING</th>
-            <th>ACTION</th>
-          </tr>
-        </thead>
-        <tbody>
-          {history.slice(0, showAirdrop).map((address) => (
-            <HistoryCardTable address={address} key={address} />
-          ))}
-        </tbody>
-      </table>
-      <button
-        onClick={() => setAmountAirdrop(showAirdrop + DEFAULT_AMOUNT)}
-        disabled={showAirdrop >= history.length}
-        className="btn btn-ghost flex self-center"
-      >
-        <ChevronDown className="h-4 w-4" /> View more
-      </button>
-    </div>
-  )
+type HistoryProps = {
+  onRevoke: () => Promise<void>
+  address: string
+  endedAt: any
+  mint: PublicKey
+  total: any
+  remaining?: any
+  value: any
+  ok: boolean
+  disabled: boolean
+  loading: boolean
 }
 
-export default HistoryTable
-
-const HistoryCardTable = ({ address }: { address: string }) => {
+const HistoryCard = ({ address }: { address: string }) => {
   const [loading, setLoading] = useState(false)
   const [disabled, setDisabled] = useState(false)
 
@@ -64,6 +39,7 @@ const HistoryCardTable = ({ address }: { address: string }) => {
 
   const { connection } = useConnection()
   const utility = useUtility()
+  const widthScreen = window.innerWidth
 
   const revoke = useRevoke(address)
   const onRevoke = useCallback(async () => {
@@ -112,8 +88,109 @@ const HistoryCardTable = ({ address }: { address: string }) => {
     return !isEmptyTreasury && validTime
   }, [endedAt, remaining])
 
+  return widthScreen >= 786 ? (
+    <CardTable
+      onRevoke={onRevoke}
+      address={address}
+      endedAt={endedAt}
+      mint={mint}
+      remaining={remaining}
+      total={total}
+      value={value}
+      ok={ok}
+      disabled={disabled}
+      loading={loading}
+    />
+  ) : (
+    <Card
+      onRevoke={onRevoke}
+      address={address}
+      endedAt={endedAt}
+      mint={mint}
+      total={total}
+      value={value}
+      ok={ok}
+      disabled={disabled}
+      loading={loading}
+    />
+  )
+}
+
+export default HistoryCard
+
+const Card = ({
+  onRevoke,
+  address,
+  endedAt,
+  mint,
+  total,
+  value,
+  ok,
+  disabled,
+  loading,
+}: HistoryProps) => {
   return (
-    <tr className="hover cursor-pointer">
+    <div className="card flex flex-col gap-4 bg-base-100">
+      <div className="flex flex-row justify-between mb-4">
+        <div className="flex gap-2 items-center">
+          <MintLogo
+            mintAddress={mint.toBase58()}
+            className="w-7 h-7 rounded-full bg-base-300"
+          />
+          <div className="flex flex-row gap-1 text-base leading-5">
+            <p>
+              <MintAmount mintAddress={mint.toBase58()} amount={total} />
+            </p>
+            <MintSymbol mintAddress={mint.toBase58()} />
+          </div>
+        </div>
+        <div className="flex gap-2">
+          {!endedAt.isZero() && (
+            <button
+              disabled={!ok || disabled || loading}
+              className="btn btn-sm btn-ghost text-info"
+              onClick={onRevoke}
+            >
+              {loading && (
+                <span className="loading loading-spinner loading-xs" />
+              )}
+              REVOKE
+            </button>
+          )}
+          <UnclaimList distributeAddress={address} />
+        </div>
+      </div>
+      <div className="flex flex-row justify-between">
+        <p>Created time</p>
+        <p>{dayjs(value?.createdAt).format('DD/MM/YYYY, HH:mm')}</p>
+      </div>
+      <div className="flex flex-row justify-between">
+        <p>Unlock time</p>
+        <p>
+          {value?.unlockTime
+            ? 'Immediately'
+            : dayjs(value?.unlockTime).format('DD/MM/YYYY, HH:mm')}
+        </p>
+      </div>
+      <div className="bg-base-300 w-full h-[1px] my-4" />
+    </div>
+  )
+}
+
+const CardTable = ({
+  onRevoke,
+  address,
+  endedAt,
+  mint,
+  total,
+  remaining,
+  value,
+  ok,
+  disabled,
+  loading,
+}: HistoryProps) => {
+  return (
+    <tr className="hover cursor-pointer hidden">
       <td>{dayjs(value?.createdAt).format('DD/MM/YYYY, HH:mm')}</td>
       <td>
         {value?.unlockTime

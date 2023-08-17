@@ -1,13 +1,25 @@
-import Empty from '@/components/empty'
-import HistoryListCard from './historyListCard'
+import { useState } from 'react'
 
-import HistoryTable from './historyTable'
-import { useMyDistributes } from '@/providers/airdrop.provider'
+import { ChevronDown } from 'lucide-react'
+import HistoryCard from './historyCard'
+import Empty from '@/components/empty'
+
+import {
+  useLoadingAirdrop,
+  useMyDistributes,
+} from '@/providers/airdrop.provider'
 import { Distribute } from '@/hooks/airdrop.hook'
 
+const DEFAULT_AMOUNT = 4
+
 const History = ({ type }: { type: Distribute }) => {
+  const [showAirdrop, setAmountAirdrop] = useState(DEFAULT_AMOUNT)
   const { airdrops, vesting } = useMyDistributes()
+  const { loadingAirdrop } = useLoadingAirdrop()
   const history = type === Distribute.Airdrop ? airdrops : vesting
+
+  const widthScreen = window.innerWidth
+
   return (
     <div className="card bg-base-100 p-4 gap-6">
       <div className="flex">
@@ -17,15 +29,50 @@ const History = ({ type }: { type: Distribute }) => {
         </p>
       </div>
 
+      <div className="overflow-x-auto">
+        {widthScreen >= 768 ? (
+          <table className="table">
+            <thead>
+              <tr>
+                <th>CREATED AT</th>
+                <th>UNLOCK DATE</th>
+                <th>TOKEN</th>
+                <th>TOTAL</th>
+                <th>REMAINING</th>
+                <th>ACTION</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loadingAirdrop ? (
+                <span className="loading loading-bars loading-xs" />
+              ) : (
+                history
+                  .slice(0, showAirdrop)
+                  .map((address) => (
+                    <HistoryCard address={address} key={address} />
+                  ))
+              )}
+            </tbody>
+          </table>
+        ) : loadingAirdrop ? (
+          <span className="loading loading-bars loading-xs" />
+        ) : (
+          history
+            .slice(0, showAirdrop)
+            .map((address) => <HistoryCard address={address} key={address} />)
+        )}
+      </div>
+
       {!history.length ? (
         <Empty />
       ) : (
-        <div className="overflow-x-auto">
-          {/* UI desktop */}
-          <HistoryTable history={history} />
-          {/* UI mobile */}
-          <HistoryListCard history={history} />
-        </div>
+        <button
+          onClick={() => setAmountAirdrop(showAirdrop + DEFAULT_AMOUNT)}
+          disabled={showAirdrop >= history.length}
+          className="btn btn-ghost flex self-center"
+        >
+          <ChevronDown className="h-4 w-4" /> View more
+        </button>
       )}
     </div>
   )

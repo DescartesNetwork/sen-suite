@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react'
 import { BN } from 'bn.js'
-import { ReceiptData } from '@sentre/utility'
+import { Leaf, ReceiptData } from '@sentre/utility'
 import { PublicKey } from '@solana/web3.js'
 import dayjs from 'dayjs'
 
@@ -13,6 +13,17 @@ import { useClaim } from '@/hooks/airdrop.hook'
 import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
 import { useAirdropStore } from '@/providers/airdrop.provider'
+
+type PropsCard = {
+  onClaim?: () => Promise<void>
+  loading: boolean
+  leaf: Leaf
+  startTime: number
+  endedAt: number
+  mintAddress: string
+  sender: string
+  status: ReceiptState
+}
 
 export enum ReceiptState {
   waiting = 'Waiting',
@@ -53,6 +64,7 @@ const RewardCard = (props: ReceiveItem) => {
   const [loading, setLoading] = useState(false)
   const pushMessage = usePushMessage()
   const upsertReceipt = useAirdropStore(({ upsertReceipt }) => upsertReceipt)
+  const widthScreen = window.innerWidth
 
   const startTime = leaf.startedAt.toNumber() * 1000
 
@@ -93,63 +105,149 @@ const RewardCard = (props: ReceiveItem) => {
     upsertReceipt,
   ])
 
-  return (
-    <div className="collapse bg-base-100 rounded-none">
-      <input type="checkbox" className="peer" />
-      <div className="collapse-title p-0 flex flex-col gap-4">
-        <div className="flex flex-row justify-between">
-          <div className="flex gap-2 items-center">
-            <MintLogo
-              mintAddress={mintAddress}
-              className="w-7 h-7 rounded-full bg-base-300"
-            />
-            <div className="flex flex-row gap-1 text-base">
-              <p>
-                <MintAmount mintAddress={mintAddress} amount={leaf.amount} />
-              </p>
-              <MintSymbol mintAddress={mintAddress} />
-            </div>
-          </div>
+  return widthScreen >= 768 ? (
+    <CardTable
+      onClaim={onClaim}
+      loading={loading}
+      leaf={leaf}
+      startTime={startTime}
+      endedAt={endedAt}
+      mintAddress={mintAddress}
+      sender={sender}
+      status={status}
+    />
+  ) : (
+    <Card
+      onClaim={onClaim}
+      loading={loading}
+      leaf={leaf}
+      startTime={startTime}
+      endedAt={endedAt}
+      mintAddress={mintAddress}
+      sender={sender}
+      status={status}
+    />
+  )
+}
 
-          <StatusTag state={status} />
-        </div>
-        <div className="flex flex-row justify-between">
-          <div className="flex items-center">
-            <p>Sender: {shortenAddress(sender)}</p>
+export default RewardCard
+
+const Card = ({
+  onClaim,
+  loading,
+  leaf,
+  startTime,
+  endedAt,
+  mintAddress,
+  sender,
+  status,
+}: PropsCard) => {
+  return (
+    <div className="flex flex-col bg-base-100 rounded-none md:hidden gap-4">
+      <div className="flex flex-row justify-between">
+        <div className="flex gap-2 items-center">
+          <MintLogo
+            mintAddress={mintAddress}
+            className="w-7 h-7 rounded-full bg-base-300"
+          />
+          <div className="flex flex-row gap-1 text-base">
+            <p>
+              <MintAmount mintAddress={mintAddress} amount={leaf.amount} />
+            </p>
+            <MintSymbol mintAddress={mintAddress} />
           </div>
-          <button
-            className="col-span-full btn btn-primary btn-sm"
-            onClick={onClaim}
-            disabled={status !== ReceiptState.ready || loading}
-          >
-            {loading && <span className="loading loading-spinner loading-xs" />}
-            Claim
-          </button>
         </div>
+
+        <StatusTag state={status} />
       </div>
-      <div className="collapse-content p-0 gap-4 mt-5">
-        <div className="flex flex-row justify-between">
-          <p>Unlock time</p>
-          <p>
-            {!startTime
-              ? 'Immediately'
-              : dayjs(startTime).format('DD/MM/YYYY, HH:mm')}
-          </p>
+      <div className="flex flex-row justify-between">
+        <div className="flex items-center">
+          <p>Sender: {shortenAddress(sender)}</p>
         </div>
-        <div className="flex flex-row justify-between">
-          <p>Expiration time</p>
-          <p>
-            {!endedAt
-              ? 'Unlimited'
-              : dayjs(endedAt).format('DD/MM/YYYY, HH:mm')}
-          </p>
-        </div>
+        <button
+          className="col-span-full btn btn-primary btn-sm"
+          onClick={onClaim}
+          disabled={status !== ReceiptState.ready || loading}
+        >
+          {loading && <span className="loading loading-spinner loading-xs" />}
+          Claim
+        </button>
       </div>
-      <ChevronUp className="hidden peer-checked:block h-6 w-6 mx-auto" />
-      <ChevronDown className="peer-checked:hidden h-6 w-6 mx-auto" />
+      <div className="collapse rounded-none">
+        <input type="checkbox" className="peer absolute bottom-0" />
+        <div className="collapse-content row-start-1 p-0 gap-4 h-0 peer-checked:h-16">
+          <div className="flex flex-row justify-between mt-2">
+            <p>Unlock time</p>
+            <p>
+              {!startTime
+                ? 'Immediately'
+                : dayjs(startTime).format('DD/MM/YYYY, HH:mm')}
+            </p>
+          </div>
+          <div className="flex flex-row justify-between">
+            <p>Expiration time</p>
+            <p>
+              {!endedAt
+                ? 'Unlimited'
+                : dayjs(endedAt).format('DD/MM/YYYY, HH:mm')}
+            </p>
+          </div>
+        </div>
+        <ChevronUp className="hidden peer-checked:block h-6 w-6 mx-auto" />
+        <ChevronDown className="peer-checked:hidden h-6 w-6 mx-auto" />
+      </div>
+
       <div className=" bg-base-300 w-full h-[1px] my-4" />
     </div>
   )
 }
 
-export default RewardCard
+const CardTable = ({
+  onClaim,
+  loading,
+  leaf,
+  startTime,
+  endedAt,
+  mintAddress,
+  sender,
+  status,
+}: PropsCard) => {
+  return (
+    <tr className="hover cursor-pointer">
+      <td>
+        {!startTime
+          ? 'Immediately'
+          : dayjs(startTime).format('DD/MM/YYYY, HH:mm')}
+      </td>
+      <td>
+        {!endedAt ? 'Unlimited' : dayjs(endedAt).format('DD/MM/YYYY, HH:mm')}
+      </td>
+      <td>{shortenAddress(sender)}</td>
+      <td>
+        <div className="flex gap-2 items-center">
+          <MintLogo
+            mintAddress={mintAddress}
+            className="w-6 h-6 rounded-full bg-base-300"
+          />
+          <MintSymbol mintAddress={mintAddress} />
+        </div>
+      </td>
+      <td>
+        <MintAmount mintAddress={mintAddress} amount={leaf.amount} />
+      </td>
+      <td>
+        <StatusTag state={status} />
+      </td>
+      <td>
+        <button
+          className="col-span-full btn btn-primary btn-sm"
+          onClick={onClaim}
+          disabled={status !== ReceiptState.ready || loading}
+        >
+          {loading && <span className="loading loading-spinner loading-xs" />}
+          Claim
+        </button>
+      </td>
+    </tr>
+  )
+}
