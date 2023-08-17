@@ -35,7 +35,7 @@ const PoolDetails = ({
           <h5>Balansol LP</h5>
         </div>
         <div className="flex gap-2 items-center">
-          <Withdraw />
+          <Withdraw poolAddress={poolAddress} />
           <Deposit poolAddress={poolAddress} />
         </div>
       </div>

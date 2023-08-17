@@ -8,10 +8,10 @@ import {
   Transaction,
   TransactionInstruction,
 } from '@solana/web3.js'
+import { utils } from '@coral-xyz/anchor'
 
 import { isAddress } from '@/helpers/utils'
 import { useAnchorProvider } from '@/providers/wallet.provider'
-import { utils } from '@coral-xyz/anchor'
 
 /**
  * Create an SPL instanse

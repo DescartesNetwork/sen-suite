@@ -117,11 +117,12 @@ const Deposit = ({ poolAddress }: { poolAddress: string }) => {
   ])
 
   const ok = useMemo(() => {
+    if (!publicKey) return false
     for (const index in amounts) {
       const mint = pool.mints[index]
       const ataAddress = utils.token.associatedAddress({
         mint,
-        owner: publicKey!,
+        owner: publicKey,
       })
       let { amount: mintAmount } = accounts[ataAddress.toBase58()] || {
         amount: new BN(0),

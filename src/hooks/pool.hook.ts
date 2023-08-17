@@ -4,6 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { utils } from '@coral-xyz/anchor'
 import { PublicKey, SystemProgram, Transaction } from '@solana/web3.js'
 import { WRAPPED_SOL_MINT } from '@metaplex-foundation/js'
+import { initTxCreateMultiTokenAccount } from '@sen-use/web3'
 import BN from 'bn.js'
 
 import { useAnchorProvider } from '@/providers/wallet.provider'
@@ -221,6 +222,105 @@ export const useDeposit = (poolAddress: string, amountIns: string[]) => {
   ])
 
   return onDeposit
+}
+
+export const useWithdraw = (
+  poolAddress: string,
+  amount: string,
+  mintAddress = '',
+) => {
+  const provider = useAnchorProvider()
+  const balancer = useBalancer()
+  const spl = useSpl()
+  const { publicKey } = useWallet()
+  const { mints } = usePoolByAddress(poolAddress)
+
+  const createTxUnwrapSol = useCallback(
+    async (owner: PublicKey) => {
+      const ata = utils.token.associatedAddress({
+        mint: WRAPPED_SOL_MINT,
+        owner,
+      })
+      const tx = await spl.methods
+        .closeAccount()
+        .accounts({
+          account: ata,
+          destination: owner,
+          owner: owner,
+        })
+        .transaction()
+      return tx
+    },
+    [spl.methods],
+  )
+
+  const onWithdrawSide = useCallback(async () => {
+    if (!publicKey || !mintAddress) return ''
+    const dAmount = decimalize(amount, LPT_DECIMALS)
+    const transaction = new Transaction()
+
+    const { tx: txWithdraw } = await balancer.removeSidedLiquidity(
+      poolAddress,
+      mintAddress,
+      dAmount,
+      false,
+    )
+    transaction.add(txWithdraw)
+    if (mintAddress === WRAPPED_SOL_MINT.toBase58()) {
+      const txUnwrapSol = await createTxUnwrapSol(publicKey)
+      transaction.add(txUnwrapSol)
+    }
+    return await provider.sendAndConfirm(transaction)
+  }, [
+    amount,
+    balancer,
+    createTxUnwrapSol,
+    mintAddress,
+    poolAddress,
+    provider,
+    publicKey,
+  ])
+
+  const onWithdraw = useCallback(async () => {
+    if (!publicKey) return ''
+    if (mintAddress) return await onWithdrawSide()
+    const dAmount = decimalize(amount, LPT_DECIMALS)
+
+    const transactions = await initTxCreateMultiTokenAccount(provider, {
+      mints,
+    })
+
+    const { transaction } = await balancer.createRemoveLiquidityTransaction(
+      poolAddress,
+      dAmount,
+    )
+    transactions.push(transaction)
+
+    for (const mint of mints) {
+      if (WRAPPED_SOL_MINT.equals(mint)) {
+        const unwrapSolTx = await createTxUnwrapSol(publicKey)
+        transactions.push(unwrapSolTx)
+      }
+    }
+    const txIds = await provider.sendAll(
+      transactions.map((tx) => {
+        return { tx, signers: [] }
+      }),
+    )
+    return txIds.pop() || ''
+  }, [
+    amount,
+    balancer,
+    createTxUnwrapSol,
+    mintAddress,
+    mints,
+    onWithdrawSide,
+    poolAddress,
+    provider,
+    publicKey,
+  ])
+
+  return onWithdraw
 }
 
 export const useOracles = () => {
