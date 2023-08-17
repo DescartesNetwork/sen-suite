@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import BN from 'bn.js'
+import Link from 'next/link'
 
 import Clipboard from '@/components/clipboard'
 import { MintAmount, MintLogo, MintSymbol } from '@/components/mint'
@@ -12,7 +13,6 @@ import { usePoolByAddress } from '@/providers/pools.provider'
 import { useTokenAccountByMintAddress } from '@/providers/tokenAccount.provider'
 import { useOracles } from '@/hooks/pool.hook'
 import { useTvl } from '@/hooks/tvl.hook'
-import Link from 'next/link'
 
 type PoolCardProps = {
   poolAddress: string

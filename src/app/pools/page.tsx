@@ -1,11 +1,12 @@
 'use client'
 import { useMemo, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import classNames from 'classnames'
 
+import { Plus, Search, X } from 'lucide-react'
 import PoolCard from './poolCard'
 import LazyLoad from 'react-lazy-load'
 import Empty from '@/components/empty'
-import { Search, X } from 'lucide-react'
 
 import { FilterPools, useFilterPools, useSearchPool } from '@/hooks/pool.hook'
 
@@ -24,6 +25,7 @@ const Pools = () => {
   const [filterKey, setFilterKey] = useState(FilterPools.AllPools)
   const poolsFilter = useFilterPools(filterKey)
   const pools = useSearchPool(poolsFilter, text)
+  const { push } = useRouter()
 
   const sortedPool = useMemo(() => {
     const filtered = new Set(PRIORITIZE_POOLS.filter((addr) => pools[addr]))
@@ -35,7 +37,7 @@ const Pools = () => {
 
   return (
     <div className="flex w-full max-w-[660px]">
-      <div className="grid grid-cols-12 gap-4 @container w-full">
+      <div className="grid grid-cols-12 gap-4  w-full">
         <div className="col-span-12 grid grid-cols-12 gap-2">
           <div className="col-span-3">
             <select
@@ -70,6 +72,15 @@ const Pools = () => {
                 if (text) setText('')
               }}
             />
+          </div>
+          <div className="col-span-3">
+            <button
+              onClick={() => push('/pools/new-pool')}
+              className="btn btn-sm w-full rounded-3xl"
+            >
+              <Plus size={16} />
+              Add New
+            </button>
           </div>
         </div>
         {sortedPool.map((poolAddress) => (
