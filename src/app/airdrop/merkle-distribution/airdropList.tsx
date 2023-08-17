@@ -20,7 +20,7 @@ const AirdropBody = ({
 
   if (screenWidth < 768)
     return (
-      <div className="grid grid-cols-12">
+      <div className="w-full">
         {airdrops.slice(0, amountShow).map((props: ReceiveItem) => (
           <div key={props.distributor} className="col-span-full">
             <RewardCard {...props} />
@@ -43,8 +43,8 @@ const AirdropBody = ({
         </tr>
       </thead>
       <tbody>
-        {airdrops.slice(0, amountShow).map((props, i) => (
-          <RewardCard key={i} {...props} />
+        {airdrops.slice(0, amountShow).map((props) => (
+          <RewardCard key={props.distributor} {...props} />
         ))}
       </tbody>
     </table>

@@ -5,20 +5,58 @@ import HistoryCard from './historyCard'
 import Empty from '@/components/empty'
 
 import {
-  useLoadingAirdrop,
+  useLoadingDistributor,
   useMyDistributes,
 } from '@/providers/airdrop.provider'
 import { Distribute } from '@/hooks/airdrop.hook'
 
 const DEFAULT_AMOUNT = 4
 
-const History = ({ type }: { type: Distribute }) => {
-  const [showAirdrop, setAmountAirdrop] = useState(DEFAULT_AMOUNT)
-  const { airdrops, vesting } = useMyDistributes()
-  const { loadingAirdrop } = useLoadingAirdrop()
-  const history = type === Distribute.Airdrop ? airdrops : vesting
+const HistoryBody = ({
+  history,
+  amountShow,
+}: {
+  amountShow: number
+  history: string[]
+}) => {
+  const screenWidth = window.innerWidth
 
-  const widthScreen = window.innerWidth
+  if (screenWidth < 768)
+    return (
+      <div className="w-full">
+        {history.slice(0, amountShow).map((address) => (
+          <HistoryCard address={address} key={address} />
+        ))}
+      </div>
+    )
+
+  return (
+    <table className="table">
+      <thead>
+        <tr>
+          <th>CREATED AT</th>
+          <th>UNLOCK DATE</th>
+          <th>TOKEN</th>
+          <th>TOTAL</th>
+          <th>REMAINING</th>
+          <th>ACTION</th>
+        </tr>
+      </thead>
+      <tbody>
+        {history.slice(0, amountShow).map((address) => (
+          <HistoryCard address={address} key={address} />
+        ))}
+      </tbody>
+    </table>
+  )
+}
+
+const History = ({ type }: { type: Distribute }) => {
+  const [amountShow, setAmountShow] = useState(DEFAULT_AMOUNT)
+  const { airdrops, vesting } = useMyDistributes()
+  const loading = useLoadingDistributor()
+
+  const history = type === Distribute.Airdrop ? airdrops : vesting
 
   return (
     <div className="card bg-base-100 p-4 gap-6">
@@ -29,45 +67,22 @@ const History = ({ type }: { type: Distribute }) => {
         </p>
       </div>
 
-      <div className="flex flex-col items-center overflow-x-auto">
-        {loadingAirdrop ? (
+      <div className="flex flex-col items-center">
+        {loading ? (
           <span className="loading loading-bars loading-xs" />
-        ) : widthScreen >= 768 ? (
-          <table className="table">
-            <thead>
-              <tr>
-                <th>CREATED AT</th>
-                <th>UNLOCK DATE</th>
-                <th>TOKEN</th>
-                <th>TOTAL</th>
-                <th>REMAINING</th>
-                <th>ACTION</th>
-              </tr>
-            </thead>
-            <tbody>
-              {history.slice(0, showAirdrop).map((address) => (
-                <HistoryCard address={address} key={address} />
-              ))}
-            </tbody>
-          </table>
         ) : (
-          history
-            .slice(0, showAirdrop)
-            .map((address) => <HistoryCard address={address} key={address} />)
+          <HistoryBody history={history} amountShow={amountShow} />
         )}
       </div>
 
-      {!history.length ? (
-        <Empty />
-      ) : (
-        <button
-          onClick={() => setAmountAirdrop(showAirdrop + DEFAULT_AMOUNT)}
-          disabled={showAirdrop >= history.length}
-          className="btn btn-ghost flex self-center"
-        >
-          <ChevronDown className="h-4 w-4" /> View more
-        </button>
-      )}
+      {!history.length && !loading && <Empty />}
+      <button
+        onClick={() => setAmountShow(amountShow + DEFAULT_AMOUNT)}
+        disabled={amountShow >= history.length}
+        className="btn btn-ghost flex self-center"
+      >
+        <ChevronDown className="h-4 w-4" /> View more
+      </button>
     </div>
   )
 }

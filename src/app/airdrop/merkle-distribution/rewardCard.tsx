@@ -143,21 +143,18 @@ const MobileRow = ({
   status,
 }: PropsCard) => {
   return (
-    <div className="flex flex-col bg-base-100 rounded-none gap-4">
-      <div className="flex flex-row justify-between">
+    <div className="collapse flex flex-col bg-base-100 rounded-none gap-2">
+      <div className="flex flex-row justify-between mb-2">
         <div className="flex gap-2 items-center">
           <MintLogo
             mintAddress={mintAddress}
             className="w-7 h-7 rounded-full bg-base-300"
           />
-          <div className="flex flex-row gap-1 text-base">
-            <p>
-              <MintAmount mintAddress={mintAddress} amount={leaf.amount} />
-            </p>
-            <MintSymbol mintAddress={mintAddress} />
-          </div>
+          <p>
+            <MintAmount mintAddress={mintAddress} amount={leaf.amount} />
+          </p>
+          <MintSymbol mintAddress={mintAddress} />
         </div>
-
         <StatusTag state={status} />
       </div>
       <div className="flex flex-row justify-between">
@@ -177,8 +174,11 @@ const MobileRow = ({
         </button>
       </div>
       <div className="collapse rounded-none">
-        <input type="checkbox" className="peer absolute bottom-0" />
-        <div className="collapse-content row-start-1 p-0 gap-4 h-0 peer-checked:h-16">
+        <input
+          type="checkbox"
+          className="peer absolute bottom-0 min-h-full w-10/12"
+        />
+        <div className="collapse-content row-start-1 p-0 mt-0 gap-4 h-0 peer-checked:h-8">
           <div className="flex flex-row justify-between mt-2">
             <p className="opacity-60 text-sm">Unlock time</p>
             <p>
@@ -196,11 +196,11 @@ const MobileRow = ({
             </p>
           </div>
         </div>
-        <ChevronUp className="hidden peer-checked:block h-6 w-6 mx-auto" />
+        <ChevronUp className="hidden peer-checked:block peer-checked:mt-2 h-6 w-6 mx-auto" />
         <ChevronDown className="peer-checked:hidden h-6 w-6 mx-auto" />
-      </div>
 
-      <div className=" bg-base-300 w-full h-[1px] my-4" />
+        <div className=" bg-base-300 w-full h-[1px] mb-4 mt-2" />
+      </div>
     </div>
   )
 }

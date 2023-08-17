@@ -19,13 +19,17 @@ const AirdropBody = ({
   const screenWidth = window.innerWidth
 
   if (screenWidth < 768)
-    return vesting.slice(0, amountShow).map((campaign, i) => (
-      <Fragment key={i}>
-        {campaign.map((props: ReceiveItem, index) => (
-          <RewardCard key={`${props.distributor}-${index}`} {...props} />
+    return (
+      <div className="w-full">
+        {vesting.slice(0, amountShow).map((campaign, i) => (
+          <Fragment key={i}>
+            {campaign.map((props: ReceiveItem, index) => (
+              <RewardCard key={`${props.distributor}-${index}`} {...props} />
+            ))}
+          </Fragment>
         ))}
-      </Fragment>
-    ))
+      </div>
+    )
 
   return (
     <table className="table">
@@ -65,7 +69,7 @@ const VestingList = ({ vesting }: { vesting: ReceiveItem[][] }) => {
           <span className="ml-2">{vesting.length}</span>
         </p>
       </div>
-      <div className="flex flex-col items-center overflow-x-auto ">
+      <div className="flex flex-col items-center">
         {loading ? (
           <span className="loading loading-bars loading-xs" />
         ) : (

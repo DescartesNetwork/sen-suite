@@ -89,7 +89,7 @@ const HistoryCard = ({ address }: { address: string }) => {
   }, [endedAt, remaining])
 
   return widthScreen >= 786 ? (
-    <CardTable
+    <DesktopRow
       onRevoke={onRevoke}
       address={address}
       endedAt={endedAt}
@@ -102,7 +102,7 @@ const HistoryCard = ({ address }: { address: string }) => {
       loading={loading}
     />
   ) : (
-    <Card
+    <MobileRow
       onRevoke={onRevoke}
       address={address}
       endedAt={endedAt}
@@ -118,7 +118,7 @@ const HistoryCard = ({ address }: { address: string }) => {
 
 export default HistoryCard
 
-const Card = ({
+const MobileRow = ({
   onRevoke,
   address,
   endedAt,
@@ -161,11 +161,11 @@ const Card = ({
         </div>
       </div>
       <div className="flex flex-row justify-between">
-        <p>Created time</p>
+        <p className="opacity-60 text-sm">Created time</p>
         <p>{dayjs(value?.createdAt).format('DD/MM/YYYY, HH:mm')}</p>
       </div>
       <div className="flex flex-row justify-between">
-        <p>Unlock time</p>
+        <p className="opacity-60 text-sm">Unlock time</p>
         <p>
           {value?.unlockTime
             ? 'Immediately'
@@ -177,7 +177,7 @@ const Card = ({
   )
 }
 
-const CardTable = ({
+const DesktopRow = ({
   onRevoke,
   address,
   endedAt,
