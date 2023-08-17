@@ -106,7 +106,7 @@ const RewardCard = (props: ReceiveItem) => {
   ])
 
   return widthScreen >= 768 ? (
-    <CardTable
+    <DesktopRow
       onClaim={onClaim}
       loading={loading}
       leaf={leaf}
@@ -117,7 +117,7 @@ const RewardCard = (props: ReceiveItem) => {
       status={status}
     />
   ) : (
-    <Card
+    <MobileRow
       onClaim={onClaim}
       loading={loading}
       leaf={leaf}
@@ -132,7 +132,7 @@ const RewardCard = (props: ReceiveItem) => {
 
 export default RewardCard
 
-const Card = ({
+const MobileRow = ({
   onClaim,
   loading,
   leaf,
@@ -143,7 +143,7 @@ const Card = ({
   status,
 }: PropsCard) => {
   return (
-    <div className="flex flex-col bg-base-100 rounded-none md:hidden gap-4">
+    <div className="flex flex-col bg-base-100 rounded-none gap-4">
       <div className="flex flex-row justify-between">
         <div className="flex gap-2 items-center">
           <MintLogo
@@ -162,7 +162,10 @@ const Card = ({
       </div>
       <div className="flex flex-row justify-between">
         <div className="flex items-center">
-          <p>Sender: {shortenAddress(sender)}</p>
+          <p>
+            <span className="opacity-60 text-sm">Sender:</span>{' '}
+            {shortenAddress(sender)}
+          </p>
         </div>
         <button
           className="col-span-full btn btn-primary btn-sm"
@@ -177,7 +180,7 @@ const Card = ({
         <input type="checkbox" className="peer absolute bottom-0" />
         <div className="collapse-content row-start-1 p-0 gap-4 h-0 peer-checked:h-16">
           <div className="flex flex-row justify-between mt-2">
-            <p>Unlock time</p>
+            <p className="opacity-60 text-sm">Unlock time</p>
             <p>
               {!startTime
                 ? 'Immediately'
@@ -185,7 +188,7 @@ const Card = ({
             </p>
           </div>
           <div className="flex flex-row justify-between">
-            <p>Expiration time</p>
+            <p className="opacity-60 text-sm">Expiration time</p>
             <p>
               {!endedAt
                 ? 'Unlimited'
@@ -202,7 +205,7 @@ const Card = ({
   )
 }
 
-const CardTable = ({
+const DesktopRow = ({
   onClaim,
   loading,
   leaf,

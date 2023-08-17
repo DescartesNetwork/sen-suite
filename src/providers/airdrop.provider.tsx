@@ -49,8 +49,8 @@ const defaultConfigs: Configs = {
 }
 
 export type AirdropStore = {
-  loadingAirdrop: boolean
-  setLoadingAirdrop: (loading: boolean) => void
+  loading: boolean
+  setLoading: (loading: boolean) => void
   distributors: Record<string, DistributorData>
   upsertDistributor: (address: string, newDistributor: DistributorData) => void
   receipts: Record<string, ReceiptData>
@@ -69,8 +69,8 @@ export type AirdropStore = {
 export const useAirdropStore = create<AirdropStore>()(
   devtools(
     (set) => ({
-      loadingAirdrop: false,
-      setLoadingAirdrop: (loadingAirdrop) => set({ loadingAirdrop }),
+      loading: false,
+      setLoading: (loading) => set({ loading }),
       distributors: {},
       upsertDistributor: (address: string, distributor: DistributorData) =>
         set(
@@ -136,28 +136,18 @@ export const useAirdropStore = create<AirdropStore>()(
   ),
 )
 
-export const useLoadingAirdrop = () => {
-  const { loadingAirdrop, setLoadingAirdrop } = useAirdropStore(
-    ({ loadingAirdrop, setLoadingAirdrop }) => ({
-      loadingAirdrop,
-      setLoadingAirdrop,
-    }),
-  )
-  return { loadingAirdrop, setLoadingAirdrop }
-}
-
 export default function AirdropProvider({ children }: { children: ReactNode }) {
   const utility = useUtility()
   const { publicKey } = useWallet()
   const upsertReceipt = useAirdropStore(({ upsertReceipt }) => upsertReceipt)
+  const setLoading = useAirdropStore(({ setLoading }) => setLoading)
   const upsertDistributor = useAirdropStore(
     ({ upsertDistributor }) => upsertDistributor,
   )
-  const { setLoadingAirdrop } = useLoadingAirdrop()
 
   const fetchDistributors = useCallback(async () => {
     try {
-      setLoadingAirdrop(true)
+      setLoading(true)
       if (!utility) return
       const { account } = utility.program
       const distributors = await account.distributor.all()
@@ -168,9 +158,9 @@ export default function AirdropProvider({ children }: { children: ReactNode }) {
     } catch (er: any) {
       console.log('alert-error', er.message)
     } finally {
-      setLoadingAirdrop(false)
+      setLoading(false)
     }
-  }, [upsertDistributor, utility, setLoadingAirdrop])
+  }, [upsertDistributor, utility, setLoading])
 
   useEffect(() => {
     fetchDistributors()
@@ -193,6 +183,15 @@ export default function AirdropProvider({ children }: { children: ReactNode }) {
   }, [fetchReceipts])
 
   return <Fragment>{children}</Fragment>
+}
+
+/**
+ * Get fetching distributors state
+ * @returns Fetching distributors state
+ */
+export const useLoadingDistributor = () => {
+  const loading = useAirdropStore(({ loading }) => loading)
+  return loading
 }
 
 /**
