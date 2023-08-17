@@ -22,8 +22,10 @@ const VestingList = ({ vesting }: { vesting: ReceiveItem[][] }) => {
           <span className="ml-2">{vesting.length}</span>
         </p>
       </div>
-      <div className="overflow-x-auto">
-        {widthScreen >= 768 ? (
+      <div className="flex flex-col items-center overflow-x-auto">
+        {loadingAirdrop ? (
+          <span className="loading loading-bars loading-xs" />
+        ) : widthScreen >= 768 ? (
           <table className="table">
             <thead>
               <tr>
@@ -37,24 +39,18 @@ const VestingList = ({ vesting }: { vesting: ReceiveItem[][] }) => {
               </tr>
             </thead>
             <tbody>
-              {loadingAirdrop ? (
-                <span className="loading loading-bars loading-xs" />
-              ) : (
-                vesting.slice(0, showAirdrop).map((campaign, i) => (
-                  <Fragment key={i}>
-                    {campaign.map((props: ReceiveItem, index) => (
-                      <RewardCard
-                        key={`${props.distributor}-${index}`}
-                        {...props}
-                      />
-                    ))}
-                  </Fragment>
-                ))
-              )}
+              {vesting.slice(0, showAirdrop).map((campaign, i) => (
+                <Fragment key={i}>
+                  {campaign.map((props: ReceiveItem, index) => (
+                    <RewardCard
+                      key={`${props.distributor}-${index}`}
+                      {...props}
+                    />
+                  ))}
+                </Fragment>
+              ))}
             </tbody>
           </table>
-        ) : loadingAirdrop ? (
-          <span className="loading loading-bars loading-xs" />
         ) : (
           vesting.slice(0, showAirdrop).map((campaign, i) => (
             <Fragment key={i}>

@@ -29,8 +29,10 @@ const History = ({ type }: { type: Distribute }) => {
         </p>
       </div>
 
-      <div className="overflow-x-auto">
-        {widthScreen >= 768 ? (
+      <div className="flex flex-col items-center overflow-x-auto">
+        {loadingAirdrop ? (
+          <span className="loading loading-bars loading-xs" />
+        ) : widthScreen >= 768 ? (
           <table className="table">
             <thead>
               <tr>
@@ -43,19 +45,11 @@ const History = ({ type }: { type: Distribute }) => {
               </tr>
             </thead>
             <tbody>
-              {loadingAirdrop ? (
-                <span className="loading loading-bars loading-xs" />
-              ) : (
-                history
-                  .slice(0, showAirdrop)
-                  .map((address) => (
-                    <HistoryCard address={address} key={address} />
-                  ))
-              )}
+              {history.slice(0, showAirdrop).map((address) => (
+                <HistoryCard address={address} key={address} />
+              ))}
             </tbody>
           </table>
-        ) : loadingAirdrop ? (
-          <span className="loading loading-bars loading-xs" />
         ) : (
           history
             .slice(0, showAirdrop)

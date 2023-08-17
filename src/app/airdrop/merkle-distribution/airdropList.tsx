@@ -1,4 +1,3 @@
-'use client'
 import { useState } from 'react'
 
 import RewardCard from './rewardCard'
@@ -23,8 +22,10 @@ const AirdropList = ({ airdrops }: { airdrops: ReceiveItem[] }) => {
           <span className="ml-2">{airdrops.length}</span>
         </p>
       </div>
-      <div className="overflow-x-auto">
-        {widthScreen >= 768 ? (
+      <div className="flex flex-col items-center overflow-x-auto ">
+        {loadingAirdrop ? (
+          <span className="loading loading-bars loading-xs" />
+        ) : widthScreen >= 768 ? (
           <table className="table">
             <thead>
               <tr>
@@ -38,17 +39,11 @@ const AirdropList = ({ airdrops }: { airdrops: ReceiveItem[] }) => {
               </tr>
             </thead>
             <tbody>
-              {loadingAirdrop ? (
-                <span className="loading loading-bars loading-xs" />
-              ) : (
-                airdrops
-                  .slice(0, showAirdrop)
-                  .map((props, i) => <RewardCard key={i} {...props} />)
-              )}
+              {airdrops.slice(0, showAirdrop).map((props, i) => (
+                <RewardCard key={i} {...props} />
+              ))}
             </tbody>
           </table>
-        ) : loadingAirdrop ? (
-          <span className="loading loading-bars loading-xs" />
         ) : (
           airdrops
             .slice(0, showAirdrop)
@@ -56,7 +51,7 @@ const AirdropList = ({ airdrops }: { airdrops: ReceiveItem[] }) => {
         )}
       </div>
 
-      {!airdrops.length ? (
+      {!airdrops.length && !loadingAirdrop ? (
         <Empty />
       ) : (
         <button
