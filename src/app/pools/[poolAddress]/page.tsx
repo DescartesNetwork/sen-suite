@@ -8,9 +8,11 @@ import PoolInfo from './poolInfo'
 import Heros from './heros'
 import Volume24h from './volume24h'
 import PoolWeights from './poolWeights'
+import PoolManagement from './management'
 
 import { usePoolByAddress } from '@/providers/pools.provider'
 import { isAddress } from '@/helpers/utils'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 const PoolDetails = ({
   params: { poolAddress },
@@ -18,6 +20,8 @@ const PoolDetails = ({
   params: { poolAddress: string }
 }) => {
   const pool = usePoolByAddress(poolAddress)
+  const { publicKey } = useWallet()
+  const isOwner = publicKey?.toString() === pool.authority.toBase58()
   const { push } = useRouter()
 
   if (!isAddress(poolAddress)) return push('/farming')
@@ -47,6 +51,9 @@ const PoolDetails = ({
       </div>
       <div className="md:col-span-6 col-span-12">
         <PoolWeights poolAddress={poolAddress} />
+      </div>
+      <div className="md:col-span-6 col-span-12">
+        {isOwner && publicKey && <PoolManagement poolAddress={poolAddress} />}
       </div>
     </div>
   )
