@@ -24,7 +24,7 @@ const PoolDetails = ({
   const isOwner = publicKey?.toString() === pool.authority.toBase58()
   const { push } = useRouter()
 
-  if (!isAddress(poolAddress)) return push('/farming')
+  if (!isAddress(poolAddress)) return push('/pools')
   return (
     <div className="grid grid-cols-12 gap-6">
       <div className="col-span-full">
