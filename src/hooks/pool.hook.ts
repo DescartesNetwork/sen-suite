@@ -468,77 +468,67 @@ export const useOracles = () => {
 
 
 /**
- * Get actions pool management
+ * List actions pool management
  * @param poolAddress pool address
  * @returns Actions pool management function
  */
-export const usePoolManagement = () => {
+export const usePoolManagement = (poolAddress: string) => {
   const balancer = useBalancer()
-  const getMintState = (mintStates: MintActionState[], idx: number) =>
-  Object.keys(mintStates[idx])[0]
 
   const updateWeights = useCallback(
-    async (tokensInfo: Record<string, TokenInfo>, poolAddress: string ) => {
+    async (tokensInfo: Record<string, TokenInfo>) => {
       const weights = Object.values(tokensInfo).map(({ weight }) => {
-        const nextWeight = Number(weight) * GENERAL_NORMALIZED_NUMBER
-        const newWeight = new BN(nextWeight)
+        const newWeight = decimalize(weight, GENERAL_NORMALIZED_NUMBER)
         return newWeight
       })
-        const { updateWeights } = balancer
-        const { txId } = await updateWeights({ poolAddress, weights })
+        const { txId } = await balancer.updateWeights({ poolAddress, weights })
         return txId
       }
-  ,[balancer])
+  ,[balancer, poolAddress])
 
   const freezePool = useCallback(
-    async (poolAddress:string) => {
-      const { freezePool } = balancer
-      const { txId } = await freezePool({ poolAddress })
+    async () => {
+      const { txId } = await balancer.freezePool({ poolAddress })
       return txId
     }
-  ,[balancer])
+  ,[balancer, poolAddress])
 
   const thawPool = useCallback(
-    async (poolAddress:string) => {
-      const { thawPool } = balancer
-      const { txId } = await thawPool({ poolAddress })
+    async () => {
+      const { txId } = await balancer.thawPool({ poolAddress })
       return txId
     }
-  ,[balancer])
+  ,[balancer, poolAddress])
 
   const updateFreezeAndThawToken =  useCallback(
-    async (mintActions:MintActionState[],poolAddress:string) => {
-      const { updateActions } = balancer
-      const { txId } = await updateActions({
+    async (mintActions:MintActionState[]) => {
+      const { txId } = await balancer.updateActions({
         poolAddress,
         actions: mintActions,
       })
       return txId
     }
-  ,[balancer])
+  ,[balancer, poolAddress])
 
   const updateFee =  useCallback(
-    async (fee:string, taxFee:string ,poolAddress:string) => {
-      const { updateFee } = balancer
-      const { txId } = await updateFee(
+    async (fee:string, taxFee:string) => {
+      const { txId } = await balancer.updateFee(
         poolAddress,
         new BN((Number(fee) * PRECISION) / 100),
         new BN((Number(taxFee) * PRECISION) / 100),
       )
       return txId
     }
-  ,[balancer])
+  ,[balancer, poolAddress])
 
   const transferOwnership =  useCallback(
-    async (newOwner:string ,poolAddress:string) => {
-      const { transferOwnership } = balancer
-      const { txId } = await transferOwnership({ poolAddress, newOwner })
+    async (newOwner:string) => {
+      const { txId } = await balancer.transferOwnership({ poolAddress, newOwner })
       return txId
     }
-  ,[balancer])
+  ,[balancer, poolAddress])
 
   return {
-    getMintState,
     updateWeights,
     freezePool,
     thawPool,

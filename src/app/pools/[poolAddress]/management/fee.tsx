@@ -66,13 +66,13 @@ const Fee = ({ poolAddress }: { poolAddress: string }) => {
 
   const [loading, setLoading] = useState(false)
 
-  const { updateFee } = usePoolManagement()
+  const { updateFee } = usePoolManagement(poolAddress)
   const pushMessage = usePushMessage()
 
   const onUpdateFee = async () => {
     setLoading(true)
     try {
-      const txId = await updateFee(fee, taxFee, poolAddress)
+      const txId = await updateFee(fee, taxFee)
       return pushMessage('alert-success', 'Successfully Update Fee', {
         onClick: () => window.open(solscan(txId || ''), '_blank'),
       })

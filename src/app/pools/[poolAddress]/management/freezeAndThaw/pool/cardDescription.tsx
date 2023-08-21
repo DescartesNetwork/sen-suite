@@ -1,6 +1,6 @@
-import { Info } from 'lucide-react'
-
 import classNames from 'classnames'
+
+import { Info } from 'lucide-react'
 
 const CardDescription = ({
   description,

@@ -9,11 +9,7 @@ import { usePoolManagement } from '@/hooks/pool.hook'
 import { usePoolByAddress } from '@/providers/pools.provider'
 import { usePushMessage } from '@/components/message/store'
 
-export const FreezeAndThawToken = ({
-  poolAddress,
-}: {
-  poolAddress: string
-}) => {
+const FreezeAndThawToken = ({ poolAddress }: { poolAddress: string }) => {
   const { mints, actions } = usePoolByAddress(poolAddress)
 
   const [mintActions, setMintActions] = useState<MintActionState[]>(
@@ -21,14 +17,13 @@ export const FreezeAndThawToken = ({
   )
   const [loading, setLoading] = useState(false)
 
-  const { updateFreezeAndThawToken } = usePoolManagement()
-  const { getMintState } = usePoolManagement()
   const pushMessage = usePushMessage()
+  const { updateFreezeAndThawToken } = usePoolManagement(poolAddress)
 
   const onFreezeAndThawToken = async () => {
     setLoading(true)
     try {
-      const txId = await updateFreezeAndThawToken(mintActions, poolAddress)
+      const txId = await updateFreezeAndThawToken(mintActions)
       return pushMessage('alert-success', 'Successfully Freeze Token', {
         onClick: () => window.open(solscan(txId || ''), '_blank'),
       })
@@ -41,7 +36,7 @@ export const FreezeAndThawToken = ({
 
   const onClickToken = (index: number) => {
     const newMintActions = [...mintActions]
-    const mintState = getMintState(newMintActions, index)
+    const mintState = Object.keys(newMintActions[index])[0]
 
     switch (mintState) {
       case 'paused':
@@ -69,7 +64,7 @@ export const FreezeAndThawToken = ({
 
         <div className="grid grid-cols-2 gap-2">
           {mints.map((mint, idx) => {
-            const mintState = getMintState(mintActions, idx)
+            const mintState = Object.keys(mintActions[idx])[0]
             return (
               <div
                 key={mint.toBase58() + idx}
@@ -105,3 +100,5 @@ export const FreezeAndThawToken = ({
     </div>
   )
 }
+
+export default FreezeAndThawToken
