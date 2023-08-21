@@ -7,7 +7,7 @@ import { utils } from '@coral-xyz/anchor'
 import { useWallet } from '@solana/wallet-adapter-react'
 
 import Modal from '@/components/modal'
-import MintInput from './mintInput'
+import MintInput from '../../mintInput'
 
 import { useAllTokenAccounts } from '@/providers/tokenAccount.provider'
 import { usePoolByAddress } from '@/providers/pools.provider'
@@ -43,7 +43,7 @@ const Deposit = ({ poolAddress }: { poolAddress: string }) => {
       const txId = await deposit()
       pushMessage(
         'alert-success',
-        'Successfully airdrop. Click here to view on explorer.',
+        'Successfully deposit token. Click here to view on explorer.',
         {
           onClick: () => window.open(solscan(txId || ''), '_blank'),
         },
