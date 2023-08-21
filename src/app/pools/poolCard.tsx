@@ -13,14 +13,12 @@ import { usePoolByAddress } from '@/providers/pools.provider'
 import { useTokenAccountByMintAddress } from '@/providers/tokenAccount.provider'
 import { useOracles } from '@/hooks/pool.hook'
 import { useTvl } from '@/hooks/tvl.hook'
-import classNames from 'classnames'
 
 type PoolCardProps = {
   poolAddress: string
 }
 const PoolCard = ({ poolAddress }: PoolCardProps) => {
   const pool = usePoolByAddress(poolAddress)
-  const isFrozen = !!pool.state['frozen']
   const { publicKey } = useWallet()
   const { amount } = useTokenAccountByMintAddress(pool.mintLpt.toBase58()) || {
     amount: new BN(0),
@@ -47,14 +45,8 @@ const PoolCard = ({ poolAddress }: PoolCardProps) => {
 
   return (
     <Link
-      href={isFrozen ? '' : `/pools/${poolAddress}`}
-      className={classNames(
-        'card p-4 border  bg-[#F2F4FA] dark:bg-[#212C4C] dark:border-[#394360] flex flex-col rounded-3xl gap-3',
-        {
-          'hover:border-[#63E0B3] dark:hover:border-[#63E0B3] cursor-pointer':
-            isFrozen === false,
-        },
-      )}
+      href={`/pools/${poolAddress}`}
+      className="card p-4 border border-[#fffc] bg-[#F2F4FA] dark:bg-[#212C4C] dark:border-[#394360] flex flex-col rounded-3xl gap-3 hover:border-[#63E0B3] dark:hover:border-[#63E0B3]"
     >
       <div className="flex flex-row items-center">
         <div className="flex-auto">
@@ -64,7 +56,7 @@ const PoolCard = ({ poolAddress }: PoolCardProps) => {
           />
         </div>
         <div className="flex flex-row gap-2 items-center">
-          {isFrozen && (
+          {pool.state['frozen'] && (
             <div className="tooltip" data-tip="Frozen Pool">
               <Snowflake />
             </div>
@@ -108,10 +100,6 @@ const PoolCard = ({ poolAddress }: PoolCardProps) => {
           </p>
         </div>
       </div>
-      {/* frozen mask */}
-      {isFrozen && (
-        <div className="absolute w-full h-full rounded-3xl top-0 left-0 bg-[#F2F4FA] dark:bg-black dark:opacity-30 opacity-60 cursor-not-allowed z-10" />
-      )}
     </Link>
   )
 }
