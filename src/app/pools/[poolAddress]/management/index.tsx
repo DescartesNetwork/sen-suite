@@ -36,8 +36,8 @@ const Tab = ({
 
 const Weight = lazy(() => import('./weight'))
 const FreezeAndThaw = lazy(() => import('./freezeAndThaw'))
-// const Fee = lazy(() => import('./fee'))
-// const TransferOwner = lazy(() => import('./transferOwner'))
+const Fee = lazy(() => import('./fee'))
+const TransferOwner = lazy(() => import('./transferOwner'))
 
 const BodyPoolManagement = ({
   activeTab,
@@ -52,10 +52,10 @@ const BodyPoolManagement = ({
         return <Weight poolAddress={poolAddress} />
       case 'freezeAndThaw':
         return <FreezeAndThaw poolAddress={poolAddress} />
-      //   case 'fee':
-      //     return <Fee poolAddress={poolAddress} />
-      //   case 'ownership':
-      //     return <TransferOwner poolAddress={poolAddress} />
+      case 'fee':
+        return <Fee poolAddress={poolAddress} />
+      case 'ownership':
+        return <TransferOwner poolAddress={poolAddress} />
       default:
         return null
     }
