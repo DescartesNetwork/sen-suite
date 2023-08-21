@@ -18,7 +18,7 @@ const Weight = ({ poolAddress }: { poolAddress: string }) => {
 
   const pushMessage = usePushMessage()
   const { calcNormalizedWeight } = useOracles()
-  const { updateWeights } = usePoolManagement(poolAddress)
+  const { updateWeights } = usePoolManagement()
   const { mints, weights } = usePoolByAddress(poolAddress)
 
   const fetchWeights = useCallback(() => {
@@ -118,7 +118,7 @@ const Weight = ({ poolAddress }: { poolAddress: string }) => {
     if (!tokensInfo) return
     setLoading(true)
     try {
-      const txId = await updateWeights(tokensInfo)
+      const txId = await updateWeights(tokensInfo, poolAddress)
       return pushMessage('alert-success', 'Successfully Update weights', {
         onClick: () => window.open(solscan(txId || ''), '_blank'),
       })

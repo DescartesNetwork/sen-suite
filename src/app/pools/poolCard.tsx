@@ -1,12 +1,11 @@
 import { useMemo } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import BN from 'bn.js'
-import classNames from 'classnames'
-
 import Link from 'next/link'
-import { Snowflake, User } from 'lucide-react'
+
 import Clipboard from '@/components/clipboard'
 import { MintAmount, MintLogo, MintSymbol } from '@/components/mint'
+import { Snowflake, User } from 'lucide-react'
 
 import { solscan } from '@/helpers/explorers'
 import { numeric, shortenAddress } from '@/helpers/utils'
@@ -14,15 +13,15 @@ import { usePoolByAddress } from '@/providers/pools.provider'
 import { useTokenAccountByMintAddress } from '@/providers/tokenAccount.provider'
 import { useOracles } from '@/hooks/pool.hook'
 import { useTvl } from '@/hooks/tvl.hook'
+import classNames from 'classnames'
 
 type PoolCardProps = {
   poolAddress: string
 }
 const PoolCard = ({ poolAddress }: PoolCardProps) => {
   const pool = usePoolByAddress(poolAddress)
-  const { publicKey } = useWallet()
   const isFrozen = !!pool.state['frozen']
-  const isPoolOwner = publicKey && pool.authority.equals(publicKey)
+  const { publicKey } = useWallet()
   const { amount } = useTokenAccountByMintAddress(pool.mintLpt.toBase58()) || {
     amount: new BN(0),
   }
@@ -48,12 +47,12 @@ const PoolCard = ({ poolAddress }: PoolCardProps) => {
 
   return (
     <Link
-      href={isFrozen && !isPoolOwner ? '' : `/pools/${poolAddress}`}
+      href={isFrozen ? '' : `/pools/${poolAddress}`}
       className={classNames(
-        'card p-4 border  bg-[#F2F4FA] dark:bg-[#212C4C] dark:border-[#394360] flex flex-col rounded-3xl gap-3 cursor-pointer',
+        'card p-4 border  bg-[#F2F4FA] dark:bg-[#212C4C] dark:border-[#394360] flex flex-col rounded-3xl gap-3',
         {
-          'hover:border-[#63E0B3] dark:hover:border-[#63E0B3]':
-            isFrozen || !isPoolOwner === false,
+          'hover:border-[#63E0B3] dark:hover:border-[#63E0B3] cursor-pointer':
+            isFrozen === false,
         },
       )}
     >
@@ -70,7 +69,7 @@ const PoolCard = ({ poolAddress }: PoolCardProps) => {
               <Snowflake />
             </div>
           )}
-          {isPoolOwner && (
+          {publicKey && pool.authority.equals(publicKey) && (
             <div className="tooltip" data-tip="Your Pool">
               <User name="person-outline" />
             </div>
@@ -110,7 +109,7 @@ const PoolCard = ({ poolAddress }: PoolCardProps) => {
         </div>
       </div>
       {/* frozen mask */}
-      {isFrozen && !isPoolOwner && (
+      {isFrozen && (
         <div className="absolute w-full h-full rounded-3xl top-0 left-0 bg-[#F2F4FA] dark:bg-black dark:opacity-30 opacity-60 cursor-not-allowed z-10" />
       )}
     </Link>

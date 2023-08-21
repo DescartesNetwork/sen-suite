@@ -1,21 +1,23 @@
-import { Suspense, lazy, useState } from 'react'
+import { useState } from 'react'
+
 import classNames from 'classnames'
-
 import { usePoolByAddress } from '@/providers/pools.provider'
-
-const ThawPool = lazy(() => import('./pool/thawPool'))
-const FreezePool = lazy(() => import('./pool/freezePool'))
-const FreezeAndThawToken = lazy(() => import('./token'))
+import FreezePool from './pool/freezePool'
+import ThawPool from './pool/thawPool'
+import { FreezeAndThawToken } from './freezeAndThawToken'
 
 const FreezeAndThaw = ({ poolAddress }: { poolAddress: string }) => {
   const [activeTab, setActiveTab] = useState('pool')
   const pool = usePoolByAddress(poolAddress)
 
+  const selectTab = (tabName: string) => {
+    setActiveTab(tabName)
+  }
   return (
     <div className="flex flex-col gap-4">
       <div className="tabs tabs-boxed bg-inherit gap-4">
         <div
-          onClick={() => setActiveTab('pool')}
+          onClick={() => selectTab('pool')}
           className={classNames('tab bg-base-200', {
             'tab-active': activeTab === 'pool',
           })}
@@ -23,7 +25,7 @@ const FreezeAndThaw = ({ poolAddress }: { poolAddress: string }) => {
           Pool
         </div>
         <div
-          onClick={() => setActiveTab('individual_token')}
+          onClick={() => selectTab('individual_token')}
           className={classNames('tab bg-base-200', {
             'tab-active': activeTab === 'individual_token',
           })}
@@ -31,18 +33,16 @@ const FreezeAndThaw = ({ poolAddress }: { poolAddress: string }) => {
           Individual token
         </div>
       </div>
-      <Suspense>
-        {activeTab === 'pool' && pool.state['initialized'] && (
-          <FreezePool poolAddress={poolAddress} />
-        )}
-        {activeTab === 'pool' && pool.state['frozen'] && (
-          <ThawPool poolAddress={poolAddress} />
-        )}
 
-        {activeTab === 'individual_token' && (
-          <FreezeAndThawToken poolAddress={poolAddress} />
-        )}
-      </Suspense>
+      <div className={`${activeTab === 'pool' ? 'block' : 'hidden'}`}>
+        {pool.state['initialized'] && <FreezePool poolAddress={poolAddress} />}
+        {pool.state['frozen'] && <ThawPool poolAddress={poolAddress} />}
+      </div>
+      <div
+        className={`${activeTab === 'individual_token' ? 'block' : 'hidden'}`}
+      >
+        <FreezeAndThawToken poolAddress={poolAddress} />
+      </div>
     </div>
   )
 }

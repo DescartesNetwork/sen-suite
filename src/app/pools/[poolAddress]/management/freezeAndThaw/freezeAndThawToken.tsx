@@ -9,7 +9,11 @@ import { usePoolManagement } from '@/hooks/pool.hook'
 import { usePoolByAddress } from '@/providers/pools.provider'
 import { usePushMessage } from '@/components/message/store'
 
-const FreezeAndThawToken = ({ poolAddress }: { poolAddress: string }) => {
+export const FreezeAndThawToken = ({
+  poolAddress,
+}: {
+  poolAddress: string
+}) => {
   const { mints, actions } = usePoolByAddress(poolAddress)
 
   const [mintActions, setMintActions] = useState<MintActionState[]>(
@@ -17,13 +21,14 @@ const FreezeAndThawToken = ({ poolAddress }: { poolAddress: string }) => {
   )
   const [loading, setLoading] = useState(false)
 
+  const { updateFreezeAndThawToken } = usePoolManagement()
+  const { getMintState } = usePoolManagement()
   const pushMessage = usePushMessage()
-  const { updateFreezeAndThawToken } = usePoolManagement(poolAddress)
 
   const onFreezeAndThawToken = async () => {
     setLoading(true)
     try {
-      const txId = await updateFreezeAndThawToken(mintActions)
+      const txId = await updateFreezeAndThawToken(mintActions, poolAddress)
       return pushMessage('alert-success', 'Successfully Freeze Token', {
         onClick: () => window.open(solscan(txId || ''), '_blank'),
       })
@@ -36,7 +41,7 @@ const FreezeAndThawToken = ({ poolAddress }: { poolAddress: string }) => {
 
   const onClickToken = (index: number) => {
     const newMintActions = [...mintActions]
-    const mintState = Object.keys(newMintActions[index])[0]
+    const mintState = getMintState(newMintActions, index)
 
     switch (mintState) {
       case 'paused':
@@ -64,7 +69,7 @@ const FreezeAndThawToken = ({ poolAddress }: { poolAddress: string }) => {
 
         <div className="grid grid-cols-2 gap-2">
           {mints.map((mint, idx) => {
-            const mintState = Object.keys(mintActions[idx])[0]
+            const mintState = getMintState(mintActions, idx)
             return (
               <div
                 key={mint.toBase58() + idx}
@@ -100,5 +105,3 @@ const FreezeAndThawToken = ({ poolAddress }: { poolAddress: string }) => {
     </div>
   )
 }
-
-export default FreezeAndThawToken

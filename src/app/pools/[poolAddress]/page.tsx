@@ -1,6 +1,5 @@
 'use client'
 import { useRouter } from 'next/navigation'
-import { useWallet } from '@solana/wallet-adapter-react'
 
 import { MintLogo } from '@/components/mint'
 import Withdraw from './withdraw'
@@ -13,6 +12,7 @@ import PoolManagement from './management'
 
 import { usePoolByAddress } from '@/providers/pools.provider'
 import { isAddress } from '@/helpers/utils'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 const PoolDetails = ({
   params: { poolAddress },
@@ -52,11 +52,9 @@ const PoolDetails = ({
       <div className="md:col-span-6 col-span-12">
         <PoolWeights poolAddress={poolAddress} />
       </div>
-      {isOwner && publicKey && (
-        <div className="md:col-span-6 col-span-12">
-          <PoolManagement poolAddress={poolAddress} />
-        </div>
-      )}
+      <div className="md:col-span-6 col-span-12">
+        {isOwner && publicKey && <PoolManagement poolAddress={poolAddress} />}
+      </div>
     </div>
   )
 }

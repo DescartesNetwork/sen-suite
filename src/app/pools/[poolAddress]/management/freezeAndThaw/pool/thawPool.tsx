@@ -9,13 +9,13 @@ import { usePushMessage } from '@/components/message/store'
 const ThawPool = ({ poolAddress }: { poolAddress: string }) => {
   const [loading, setLoading] = useState(false)
 
-  const { thawPool } = usePoolManagement(poolAddress)
+  const { thawPool } = usePoolManagement()
   const pushMessage = usePushMessage()
 
   const onThawPool = async () => {
     setLoading(true)
     try {
-      const txId = await thawPool()
+      const txId = await thawPool(poolAddress)
       return pushMessage('alert-success', 'Successfully Unfreeze pool', {
         onClick: () => window.open(solscan(txId || ''), '_blank'),
       })

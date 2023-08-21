@@ -11,14 +11,14 @@ const TransferOwner = ({ poolAddress }: { poolAddress: string }) => {
   const [newOwner, setNewOwner] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const { transferOwnership } = usePoolManagement(poolAddress)
+  const { transferOwnership } = usePoolManagement()
   const pushMessage = usePushMessage()
 
   const transferOwner = async () => {
     setLoading(true)
     if (!isAddress(newOwner)) return
     try {
-      const txId = await transferOwnership(newOwner)
+      const txId = await transferOwnership(newOwner, poolAddress)
       return pushMessage('alert-success', 'Successfully Update Owner Pool', {
         onClick: () => window.open(solscan(txId || ''), '_blank'),
       })
