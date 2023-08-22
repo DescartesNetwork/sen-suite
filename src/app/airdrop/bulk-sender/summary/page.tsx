@@ -247,9 +247,8 @@ export default function SummaryBulkSender() {
         <div className="card flex flex-col bg-base-200 rounded-box w-full p-4 gap-2">
           <div className=" flex flex-row justify-between">
             <p className="text-sm opacity-60">Receivers</p>
-            <div className="text-sm font-normal">
-              {numeric(data.length).format('0,0')}
-            </div>
+
+            {numeric(data.length).format('0,0')}
           </div>
           <div className="flex flex-row justify-between">
             <p className="text-sm opacity-60">Total value</p>
