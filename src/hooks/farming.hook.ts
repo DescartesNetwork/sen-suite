@@ -16,6 +16,16 @@ import {
 import { isAddress } from '@/helpers/utils'
 import { useMpl } from './mpl.hook'
 
+export type Reward = {
+  mintAddress: string
+  budget: string
+}
+
+export type BoostData = {
+  collection: string
+  percentage: number
+}
+
 /**
  * Velocity precision
  */
