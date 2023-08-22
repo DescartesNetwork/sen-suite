@@ -217,9 +217,7 @@ export default function SummaryBulkSender() {
             <span className="text-error text-sm font-semibold">{`${errors} error(s)`}</span>
           )}
           {warnings > 0 && (
-            <div className="stat-desc">
-              <span className="text-warning text-sm font-semibold">{`${warnings} warning(s)`}</span>
-            </div>
+            <span className="text-warning text-sm font-semibold">{`${warnings} warning(s)`}</span>
           )}
           {!errors && !warnings && (
             <span className="text-success text-sm font-semibold">
@@ -247,12 +245,10 @@ export default function SummaryBulkSender() {
         <div className="card flex flex-col bg-base-200 rounded-box w-full p-4 gap-2">
           <div className=" flex flex-row justify-between">
             <p className="text-sm opacity-60">Receivers</p>
-
             {numeric(data.length).format('0,0')}
           </div>
           <div className="flex flex-row justify-between">
             <p className="text-sm opacity-60">Total value</p>
-
             <div className="flex flex-col gap-1">
               <div className="flex flex-row text-xl font-bold">
                 {numeric(undecimalize(amount, mint?.decimals || 0)).format(
@@ -261,7 +257,7 @@ export default function SummaryBulkSender() {
                 <MintSymbol mintAddress={mintAddress} />
               </div>
               <p className="text-right opacity-60">
-                {numeric(tvl).format('$0a.[00]')}
+                {numeric(tvl).format('$0a.[0000]')}
               </p>
             </div>
           </div>
