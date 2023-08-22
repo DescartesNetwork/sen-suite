@@ -26,6 +26,7 @@ const TransferOwner = ({ poolAddress }: { poolAddress: string }) => {
       pushMessage('alert-error', err.message)
     } finally {
       setLoading(false)
+      setNewOwner('')
     }
   }
 

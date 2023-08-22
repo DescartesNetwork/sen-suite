@@ -30,7 +30,7 @@ const FreezePool = ({ poolAddress }: { poolAddress: string }) => {
   return (
     <div className="flex flex-col gap-4">
       <CardDescription
-        statusContent="Active"
+        statusContent="active"
         description="Freezing a pool will prevent all actions until the pool has been unfreezed."
       />
 

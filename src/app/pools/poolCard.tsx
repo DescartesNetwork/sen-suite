@@ -67,12 +67,12 @@ const PoolCard = ({ poolAddress }: PoolCardProps) => {
         <div className="flex flex-row gap-2 items-center">
           {isFrozen && (
             <div className="tooltip" data-tip="Frozen Pool">
-              <Snowflake />
+              <Snowflake size={16} />
             </div>
           )}
           {isPoolOwner && (
             <div className="tooltip" data-tip="Your Pool">
-              <User name="person-outline" />
+              <User size={16} name="person-outline" />
             </div>
           )}
           <p
