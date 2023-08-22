@@ -31,7 +31,7 @@ export default function SummaryRowBulkSender({
 
   const color = useMemo(() => {
     if (error) return ' bg-error text-error-content'
-    if (warning) return ' bg-warning text-warning-content'
+    if (warning) return ' bg-[#FA8C16] text-warning-content'
     else return ' bg-base-200'
   }, [error, warning])
 

@@ -228,7 +228,7 @@ export default function SummaryBulkSender() {
           )}
           <div className="flex flex-row gap-2 items-center">
             <button
-              className="btn btn-xs btn-accent"
+              className="btn btn-xs btn-outline rounded-full btn-error"
               onClick={onFilterZeros}
               disabled={!statuses.find((e) => e === RowStatus.ZeroAmount)}
             >
@@ -236,7 +236,7 @@ export default function SummaryBulkSender() {
             </button>
 
             <button
-              className="btn btn-xs btn-accent"
+              className="btn btn-xs btn-outline rounded-full btn-error"
               onClick={onMergeDuplicates}
               disabled={!statuses.find((e) => e === RowStatus.Duplicated)}
             >
