@@ -6,15 +6,16 @@ import ThawPool from './pool/thawPool'
 import FreezeAndThawToken from './token'
 
 import { usePoolByAddress } from '@/providers/pools.provider'
+import { StatePool } from '@/hooks/pool.hook'
 
 const FreezeAndThaw = ({ poolAddress }: { poolAddress: string }) => {
   const [activeTab, setActiveTab] = useState('pool')
   const pool = usePoolByAddress(poolAddress)
 
   const renderedBodyComponent = useMemo(() => {
-    if (activeTab === 'pool' && pool.state['initialized'])
+    if (activeTab === 'pool' && pool.state[StatePool.Initialized])
       return <FreezePool poolAddress={poolAddress} />
-    if (activeTab === 'pool' && pool.state['frozen'])
+    if (activeTab === 'pool' && pool.state[StatePool.Frozen])
       return <ThawPool poolAddress={poolAddress} />
 
     return <FreezeAndThawToken poolAddress={poolAddress} />

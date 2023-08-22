@@ -29,7 +29,7 @@ const ThawPool = ({ poolAddress }: { poolAddress: string }) => {
   return (
     <div className="flex flex-col gap-4">
       <CardDescription
-        statusContent="Frozen"
+        statusContent="frozen"
         description="Unfreeze a pool will active all actions"
       />
 

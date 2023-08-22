@@ -27,6 +27,12 @@ export enum FilterPools {
   DepositedPools = 'deposited-pools',
   YourPools = 'your-pools',
 }
+
+export enum StatePool {
+  Frozen = 'frozen',
+  Initialized = 'initialized',
+  Active = 'active',
+}
 export type VolumeData = { data: number; label: string }
 
 export type PoolPairLpData = {

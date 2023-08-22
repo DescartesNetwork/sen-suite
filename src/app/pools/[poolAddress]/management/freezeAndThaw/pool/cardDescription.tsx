@@ -2,6 +2,8 @@ import classNames from 'classnames'
 
 import { Info } from 'lucide-react'
 
+import { StatePool } from '@/hooks/pool.hook'
+
 const CardDescription = ({
   description,
   statusContent,
@@ -19,8 +21,8 @@ const CardDescription = ({
       <div className="flex flex-row items-center gap-2">
         <div
           className={classNames('badge badge-xs', {
-            'badge-primary': statusContent === 'Frozen',
-            'bg-[#30A24C]': statusContent === 'Active',
+            'badge-primary': statusContent === StatePool.Frozen,
+            'bg-[#30A24C]': statusContent === StatePool.Active,
           })}
         />
         <p className="text-sm">Current status: {statusContent}</p>

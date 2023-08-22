@@ -12,7 +12,7 @@ import { solscan } from '@/helpers/explorers'
 import { numeric, shortenAddress } from '@/helpers/utils'
 import { usePoolByAddress } from '@/providers/pools.provider'
 import { useTokenAccountByMintAddress } from '@/providers/tokenAccount.provider'
-import { useOracles } from '@/hooks/pool.hook'
+import { StatePool, useOracles } from '@/hooks/pool.hook'
 import { useTvl } from '@/hooks/tvl.hook'
 
 type PoolCardProps = {
@@ -21,7 +21,7 @@ type PoolCardProps = {
 const PoolCard = ({ poolAddress }: PoolCardProps) => {
   const pool = usePoolByAddress(poolAddress)
   const { publicKey } = useWallet()
-  const isFrozen = !!pool.state['frozen']
+  const isFrozen = !!pool.state[StatePool.Frozen]
   const isPoolOwner = publicKey && pool.authority.equals(publicKey)
   const { amount } = useTokenAccountByMintAddress(pool.mintLpt.toBase58()) || {
     amount: new BN(0),
