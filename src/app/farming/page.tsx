@@ -4,6 +4,9 @@ import { useMemo } from 'react'
 import LazyLoad from 'react-lazy-load'
 import Empty from '@/components/empty'
 import FarmingCard from './farmCard'
+import FarmingPanel from './panel'
+import FarmingNavigation from './navigation'
+import FarmingSearch from './search'
 
 import { useAllFarms, useNftBoosted } from '@/providers/farming.provider'
 import {
@@ -32,6 +35,15 @@ export default function Farming() {
 
   return (
     <div className="grid grid-cols-12 gap-4 @container">
+      <div className="col-span-full">
+        <FarmingPanel />
+      </div>
+      <div className="col-span-full flex flex-row gap-2 overflow-auto no-scrollbar">
+        <FarmingNavigation />
+      </div>
+      <div className="col-span-full">
+        <FarmingSearch />
+      </div>
       {filteredActiveFarmAddresses.map((farmAddress) => (
         <LazyLoad className="col-span-full @2xl:col-span-6" key={farmAddress}>
           <FarmingCard farmAddress={farmAddress} />
