@@ -50,7 +50,7 @@ const PoolCard = ({ poolAddress }: PoolCardProps) => {
     <Link
       href={isFrozen && !isPoolOwner ? '' : `/pools/${poolAddress}`}
       className={classNames(
-        'card p-4 border  bg-[#F2F4FA] dark:bg-[#212C4C] dark:border-[#394360] flex flex-col rounded-3xl gap-3 cursor-pointer',
+        'card p-4 border  bg-[#F2F4FA] dark:bg-[#212C4C] dark:border-[#394360] flex flex-col rounded-3xl gap-3 cursor-pointer ',
         {
           'hover:border-[#63E0B3] dark:hover:border-[#63E0B3]':
             isFrozen || !isPoolOwner === false,

@@ -44,9 +44,10 @@ const TransferOwner = ({ poolAddress }: { poolAddress: string }) => {
         placeholder="E.g. AgTMC..."
         value={newOwner}
         onChange={(e) => setNewOwner(e.target.value)}
-        className="input p-3 text-sm bg-base-200 w-full rounded-full focus:outline-none text-lg"
+        className="input p-3 text-sm bg-base-200 w-full rounded-full focus:outline-none"
       />
       <button
+        disabled={!!newOwner === false}
         onClick={transferOwner}
         className="btn btn-primary w-full rounded-full"
       >

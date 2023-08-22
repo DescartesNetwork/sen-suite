@@ -478,12 +478,12 @@ export const usePoolManagement = (poolAddress: string) => {
   const updateWeights = useCallback(
     async (tokensInfo: Record<string, TokenInfo>) => {
       const weights = Object.values(tokensInfo).map(({ weight }) => {
-        const newWeight = decimalize(weight, GENERAL_NORMALIZED_NUMBER)
+        const newWeight = decimalize(weight,LPT_DECIMALS)
         return newWeight
-      })
-        const { txId } = await balancer.updateWeights({ poolAddress, weights })
-        return txId
-      }
+      })  
+      const { txId } = await balancer.updateWeights({ poolAddress, weights })
+      return txId
+    }
   ,[balancer, poolAddress])
 
   const freezePool = useCallback(

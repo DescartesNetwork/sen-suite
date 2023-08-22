@@ -46,7 +46,7 @@ const Content = ({
       value={percent}
       onChange={(e) => onChangeValue(e.target.value)}
       className={classNames(
-        'input p-4 text-sm bg-base-200 w-full rounded-full focus:outline-none text-lg',
+        'input p-4 text-sm bg-base-200 w-full rounded-full focus:outline-none',
         {
           'cursor-not-allowed opacity-60': disabled,
         },
@@ -61,8 +61,8 @@ const Fee = ({ poolAddress }: { poolAddress: string }) => {
   const currentFee = (poolData.fee.toNumber() * 100) / PRECISION
   const currentTaxFee = (poolData.taxFee.toNumber() * 100) / PRECISION
 
-  const [fee, setFee] = useState<string>(currentFee.toString())
-  const [taxFee, setTaxFee] = useState<string>(currentTaxFee.toString())
+  const [fee, setFee] = useState(currentFee.toString())
+  const [taxFee, setTaxFee] = useState(currentTaxFee.toString())
 
   const [loading, setLoading] = useState(false)
 
@@ -107,6 +107,9 @@ const Fee = ({ poolAddress }: { poolAddress: string }) => {
       />
 
       <button
+        disabled={
+          fee === currentFee.toString() && taxFee === currentTaxFee.toString()
+        }
         onClick={onUpdateFee}
         className="btn btn-primary w-full rounded-full"
       >

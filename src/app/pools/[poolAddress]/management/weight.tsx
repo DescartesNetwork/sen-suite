@@ -15,6 +15,7 @@ const TOTAL_PERCENT = 100
 const Weight = ({ poolAddress }: { poolAddress: string }) => {
   const [tokensInfo, setTokensInfo] = useState<Record<string, TokenInfo>>()
   const [loading, setLoading] = useState(false)
+  const [checkInput, setCheckInput] = useState(false)
 
   const pushMessage = usePushMessage()
   const { calcNormalizedWeight } = useOracles()
@@ -37,6 +38,8 @@ const Weight = ({ poolAddress }: { poolAddress: string }) => {
   }, [calcNormalizedWeight, mints, weights])
 
   const onWeightChange = (val: string, mint: string) => {
+    if (val) setCheckInput(true)
+
     const newTokensInfo = { ...tokensInfo }
     newTokensInfo[mint] = { ...newTokensInfo[mint], weight: val }
 
@@ -93,7 +96,7 @@ const Weight = ({ poolAddress }: { poolAddress: string }) => {
       if (!tokensInfo) return false
       const { weight } = tokensInfo[mint]
       const numWeight = Number(weight)
-      if (numWeight > TOTAL_PERCENT || numWeight < 0) return false
+      if (numWeight > TOTAL_PERCENT || numWeight <= 0) return false
 
       let remainingPercent = 0
       for (const { addressToken, weight } of Object.values(tokensInfo)) {
@@ -142,7 +145,7 @@ const Weight = ({ poolAddress }: { poolAddress: string }) => {
         return (
           <div
             key={addressToken + idx}
-            className="card w-full flex flex-row grid grid-cols-12 gap-4 items-center"
+            className="card w-full grid grid-cols-12 gap-4 items-center"
           >
             <div className="card bg-base-200 p-2 rounded-3xl col-span-11">
               <div className="flex flex-row justify-between  gap-2 items-center">
@@ -182,7 +185,7 @@ const Weight = ({ poolAddress }: { poolAddress: string }) => {
       })}
 
       <button
-        disabled={disabled}
+        disabled={disabled || !checkInput}
         onClick={onUpdateWeights}
         className="btn btn-primary w-full rounded-full"
       >
