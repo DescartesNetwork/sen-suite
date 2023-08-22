@@ -167,14 +167,14 @@ export default function SummaryBulkSender() {
 
   if (!isAddress(mintAddress)) return redirect('/airdrop/bulk-sender')
   return (
-    <div className="grid grid-cols-12 gap-x-2 gap-y-4">
-      <div className="col-span-12 card bg-base-200 p-2 flex flex-row gap-2 items-center">
-        <MintLogo mintAddress={mintAddress} />
+    <div className="grid grid-cols-12 gap-x-2 gap-y-6">
+      <div className="col-span-12 card p-2 flex flex-row gap-2 items-center">
+        <MintLogo className="h-9 w-9 rounded-full" mintAddress={mintAddress} />
         <p className="font-bold flex-auto">
           <MintSymbol mintAddress={mintAddress} />
         </p>
         <label className="label cursor-pointer gap-2">
-          <span className="label-text">With decimals?</span>
+          <span className="label-text">Enable decimals</span>
           <input
             type="checkbox"
             className="checkbox"
@@ -202,6 +202,7 @@ export default function SummaryBulkSender() {
           />
         ))}
         <EditRowBulkSender
+          index={String(data.length + 1)}
           address={newAddress}
           onAddress={setNewAddress}
           amount={newAmount}
@@ -211,56 +212,58 @@ export default function SummaryBulkSender() {
         />
       </div>
       <div className="col-span-full @container">
-        <div className="stats stats-vertical @md:stats-horizontal w-full bg-base-200">
-          <div className="stat">
-            <div className="stat-title">Total receivers</div>
-            <div className="stat-value">
+        <div className="flex flex-row justify-between items-center mb-6">
+          {errors > 0 && (
+            <span className="text-error text-sm font-semibold">{`${errors} error(s)`}</span>
+          )}
+          {warnings > 0 && (
+            <div className="stat-desc">
+              <span className="text-warning text-sm font-semibold">{`${warnings} warning(s)`}</span>
+            </div>
+          )}
+          {!errors && !warnings && (
+            <span className="text-success text-sm font-semibold">
+              Optimized
+            </span>
+          )}
+          <div className="flex flex-row gap-2 items-center">
+            <button
+              className="btn btn-xs btn-accent"
+              onClick={onFilterZeros}
+              disabled={!statuses.find((e) => e === RowStatus.ZeroAmount)}
+            >
+              Remove zeros
+            </button>
+
+            <button
+              className="btn btn-xs btn-accent"
+              onClick={onMergeDuplicates}
+              disabled={!statuses.find((e) => e === RowStatus.Duplicated)}
+            >
+              Merge duplicates
+            </button>
+          </div>
+        </div>
+        <div className="card flex flex-col bg-base-200 rounded-box w-full p-4 gap-2">
+          <div className=" flex flex-row justify-between">
+            <p className="text-sm opacity-60">Receivers</p>
+            <div className="text-sm font-normal">
               {numeric(data.length).format('0,0')}
             </div>
-            {errors > 0 && (
-              <div className="stat-desc">
-                <span className="text-error font-bold">{`${errors} error(s)`}</span>
-              </div>
-            )}
-            {warnings > 0 && (
-              <div className="stat-desc">
-                <span className="text-warning font-bold">{`${warnings} warning(s)`}</span>
-              </div>
-            )}
-            {!errors && !warnings && (
-              <div className="stat-desc">
-                <span className="text-success font-bold">Optimized</span>
-              </div>
-            )}
-            <div className="stat-actions">
-              <button
-                className="btn btn-xs btn-accent"
-                onClick={onMergeDuplicates}
-                disabled={!statuses.find((e) => e === RowStatus.Duplicated)}
-              >
-                Merge duplicates
-              </button>
-            </div>
           </div>
-          <div className="stat">
-            <div className="stat-title">Total value</div>
-            <div className="stat-value">{numeric(tvl).format('$0a.[00]')}</div>
-            <div className="stat-desc">
-              {numeric(undecimalize(amount, mint?.decimals || 0)).format(
-                '0,0.[0000]',
-              )}
-              <span className="ml-1">
+          <div className="flex flex-row justify-between">
+            <p className="text-sm opacity-60">Total value</p>
+
+            <div className="flex flex-col gap-1">
+              <div className="flex flex-row text-xl font-bold">
+                {numeric(undecimalize(amount, mint?.decimals || 0)).format(
+                  '0,0.[0000]',
+                )}{' '}
                 <MintSymbol mintAddress={mintAddress} />
-              </span>
-            </div>
-            <div className="stat-actions">
-              <button
-                className="btn btn-xs btn-accent"
-                onClick={onFilterZeros}
-                disabled={!statuses.find((e) => e === RowStatus.ZeroAmount)}
-              >
-                Remove zeros
-              </button>
+              </div>
+              <p className="text-right opacity-60">
+                {numeric(tvl).format('$0a.[00]')}
+              </p>
             </div>
           </div>
         </div>

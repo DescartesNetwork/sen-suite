@@ -5,7 +5,7 @@ import { parse } from 'papaparse'
 
 import { MintLogo, MintSymbol } from '@/components/mint'
 import TokenSelection from '@/components/tokenSelection'
-import { ChevronDown, Search } from 'lucide-react'
+import { ChevronDown } from 'lucide-react'
 import Dropzone from '@/components/dropzone'
 
 import {
@@ -43,12 +43,12 @@ export default function BulkSender() {
   }, [file, pushMessage, setData])
 
   return (
-    <div className="grid grid-cols-12 gap-x-2 gap-y-4">
-      <div className="col-span-12 flex flex-row gap-2 items-center">
-        <div
-          className="card bg-base-200 p-2 rounded-full cursor-pointer flex flex-row items-center gap-2"
-          onClick={() => setOpen(true)}
-        >
+    <div className="grid grid-cols-12 gap-6">
+      <div
+        className="rounded-full border-2 px-4 py-2 col-span-12 flex flex-row justify-between items-center cursor-pointer"
+        onClick={() => setOpen(true)}
+      >
+        <div className="card cursor-pointer flex flex-row items-center gap-2">
           <MintLogo
             className="w-8 h-8 rounded-full"
             mintAddress={mintAddress}
@@ -56,30 +56,16 @@ export default function BulkSender() {
           <p className="font-bold">
             <MintSymbol mintAddress={mintAddress} />
           </p>
-          <ChevronDown />
         </div>
-        <div className="flex-auto flex flex-row items-center relative">
-          <input
-            className="input bg-base-200 w-full pr-12 rounded-full"
-            type="text"
-            placeholder="Token Address"
-            value={mintAddress}
-            onChange={(e) => onMintAddress(e.target.value)}
-          />
-          <button
-            className="absolute right-2 btn btn-sm btn-circle btn-ghost"
-            onClick={() => setOpen(true)}
-          >
-            <Search />
-          </button>
-          <TokenSelection
-            open={open}
-            onCancel={() => setOpen(false)}
-            mintAddress={mintAddress}
-            onChange={onMintAddress}
-          />
-        </div>
+        <ChevronDown />
       </div>
+      {/* Modal Token Selection */}
+      <TokenSelection
+        open={open}
+        onCancel={() => setOpen(false)}
+        mintAddress={mintAddress}
+        onChange={onMintAddress}
+      />
       <div className="col-span-12">
         <Dropzone file={file} onChange={setFile} />
       </div>
@@ -89,7 +75,7 @@ export default function BulkSender() {
           onClick={() => push('/airdrop/bulk-sender/summary')}
           disabled={!isAddress(mintAddress)}
         >
-          Next
+          Skip
         </button>
       </div>
     </div>
