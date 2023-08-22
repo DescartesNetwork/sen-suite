@@ -587,7 +587,7 @@ export const usePoolManagement = (poolAddress: string) => {
   const updateWeights = useCallback(
     async (tokensInfo: Record<string, MintSetup>) => {
       const weights = Object.values(tokensInfo).map(({ weight }) => {
-        const newWeight = decimalize(weight,LPT_DECIMALS)
+        const newWeight = decimalize(weight,GENERAL_DECIMALS)
         return newWeight
       })  
       const { txId } = await balancer.updateWeights({ poolAddress, weights })

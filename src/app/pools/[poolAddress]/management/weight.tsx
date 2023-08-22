@@ -7,15 +7,20 @@ import { usePushMessage } from '@/components/message/store'
 
 import { numeric } from '@/helpers/utils'
 import { solscan } from '@/helpers/explorers'
-import { MintSetup, useOracles, usePoolManagement } from '@/hooks/pool.hook'
+import {
+  GENERAL_DECIMALS,
+  MintSetup,
+  useOracles,
+  usePoolManagement,
+} from '@/hooks/pool.hook'
 import { usePoolByAddress } from '@/providers/pools.provider'
+import { decimalize } from '@/helpers/decimals'
 
 const TOTAL_PERCENT = 100
 
 const Weight = ({ poolAddress }: { poolAddress: string }) => {
   const [tokensInfo, setTokensInfo] = useState<Record<string, MintSetup>>()
   const [loading, setLoading] = useState(false)
-  const [checkInput, setCheckInput] = useState(false)
 
   const pushMessage = usePushMessage()
   const { calcNormalizedWeight } = useOracles()
@@ -38,8 +43,6 @@ const Weight = ({ poolAddress }: { poolAddress: string }) => {
   }, [calcNormalizedWeight, mints, weights])
 
   const onWeightChange = (val: string, mint: string) => {
-    if (val) setCheckInput(true)
-
     const newTokensInfo = { ...tokensInfo }
     newTokensInfo[mint] = { ...newTokensInfo[mint], weight: val }
 
@@ -111,11 +114,18 @@ const Weight = ({ poolAddress }: { poolAddress: string }) => {
 
   const disabled = useMemo(() => {
     if (!tokensInfo) return true
-    for (const mintAddress of Object.keys(tokensInfo)) {
-      if (!validateWeight(mintAddress)) return true
+
+    const listMints = Object.keys(tokensInfo)
+
+    for (let i = 0; i < weights.length; i++) {
+      if (!validateWeight(listMints[i])) return true
+      const { weight } = tokensInfo[listMints[i]]
+      const dWeight = decimalize(weight, GENERAL_DECIMALS)
+      if (dWeight.eq(weights[i])) return true
     }
+
     return false
-  }, [tokensInfo, validateWeight])
+  }, [tokensInfo, validateWeight, weights])
 
   const onUpdateWeights = async () => {
     if (!tokensInfo) return
@@ -129,7 +139,6 @@ const Weight = ({ poolAddress }: { poolAddress: string }) => {
       pushMessage('alert-error', err.message)
     } finally {
       setLoading(false)
-      setCheckInput(false)
     }
   }
 
@@ -169,7 +178,7 @@ const Weight = ({ poolAddress }: { poolAddress: string }) => {
                     'input h-6 bg-base-200 w-full rounded-full focus:outline-none text-right text-lg',
                     {
                       'cursor-not-allowed opacity-60': isLocked,
-                      'text-[red]': disabled,
+                      'text-[red]': !validateWeight(addressToken),
                     },
                   )}
                 />
@@ -186,7 +195,7 @@ const Weight = ({ poolAddress }: { poolAddress: string }) => {
       })}
 
       <button
-        disabled={disabled || !checkInput}
+        disabled={disabled}
         onClick={onUpdateWeights}
         className="btn btn-primary w-full rounded-full"
       >
