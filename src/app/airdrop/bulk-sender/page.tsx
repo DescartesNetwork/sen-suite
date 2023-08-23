@@ -3,9 +3,9 @@ import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { parse } from 'papaparse'
 
+import { ChevronDown } from 'lucide-react'
 import { MintLogo, MintSymbol } from '@/components/mint'
 import TokenSelection from '@/components/tokenSelection'
-import { ChevronDown } from 'lucide-react'
 import Dropzone from '@/components/dropzone'
 
 import {
@@ -67,7 +67,11 @@ export default function BulkSender() {
         onChange={onMintAddress}
       />
       <div className="col-span-12">
-        <Dropzone file={file} onChange={setFile} />
+        <Dropzone
+          file={file}
+          onChange={setFile}
+          urlFileTemplate="data:text/txt;base64,YWJjLGRlZmdoDQoxMjMsNDU2NzgNCg=="
+        />
       </div>
       <div className="col-span-12">
         <button

@@ -8,11 +8,13 @@ import { Download, FileUp, Info, X } from 'lucide-react'
 export type DropzoneProps = {
   file?: File
   onChange?: (value: File | undefined) => void
+  urlFileTemplate?: string
 }
 
 export default function Dropzone({
   file = undefined,
   onChange = () => {},
+  urlFileTemplate = '',
 }: DropzoneProps) {
   const onDrop = useCallback(
     (files: File[]) => {
@@ -30,6 +32,14 @@ export default function Dropzone({
     },
     disabled: !!file,
   })
+
+  const downloadFile = (urlFileTemplate: string) => {
+    const anchor = document.createElement('a')
+    anchor.href = urlFileTemplate
+    anchor.download = 'templates.csv'
+    document.body.appendChild(anchor)
+    anchor.click()
+  }
 
   const onClear = useCallback(() => {
     if (inputRef.current) inputRef.current.value = ''
@@ -75,10 +85,13 @@ export default function Dropzone({
         )}
       </div>
       <div className=" flex flex-col gap-6">
-        <div className="flex flex-row gap-2 items-center ml-2 cursor-pointer">
+        <button
+          onClick={() => downloadFile(urlFileTemplate)}
+          className="flex flex-row gap-2 items-center mx-2 cursor-pointer"
+        >
           <Download className="w-3 h-3 font-semibold" />
           <p className="text-sm font-semibold">Download templates</p>
-        </div>
+        </button>
         <div className="flex flex-row items-center gap-2">
           <Info className="w-3 h-3" />
           <p className="text-sm">Skip this step to manually input.</p>
