@@ -3,6 +3,7 @@ import { useCallback, useMemo, useState } from 'react'
 import BN from 'bn.js'
 
 import { MintAmount, MintSymbol } from '@/components/mint'
+import BoostNft from './boost'
 
 import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
@@ -11,6 +12,7 @@ import { useFarmByAddress } from '@/providers/farming.provider'
 import { useMintByAddress } from '@/providers/mint.provider'
 import { decimalize, undecimalize } from '@/helpers/decimals'
 import { useTokenAccountByMintAddress } from '@/providers/tokenAccount.provider'
+import BoostInfo from './boostInfo'
 
 export type StakeProps = {
   farmAddress: string
@@ -19,6 +21,7 @@ export type StakeProps = {
 export default function Stake({ farmAddress }: StakeProps) {
   const [loading, setLoading] = useState(false)
   const [amount, setAmount] = useState('')
+  const [nfts, setNfts] = useState<string[]>([])
   const pushMessage = usePushMessage()
   const { inputMint } = useFarmByAddress(farmAddress)
   const { decimals } = useMintByAddress(inputMint.toBase58()) || { decimals: 0 }
@@ -86,6 +89,17 @@ export default function Stake({ farmAddress }: StakeProps) {
             </button>
           </div>
         </div>
+      </div>
+      {/* Boosting NFT */}
+      <div className="col-span-full">
+        <BoostNft farmAddress={farmAddress} nfts={nfts} onNfts={setNfts} />
+      </div>
+      <div className="col-span-full">
+        <BoostInfo
+          nfts={nfts}
+          amount={Number(amount) || 0}
+          farmAddress={farmAddress}
+        />
       </div>
       <button
         className="col-span-full btn btn-primary btn-sm"

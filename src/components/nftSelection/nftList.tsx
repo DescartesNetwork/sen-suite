@@ -4,13 +4,13 @@ import Empty from '../empty'
 
 type NftListProps = {
   nftAddresses?: string[]
-  nftSelected?: string
+  nftsSelected?: string[]
   onChange?: (mintAddress: string) => void
 }
 
 const NftList = ({
   nftAddresses = [],
-  nftSelected = '',
+  nftsSelected = [],
   onChange = () => {},
 }: NftListProps) => {
   return (
@@ -19,7 +19,7 @@ const NftList = ({
         <div className="col-span-4" key={nftAddress}>
           <LazyLoad>
             <NftCard
-              active={nftAddress === nftSelected}
+              active={nftsSelected.includes(nftAddress)}
               nftAddress={nftAddress}
               onChange={onChange}
             />

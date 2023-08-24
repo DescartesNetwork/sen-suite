@@ -100,7 +100,7 @@ export default function FarmDetails() {
               </div>
             </div>
           </div>
-          <div className="col-span-full">
+          <div className="col-span-full container-content">
             {tab === FarmAction.Stake ? (
               <Stake farmAddress={farmAddress} />
             ) : tab === FarmAction.Unstake ? (

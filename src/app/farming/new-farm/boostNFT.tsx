@@ -66,7 +66,7 @@ const BoostCard = ({
 
       <NFTSelection
         open={open}
-        mintAddress={boostData.collection}
+        mintAddresses={[boostData.collection]}
         onChange={(val) => onMintChange(index, val)}
         onCancel={() => setOpen(false)}
         onlyCollection

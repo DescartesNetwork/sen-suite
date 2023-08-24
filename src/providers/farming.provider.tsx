@@ -275,7 +275,7 @@ export const useAllBoostings = () => {
  */
 export const useBoostingByFarmAddress = (farmAddress: string) => {
   const boosting = useFarmingStore(({ boostings }) =>
-    Object.values(boostings).find(
+    Object.values(boostings).filter(
       ({ farm }) => farm.toBase58() === farmAddress,
     ),
   )

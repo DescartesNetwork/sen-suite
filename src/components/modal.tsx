@@ -17,7 +17,7 @@ export default function Modal({
   return (
     <Fragment>
       <input type="checkbox" className="modal-toggle" checked={open} readOnly />
-      <div className="modal">
+      <div className="@xs/root:modal">
         <div className="modal-box max-h-fit">
           <button
             className="btn btn-circle btn-ghost btn-sm absolute top-2 right-2"

@@ -20,7 +20,6 @@ const FarmingWatcher = () => {
           'farm',
           buffer,
         )
-        console.log('accountData', accountData)
         upsertFarms({ [address]: accountData })
       },
       'confirmed',

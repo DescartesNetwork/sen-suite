@@ -9,32 +9,47 @@ import { useNftsByOwner } from '@/hooks/mpl.hook'
 
 type NFTSelectionProps = {
   open?: boolean
-  mintAddress?: string
+  mintAddresses?: string[]
+  collections?: string[]
   onCancel?: () => void
   onChange?: (mintAddress: string) => void
   onlyCollection?: boolean
 }
 const NFTSelection = ({
-  open,
-  mintAddress,
-  onlyCollection,
-  onCancel,
+  open = false,
+  mintAddresses = [],
+  onlyCollection = false,
+  collections = [],
+  onCancel = () => {},
   onChange = () => {},
 }: NFTSelectionProps) => {
   const { publicKey } = useWallet()
   const nfts = useNftsByOwner(publicKey?.toBase58() || '')
 
   const nftsOrCollections = useMemo(() => {
-    if (!onlyCollection)
-      return nfts.map((nft: any) => nft.mintAddress.toBase58())
-    const collections = nfts
-      .map(({ collection }) => collection?.address.toBase58())
-      .filter(
-        (collection, i, collections) =>
-          collection && collections.findIndex((e) => e === collection) === i,
+    if (onlyCollection) {
+      let myCollections = nfts
+        .map(({ collection }) => collection?.address.toBase58())
+        .filter(
+          (collection, i, collections) =>
+            collection && collections.findIndex((e) => e === collection) === i,
+        )
+      if (collections.length)
+        myCollections = myCollections.filter(
+          (address) => address && collections.includes(address),
+        )
+      return myCollections
+    }
+
+    let filteredNfts = [...nfts]
+    if (collections.length)
+      filteredNfts = filteredNfts.filter(
+        ({ collection }) =>
+          collection && collections.includes(collection.address.toBase58()),
       )
-    return collections
-  }, [nfts, onlyCollection])
+
+    return filteredNfts.map((nft: any) => nft.mintAddress.toBase58())
+  }, [collections, nfts, onlyCollection])
 
   return (
     <Modal open={open} onCancel={onCancel}>
@@ -46,7 +61,7 @@ const NFTSelection = ({
           <Island>
             <NftList
               nftAddresses={nftsOrCollections}
-              nftSelected={mintAddress}
+              nftsSelected={mintAddresses}
               onChange={onChange}
             />
           </Island>

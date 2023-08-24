@@ -11,6 +11,10 @@ type NftCardProps = {
 }
 
 const NftCard = ({ nftAddress, active, onChange = () => {} }: NftCardProps) => {
+  const onChangeNft = (nftAddress: string) => {
+    if (active) return
+    onChange(nftAddress)
+  }
   return (
     <div
       className={classNames(
@@ -19,7 +23,7 @@ const NftCard = ({ nftAddress, active, onChange = () => {} }: NftCardProps) => {
           '!bg-accent': active,
         },
       )}
-      onClick={() => onChange(nftAddress)}
+      onClick={() => onChangeNft(nftAddress)}
     >
       <MintLogo className="rounded-lg w-full h-full" mintAddress={nftAddress} />
       <div className="flex items-center justify-between gap-2">
