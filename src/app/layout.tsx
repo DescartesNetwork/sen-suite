@@ -45,7 +45,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             gtag('config', 'G-G57JYZBDBP');`}
         </Script>
       </head>
-      <body className="w-full flex flex-row @container/root">
+      <body className="w-full flex flex-row">
         <UiProvider>
           <WalletProvider>
             <MintProvider>
