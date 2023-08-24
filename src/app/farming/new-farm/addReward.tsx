@@ -1,11 +1,15 @@
 import { useState } from 'react'
+import { BN } from 'bn.js'
 
-import { MintLogo, MintSymbol } from '@/components/mint'
+import { MintAmount, MintLogo, MintSymbol } from '@/components/mint'
 import { ChevronDown, Plus, Trash2 } from 'lucide-react'
 import TokenSelection from '@/components/tokenSelection'
 
 import { Reward } from '@/hooks/farming.hook'
 import { EMPTY_REWARD } from './page'
+import { undecimalize } from '@/helpers/decimals'
+import { useTokenAccountByMintAddress } from '@/providers/tokenAccount.provider'
+import { useMintByAddress } from '@/providers/mint.provider'
 
 type RewardCardProps = {
   reward: Reward
@@ -15,14 +19,23 @@ type RewardCardProps = {
 }
 const RewardCard = ({ reward, index, onChange, onDelete }: RewardCardProps) => {
   const [open, setOpen] = useState(false)
+  const { amount } = useTokenAccountByMintAddress(reward.mintAddress) || {
+    amount: new BN(0),
+  }
+  const { decimals } = useMintByAddress(reward.mintAddress) || { decimals: 0 }
 
-  const onMintChange = (index: number, mintAddress: string) => {
+  const onMintChange = (mintAddress: string) => {
     onChange(index, 'mintAddress', mintAddress)
     setOpen(false)
   }
 
+  const onMax = () => {
+    const maxAmount = undecimalize(amount, decimals)
+    onChange(index, 'budget', maxAmount)
+  }
+
   return (
-    <div className=" grid grid-cols-12 gap-4">
+    <div className=" grid grid-cols-12 gap-2">
       <div className="col-span-full flex items-center">
         <p className="text-sm flex-auto">Token #{index + 1}</p>
         {!!index && (
@@ -55,13 +68,24 @@ const RewardCard = ({ reward, index, onChange, onDelete }: RewardCardProps) => {
         type="number"
         value={reward.budget}
         onChange={(e) => onChange(index, 'budget', e.target.value)}
-        className=" col-span-6 rounded-xl bg-base-200 px-3 py-2"
+        className=" ml-2 col-span-6 rounded-xl bg-base-200 px-3 py-2"
         placeholder="Enter budget"
       />
+      {reward.mintAddress && (
+        <p
+          onClick={onMax}
+          className="col-span-full text-xs opacity-60 cursor-pointer"
+        >
+          Available:{' '}
+          <MintAmount amount={amount} mintAddress={reward.mintAddress} />{' '}
+          <MintSymbol mintAddress={reward.mintAddress} />
+        </p>
+      )}
+
       <TokenSelection
         open={open}
         mintAddress={reward.mintAddress}
-        onChange={(val) => onMintChange(index, val)}
+        onChange={onMintChange}
         onCancel={() => setOpen(false)}
       />
     </div>
@@ -107,7 +131,7 @@ const AddReward = ({ rewards, onRewards }: AddRewardProps) => {
         </div>
       ))}
       <div className="col-span-full">
-        <button onClick={onAddReward} className="btn btn-block">
+        <button onClick={onAddReward} className="btn btn-block btn-sm">
           <Plus size={16} /> Add more
         </button>
       </div>

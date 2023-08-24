@@ -3,7 +3,13 @@ import SenFarmingProgram from '@sentre/farming'
 import BN from 'bn.js'
 import { useInterval } from 'react-use'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { ComputeBudgetProgram, PublicKey, Transaction } from '@solana/web3.js'
+import {
+  ComputeBudgetProgram,
+  Keypair,
+  PublicKey,
+  Signer,
+  Transaction,
+} from '@solana/web3.js'
 
 import solConfig from '@/configs/sol.config'
 import { useAnchorProvider } from '@/providers/wallet.provider'
@@ -15,6 +21,8 @@ import {
 } from '@/providers/farming.provider'
 import { isAddress } from '@/helpers/utils'
 import { useMpl } from './mpl.hook'
+import { useMints } from './spl.hook'
+import { decimalize } from '@/helpers/decimals'
 
 export type Reward = {
   mintAddress: string
@@ -382,4 +390,83 @@ export const useTransferOwnership = (
   }, [farmAddress, ownerAddress, farming])
 
   return transferOwnership
+}
+
+/**
+ * Get farm's transfer ownership function
+ * @param farmAddress Farm address
+ * @returns Transfer ownership function
+ */
+export const useInitializeFarm = (
+  inputMint: string,
+  startAt: number,
+  endAt: number,
+  boostsData: BoostData[],
+  tokenRewards: Reward[],
+) => {
+  const farming = useFarming()
+  const mints = useMints(tokenRewards.map(({ mintAddress }) => mintAddress))
+  const decimals = mints.map((mint) => mint?.decimals || 0)
+
+  const onInitializeFarm = useCallback(async () => {
+    const mintPubKey = new PublicKey(inputMint)
+    const allTxs: { tx: Transaction; signers: Signer[] }[] = []
+    // Check time
+    const currentTime = new Date().getTime()
+    let startAfter = 0
+    if (startAt > currentTime)
+      startAfter = Math.floor((startAt - currentTime) / 1000)
+    const endAfter = Math.floor((endAt - currentTime) / 1000)
+
+    // Initialize farm
+    const farmKeypair = Keypair.generate()
+    const { tx: txInitializeFarm } = await farming.initializeFarm({
+      inputMint: mintPubKey,
+      startAfter: startAfter + 10,
+      endAfter: endAfter,
+      sendAndConfirm: false,
+      farmKeypair,
+    })
+    allTxs.push({ tx: txInitializeFarm, signers: [farmKeypair] })
+
+    // Add Boosting
+    if (boostsData.length) {
+      const txBoosts = new Transaction()
+      await Promise.all(
+        boostsData.map(async ({ collection, percentage }) => {
+          const { tx: txPushFarmBoostingCollection } =
+            await farming.pushFarmBoostingCollection({
+              farm: farmKeypair.publicKey,
+              collection: collection,
+              coefficient: new BN((percentage / 100) * precision.toNumber()),
+              sendAndConfirm: false,
+            })
+          txBoosts.add(txPushFarmBoostingCollection)
+        }),
+      )
+      allTxs.push({ tx: txBoosts, signers: [] })
+    }
+
+    // Add Reward
+    const txRewards = new Transaction()
+    await Promise.all(
+      tokenRewards.map(async ({ mintAddress, budget }, index) => {
+        const rewardAmount = decimalize(budget, decimals[index])
+        const { tx: txPushFarmReward } = await farming.pushFarmReward({
+          farm: farmKeypair.publicKey,
+          rewardMint: mintAddress,
+          rewardAmount,
+          sendAndConfirm: false,
+        })
+        txRewards.add(txPushFarmReward)
+      }),
+    )
+    allTxs.push({ tx: txRewards, signers: [] })
+
+    const [txId] = await farming.provider.sendAll(allTxs)
+
+    return { txId, farmAddress: farmKeypair.publicKey.toBase58() }
+  }, [boostsData, decimals, endAt, farming, inputMint, startAt, tokenRewards])
+
+  return onInitializeFarm
 }

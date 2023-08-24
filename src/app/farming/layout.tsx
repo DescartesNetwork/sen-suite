@@ -2,6 +2,7 @@ import { ReactNode } from 'react'
 import type { Metadata } from 'next'
 
 import FarmingProvider from '@/providers/farming.provider'
+import FarmingWatcher from '@/watchers/farming.watcher'
 
 export const metadata: Metadata = {
   title: 'SenFarming',
@@ -15,6 +16,9 @@ export default function FarmingLayout({ children }: { children: ReactNode }) {
         <div className="max-w-[1024px] w-full grid grid-cols-12 gap-x-2 gap-y-4">
           <div className="col-span-full">{children}</div>
         </div>
+
+        {/* Services worker */}
+        <FarmingWatcher />
       </FarmingProvider>
     </div>
   )
