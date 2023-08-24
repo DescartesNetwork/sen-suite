@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { parse } from 'papaparse'
 
-import { ChevronDown } from 'lucide-react'
+import { ChevronDown, ChevronLeft } from 'lucide-react'
 import { MintLogo, MintSymbol } from '@/components/mint'
 import TokenSelection from '@/components/tokenSelection'
 import Dropzone from '@/components/dropzone'
@@ -15,6 +15,7 @@ import {
 } from '@/providers/bulkSender.provider'
 import { isAddress } from '@/helpers/utils'
 import { usePushMessage } from '@/components/message/store'
+import Link from 'next/link'
 
 export default function BulkSender() {
   const [open, setOpen] = useState(false)
@@ -44,44 +45,61 @@ export default function BulkSender() {
   }, [file, pushMessage, setData])
 
   return (
-    <div className="grid grid-cols-12 gap-6">
-      <div
-        className="rounded-full border-2 px-4 py-2 col-span-12 flex flex-row justify-between items-center cursor-pointer"
-        onClick={() => setOpen(true)}
-      >
-        {mintAddress ? (
-          <div className="flex items-center gap-2 flex-auto">
-            <MintLogo
+    <div className="max-w-[480px]">
+      <Link href={'/airdrop'} className="btn btn-sm btn-ghost mb-2">
+        <ChevronLeft size={16} />
+        Back
+      </Link>
+      <div className="card bg-base-100 p-6 rounded-box shadow-xl grid grid-cols-12 gap-6 ">
+        <div className="col-span-12">
+          <h5 className="mb-2">Bulk Sender</h5>
+        </div>
+        <div className="col-span-12">
+          <div className="grid grid-cols-12 gap-6">
+            <div
+              className="rounded-full border-2 px-4 py-2 col-span-12 flex flex-row justify-between items-center cursor-pointer"
+              onClick={() => setOpen(true)}
+            >
+              {mintAddress ? (
+                <div className="flex items-center gap-2 flex-auto">
+                  <MintLogo
+                    mintAddress={mintAddress}
+                    className="w-8 h-8 rounded-full"
+                  />
+                  <Island>
+                    <MintSymbol mintAddress={mintAddress} />
+                  </Island>
+                </div>
+              ) : (
+                <p className="font-bold flex-auto"> Select a token</p>
+              )}
+              <ChevronDown />
+            </div>
+            {/* Modal Token Selection */}
+            <TokenSelection
+              open={open}
+              onCancel={() => setOpen(false)}
               mintAddress={mintAddress}
-              className="w-8 h-8 rounded-full"
+              onChange={onMintAddress}
             />
-            <Island>
-              <MintSymbol mintAddress={mintAddress} />
-            </Island>
+            <div className="col-span-12">
+              <Dropzone
+                file={file}
+                onChange={setFile}
+                templateFile="/airdrop.csv"
+              />
+            </div>
+            <div className="col-span-12">
+              <button
+                className="btn btn-primary w-full rounded-full"
+                onClick={() => push('/airdrop/bulk-sender/summary')}
+                disabled={!isAddress(mintAddress)}
+              >
+                Skip
+              </button>
+            </div>
           </div>
-        ) : (
-          <p className="font-bold flex-auto"> Select a token</p>
-        )}
-        <ChevronDown />
-      </div>
-      {/* Modal Token Selection */}
-      <TokenSelection
-        open={open}
-        onCancel={() => setOpen(false)}
-        mintAddress={mintAddress}
-        onChange={onMintAddress}
-      />
-      <div className="col-span-12">
-        <Dropzone file={file} onChange={setFile} templateFile="/airdrop.csv" />
-      </div>
-      <div className="col-span-12">
-        <button
-          className="btn btn-primary w-full rounded-full"
-          onClick={() => push('/airdrop/bulk-sender/summary')}
-          disabled={!isAddress(mintAddress)}
-        >
-          Skip
-        </button>
+        </div>
       </div>
     </div>
   )
