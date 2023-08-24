@@ -34,11 +34,11 @@ export default function Dropzone({
   })
 
   const downloadFile = (urlFileTemplate: string) => {
-    const anchor = document.createElement('a')
-    anchor.href = urlFileTemplate
-    anchor.download = 'templates.csv'
-    document.body.appendChild(anchor)
-    anchor.click()
+    const event = document.createElement('a')
+    event.href = urlFileTemplate
+    event.download = 'templates.csv'
+    document.body.appendChild(event)
+    event.click()
   }
 
   const onClear = useCallback(() => {

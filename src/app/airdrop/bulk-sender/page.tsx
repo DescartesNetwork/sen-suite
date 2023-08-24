@@ -70,7 +70,7 @@ export default function BulkSender() {
         <Dropzone
           file={file}
           onChange={setFile}
-          urlFileTemplate="data:text/txt;base64,YWJjLGRlZmdoDQoxMjMsNDU2NzgNCg=="
+          urlFileTemplate="/templates.csv"
         />
       </div>
       <div className="col-span-12">
