@@ -7,16 +7,19 @@ import { ChevronDown } from 'lucide-react'
 import { MintLogo, MintSymbol } from '@/components/mint'
 import TokenSelection from '@/components/tokenSelection'
 import Dropzone from '@/components/dropzone'
+import Island from '@/components/island'
 
-import { useBulkSenderData } from '@/providers/bulkSender.provider'
+import {
+  useBulkSenderData,
+  useBulkSenderMint,
+} from '@/providers/bulkSender.provider'
 import { isAddress } from '@/helpers/utils'
 import { usePushMessage } from '@/components/message/store'
-import { useAirdropMintAddress } from '@/providers/airdrop.provider'
 
 export default function BulkSender() {
   const [open, setOpen] = useState(false)
   const [file, setFile] = useState<File>()
-  const { mintAddress, setMintAddress } = useAirdropMintAddress()
+  const { mintAddress, setMintAddress } = useBulkSenderMint()
   const { setData } = useBulkSenderData()
   const { push } = useRouter()
   const pushMessage = usePushMessage()
@@ -46,15 +49,19 @@ export default function BulkSender() {
         className="rounded-full border-2 px-4 py-2 col-span-12 flex flex-row justify-between items-center cursor-pointer"
         onClick={() => setOpen(true)}
       >
-        <div className="card cursor-pointer flex flex-row items-center gap-2">
-          <MintLogo
-            className="w-8 h-8 rounded-full"
-            mintAddress={mintAddress}
-          />
-          <p className="font-bold">
-            <MintSymbol mintAddress={mintAddress} />
-          </p>
-        </div>
+        {mintAddress ? (
+          <div className="flex items-center gap-2 flex-auto">
+            <MintLogo
+              mintAddress={mintAddress}
+              className="w-8 h-8 rounded-full"
+            />
+            <Island>
+              <MintSymbol mintAddress={mintAddress} />
+            </Island>
+          </div>
+        ) : (
+          <p className="font-bold flex-auto"> Select a token</p>
+        )}
         <ChevronDown />
       </div>
       {/* Modal Token Selection */}

@@ -28,7 +28,6 @@ import {
 } from '@/providers/airdrop.provider'
 import { CreateStep } from '@/app/airdrop/merkle-distribution/constants'
 import { usePushMessage } from '@/components/message/store'
-import { useBulkSenderMint } from '@/providers/bulkSender.provider'
 
 dayjs.extend(duration)
 dayjs.extend(relativeTime)
@@ -383,7 +382,7 @@ const Expiration = ({
 
 const MintSelection = () => {
   const [open, setOpen] = useState(false)
-  const { mintAddress, setMintAddress } = useBulkSenderMint()
+  const { mintAddress, setMintAddress } = useAirdropMintAddress()
 
   const onMintAddress = useCallback(
     (value: string) => {
