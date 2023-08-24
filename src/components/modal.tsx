@@ -23,7 +23,7 @@ export default function Modal({
   }, [open, ref])
 
   return (
-    <dialog id="daisy_modal" className="modal" ref={setRef}>
+    <dialog className="modal" ref={setRef}>
       <form method="dialog" className="modal-box max-h-fit">
         <button
           className="btn btn-circle btn-ghost btn-sm absolute top-2 right-2"
