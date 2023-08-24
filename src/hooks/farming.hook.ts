@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import SenFarmingProgram from '@sentre/farming'
 import BN from 'bn.js'
-import { useInterval } from 'react-use'
+import { useAsync, useInterval } from 'react-use'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import {
   ComputeBudgetProgram,
@@ -469,4 +469,26 @@ export const useInitializeFarm = (
   }, [boostsData, decimals, endAt, farming, inputMint, startAt, tokenRewards])
 
   return onInitializeFarm
+}
+
+/**
+ * Get collection boosted
+ * @param farmAddress Farm address
+ * @returns List collection boosted by farm address
+ */
+export const useCollectionBoosted = (farmAddress: string) => {
+  const debt = useDebtByFarmAddress(farmAddress)
+  const farming = useFarming()
+  const mpl = useMpl()
+
+  const { value: nfts } = useAsync(async () => {
+    if (!debt || debt.leverage.eq(precision)) return []
+    const PDAs = await farming.deriveAllPDAs({ farm: farmAddress })
+    const nfts = await mpl.nfts().findAllByOwner({ owner: PDAs.debtTreasurer })
+    return nfts
+      .filter(({ collection }) => !!collection)
+      .map(({ collection }) => collection?.address.toBase58())
+  }, [])
+
+  return nfts || []
 }

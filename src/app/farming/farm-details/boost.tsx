@@ -1,10 +1,10 @@
 import { useState } from 'react'
 
 import { Plus, Trash2 } from 'lucide-react'
+import { MintLogo } from '@/components/mint'
 import NFTSelection from '@/components/nftSelection'
 
 import { useBoostingByFarmAddress } from '@/providers/farming.provider'
-import { MintLogo } from '@/components/mint'
 
 type BoostNftProps = {
   farmAddress: string
