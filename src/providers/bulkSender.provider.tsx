@@ -29,6 +29,14 @@ export const useBulkSenderStore = create<BulkSenderStore>()(
         decimalized: false,
         setDecimalized: (decimalized) =>
           set({ decimalized }, false, 'setDecimalized'),
+        destroy: () =>
+          set(
+            {
+              mintAddress: '',
+            },
+            false,
+            'destroy',
+          ),
       }),
       {
         name: 'bulk_sender',

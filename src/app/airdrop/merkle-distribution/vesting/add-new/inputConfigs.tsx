@@ -28,6 +28,7 @@ import {
 } from '@/providers/airdrop.provider'
 import { CreateStep } from '@/app/airdrop/merkle-distribution/constants'
 import { usePushMessage } from '@/components/message/store'
+import { useBulkSenderMint } from '@/providers/bulkSender.provider'
 
 dayjs.extend(duration)
 dayjs.extend(relativeTime)
@@ -382,7 +383,7 @@ const Expiration = ({
 
 const MintSelection = () => {
   const [open, setOpen] = useState(false)
-  const { mintAddress, setMintAddress } = useAirdropMintAddress()
+  const { mintAddress, setMintAddress } = useBulkSenderMint()
 
   const onMintAddress = useCallback(
     (value: string) => {
@@ -496,7 +497,7 @@ const InputConfigs = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
             <Expiration unlimited={unlimited} onChange={setUnlimited} />
           </div>
         </div>
-        <Dropzone file={file} onChange={setFile} />
+        <Dropzone file={file} onChange={setFile} templateFile="/vesting.csv" />
       </div>
       <div className="grid grid-cols-2 gap-6">
         <button className="btn" onClick={onBack}>

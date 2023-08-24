@@ -8,17 +8,15 @@ import { MintLogo, MintSymbol } from '@/components/mint'
 import TokenSelection from '@/components/tokenSelection'
 import Dropzone from '@/components/dropzone'
 
-import {
-  useBulkSenderData,
-  useBulkSenderMint,
-} from '@/providers/bulkSender.provider'
+import { useBulkSenderData } from '@/providers/bulkSender.provider'
 import { isAddress } from '@/helpers/utils'
 import { usePushMessage } from '@/components/message/store'
+import { useAirdropMintAddress } from '@/providers/airdrop.provider'
 
 export default function BulkSender() {
   const [open, setOpen] = useState(false)
   const [file, setFile] = useState<File>()
-  const { mintAddress, setMintAddress } = useBulkSenderMint()
+  const { mintAddress, setMintAddress } = useAirdropMintAddress()
   const { setData } = useBulkSenderData()
   const { push } = useRouter()
   const pushMessage = usePushMessage()
@@ -67,11 +65,7 @@ export default function BulkSender() {
         onChange={onMintAddress}
       />
       <div className="col-span-12">
-        <Dropzone
-          file={file}
-          onChange={setFile}
-          urlFileTemplate="/templates.csv"
-        />
+        <Dropzone file={file} onChange={setFile} templateFile="/airdrop.csv" />
       </div>
       <div className="col-span-12">
         <button

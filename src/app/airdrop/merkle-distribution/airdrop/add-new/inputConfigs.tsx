@@ -157,7 +157,7 @@ const InputConfigs = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
             </div>
           </div>
         </div>
-        <Dropzone file={file} onChange={setFile} />
+        <Dropzone file={file} onChange={setFile} templateFile="/airdrop.csv" />
       </div>
       <div className="grid grid-cols-2 gap-6">
         <button className="btn" onClick={onBack}>
