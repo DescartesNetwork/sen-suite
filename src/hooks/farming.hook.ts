@@ -23,6 +23,7 @@ import { isAddress } from '@/helpers/utils'
 import { useMpl } from './mpl.hook'
 import { useMints } from './spl.hook'
 import { decimalize } from '@/helpers/decimals'
+import { useMintByAddress } from '@/providers/mint.provider'
 
 export type Reward = {
   mintAddress: string
@@ -369,6 +370,102 @@ export const useUnstake = (farmAddress: string, shares: BN) => {
 }
 
 /**
+ * Get farm's unstake nft function
+ * @param farmAddress Farm address
+ * @param nft Unstake nft address
+ * @returns Unstake nft function
+ */
+export const useUnstakeNft = (farmAddress: string, nft: string) => {
+  const farming = useFarming()
+  const debtData = useDebtByFarmAddress(farmAddress)
+  const mpl = useMpl()
+  const { inputMint } = useFarmByAddress(farmAddress)
+  const { decimals } = useMintByAddress(inputMint.toBase58()) || {
+    decimals: 0,
+  }
+
+  const withdraw = useCallback(
+    (mi_mint_amount: BN) => {
+      if (!debtData?.leverage) return new BN(0)
+      const input_mint_out = mi_mint_amount
+        .mul(precision)
+        .div(debtData.leverage)
+      return input_mint_out
+    },
+    [debtData?.leverage],
+  )
+
+  const unstakeNft = useCallback(async () => {
+    const metadata = await mpl
+      .nfts()
+      .findByMint({ mintAddress: new PublicKey(nft) })
+    if (!metadata.collection?.address) throw new Error('Not found collection!')
+
+    const shareAmount = debtData?.shares || new BN(0)
+    const depositAmount = withdraw(shareAmount)
+    // Validate
+    if (!decimals) throw new Error('Not find mint decimals')
+    const transaction = new Transaction()
+    // Initialize debt if needed
+    if (!debtData) {
+      const { tx } = await farming.initializeDebt({
+        farm: farmAddress,
+        sendAndConfirm: false,
+      })
+      transaction.add(tx)
+    }
+    // Unstake
+    if (!shareAmount.isZero()) {
+      const { tx } = await farming.unstake({
+        farm: farmAddress,
+        sendAndConfirm: false,
+      })
+      transaction.add(tx)
+    }
+    // Withdraw
+    if (!shareAmount.isZero()) {
+      const { tx } = await farming.withdraw({
+        farm: farmAddress,
+        shares: shareAmount,
+        sendAndConfirm: false,
+      })
+      transaction.add(tx)
+    }
+    // Unlock
+    const { tx: txUnlock } = await farming.unlock({
+      nft,
+      collection: metadata.collection.address,
+      farm: farmAddress,
+      metadata: metadata.metadataAddress,
+      sendAndConfirm: false,
+    })
+    transaction.add(txUnlock)
+    // Deposit
+    if (!depositAmount.isZero()) {
+      const { tx } = await farming.deposit({
+        farm: farmAddress,
+        inAmount: depositAmount,
+        sendAndConfirm: false,
+      })
+      transaction.add(tx)
+    }
+    // Stake
+    const { tx: txStake } = await farming.stake({
+      farm: farmAddress,
+      sendAndConfirm: false,
+    })
+    transaction.add(txStake)
+
+    const provider = farming.provider
+    const txId = await provider.sendAndConfirm(transaction)
+
+    return txId
+  }, [debtData, decimals, farmAddress, farming, mpl, nft, withdraw])
+
+  return unstakeNft
+}
+
+/**
  * Get farm's transfer ownership function
  * @param farmAddress Farm address
  * @returns Transfer ownership function
@@ -472,11 +569,11 @@ export const useInitializeFarm = (
 }
 
 /**
- * Get collection boosted
+ * Get nfts boosted
  * @param farmAddress Farm address
- * @returns List collection boosted by farm address
+ * @returns List nfts boosted by farm address
  */
-export const useCollectionBoosted = (farmAddress: string) => {
+export const useNftsBoosted = (farmAddress: string) => {
   const debt = useDebtByFarmAddress(farmAddress)
   const farming = useFarming()
   const mpl = useMpl()
@@ -486,8 +583,6 @@ export const useCollectionBoosted = (farmAddress: string) => {
     const PDAs = await farming.deriveAllPDAs({ farm: farmAddress })
     const nfts = await mpl.nfts().findAllByOwner({ owner: PDAs.debtTreasurer })
     return nfts
-      .filter(({ collection }) => !!collection)
-      .map(({ collection }) => collection?.address.toBase58())
   }, [])
 
   return nfts || []

@@ -100,11 +100,11 @@ export default function Stake({ farmAddress }: StakeProps) {
 
       {/* Boosting NFT */}
       {!!boosting.length && (
-        <div className="col-span-full grid grid-cols-12 gap-6">
+        <div className="col-span-full grid grid-cols-12">
           <div className="col-span-full">
             <BoostNft farmAddress={farmAddress} nfts={nfts} onNfts={setNfts} />
           </div>
-          <div className="col-span-full">
+          <div className="col-span-full mt-6">
             <BoostInfo
               nfts={nfts}
               amount={Number(amount) || 0}

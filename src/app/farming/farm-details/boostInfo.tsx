@@ -3,7 +3,7 @@ import BN from 'bn.js'
 
 import { MintAmount, MintSymbol } from '@/components/mint'
 
-import { precision, useCollectionBoosted } from '@/hooks/farming.hook'
+import { precision, useNftsBoosted } from '@/hooks/farming.hook'
 import {
   useBoostingByFarmAddress,
   useDebtByFarmAddress,
@@ -29,7 +29,11 @@ const BoostInfo = ({ farmAddress, amount, nfts }: BoostInfoType) => {
   const collections = nftsMetadata.map((metadata) =>
     metadata?.collection?.address.toBase58(),
   )
-  const collectionBoosted = useCollectionBoosted(farmAddress)
+  const nftsBoosted = useNftsBoosted(farmAddress)
+  const collectionBoosted = nftsBoosted.map(({ collection }) =>
+    collection?.address.toBase58(),
+  )
+
   const stakedAmount = useMemo(
     () =>
       !debt || (!amount && !nfts.length)
@@ -71,7 +75,7 @@ const BoostInfo = ({ farmAddress, amount, nfts }: BoostInfoType) => {
 
   return (
     <div className="card p-4 bg-base-300 mb-4 gap-2">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between  items-center">
         <p className="text-sm opacity-60">Staked LP</p>
         <MintAmount amount={stakedAmount} mintAddress={inputMint.toBase58()} />
       </div>
@@ -97,7 +101,7 @@ const BoostInfo = ({ farmAddress, amount, nfts }: BoostInfoType) => {
           {numeric(undecimalize(totalAmountIn, decimals)).format('0,0.[0000]')}
         </p>
       </div>
-      <p className="text-xs opacity-60">
+      <p className="text-xs opacity-60 break-words">
         *Total = Staked LP + LP amount + Boosted LP
       </p>
     </div>
