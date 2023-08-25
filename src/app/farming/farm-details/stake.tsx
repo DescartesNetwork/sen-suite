@@ -3,14 +3,19 @@ import { useCallback, useMemo, useState } from 'react'
 import BN from 'bn.js'
 
 import { MintAmount, MintSymbol } from '@/components/mint'
+import BoostNft from './boost'
+import BoostInfo from './boostInfo'
 
 import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
 import { useStake } from '@/hooks/farming.hook'
-import { useFarmByAddress } from '@/providers/farming.provider'
 import { useMintByAddress } from '@/providers/mint.provider'
 import { decimalize, undecimalize } from '@/helpers/decimals'
 import { useTokenAccountByMintAddress } from '@/providers/tokenAccount.provider'
+import {
+  useBoostingByFarmAddress,
+  useFarmByAddress,
+} from '@/providers/farming.provider'
 
 export type StakeProps = {
   farmAddress: string
@@ -19,11 +24,13 @@ export type StakeProps = {
 export default function Stake({ farmAddress }: StakeProps) {
   const [loading, setLoading] = useState(false)
   const [amount, setAmount] = useState('')
+  const [nfts, setNfts] = useState<string[]>([])
   const pushMessage = usePushMessage()
   const { inputMint } = useFarmByAddress(farmAddress)
   const { decimals } = useMintByAddress(inputMint.toBase58()) || { decimals: 0 }
   const { amount: balance } =
     useTokenAccountByMintAddress(inputMint.toBase58()) || {}
+  const boosting = useBoostingByFarmAddress(farmAddress)
 
   const max = useMemo(() => (!balance ? new BN(0) : balance), [balance])
   const ok = useMemo(() => {
@@ -35,7 +42,8 @@ export default function Stake({ farmAddress }: StakeProps) {
     () => setAmount(undecimalize(max, decimals)),
     [max, decimals],
   )
-  const stake = useStake(farmAddress, decimalize(amount, decimals))
+
+  const stake = useStake(farmAddress, decimalize(amount, decimals), nfts)
   const onStake = useCallback(async () => {
     try {
       setLoading(true)
@@ -47,6 +55,8 @@ export default function Stake({ farmAddress }: StakeProps) {
           onClick: () => window.open(solscan(txId), '_blank'),
         },
       )
+      setNfts([])
+      setAmount('')
     } catch (er: any) {
       pushMessage('alert-error', er.message)
     } finally {
@@ -87,6 +97,23 @@ export default function Stake({ farmAddress }: StakeProps) {
           </div>
         </div>
       </div>
+
+      {/* Boosting NFT */}
+      {!!boosting.length && (
+        <div className="col-span-full grid grid-cols-12">
+          <div className="col-span-full">
+            <BoostNft farmAddress={farmAddress} nfts={nfts} onNfts={setNfts} />
+          </div>
+          <div className="col-span-full mt-6">
+            <BoostInfo
+              nfts={nfts}
+              amount={Number(amount) || 0}
+              farmAddress={farmAddress}
+            />
+          </div>
+        </div>
+      )}
+
       <button
         className="col-span-full btn btn-primary btn-sm"
         onClick={onStake}

@@ -15,6 +15,7 @@ import UserPosition from '../farmCard/userPosition'
 import Stake from './stake'
 import Unstake from './unstake'
 import Ownership from './ownership'
+import UnstakeNft from './unstakeNft'
 
 import { isAddress } from '@/helpers/utils'
 import { useFarmByAddress } from '@/providers/farming.provider'
@@ -76,6 +77,9 @@ export default function FarmDetails() {
         </div>
         <div className="col-span-full @lg/left:col-span-6 card bg-base-200 p-4">
           <MyReward farmAddress={farmAddress} />
+        </div>
+        <div className="col-span-full">
+          <UnstakeNft farmAddress={farmAddress} />
         </div>
       </div>
       <div className="col-span-full @2xl/main:col-span-5 @3xl/main:col-span-4 card bg-base-200 p-4">

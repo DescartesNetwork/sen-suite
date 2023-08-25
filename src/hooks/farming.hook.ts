@@ -1,9 +1,15 @@
 import { useCallback, useMemo, useState } from 'react'
 import SenFarmingProgram from '@sentre/farming'
 import BN from 'bn.js'
-import { useInterval } from 'react-use'
+import { useAsync, useInterval } from 'react-use'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { ComputeBudgetProgram, PublicKey, Transaction } from '@solana/web3.js'
+import {
+  ComputeBudgetProgram,
+  Keypair,
+  PublicKey,
+  Signer,
+  Transaction,
+} from '@solana/web3.js'
 
 import solConfig from '@/configs/sol.config'
 import { useAnchorProvider } from '@/providers/wallet.provider'
@@ -15,6 +21,18 @@ import {
 } from '@/providers/farming.provider'
 import { isAddress } from '@/helpers/utils'
 import { useMpl } from './mpl.hook'
+import { useMints } from './spl.hook'
+import { decimalize } from '@/helpers/decimals'
+
+export type Reward = {
+  mintAddress: string
+  budget: string
+}
+
+export type BoostData = {
+  collection: string
+  percentage: number
+}
 
 /**
  * Velocity precision
@@ -351,6 +369,97 @@ export const useUnstake = (farmAddress: string, shares: BN) => {
 }
 
 /**
+ * Get farm's unstake nft function
+ * @param farmAddress Farm address
+ * @param nft Unstake nft address
+ * @returns Unstake nft function
+ */
+export const useUnstakeNft = (farmAddress: string, nft: string) => {
+  const farming = useFarming()
+  const debtData = useDebtByFarmAddress(farmAddress)
+  const mpl = useMpl()
+
+  const withdraw = useCallback(
+    (mi_mint_amount: BN) => {
+      if (!debtData?.leverage) return new BN(0)
+      const input_mint_out = mi_mint_amount
+        .mul(precision)
+        .div(debtData.leverage)
+      return input_mint_out
+    },
+    [debtData?.leverage],
+  )
+
+  const unstakeNft = useCallback(async () => {
+    const metadata = await mpl
+      .nfts()
+      .findByMint({ mintAddress: new PublicKey(nft) })
+    if (!metadata.collection?.address) throw new Error('Not found collection!')
+
+    const shareAmount = debtData?.shares || new BN(0)
+    const depositAmount = withdraw(shareAmount)
+    // Validate
+    const transaction = new Transaction()
+    // Initialize debt if needed
+    if (!debtData) {
+      const { tx } = await farming.initializeDebt({
+        farm: farmAddress,
+        sendAndConfirm: false,
+      })
+      transaction.add(tx)
+    }
+    // Unstake
+    if (!shareAmount.isZero()) {
+      const { tx } = await farming.unstake({
+        farm: farmAddress,
+        sendAndConfirm: false,
+      })
+      transaction.add(tx)
+    }
+    // Withdraw
+    if (!shareAmount.isZero()) {
+      const { tx } = await farming.withdraw({
+        farm: farmAddress,
+        shares: shareAmount,
+        sendAndConfirm: false,
+      })
+      transaction.add(tx)
+    }
+    // Unlock
+    const { tx: txUnlock } = await farming.unlock({
+      nft,
+      collection: metadata.collection.address,
+      farm: farmAddress,
+      metadata: metadata.metadataAddress,
+      sendAndConfirm: false,
+    })
+    transaction.add(txUnlock)
+    // Deposit
+    if (!depositAmount.isZero()) {
+      const { tx } = await farming.deposit({
+        farm: farmAddress,
+        inAmount: depositAmount,
+        sendAndConfirm: false,
+      })
+      transaction.add(tx)
+    }
+    // Stake
+    const { tx: txStake } = await farming.stake({
+      farm: farmAddress,
+      sendAndConfirm: false,
+    })
+    transaction.add(txStake)
+
+    const provider = farming.provider
+    const txId = await provider.sendAndConfirm(transaction)
+
+    return txId
+  }, [debtData, farmAddress, farming, mpl, nft, withdraw])
+
+  return unstakeNft
+}
+
+/**
  * Get farm's transfer ownership function
  * @param farmAddress Farm address
  * @returns Transfer ownership function
@@ -372,4 +481,103 @@ export const useTransferOwnership = (
   }, [farmAddress, ownerAddress, farming])
 
   return transferOwnership
+}
+
+/**
+ * Get farm's transfer ownership function
+ * @param farmAddress Farm address
+ * @returns Transfer ownership function
+ */
+export const useInitializeFarm = (
+  inputMint: string,
+  startAt: number,
+  endAt: number,
+  boostsData: BoostData[],
+  tokenRewards: Reward[],
+) => {
+  const farming = useFarming()
+  const mints = useMints(tokenRewards.map(({ mintAddress }) => mintAddress))
+  const decimals = mints.map((mint) => mint?.decimals || 0)
+
+  const onInitializeFarm = useCallback(async () => {
+    const mintPubKey = new PublicKey(inputMint)
+    const allTxs: { tx: Transaction; signers: Signer[] }[] = []
+    // Check time
+    const currentTime = new Date().getTime()
+    let startAfter = 0
+    if (startAt > currentTime)
+      startAfter = Math.floor((startAt - currentTime) / 1000)
+    const endAfter = Math.floor((endAt - currentTime) / 1000)
+
+    // Initialize farm
+    const farmKeypair = Keypair.generate()
+    const { tx: txInitializeFarm } = await farming.initializeFarm({
+      inputMint: mintPubKey,
+      startAfter: startAfter + 10,
+      endAfter: endAfter,
+      sendAndConfirm: false,
+      farmKeypair,
+    })
+    allTxs.push({ tx: txInitializeFarm, signers: [farmKeypair] })
+
+    // Add Boosting
+    if (boostsData.length) {
+      const txBoosts = new Transaction()
+      await Promise.all(
+        boostsData.map(async ({ collection, percentage }) => {
+          const { tx: txPushFarmBoostingCollection } =
+            await farming.pushFarmBoostingCollection({
+              farm: farmKeypair.publicKey,
+              collection: collection,
+              coefficient: new BN((percentage / 100) * precision.toNumber()),
+              sendAndConfirm: false,
+            })
+          txBoosts.add(txPushFarmBoostingCollection)
+        }),
+      )
+      allTxs.push({ tx: txBoosts, signers: [] })
+    }
+
+    // Add Reward
+    const txRewards = new Transaction()
+    await Promise.all(
+      tokenRewards.map(async ({ mintAddress, budget }, index) => {
+        const rewardAmount = decimalize(budget, decimals[index])
+        const { tx: txPushFarmReward } = await farming.pushFarmReward({
+          farm: farmKeypair.publicKey,
+          rewardMint: mintAddress,
+          rewardAmount,
+          sendAndConfirm: false,
+        })
+        txRewards.add(txPushFarmReward)
+      }),
+    )
+    allTxs.push({ tx: txRewards, signers: [] })
+
+    const [txId] = await farming.provider.sendAll(allTxs)
+
+    return { txId, farmAddress: farmKeypair.publicKey.toBase58() }
+  }, [boostsData, decimals, endAt, farming, inputMint, startAt, tokenRewards])
+
+  return onInitializeFarm
+}
+
+/**
+ * Get nfts boosted
+ * @param farmAddress Farm address
+ * @returns List nfts boosted by farm address
+ */
+export const useNftsBoosted = (farmAddress: string) => {
+  const debt = useDebtByFarmAddress(farmAddress)
+  const farming = useFarming()
+  const mpl = useMpl()
+
+  const { value: nfts } = useAsync(async () => {
+    if (!debt || debt.leverage.eq(precision)) return []
+    const PDAs = await farming.deriveAllPDAs({ farm: farmAddress })
+    const nfts = await mpl.nfts().findAllByOwner({ owner: PDAs.debtTreasurer })
+    return nfts
+  }, [mpl, farming, debt])
+
+  return nfts || []
 }
