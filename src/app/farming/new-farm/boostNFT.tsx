@@ -10,12 +10,14 @@ import { EMPTY_COLLECTION } from './page'
 type RewardCardProps = {
   boostData: BoostData
   index: number
+  collectionSelected: string[]
   onDelete: (index: number) => void
   onChange: (index: number, name: keyof BoostData, value: string) => void
 }
 const BoostCard = ({
   boostData,
   index,
+  collectionSelected,
   onChange,
   onDelete,
 }: RewardCardProps) => {
@@ -66,7 +68,7 @@ const BoostCard = ({
 
       <NFTSelection
         open={open}
-        mintAddresses={[boostData.collection]}
+        mintAddresses={collectionSelected}
         onChange={(val) => onMintChange(index, val)}
         onCancel={() => setOpen(false)}
         onlyCollection
@@ -132,6 +134,9 @@ const BoostNFT = ({ boostsData, onBoostsData }: BoostNFTProps) => {
                 onChange={onChange}
                 onDelete={onDelete}
                 boostData={boostData}
+                collectionSelected={boostsData.map(
+                  ({ collection }) => collection,
+                )}
               />
             </div>
           ))}

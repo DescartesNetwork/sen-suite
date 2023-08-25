@@ -19,13 +19,23 @@ type UnstakeNftProps = {
 const UnstakeNft = ({ farmAddress }: UnstakeNftProps) => {
   const [loading, setLoading] = useState(false)
   const [nftSelected, setNftSelect] = useState('')
+
   const nftsBoosted = useNftsBoosted(farmAddress)
-  const collectionBoosted = nftsBoosted.map(({ collection }) =>
-    collection?.address.toBase58(),
-  )
-  const nftAddresses = nftsBoosted.map((nft: any) => nft.mintAddress.toBase58())
   const boosting = useBoostingByFarmAddress(farmAddress)
   const pushMessage = usePushMessage()
+
+  const collectionBoosted = useMemo(
+    () => nftsBoosted.map(({ collection }) => collection?.address.toBase58()),
+    [nftsBoosted],
+  )
+  const nftAddresses = useMemo(
+    () =>
+      nftsBoosted.map((nft: any) => ({
+        nft: nft.mintAddress.toBase58(),
+        collection: nft.collection?.address.toBase58(),
+      })),
+    [nftsBoosted],
+  )
 
   const unstake = useUnstakeNft(farmAddress, nftSelected)
   const onUnstake = useCallback(
@@ -51,17 +61,23 @@ const UnstakeNft = ({ farmAddress }: UnstakeNftProps) => {
     [unstake, pushMessage],
   )
 
-  const totalBoosted = useMemo(() => {
+  const { totalBoosted, percentage } = useMemo(() => {
     let totalBoosted = new BN(0)
+    const percentage: Record<string, string> = {}
     for (const { boostingCollection, boostingCoefficient } of boosting) {
-      if (collectionBoosted.includes(boostingCollection.toBase58()))
+      if (collectionBoosted.includes(boostingCollection.toBase58())) {
         totalBoosted = totalBoosted.add(boostingCoefficient)
+        percentage[boostingCollection.toBase58()] = undecimalize(
+          boostingCoefficient,
+          9,
+        )
+      }
     }
-    return totalBoosted
+    return { totalBoosted, percentage }
   }, [boosting, collectionBoosted])
 
   return (
-    <div className="card p-4 bg-base-200 gap-3">
+    <div className="card p-4 bg-base-200 gap-6">
       <p className="font-bold">
         Your locked NFTs{' '}
         <span className="font-light ml-1 border-2 border-primary px-2 rounded-lg text-primary">
@@ -69,14 +85,22 @@ const UnstakeNft = ({ farmAddress }: UnstakeNftProps) => {
         </span>
       </p>
       <div className="flex gap-2 items-center">
-        {nftAddresses.map((nftAddress) => (
-          <div key={nftAddress} className="relative group/nft w-16 h-16">
-            <MintLogo
-              className="w-full h-full rounded-lg group-hover/nft:opacity-60"
-              mintAddress={nftAddress}
-            />
-            <div className="opacity-0 group-hover/nft:opacity-100 cursor-pointer absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-primary p-0.5 rounded-md">
-              <X size={16} onClick={() => setNftSelect(nftAddress)} />
+        {nftAddresses.map(({ nft, collection }) => (
+          <div
+            key={nft}
+            className="tooltip"
+            data-tip={`Boosted ${numeric(percentage[collection]).format(
+              '0,0.[00]%',
+            )}`}
+          >
+            <div className="relative group/nft w-16 h-16">
+              <MintLogo
+                className="w-full h-full rounded-lg group-hover/nft:opacity-60"
+                mintAddress={nft}
+              />
+              <div className="opacity-0 group-hover/nft:opacity-100 cursor-pointer absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-primary p-0.5 rounded-md">
+                <X size={16} onClick={() => setNftSelect(nft)} />
+              </div>
             </div>
           </div>
         ))}

@@ -23,7 +23,6 @@ import { isAddress } from '@/helpers/utils'
 import { useMpl } from './mpl.hook'
 import { useMints } from './spl.hook'
 import { decimalize } from '@/helpers/decimals'
-import { useMintByAddress } from '@/providers/mint.provider'
 
 export type Reward = {
   mintAddress: string
@@ -379,10 +378,6 @@ export const useUnstakeNft = (farmAddress: string, nft: string) => {
   const farming = useFarming()
   const debtData = useDebtByFarmAddress(farmAddress)
   const mpl = useMpl()
-  const { inputMint } = useFarmByAddress(farmAddress)
-  const { decimals } = useMintByAddress(inputMint.toBase58()) || {
-    decimals: 0,
-  }
 
   const withdraw = useCallback(
     (mi_mint_amount: BN) => {
@@ -404,7 +399,6 @@ export const useUnstakeNft = (farmAddress: string, nft: string) => {
     const shareAmount = debtData?.shares || new BN(0)
     const depositAmount = withdraw(shareAmount)
     // Validate
-    if (!decimals) throw new Error('Not find mint decimals')
     const transaction = new Transaction()
     // Initialize debt if needed
     if (!debtData) {
@@ -460,7 +454,7 @@ export const useUnstakeNft = (farmAddress: string, nft: string) => {
     const txId = await provider.sendAndConfirm(transaction)
 
     return txId
-  }, [debtData, decimals, farmAddress, farming, mpl, nft, withdraw])
+  }, [debtData, farmAddress, farming, mpl, nft, withdraw])
 
   return unstakeNft
 }
@@ -583,7 +577,7 @@ export const useNftsBoosted = (farmAddress: string) => {
     const PDAs = await farming.deriveAllPDAs({ farm: farmAddress })
     const nfts = await mpl.nfts().findAllByOwner({ owner: PDAs.debtTreasurer })
     return nfts
-  }, [])
+  }, [mpl, farming, debt])
 
   return nfts || []
 }
