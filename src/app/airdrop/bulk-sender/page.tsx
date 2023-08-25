@@ -1,12 +1,14 @@
 'use client'
 import { useCallback, useEffect, useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { parse } from 'papaparse'
 
+import { ChevronDown, ChevronLeft } from 'lucide-react'
 import { MintLogo, MintSymbol } from '@/components/mint'
 import TokenSelection from '@/components/tokenSelection'
-import { ChevronDown, Search } from 'lucide-react'
 import Dropzone from '@/components/dropzone'
+import Island from '@/components/island'
 
 import {
   useBulkSenderData,
@@ -43,54 +45,61 @@ export default function BulkSender() {
   }, [file, pushMessage, setData])
 
   return (
-    <div className="grid grid-cols-12 gap-x-2 gap-y-4">
-      <div className="col-span-12 flex flex-row gap-2 items-center">
-        <div
-          className="card bg-base-200 p-2 rounded-full cursor-pointer flex flex-row items-center gap-2"
-          onClick={() => setOpen(true)}
-        >
-          <MintLogo
-            className="w-8 h-8 rounded-full"
-            mintAddress={mintAddress}
-          />
-          <p className="font-bold">
-            <MintSymbol mintAddress={mintAddress} />
-          </p>
-          <ChevronDown />
+    <div className="max-w-[480px]">
+      <Link href={'/airdrop'} className="btn btn-sm btn-ghost mb-2">
+        <ChevronLeft size={16} />
+        Back
+      </Link>
+      <div className="card bg-base-100 p-6 rounded-box shadow-xl grid grid-cols-12 gap-6 ">
+        <div className="col-span-12">
+          <h5 className="mb-2">Bulk Sender</h5>
         </div>
-        <div className="flex-auto flex flex-row items-center relative">
-          <input
-            className="input bg-base-200 w-full pr-12 rounded-full"
-            type="text"
-            placeholder="Token Address"
-            value={mintAddress}
-            onChange={(e) => onMintAddress(e.target.value)}
-          />
-          <button
-            className="absolute right-2 btn btn-sm btn-circle btn-ghost"
-            onClick={() => setOpen(true)}
-          >
-            <Search />
-          </button>
-          <TokenSelection
-            open={open}
-            onCancel={() => setOpen(false)}
-            mintAddress={mintAddress}
-            onChange={onMintAddress}
-          />
+        <div className="col-span-12">
+          <div className="grid grid-cols-12 gap-6">
+            <div
+              className="rounded-full border-2 px-4 py-2 col-span-12 flex flex-row justify-between items-center cursor-pointer"
+              onClick={() => setOpen(true)}
+            >
+              {mintAddress ? (
+                <div className="flex items-center gap-2 flex-auto">
+                  <MintLogo
+                    mintAddress={mintAddress}
+                    className="w-8 h-8 rounded-full"
+                  />
+                  <Island>
+                    <MintSymbol mintAddress={mintAddress} />
+                  </Island>
+                </div>
+              ) : (
+                <p className="font-bold flex-auto"> Select a token</p>
+              )}
+              <ChevronDown />
+            </div>
+            {/* Modal Token Selection */}
+            <TokenSelection
+              open={open}
+              onCancel={() => setOpen(false)}
+              mintAddress={mintAddress}
+              onChange={onMintAddress}
+            />
+            <div className="col-span-12">
+              <Dropzone
+                file={file}
+                onChange={setFile}
+                templateFile="/airdrop.csv"
+              />
+            </div>
+            <div className="col-span-12">
+              <button
+                className="btn btn-primary w-full rounded-full"
+                onClick={() => push('/airdrop/bulk-sender/summary')}
+                disabled={!isAddress(mintAddress)}
+              >
+                Skip
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
-      <div className="col-span-12">
-        <Dropzone file={file} onChange={setFile} />
-      </div>
-      <div className="col-span-12">
-        <button
-          className="btn btn-primary w-full rounded-full"
-          onClick={() => push('/airdrop/bulk-sender/summary')}
-          disabled={!isAddress(mintAddress)}
-        >
-          Next
-        </button>
       </div>
     </div>
   )
