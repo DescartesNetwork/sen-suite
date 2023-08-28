@@ -4,30 +4,14 @@ import Link from 'next/link'
 import { useKey } from 'react-use'
 import classNames from 'classnames'
 
-import {
-  ChevronLeftSquare,
-  ChevronRightSquare,
-  Send,
-  Twitter,
-  Menu,
-} from 'lucide-react'
+import { Menu } from 'lucide-react'
 import Brand from '@/components/brand'
 import Island from '@/components/island'
 import WalletButton from './walletButton'
-import ThemeSwitch from './themeSwitch'
 import MenuItem from './menuItem'
+import MenuInfo, { MenuLoading } from './menuInfo'
 
 import './index.scss'
-
-function MenuLoading() {
-  return (
-    <li>
-      <a href="#">
-        <span className="menu-logo loading loading-ring loading-xs" />
-      </a>
-    </li>
-  )
-}
 
 export type SidebarProps = { children: ReactNode }
 
@@ -64,61 +48,8 @@ export default function Sidebar({ children }: SidebarProps) {
         </Link>
         {/* Menu Selection */}
         <MenuItem open={open} />
-
-        <div className="menu menu-vertical menu-md">
-          <Island Loading={MenuLoading}>
-            <WalletButton />
-          </Island>
-          <div className="divider mx-4 my-0" />
-          <Link
-            className="px-4 py-3 flex flex-row gap-2 hover:bg-[#EFF0F1] hover:text-[#616973] rounded-lg"
-            href="https://twitter.com/SentreProtocol"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <Twitter strokeWidth={1.5} className="menu-logo" />
-            <p className="menu-option">Twitter</p>
-          </Link>
-          <Link
-            className="px-4 py-3 flex flex-row gap-2 hover:bg-[#EFF0F1] hover:text-[#616973] rounded-lg"
-            href="https://t.me/Sentre"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <Send strokeWidth={1.5} className="menu-logo" />
-            <p className="menu-option">Telegram</p>
-          </Link>
-          <Island Loading={MenuLoading}>
-            <ThemeSwitch />
-          </Island>
-          <span
-            onClick={() => setOpen(!open)}
-            className="flex flex-row gap-1 items-center px-4 py-3 hover:bg-[#EFF0F1] hover:text-[#616973] rounded-lg cursor-pointer"
-          >
-            <label className="menu-logo swap swap-rotate">
-              <input
-                type="checkbox"
-                onClick={(e) => e.stopPropagation()}
-                checked={open}
-                readOnly
-              />
-              <p className="swap-on">
-                <ChevronLeftSquare strokeWidth={1.5} className="menu-logo" />
-              </p>
-              <p className="swap-off">
-                <ChevronRightSquare strokeWidth={1.5} className="menu-logo" />
-              </p>
-            </label>
-            <div className="menu-option pl-2 gap-1">
-              <span className="join opacity-60">
-                <kbd className="join-item kbd !kbd-xs">ctrl</kbd>
-                <kbd className="join-item kbd !kbd-xs">⌘</kbd>
-              </span>
-              <span>+</span>
-              <kbd className="kbd !kbd-xs opacity-60">K</kbd>
-            </div>
-          </span>
-        </div>
+        {/* Menu Selection */}
+        <MenuInfo open={open} setOpen={setOpen} />
       </aside>
       {/* Mobile header & Page content */}
       <main className="flex-auto flex flex-col min-h-[100dvh]">

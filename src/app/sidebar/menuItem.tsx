@@ -70,6 +70,7 @@ const routes = [
 ]
 export default function MenuItem({ open }: { open: boolean }) {
   const pathname = usePathname()
+  console.log('path', pathname)
 
   return (
     <ul className="flex flex-nowrap overflow-y-auto h-4/6 menu menu-vertical menu-md sidebar-menu">
@@ -78,14 +79,12 @@ export default function MenuItem({ open }: { open: boolean }) {
           <li key={route}>
             <details className="w-full">
               <summary
-                className={classNames('px-4 py-3 opacity-70', {
+                className={classNames('px-4 py-3', {
                   'after:w-0': !open,
                 })}
               >
-                <p>
-                  <Logo strokeWidth={1.5} className="menu-logo" />
-                </p>
-                <p className="menu-option font-semibold">{name}</p>
+                <Logo strokeWidth={1.5} className="menu-logo opacity-60" />
+                <p className="menu-option opacity-60 font-semibold">{name}</p>
               </summary>
               <ul
                 className={classNames('ml-0 pl-0 before:w-0', {
@@ -96,11 +95,13 @@ export default function MenuItem({ open }: { open: boolean }) {
                   <li key={route}>
                     <Link
                       href={disabled ? '#' : route}
-                      className={classNames('pl-11 py-3 opacity-70', {
+                      className={classNames('pl-11 py-3', {
                         focus: pathname === route,
                       })}
                     >
-                      <p className="menu-option font-semibold">{name}</p>
+                      <p className="menu-option opacity-60 font-semibold ml-1">
+                        {name}
+                      </p>
                     </Link>
                   </li>
                 ))}
@@ -111,14 +112,12 @@ export default function MenuItem({ open }: { open: boolean }) {
           <li key={route} className={classNames({ disabled: disabled })}>
             <Link
               href={disabled ? '#' : route}
-              className={classNames('px-4 py-3 opacity-70', {
+              className={classNames('px-4 py-3', {
                 focus: pathname === route,
               })}
             >
-              <p>
-                <Logo strokeWidth={1.5} className="menu-logo" />
-              </p>
-              <p className="menu-option font-semibold">{name}</p>
+              <Logo strokeWidth={1.5} className="menu-logo opacity-60" />
+              <p className="menu-option opacity-60 font-semibold">{name}</p>
             </Link>
           </li>
         ),

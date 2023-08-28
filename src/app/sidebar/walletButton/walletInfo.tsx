@@ -48,9 +48,13 @@ export default function WalletInfo({
   const tolltipText = copied ? 'Copied' : 'Copy'
 
   return (
-    <div className="dropdown px-4 py-3 hover:bg-[#EFF0F1] hover:text-[#616973] rounded-lg cursor-pointer">
-      <label tabIndex={0} ref={setReference} className="flex flex-row gap-2">
-        <WalletIcon className="avatar h-5 w-5" wallet={wallet} />
+    <div className="dropdown">
+      <label
+        tabIndex={0}
+        ref={setReference}
+        className="flex flex-row gap-2 px-4 py-3 hover:bg-neutral hover:text-neutral-100 rounded-lg cursor-pointer"
+      >
+        <WalletIcon className="avatar h-5 w-5 ml-1" wallet={wallet} />
         <p className="menu-option font-semibold">{shortenAddress(address)}</p>
       </label>
       <ul
