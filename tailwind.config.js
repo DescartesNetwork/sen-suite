@@ -27,6 +27,9 @@ module.exports = {
           'primary-content': '#ffffff',
           secondary: '#5d6ccf',
           'secondary-content': '#ffffff',
+
+          '--neutral-block': '#212433',
+          '--neutral-text': '#ffffff'
         },
       },
       {
@@ -36,6 +39,9 @@ module.exports = {
           'primary-content': '#ffffff',
           secondary: '#5d6ccf',
           'secondary-content': '#ffffff',
+
+          '--neutral-block': '#29323C',
+          '--neutral-text': '#C1C4C6'
         },
       },
     ],

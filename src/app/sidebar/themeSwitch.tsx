@@ -9,10 +9,10 @@ export default function ThemeSwitch() {
 
   return (
     <div
-      className="px-4 py-3 flex flex-row gap-2 hover:bg-neutral hover:text-neutral-100 rounded-lg cursor-pointer"
+      className="menu-item"
       onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
     >
-      <label className="swap swap-rotate ml-1">
+      <label className="swap swap-rotate">
         <input
           type="checkbox"
           onChange={(e) => setTheme(e.target.checked ? 'light' : 'dark')}

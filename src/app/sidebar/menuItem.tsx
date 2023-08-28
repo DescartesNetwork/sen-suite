@@ -12,9 +12,19 @@ import {
   BadgePercent,
   Rocket,
   Home,
+  LucideIcon,
 } from 'lucide-react'
+import { Fragment } from 'react'
 
-const routes = [
+export type MenuItems = {
+  route: string
+  name: string
+  Logo?: LucideIcon
+  disabled?: boolean
+  children?: MenuItems[]
+}
+
+const ROUTES: MenuItems[] = [
   {
     route: '/',
     name: 'Home',
@@ -45,7 +55,7 @@ const routes = [
     route: '/airdrop',
     name: 'Airdrop',
     Logo: Droplets,
-    childrens: [
+    children: [
       {
         route: '/airdrop/bulk-sender',
         name: 'Bulk Sender',
@@ -68,60 +78,86 @@ const routes = [
     Logo: BookPlus,
   },
 ]
-export default function MenuItem({ open }: { open: boolean }) {
+
+const RenderItem = ({ name, Logo }: { name: string; Logo?: LucideIcon }) => {
+  return (
+    <Fragment>
+      {Logo && <Logo strokeWidth={1.5} className="menu-logo opacity-60" />}
+      <p className="menu-option menu-text">{name}</p>
+    </Fragment>
+  )
+}
+
+const RenderMenu = ({
+  items,
+  open,
+  setOpen,
+  className,
+}: {
+  items: MenuItems[]
+  open: boolean
+  setOpen: (open: boolean) => void
+  className?: string
+}) => {
   const pathname = usePathname()
-  console.log('path', pathname)
 
   return (
-    <ul className="flex flex-nowrap overflow-y-auto h-4/6 menu menu-vertical menu-md sidebar-menu">
-      {routes.map(({ route, name, Logo, disabled, childrens }) =>
-        childrens?.length ? (
-          <li key={route}>
-            <details className="w-full">
-              <summary
-                className={classNames('px-4 py-3', {
-                  'after:w-0': !open,
-                })}
-              >
-                <Logo strokeWidth={1.5} className="menu-logo opacity-60" />
-                <p className="menu-option opacity-60 font-semibold">{name}</p>
-              </summary>
-              <ul
-                className={classNames('ml-0 pl-0 before:w-0', {
-                  hidden: !open,
-                })}
-              >
-                {childrens.map(({ route, name }) => (
-                  <li key={route}>
-                    <Link
-                      href={disabled ? '#' : route}
-                      className={classNames('pl-11 py-3', {
-                        focus: pathname === route,
-                      })}
-                    >
-                      <p className="menu-option opacity-60 font-semibold ml-1">
-                        {name}
-                      </p>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </details>
-          </li>
-        ) : (
+    <Fragment>
+      {items.map(({ route, name, Logo, disabled, children }) => {
+        if (children?.length)
+          return (
+            <li className={className} key={route}>
+              <details onClick={() => setOpen(true)}>
+                <summary
+                  className={classNames('px-4 py-3', {
+                    'after:w-0': !open,
+                  })}
+                >
+                  <RenderItem Logo={Logo} name={name} />
+                </summary>
+                <ul
+                  className={classNames('ml-0 pl-0 before:w-0', {
+                    hidden: !open,
+                  })}
+                >
+                  <RenderMenu
+                    className="pl-11"
+                    items={children}
+                    open={open}
+                    setOpen={setOpen}
+                  />
+                </ul>
+              </details>
+            </li>
+          )
+
+        return (
           <li key={route} className={classNames({ disabled: disabled })}>
             <Link
               href={disabled ? '#' : route}
-              className={classNames('px-4 py-3', {
+              className={classNames(`px-4 py-3 ${className}`, {
                 focus: pathname === route,
               })}
             >
-              <Logo strokeWidth={1.5} className="menu-logo opacity-60" />
-              <p className="menu-option opacity-60 font-semibold">{name}</p>
+              <RenderItem Logo={Logo} name={name} />
             </Link>
           </li>
-        ),
-      )}
+        )
+      })}
+    </Fragment>
+  )
+}
+
+export default function MenuItem({
+  open,
+  setOpen,
+}: {
+  open: boolean
+  setOpen: (open: boolean) => void
+}) {
+  return (
+    <ul className="flex flex-nowrap overflow-y-auto h-4/6 menu menu-vertical menu-md sidebar-menu">
+      <RenderMenu items={ROUTES} open={open} setOpen={setOpen} />
     </ul>
   )
 }

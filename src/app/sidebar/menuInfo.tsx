@@ -1,6 +1,5 @@
 'use client'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 
 import {
   Twitter,
@@ -29,9 +28,6 @@ export default function MenuInfo({
   open: boolean
   setOpen: (open: boolean) => void
 }) {
-  const pathname = usePathname()
-  console.log('path', pathname)
-
   return (
     <div className="menu menu-vertical menu-md">
       <Island Loading={MenuLoading}>
@@ -39,7 +35,7 @@ export default function MenuInfo({
       </Island>
       <div className="divider mx-4 my-0" />
       <Link
-        className="px-4 py-3 flex flex-row gap-2 hover:bg-neutral hover:text-neutral-100 rounded-lg"
+        className="menu-item"
         href="https://twitter.com/SentreProtocol"
         target="_blank"
         rel="noreferrer"
@@ -48,7 +44,7 @@ export default function MenuInfo({
         <p className="menu-option">Twitter</p>
       </Link>
       <Link
-        className="px-4 py-3 flex flex-row gap-2 hover:bg-neutral hover:text-neutral-100 rounded-lg"
+        className="menu-item"
         href="https://t.me/Sentre"
         target="_blank"
         rel="noreferrer"
@@ -59,10 +55,7 @@ export default function MenuInfo({
       <Island Loading={MenuLoading}>
         <ThemeSwitch />
       </Island>
-      <span
-        onClick={() => setOpen(!open)}
-        className="flex flex-row gap-1 items-center px-4 py-3 hover:bg-neutral hover:text-neutral-100 rounded-lg cursor-pointer"
-      >
+      <span onClick={() => setOpen(!open)} className="menu-item gap-1">
         <label className="menu-logo swap swap-rotate">
           <input
             type="checkbox"

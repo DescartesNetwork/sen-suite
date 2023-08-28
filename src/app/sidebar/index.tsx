@@ -40,10 +40,10 @@ export default function Sidebar({ children }: SidebarProps) {
         )}
       >
         <Link className="p-4" href="/">
-          <Brand size={32} style={{ marginLeft: 4 }} named={open} />
+          <Brand size={32} style={{ marginLeft: 3 }} named={open} />
         </Link>
         {/* Menu Item */}
-        <MenuItem open={open} />
+        <MenuItem open={open} setOpen={setOpen} />
         {/* Menu Infor */}
         <MenuInfo open={open} setOpen={setOpen} />
       </aside>

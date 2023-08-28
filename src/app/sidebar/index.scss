@@ -9,18 +9,40 @@
         @apply text-sm hidden;
       }
       .menu-logo {
-        @apply h-5 w-5 ml-1;
+        @apply h-5 w-5;
+      }
+      .menu-text {
+        @apply opacity-60 font-semibold;
+      }
+      .menu-item {
+        @apply px-4 py-3 flex flex-row gap-2 hover:bg-neutral hover:text-neutral-100 rounded-lg cursor-pointer;
       }
       li.disabled > a {
         @apply cursor-not-allowed;
       }
-    }
-    .sidebar-menu::-webkit-scrollbar {
-      display: none;
+      .focus{
+        @apply bg-[--neutral-block] text-[--neutral-text];
+        > .menu-option, .menu-logo{
+          opacity: 1;
+        }
+      }
+      li:not(.menu-title):not(.disabled) {
+        > *:not(ul):not(details):not(.menu-title):not(.active):hover,
+        > details > summary:not(.menu-title):not(.active):hover {
+          @apply bg-[--neutral-block] text-[--neutral-text] #{!important};
+          > .menu-option, .menu-logo{
+            opacity: 1;
+          }
+        }
+      }
     }
     .sidebar-menu {
       -ms-overflow-style: none;  /* IE and Edge */
       scrollbar-width: none;  /* Firefox */
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
     }
     .menu-vertical > li:not(.menu-title) > details > ul {
       margin-left: 0;
@@ -37,7 +59,18 @@
           display: inherit;
         }
       }
+
     }
+
+    &:not(.open) {
+      .menu {
+        li a, li details summary{
+          display: block;
+          text-align: center;
+        }
+      }
+    }
+   
 
     &.mobile {
       @apply fixed -translate-x-full top-0;
@@ -63,47 +96,3 @@
   }
 }
 
-[data-theme="light"]{
-  .menu{
-    .focus{
-      @apply bg-[#212433] text-[#fff];
-      > .menu-option, .menu-logo{
-        opacity: 1;
-      }
-    }
-    
-    li:not(.menu-title):not(.disabled) {
-      > *:not(ul):not(details):not(.menu-title):not(.active):hover,
-      > details > summary:not(.menu-title):not(.active):hover {
-        background-color: #212433 !important;
-        color: #fff !important;
-        > .menu-option, .menu-logo{
-          opacity: 1;
-        }
-      }
-    }
-  }
-} 
-
-
-[data-theme="dark"] {
-  .menu{
-    .focus{
-      @apply bg-[#29323C] text-[#C1C4C6];
-      > .menu-option, .menu-logo{
-        opacity: 1;
-      }
-    }
-    
-    li:not(.menu-title):not(.disabled) {
-      > *:not(ul):not(details):not(.menu-title):not(.active):hover,
-      > details > summary:not(.menu-title):not(.active):hover {
-        background-color: #29323C !important;
-        color: #C1C4C6 !important;
-        > .menu-option, .menu-logo{
-          opacity: 1;
-        }
-      }
-    }
-  }
-}

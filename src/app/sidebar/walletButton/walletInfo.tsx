@@ -49,12 +49,8 @@ export default function WalletInfo({
 
   return (
     <div className="dropdown">
-      <label
-        tabIndex={0}
-        ref={setReference}
-        className="flex flex-row gap-2 px-4 py-3 hover:bg-neutral hover:text-neutral-100 rounded-lg cursor-pointer"
-      >
-        <WalletIcon className="avatar h-5 w-5 ml-1" wallet={wallet} />
+      <label tabIndex={0} ref={setReference} className="menu-item">
+        <WalletIcon className="avatar h-5 w-5" wallet={wallet} />
         <p className="menu-option font-semibold">{shortenAddress(address)}</p>
       </label>
       <ul
