@@ -7,7 +7,7 @@ import { PublicKey } from '@metaplex-foundation/js'
 
 import { ChevronLeft } from 'lucide-react'
 import MintSelect from './mintSelect'
-import AddReward from './addReward'
+import AddReward, { EMPTY_REWARD } from './addReward'
 import AddTime from './addTime'
 import BoostNFT from './boostNFT'
 
@@ -18,12 +18,6 @@ import { solscan } from '@/helpers/explorers'
 import { useMints } from '@/hooks/spl.hook'
 import { useAllTokenAccounts } from '@/providers/tokenAccount.provider'
 import { decimalize } from '@/helpers/decimals'
-
-export const EMPTY_REWARD = {
-  mintAddress: '',
-  budget: '',
-}
-export const EMPTY_COLLECTION = { collection: '', percentage: 0 }
 
 const NewFarm = () => {
   const [loading, setLoading] = useState(false)

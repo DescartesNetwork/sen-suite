@@ -18,6 +18,7 @@ export const metadata: Metadata = {
   title: 'Sentre: The suite for startups on Solana',
   description:
     'The suite for startups on Solana. Formerly, The dApp Store for All Things Solana.',
+  manifest: '/manifest.json',
   viewport: {
     width: 'device-width',
     initialScale: 1,

@@ -7,10 +7,14 @@ import { ChevronDown, Plus, Trash2 } from 'lucide-react'
 import TokenSelection from '@/components/tokenSelection'
 
 import { Reward } from '@/hooks/farming.hook'
-import { EMPTY_REWARD } from './page'
 import { undecimalize } from '@/helpers/decimals'
 import { useTokenAccountByMintAddress } from '@/providers/tokenAccount.provider'
 import { useMintByAddress } from '@/providers/mint.provider'
+
+export const EMPTY_REWARD: Reward = {
+  mintAddress: '',
+  budget: '',
+}
 
 type RewardCardProps = {
   reward: Reward

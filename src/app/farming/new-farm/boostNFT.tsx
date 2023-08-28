@@ -6,7 +6,8 @@ import { ChevronDown, Plus, Trash2 } from 'lucide-react'
 import NFTSelection from '@/components/nftSelection'
 
 import { BoostData } from '@/hooks/farming.hook'
-import { EMPTY_COLLECTION } from './page'
+
+export const EMPTY_COLLECTION = { collection: '', percentage: 0 }
 
 type RewardCardProps = {
   boostData: BoostData
