@@ -8,19 +8,29 @@ import { ReceiveItem } from './page'
 
 const DEFAULT_AMOUNT = 4
 
-const AirdropList = ({ airdrops }: { airdrops: ReceiveItem[] }) => {
+type AirdropListProps = {
+  airdrops: ReceiveItem[]
+  loading: boolean
+}
+
+const AirdropList = ({ airdrops, loading }: AirdropListProps) => {
   const [showAirdrop, setAmountAirdrop] = useState(DEFAULT_AMOUNT)
 
   return (
-    <div className="card bg-base-100 p-4 gap-6">
+    <div className="card bg-base-100 p-4 gap-6 justify-center">
       <div className="flex">
         <p>
           Airdrop receive
           <span className="ml-2">{airdrops.length}</span>
         </p>
       </div>
+      {loading && !airdrops.length && (
+        <div className="w-full text-center">
+          <span className="loading loading-spinner loading-lg" />
+        </div>
+      )}
       <div className="overflow-x-auto">
-        <table className="table">
+        <table className="table ">
           <thead>
             <tr>
               <th>UNLOCK TIME</th>
@@ -32,6 +42,7 @@ const AirdropList = ({ airdrops }: { airdrops: ReceiveItem[] }) => {
               <th>ACTION</th>
             </tr>
           </thead>
+
           <tbody>
             {airdrops.slice(0, showAirdrop).map((props, i) => (
               <RewardCard key={i} {...props} />

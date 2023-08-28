@@ -1,44 +1,58 @@
 'use client'
-import { useAsync } from 'react-use'
+import { useCallback, useMemo } from 'react'
+import { useWallet } from '@solana/wallet-adapter-react'
+import useSWR from 'swr'
 
 import { ArrowUpRightFromCircle } from 'lucide-react'
 import HeroCard from '../heroCard'
 
 import { useDistributors } from '@/providers/airdrop.provider'
-import { useWallet } from '@solana/wallet-adapter-react'
-import { useMintStore } from '@/providers/mint.provider'
+import { usePrices } from '@/providers/mint.provider'
 import { undecimalize } from '@/helpers/decimals'
-import { getPrice } from '@/helpers/stat'
 import { numeric } from '@/helpers/utils'
+import { useMints } from '@/hooks/spl.hook'
 
 const TotalDistribution = () => {
   const { publicKey } = useWallet()
   const distributors = useDistributors()
-  const metadata = useMintStore(({ metadata }) => metadata)
 
-  const { value: totalUSD, loading } = useAsync(async () => {
-    if (!publicKey) return 0
+  const myDistributors = useMemo(() => {
+    if (!publicKey || !distributors) return []
+    return Object.values(distributors).filter(({ authority }) =>
+      authority.equals(publicKey),
+    )
+  }, [distributors, publicKey])
+
+  const mintAddresses = useMemo(
+    () => myDistributors.map(({ mint }) => mint.toBase58()),
+    [myDistributors],
+  )
+
+  const mints = useMints(mintAddresses)
+  const prices = usePrices(mintAddresses)
+  const decimals = mints.map((mint) => mint?.decimals || 0)
+
+  const fetcher = useCallback(async () => {
+    if (!publicKey || !prices) return 0
     let usd = 0
-    for (const address in distributors) {
-      const { authority, total, mint } = distributors[address]
-      if (publicKey.equals(authority)) {
-        const { decimals } = metadata.find(
-          ({ address }) => address === mint.toBase58(),
-        ) || { decimals: 0 }
-        const numAmount = Number(undecimalize(total, decimals))
-        const price = (await getPrice(mint.toBase58())) || 0
-
-        usd += numAmount * price
-      }
+    for (const idx in myDistributors) {
+      const { total } = myDistributors[idx]
+      const numAmount = Number(undecimalize(total, decimals[idx]))
+      usd += numAmount * prices[idx]
     }
     return usd
-  }, [publicKey, metadata, distributors])
+  }, [publicKey, prices, myDistributors, decimals])
+
+  const { data: totalUSD, isLoading } = useSWR(
+    [mintAddresses, prices, 'totalDistribution'],
+    fetcher,
+  )
 
   return (
     <HeroCard
       Icon={ArrowUpRightFromCircle}
       label="Total Distribution"
-      loading={loading}
+      loading={isLoading}
       value={numeric(totalUSD || 0).format('$0,0.[0000]')}
     />
   )

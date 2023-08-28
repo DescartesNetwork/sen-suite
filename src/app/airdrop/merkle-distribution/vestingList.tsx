@@ -8,7 +8,12 @@ import { ReceiveItem } from './page'
 
 const DEFAULT_AMOUNT = 4
 
-const VestingList = ({ vesting }: { vesting: ReceiveItem[][] }) => {
+type VestingListProps = {
+  vesting: ReceiveItem[][]
+  loading: boolean
+}
+
+const VestingList = ({ vesting, loading }: VestingListProps) => {
   const [showAirdrop, setAmountAirdrop] = useState(DEFAULT_AMOUNT)
 
   return (
@@ -19,6 +24,11 @@ const VestingList = ({ vesting }: { vesting: ReceiveItem[][] }) => {
           <span className="ml-2">{vesting.length}</span>
         </p>
       </div>
+      {loading && !vesting.length && (
+        <div className="w-full text-center">
+          <span className="loading loading-spinner loading-lg" />
+        </div>
+      )}
       <div className="overflow-x-auto">
         <table className="table">
           <thead>
