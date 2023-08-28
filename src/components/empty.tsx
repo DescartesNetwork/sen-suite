@@ -1,3 +1,4 @@
+'use client'
 import { FolderSearch } from 'lucide-react'
 
 export default function Empty() {

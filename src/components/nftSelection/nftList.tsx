@@ -1,3 +1,4 @@
+'use client'
 import LazyLoad from 'react-lazy-load'
 import NftCard from './nftCard'
 import Empty from '../empty'

@@ -1,3 +1,4 @@
+'use client'
 import { useAsync } from 'react-use'
 import { MerkleDistributor } from '@sentre/utility'
 
@@ -7,7 +8,7 @@ import HeroCard from '@/app/airdrop/merkle-distribution/heroCard'
 import { undecimalize } from '@/helpers/decimals'
 import { getPrice } from '@/helpers/stat'
 import { numeric } from '@/helpers/utils'
-import { useMerkleMetadata } from '@/hooks/airdrop.hook'
+import { useGetMerkleMetadata } from '@/hooks/airdrop.hook'
 import { useDistributors, useMyDistributes } from '@/providers/airdrop.provider'
 import { useMintStore } from '@/providers/mint.provider'
 
@@ -66,7 +67,7 @@ const TotalAirdrop = () => {
 
 const TotalRecipients = () => {
   const { airdrops } = useMyDistributes()
-  const getMetadata = useMerkleMetadata()
+  const getMetadata = useGetMerkleMetadata()
 
   const { value: amountRecipient } = useAsync(async () => {
     const mapping: Record<string, string> = {}

@@ -26,20 +26,20 @@ const CardOverview = ({ showTotal, showUnlock }: CardOverviewProps) => {
   }
 
   return (
-    <div className="rounded-lg p-4 bg-base-200 grid grid-cols-2">
-      <div className="flex gap-12">
-        <div className="flex flex-col gap-2">
+    <div className="rounded-lg p-4 bg-base-200 grid md:grid-cols-2">
+      <div className="flex flex-col md:flex-row gap-5 md:gap-12">
+        <div className="flex flex-row md:flex-col justify-between md: md:gap-2">
           <p className="text-sm opacity-60">Recipients</p>
           <p>{quantity}</p>
         </div>
         {showUnlock && (
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-row md:flex-col justify-between md:gap-2">
             <p className="text-sm opacity-60">Unlock time</p>
             <p> {dayjs(unlockTime).format('DD/MM/YYYY, HH:mm')}</p>
           </div>
         )}
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-row md:flex-col justify-between md:gap-2">
           <p className="text-sm opacity-60">Expiration time</p>
           <p>
             {!expiration
@@ -49,8 +49,10 @@ const CardOverview = ({ showTotal, showUnlock }: CardOverviewProps) => {
         </div>
       </div>
 
-      <div className="flex gap-12">
-        <div className="flex flex-col gap-2">
+      <div className="bg-base-300 h-[1px] my-4 md:hidden" />
+
+      <div className="flex flex-col md:flex-row gap-5 md:gap-12">
+        <div className="flex flex-row md:flex-col justify-between md:gap-2">
           <p className="text-sm opacity-60">Your balance</p>
           <p>
             {<MintAmount amount={amount} mintAddress={mintAddress} />}{' '}
@@ -58,7 +60,7 @@ const CardOverview = ({ showTotal, showUnlock }: CardOverviewProps) => {
           </p>
         </div>
         {showTotal && (
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-row md:flex-col justify-between md:gap-2">
             <p className="text-sm opacity-60">Total</p>
             <p>
               <MintAmount amount={total} mintAddress={mintAddress} />{' '}
@@ -66,7 +68,7 @@ const CardOverview = ({ showTotal, showUnlock }: CardOverviewProps) => {
             </p>
           </div>
         )}
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-row md:flex-col justify-between md:gap-2">
           <p className="text-sm opacity-60">Remaining</p>
           <p>
             <MintAmount
