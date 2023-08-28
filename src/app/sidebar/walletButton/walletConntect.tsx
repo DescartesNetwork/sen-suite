@@ -8,11 +8,12 @@ export type WalletConnectProps = {
 
 export default function WalletConnect({ onClick }: WalletConnectProps) {
   return (
-    <li>
-      <a onClick={onClick}>
-        <Wallet className="menu-logo" />
-        <p className="menu-option font-semibold">Connect Wallet</p>
-      </a>
-    </li>
+    <div
+      className="px-4 py-3 flex flex-row gap-2 hover:bg-[#EFF0F1] hover:text-[#616973] rounded-lg cursor-pointer"
+      onClick={onClick}
+    >
+      <Wallet strokeWidth={1.5} className="menu-logo" />
+      <p className="menu-option font-semibold">Connect Wallet</p>
+    </div>
   )
 }

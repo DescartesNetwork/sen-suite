@@ -15,6 +15,16 @@
         @apply cursor-not-allowed;
       }
     }
+    .sidebar-menu::-webkit-scrollbar {
+      display: none;
+    }
+    .sidebar-menu {
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;  /* Firefox */
+    }
+    .menu-vertical > li:not(.menu-title) > details > ul {
+      margin-left: 0;
+    }
   }
 
   .sidebar.vertical {

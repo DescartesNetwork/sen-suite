@@ -42,7 +42,7 @@ export default function Brand({
       onClick={onClick}
     >
       <BrandLogo size={size} />
-      {named && <p className="font-bold">Sentre</p>}
+      {named && <p className="font-semibold text-2xl">Sentre</p>}
     </div>
   )
 }
