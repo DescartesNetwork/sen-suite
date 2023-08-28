@@ -1,5 +1,4 @@
 'use client'
-
 import { MouseEvent, useCallback, useState } from 'react'
 import { BN } from 'bn.js'
 import { ReceiptData } from '@sentre/utility'
