@@ -15,9 +15,13 @@ import UserPosition from '../farmCard/userPosition'
 import Stake from './stake'
 import Unstake from './unstake'
 import Ownership from './ownership'
+import UnstakeNft from './unstakeNft'
 
 import { isAddress } from '@/helpers/utils'
-import { useFarmByAddress } from '@/providers/farming.provider'
+import {
+  useBoostingByFarmAddress,
+  useFarmByAddress,
+} from '@/providers/farming.provider'
 import { useWallet } from '@solana/wallet-adapter-react'
 
 enum FarmAction {
@@ -34,6 +38,7 @@ export default function FarmDetails() {
 
   const farmAddress = searchParams.get('farmAddress') || ''
   const { inputMint, authority } = useFarmByAddress(farmAddress)
+  const boosting = useBoostingByFarmAddress(farmAddress)
   const inputMintAddress = useMemo(
     () => inputMint?.toBase58() || '',
     [inputMint],
@@ -77,6 +82,11 @@ export default function FarmDetails() {
         <div className="col-span-full @lg/left:col-span-6 card bg-base-200 p-4">
           <MyReward farmAddress={farmAddress} />
         </div>
+        {!!boosting.length && (
+          <div className="col-span-full">
+            <UnstakeNft farmAddress={farmAddress} />
+          </div>
+        )}
       </div>
       <div className="col-span-full @2xl/main:col-span-5 @3xl/main:col-span-4 card bg-base-200 p-4">
         <div className="grid grid-cols-12 gap-2">
