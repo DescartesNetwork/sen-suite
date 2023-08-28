@@ -13,7 +13,7 @@ import { devtools } from 'zustand/middleware'
 
 import {
   Distribute,
-  useMerkleMetadata,
+  useGetMerkleMetadata,
   useParseMerkleType,
   useUtility,
 } from '@/hooks/airdrop.hook'
@@ -189,7 +189,7 @@ export const useDistributors = () => {
 export const useMyDistributes = () => {
   const distributors = useAirdropStore(({ distributors }) => distributors)
   const { publicKey } = useWallet()
-  const getMetadata = useMerkleMetadata()
+  const getMetadata = useGetMerkleMetadata()
   const parseMerkleType = useParseMerkleType()
 
   const { value } = useAsync(async () => {
@@ -222,7 +222,7 @@ export const useMyDistributes = () => {
  */
 export const useMyReceivedList = () => {
   const distributors = useDistributors()
-  const getMetadata = useMerkleMetadata()
+  const getMetadata = useGetMerkleMetadata()
   const parseMerkleType = useParseMerkleType()
   const { publicKey } = useWallet()
   const utility = useUtility()

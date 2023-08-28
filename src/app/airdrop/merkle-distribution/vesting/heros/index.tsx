@@ -8,7 +8,7 @@ import HeroCard from '@/app/airdrop/merkle-distribution/heroCard'
 import { undecimalize } from '@/helpers/decimals'
 import { getPrice } from '@/helpers/stat'
 import { numeric } from '@/helpers/utils'
-import { useMerkleMetadata } from '@/hooks/airdrop.hook'
+import { useGetMerkleMetadata } from '@/hooks/airdrop.hook'
 import { useDistributors, useMyDistributes } from '@/providers/airdrop.provider'
 import { useMintStore } from '@/providers/mint.provider'
 
@@ -67,7 +67,7 @@ const TotalVesting = () => {
 
 const TotalRecipients = () => {
   const { vesting } = useMyDistributes()
-  const getMetadata = useMerkleMetadata()
+  const getMetadata = useGetMerkleMetadata()
 
   const { value: amountRecipient } = useAsync(async () => {
     const mapping: Record<string, string> = {}

@@ -11,7 +11,7 @@ import {
   useMyReceivedList,
 } from '@/providers/airdrop.provider'
 import { useReceiptStatus } from '@/hooks/airdrop.hook'
-import { ReceiptState } from './rewardCard'
+import { ReceiptState } from './statusTag'
 
 export type ReceiveItem = {
   endedAt: number

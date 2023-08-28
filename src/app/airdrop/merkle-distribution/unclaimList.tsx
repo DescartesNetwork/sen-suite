@@ -9,7 +9,7 @@ import { FileText } from 'lucide-react'
 import { MintAmount } from '@/components/mint'
 
 import {
-  useMerkleMetadata,
+  useGetMerkleMetadata,
   useReceiptByDistributorAddress,
   useUtility,
 } from '@/hooks/airdrop.hook'
@@ -26,7 +26,7 @@ const UnclaimList = ({ distributeAddress }: UnclaimListProps) => {
   const receipts = useReceiptByDistributorAddress(distributeAddress)
   const { mint } = useDistributors()[distributeAddress]
 
-  const getMetadata = useMerkleMetadata()
+  const getMetadata = useGetMerkleMetadata()
   const utility = useUtility()
 
   const { value: unclaimList } = useAsync(async () => {
