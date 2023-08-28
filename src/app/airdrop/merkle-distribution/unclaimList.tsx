@@ -1,3 +1,4 @@
+'use client'
 import { useState } from 'react'
 import { Leaf, MerkleDistributor } from '@sentre/utility'
 import { useAsync } from 'react-use'

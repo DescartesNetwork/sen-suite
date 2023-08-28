@@ -1,3 +1,4 @@
+'use client'
 import { useCallback, useMemo, useState } from 'react'
 import { useAsync } from 'react-use'
 import { BN } from 'bn.js'

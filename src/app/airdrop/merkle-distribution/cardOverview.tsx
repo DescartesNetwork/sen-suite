@@ -1,3 +1,4 @@
+'use client'
 import { BN } from 'bn.js'
 import dayjs from 'dayjs'
 

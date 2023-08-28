@@ -1,3 +1,4 @@
+'use client'
 import TotalBalance from './balance'
 import TotalDistribution from './distribution'
 import TotalReceived from './received'

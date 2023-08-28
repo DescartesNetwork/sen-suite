@@ -1,3 +1,4 @@
+'use client'
 import { useAsync } from 'react-use'
 
 import { ArrowDownLeftFromCircle } from 'lucide-react'
