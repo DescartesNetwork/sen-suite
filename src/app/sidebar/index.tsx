@@ -39,16 +39,12 @@ export default function Sidebar({ children }: SidebarProps) {
           },
         )}
       >
-        <Link className="mb-5 ml-6 mt-4" href="/">
-          <Brand
-            size={32}
-            style={{ marginLeft: -4, marginRight: -4 }}
-            named={open}
-          />
+        <Link className="p-4" href="/">
+          <Brand size={32} style={{ marginLeft: 4 }} named={open} />
         </Link>
-        {/* Menu Selection */}
+        {/* Menu Item */}
         <MenuItem open={open} />
-        {/* Menu Selection */}
+        {/* Menu Infor */}
         <MenuInfo open={open} setOpen={setOpen} />
       </aside>
       {/* Mobile header & Page content */}
