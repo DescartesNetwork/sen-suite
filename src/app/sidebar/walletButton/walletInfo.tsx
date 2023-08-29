@@ -48,8 +48,8 @@ export default function WalletInfo({
   const tolltipText = copied ? 'Copied' : 'Copy'
 
   return (
-    <div className="dropdown">
-      <label tabIndex={0} ref={setReference} className="menu-item">
+    <li className="dropdown">
+      <label tabIndex={0} ref={setReference} className="menu-item gap-2">
         <WalletIcon className="avatar h-5 w-5" wallet={wallet} />
         <p className="menu-option font-semibold">{shortenAddress(address)}</p>
       </label>
@@ -103,6 +103,6 @@ export default function WalletInfo({
           </a>
         </li>
       </ul>
-    </div>
+    </li>
   )
 }

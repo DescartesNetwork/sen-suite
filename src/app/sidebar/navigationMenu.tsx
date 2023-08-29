@@ -79,7 +79,7 @@ const ROUTES: MenuItems[] = [
   },
 ]
 
-const RenderItem = ({ name, Logo }: { name: string; Logo?: LucideIcon }) => {
+const MenuItems = ({ name, Logo }: { name: string; Logo?: LucideIcon }) => {
   return (
     <Fragment>
       {Logo && <Logo strokeWidth={1.5} className="menu-logo opacity-60" />}
@@ -107,13 +107,13 @@ const RenderMenu = ({
         if (children?.length)
           return (
             <li className={className} key={route}>
-              <details onClick={() => setOpen(true)}>
+              <details onClick={() => setOpen(true)} open={open}>
                 <summary
                   className={classNames('px-4 py-3', {
                     'after:w-0': !open,
                   })}
                 >
-                  <RenderItem Logo={Logo} name={name} />
+                  <MenuItems Logo={Logo} name={name} />
                 </summary>
                 <ul
                   className={classNames('ml-0 pl-0 before:w-0', {
@@ -139,7 +139,7 @@ const RenderMenu = ({
                 focus: pathname === route,
               })}
             >
-              <RenderItem Logo={Logo} name={name} />
+              <MenuItems Logo={Logo} name={name} />
             </Link>
           </li>
         )
@@ -148,7 +148,7 @@ const RenderMenu = ({
   )
 }
 
-export default function MenuItem({
+export default function NavigationMenu({
   open,
   setOpen,
 }: {
@@ -156,7 +156,7 @@ export default function MenuItem({
   setOpen: (open: boolean) => void
 }) {
   return (
-    <ul className="flex flex-nowrap overflow-y-auto h-4/6 menu menu-vertical menu-md sidebar-menu">
+    <ul className="flex flex-nowrap overflow-y-auto menu menu-vertical menu-md sidebar-menu">
       <RenderMenu items={ROUTES} open={open} setOpen={setOpen} />
     </ul>
   )

@@ -15,23 +15,18 @@
         @apply opacity-60 font-semibold;
       }
       .menu-item {
-        @apply px-4 py-3 flex flex-row gap-2 hover:bg-neutral hover:text-neutral-100 rounded-lg cursor-pointer;
+        @apply px-4 py-3 flex flex-row hover:bg-neutral hover:text-neutral-100 rounded-lg cursor-pointer;
       }
       li.disabled > a {
         @apply cursor-not-allowed;
       }
-      .focus{
-        @apply bg-[--neutral-block] text-[--neutral-text];
-        > .menu-option, .menu-logo{
-          opacity: 1;
-        }
-      }
       li:not(.menu-title):not(.disabled) {
         > *:not(ul):not(details):not(.menu-title):not(.active):hover,
-        > details > summary:not(.menu-title):not(.active):hover {
+        > details > summary:not(.menu-title):not(.active):hover,
+        .focus {
           @apply bg-[--neutral-block] text-[--neutral-text] #{!important};
           > .menu-option, .menu-logo{
-            opacity: 1;
+            @apply opacity-100
           }
         }
       }
@@ -41,11 +36,11 @@
       scrollbar-width: none;  /* Firefox */
 
       &::-webkit-scrollbar {
-        display: none;
+        @apply hidden
       }
     }
     .menu-vertical > li:not(.menu-title) > details > ul {
-      margin-left: 0;
+      @apply ml-0
     }
   }
 
@@ -65,8 +60,7 @@
     &:not(.open) {
       .menu {
         li a, li details summary{
-          display: block;
-          text-align: center;
+          @apply block text-center
         }
       }
     }

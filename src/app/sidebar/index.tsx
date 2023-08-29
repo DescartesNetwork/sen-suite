@@ -8,8 +8,8 @@ import { Menu } from 'lucide-react'
 import Brand from '@/components/brand'
 import Island from '@/components/island'
 import WalletButton from './walletButton'
-import MenuItem from './menuItem'
-import MenuInfo, { MenuLoading } from './menuInfo'
+import NavigationMenu from './navigationMenu'
+import SystemMenu, { MenuLoading } from './systemMenu'
 
 import './index.scss'
 
@@ -32,20 +32,16 @@ export default function Sidebar({ children }: SidebarProps) {
       />
       {/* Sidebar */}
       <aside
-        className={classNames(
-          'flex flex-col justify-between sidebar vertical max-md:mobile',
-          {
-            open,
-          },
-        )}
+        className={classNames('flex flex-col sidebar vertical max-md:mobile', {
+          open,
+        })}
       >
         <Link className="p-4" href="/">
           <Brand size={32} style={{ marginLeft: 3 }} named={open} />
         </Link>
-        {/* Menu Item */}
-        <MenuItem open={open} setOpen={setOpen} />
-        {/* Menu Infor */}
-        <MenuInfo open={open} setOpen={setOpen} />
+        <NavigationMenu open={open} setOpen={setOpen} />
+        <div className="flex-auto" />
+        <SystemMenu open={open} setOpen={setOpen} />
       </aside>
       {/* Mobile header & Page content */}
       <main className="flex-auto flex flex-col min-h-[100dvh]">
