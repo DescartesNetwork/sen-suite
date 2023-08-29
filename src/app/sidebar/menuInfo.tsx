@@ -13,11 +13,9 @@ import ThemeSwitch from './themeSwitch'
 
 export function MenuLoading() {
   return (
-    <li>
-      <a href="#">
-        <span className="menu-logo loading loading-ring loading-xs" />
-      </a>
-    </li>
+    <div className="menu-item">
+      <span className="menu-logo loading loading-ring loading-xs" />
+    </div>
   )
 }
 
