@@ -1,6 +1,7 @@
 'use client'
 import { usePathname, useRouter } from 'next/navigation'
 import { useCallback, useMemo } from 'react'
+import classNames from 'classnames'
 
 import Link from 'next/link'
 import {
@@ -19,7 +20,7 @@ enum MenuKey {
 const menus = [
   {
     route: '/airdrop/merkle-distribution',
-    name: 'Dashboard',
+    name: 'Main',
     key: MenuKey.Dashboard,
     Logo: LayoutDashboard,
   },
@@ -55,27 +56,23 @@ export default function MerkleDistributionHeader() {
   }, [pathname])
 
   return (
-    <div className="card bg-base-100 p-4 flex-row items-center">
+    <div className="card bg-base-100 p-4 flex flex-row items-center">
       <div className="flex-auto">
-        <button className="btn btn-sm btn-circle" onClick={onBack}>
+        <button className="btn btn-sm btn-circle btn-ghost" onClick={onBack}>
           <ChevronLeft />
         </button>
       </div>
-      <div className=" flex gap-10">
+      <div className="tabs">
         {menus.map(({ Logo, name, route, key }, i) => (
           <Link
-            href={route}
             key={i}
-            className={
-              activeKey === key
-                ? 'border-b-2 border-primary pb-2 text-primary'
-                : 'hover:border-b-2 border-primary pb-2'
-            }
+            href={route}
+            className={classNames('tab', {
+              'tab-active': activeKey === key,
+            })}
           >
-            <div className="flex gap-2">
-              <Logo />
-              <p>{name}</p>
-            </div>
+            <Logo className="w-4 h-4" />
+            <p className="ml-2">{name}</p>
           </Link>
         ))}
       </div>
