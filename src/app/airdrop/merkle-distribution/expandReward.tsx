@@ -6,8 +6,8 @@ import { PublicKey } from '@solana/web3.js'
 import dayjs from 'dayjs'
 
 import { MintAmount, MintLogo, MintSymbol } from '@/components/mint'
-import StatusTag, { ReceiptState } from './statusTag'
 import ExpandCard from '@/components/expandCard'
+import StatusTag, { ReceiptState } from './statusTag'
 
 import { ReceiveItem } from './page'
 import { shortenAddress } from '@/helpers/utils'
