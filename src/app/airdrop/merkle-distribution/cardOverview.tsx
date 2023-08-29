@@ -15,7 +15,10 @@ type CardOverviewProps = {
   showUnlock?: boolean
 }
 
-const CardOverview = ({ showTotal, showUnlock }: CardOverviewProps) => {
+export default function CardOverview({
+  showTotal,
+  showUnlock,
+}: CardOverviewProps) {
   const { mintAddress } = useAirdropMintAddress()
   const {
     configs: { unlockTime, expiration },
@@ -82,5 +85,3 @@ const CardOverview = ({ showTotal, showUnlock }: CardOverviewProps) => {
     </div>
   )
 }
-
-export default CardOverview

@@ -422,7 +422,11 @@ const MintSelection = () => {
   )
 }
 
-const InputConfigs = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
+export default function InputConfigs({
+  setStep,
+}: {
+  setStep: (step: CreateStep) => void
+}) {
   const [file, setFile] = useState<File>()
   const [unlimited, setUnlimited] = useState(true)
 
@@ -513,5 +517,3 @@ const InputConfigs = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
     </div>
   )
 }
-
-export default InputConfigs

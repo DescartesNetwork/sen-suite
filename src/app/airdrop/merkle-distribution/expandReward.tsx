@@ -16,7 +16,9 @@ import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
 import { useAirdropStore } from '@/providers/airdrop.provider'
 
-const ExpandReward = (props: ReceiveItem & { forceExpand: boolean }) => {
+export default function ExpandReward(
+  props: ReceiveItem & { forceExpand: boolean },
+) {
   const { leaf, endedAt, mintAddress, sender, status, receiptAddress } = props
   const [loading, setLoading] = useState(false)
   const pushMessage = usePushMessage()
@@ -126,5 +128,3 @@ const ExpandReward = (props: ReceiveItem & { forceExpand: boolean }) => {
     </ExpandCard>
   )
 }
-
-export default ExpandReward

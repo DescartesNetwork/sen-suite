@@ -14,7 +14,7 @@ type VestingListProps = {
   loading: boolean
 }
 
-const VestingList = ({ vesting, loading }: VestingListProps) => {
+export default function VestingList({ vesting, loading }: VestingListProps) {
   const [showAirdrop, setAmountAirdrop] = useState(DEFAULT_AMOUNT)
 
   return (
@@ -88,5 +88,3 @@ const VestingList = ({ vesting, loading }: VestingListProps) => {
     </div>
   )
 }
-
-export default VestingList

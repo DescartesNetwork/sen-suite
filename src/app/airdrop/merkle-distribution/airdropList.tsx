@@ -14,7 +14,7 @@ type AirdropListProps = {
   loading: boolean
 }
 
-const AirdropList = ({ airdrops, loading }: AirdropListProps) => {
+export default function AirdropList({ airdrops, loading }: AirdropListProps) {
   const [showAirdrop, setAmountAirdrop] = useState(DEFAULT_AMOUNT)
 
   return (
@@ -74,5 +74,3 @@ const AirdropList = ({ airdrops, loading }: AirdropListProps) => {
     </div>
   )
 }
-
-export default AirdropList

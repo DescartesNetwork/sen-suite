@@ -7,7 +7,7 @@ import Heros from './heros'
 
 import { Distribute } from '@/hooks/airdrop.hook'
 
-const Airdrop = () => {
+export default function Airdrop() {
   const { push } = useRouter()
 
   return (
@@ -27,5 +27,3 @@ const Airdrop = () => {
     </div>
   )
 }
-
-export default Airdrop

@@ -18,7 +18,11 @@ import { CreateStep } from '@/app/airdrop/merkle-distribution/constants'
 import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
 
-const CreateMerkle = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
+export default function CreateMerkle({
+  setStep,
+}: {
+  setStep: (step: CreateStep) => void
+}) {
   const [loading, setLoading] = useState(false)
   const { total } = useTotalDistribute()
   const { mintAddress } = useAirdropMintAddress()
@@ -86,5 +90,3 @@ const CreateMerkle = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
     </div>
   )
 }
-
-export default CreateMerkle

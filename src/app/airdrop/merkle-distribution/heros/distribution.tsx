@@ -12,7 +12,7 @@ import { undecimalize } from '@/helpers/decimals'
 import { numeric } from '@/helpers/utils'
 import { useMints } from '@/hooks/spl.hook'
 
-const TotalDistribution = () => {
+export default function TotalDistribution() {
   const { publicKey } = useWallet()
   const distributors = useDistributors()
 
@@ -32,19 +32,22 @@ const TotalDistribution = () => {
   const prices = usePrices(mintAddresses)
   const decimals = mints.map((mint) => mint?.decimals || 0)
 
-  const fetcher = useCallback(async () => {
-    if (!publicKey || !prices) return 0
-    let usd = 0
-    for (const idx in myDistributors) {
-      const { total } = myDistributors[idx]
-      const numAmount = Number(undecimalize(total, decimals[idx]))
-      usd += numAmount * prices[idx]
-    }
-    return usd
-  }, [publicKey, prices, myDistributors, decimals])
+  const fetcher = useCallback(
+    async ([prices, decimals]: [number[], number[]]) => {
+      if (!prices) return 0
+      let usd = 0
+      for (const idx in myDistributors) {
+        const { total } = myDistributors[idx]
+        const numAmount = Number(undecimalize(total, decimals[idx]))
+        usd += numAmount * prices[idx]
+      }
+      return usd
+    },
+    [myDistributors],
+  )
 
   const { data: totalUSD, isLoading } = useSWR(
-    [mintAddresses, prices, 'totalDistribution'],
+    [prices, decimals, 'totalDistribution'],
     fetcher,
   )
 
@@ -57,5 +60,3 @@ const TotalDistribution = () => {
     />
   )
 }
-
-export default TotalDistribution

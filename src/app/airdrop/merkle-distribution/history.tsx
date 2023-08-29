@@ -7,6 +7,7 @@ import dayjs from 'dayjs'
 import { ChevronDown } from 'lucide-react'
 import { MintAmount, MintLogo, MintSymbol } from '@/components/mint'
 import UnclaimList from './unclaimList'
+import ExpandCard from '@/components/expandCard'
 
 import { useDistributors, useMyDistributes } from '@/providers/airdrop.provider'
 import {
@@ -17,11 +18,10 @@ import {
 } from '@/hooks/airdrop.hook'
 import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
-import ExpandCard from '@/components/expandCard'
 
 const DEFAULT_AMOUNT = 4
 
-const History = ({ type }: { type: Distribute }) => {
+export default function History({ type }: { type: Distribute }) {
   const [showAirdrop, setAmountAirdrop] = useState(DEFAULT_AMOUNT)
   const { airdrops, vesting } = useMyDistributes()
   const history = type === Distribute.Airdrop ? airdrops : vesting
@@ -77,8 +77,6 @@ const History = ({ type }: { type: Distribute }) => {
   )
 }
 
-export default History
-
 const HistoryTableItem = ({ address }: { address: string }) => {
   const [loading, setLoading] = useState(false)
   const [disabled, setDisabled] = useState(false)
@@ -128,7 +126,7 @@ const HistoryTableItem = ({ address }: { address: string }) => {
     <tr className="hover cursor-pointer">
       <td>{dayjs(time?.createdAt).format('DD/MM/YYYY, HH:mm')}</td>
       <td>
-        {time?.unlockTime
+        {!time?.unlockTime
           ? 'Immediately'
           : dayjs(time?.unlockTime).format('DD/MM/YYYY, HH:mm')}
       </td>
