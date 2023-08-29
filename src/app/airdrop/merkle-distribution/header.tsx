@@ -56,7 +56,7 @@ export default function MerkleDistributionHeader() {
   }, [pathname])
 
   return (
-    <div className="card bg-base-100 p-4 flex flex-row items-center">
+    <div className="card bg-base-100 py-4 px-2 flex flex-row items-center">
       <div className="flex-auto">
         <button className="btn btn-sm btn-circle btn-ghost" onClick={onBack}>
           <ChevronLeft />
