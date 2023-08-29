@@ -15,7 +15,7 @@ import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
 import { useAirdropStore } from '@/providers/airdrop.provider'
 
-const RewardCard = (props: ReceiveItem) => {
+export default function RewardCard(props: ReceiveItem) {
   const { leaf, endedAt, mintAddress, sender, status, receiptAddress } = props
   const [loading, setLoading] = useState(false)
   const pushMessage = usePushMessage()
@@ -106,5 +106,3 @@ const RewardCard = (props: ReceiveItem) => {
     </tr>
   )
 }
-
-export default RewardCard

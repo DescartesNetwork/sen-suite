@@ -17,7 +17,7 @@ type EditRecipientProps = {
   onRemove?: () => void
 }
 
-const EditRecipient = ({
+export default function EditRecipient({
   index = '',
   amount = '',
   address = '',
@@ -27,7 +27,7 @@ const EditRecipient = ({
   onAddress = () => {},
   onAdd = () => {},
   onRemove = () => {},
-}: EditRecipientProps) => {
+}: EditRecipientProps) {
   const Icon = useMemo(() => (!index ? UserPlus : Trash), [index])
   const onHandle = index ? onRemove : onAdd
 
@@ -68,5 +68,3 @@ const EditRecipient = ({
     </div>
   )
 }
-
-export default EditRecipient

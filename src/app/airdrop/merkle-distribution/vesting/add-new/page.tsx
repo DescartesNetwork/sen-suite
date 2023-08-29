@@ -7,7 +7,7 @@ import CreateMerkle from '@/app/airdrop/merkle-distribution/createMerkle'
 
 import { CreateStep } from '@/app/airdrop/merkle-distribution/constants'
 
-const NewVesting = () => {
+export default function NewVesting() {
   const [step, setStep] = useState(CreateStep.InputConfigs)
   const renderPage = useMemo(() => {
     switch (step) {
@@ -26,5 +26,3 @@ const NewVesting = () => {
     </div>
   )
 }
-
-export default NewVesting

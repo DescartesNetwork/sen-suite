@@ -11,7 +11,7 @@ import { usePrices } from '@/providers/mint.provider'
 import { useMints } from '@/hooks/spl.hook'
 import { useDistributors, useMyReceipts } from '@/providers/airdrop.provider'
 
-const TotalReceived = () => {
+export default function TotalReceived() {
   const myReceipts = useMyReceipts()
   const distributors = useDistributors()
 
@@ -30,21 +30,24 @@ const TotalReceived = () => {
   const prices = usePrices(mintAddresses)
   const decimals = mints.map((mint) => mint?.decimals || 0)
 
-  const fetcher = useCallback(async () => {
-    if (!prices) return 0
-    let total = 0
-    let idx = 0
-    for (const address in myReceipts) {
-      const { amount } = myReceipts[address]
-      const numAmount = Number(undecimalize(amount, decimals[idx]))
-      total += numAmount * prices[idx]
-      idx++
-    }
-    return total
-  }, [prices, myReceipts, decimals])
+  const fetcher = useCallback(
+    async ([prices, decimals]: [number[], number[]]) => {
+      if (!prices) return 0
+      let total = 0
+      let idx = 0
+      for (const address in myReceipts) {
+        const { amount } = myReceipts[address]
+        const numAmount = Number(undecimalize(amount, decimals[idx]))
+        total += numAmount * prices[idx]
+        idx++
+      }
+      return total
+    },
+    [myReceipts],
+  )
 
   const { data: totalUSD, isLoading } = useSWR(
-    [mintAddresses, prices, 'totalReceived'],
+    [prices, decimals, 'totalReceived'],
     fetcher,
   )
 
@@ -57,5 +60,3 @@ const TotalReceived = () => {
     />
   )
 }
-
-export default TotalReceived

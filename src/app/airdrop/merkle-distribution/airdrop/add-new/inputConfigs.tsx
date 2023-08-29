@@ -19,7 +19,11 @@ import {
   useRecipients,
 } from '@/providers/airdrop.provider'
 
-const InputConfigs = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
+export default function InputConfigs({
+  setStep,
+}: {
+  setStep: (step: CreateStep) => void
+}) {
   const [open, setOpen] = useState(false)
   const [file, setFile] = useState<File>()
   const [unlimited, setUnlimited] = useState(true)
@@ -174,5 +178,3 @@ const InputConfigs = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
     </div>
   )
 }
-
-export default InputConfigs

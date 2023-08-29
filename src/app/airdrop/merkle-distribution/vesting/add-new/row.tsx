@@ -18,7 +18,7 @@ type EditRecipientProps = {
   onAdd?: () => void
 }
 
-const EditRecipient = ({
+export default function EditRecipient({
   index = '',
   amount = '',
   address = '',
@@ -27,7 +27,7 @@ const EditRecipient = ({
   onAmount = () => {},
   onAddress = () => {},
   onAdd = () => {},
-}: EditRecipientProps) => {
+}: EditRecipientProps) {
   const {
     configs: { tgeTime },
   } = useDistributeConfigs()
@@ -83,5 +83,3 @@ const EditRecipient = ({
     </div>
   )
 }
-
-export default EditRecipient

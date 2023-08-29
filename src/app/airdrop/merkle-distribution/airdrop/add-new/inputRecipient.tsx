@@ -30,7 +30,7 @@ enum RowStatus {
 type InputRecipientProps = {
   setStep: (step: CreateStep) => void
 }
-const InputRecipient = ({ setStep }: InputRecipientProps) => {
+export default function InputRecipient({ setStep }: InputRecipientProps) {
   const [address, setAddress] = useState('')
   const [amount, setAmount] = useState('')
   const { mintAddress } = useAirdropMintAddress()
@@ -159,5 +159,3 @@ const InputRecipient = ({ setStep }: InputRecipientProps) => {
     </div>
   )
 }
-
-export default InputRecipient
