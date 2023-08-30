@@ -9,7 +9,7 @@ import {
   autoUpdate,
 } from '@floating-ui/react'
 
-import { PropsMenu } from './menu'
+import { PropsMenu } from './menuItem'
 
 export default function DropdownMenu({
   item,
@@ -31,7 +31,7 @@ export default function DropdownMenu({
   const { route, name, Logo, disabled, children } = item
 
   return (
-    <li key={route} className="dropdown p-0 flex static">
+    <div className="static dropdown p-0 flex rounded-lg">
       <label
         tabIndex={0}
         ref={setReference}
@@ -54,15 +54,18 @@ export default function DropdownMenu({
           <li key={name}>
             <Link
               href={disabled ? '#' : route}
-              className={classNames('pl-8 opacity-60 hover:opacity-100', {
-                'opacity-100': pathname === route,
-              })}
+              className={classNames(
+                'pl-8 text-neutral-focus opacity-60 hover:opacity-100',
+                {
+                  'opacity-100': pathname === route,
+                },
+              )}
             >
               {name}
             </Link>
           </li>
         ))}
       </ul>
-    </li>
+    </div>
   )
 }

@@ -18,7 +18,7 @@
         @apply opacity-60 font-semibold;
       }
       .menu-item {
-        @apply px-4 py-3 flex flex-row cursor-pointer;
+        @apply px-4 py-3 flex flex-row cursor-pointer rounded-lg;
       }
       li.disabled > a {
         @apply cursor-not-allowed;

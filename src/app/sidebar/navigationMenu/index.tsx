@@ -1,5 +1,5 @@
 'use client'
-import { usePathname } from 'next/navigation'
+import classNames from 'classnames'
 
 import {
   BookPlus,
@@ -11,8 +11,7 @@ import {
   Rocket,
   Home,
 } from 'lucide-react'
-import Menu, { PropsMenu, MenuItem } from './menu'
-import DropdownMenu from './dropdownMenu'
+import MenuItem, { PropsMenu } from './menuItem'
 
 const ROUTES: PropsMenu[] = [
   {
@@ -70,20 +69,13 @@ const ROUTES: PropsMenu[] = [
 ]
 
 export default function NavigationMenu({ open }: { open: boolean }) {
-  const pathname = usePathname()
-
   return (
     <ul className="flex flex-nowrap overflow-y-auto menu menu-vertical menu-md sidebar-menu">
-      {ROUTES.map((item) => {
-        if (item.children)
-          return open ? (
-            <Menu item={item} open={open} pathname={pathname} />
-          ) : (
-            <DropdownMenu item={item} pathname={pathname} />
-          )
-
-        return <MenuItem key={item.name} item={item} pathname={pathname} />
-      })}
+      {ROUTES.map((item) => (
+        <li key={item.name} className={classNames({ disabled: item.disabled })}>
+          <MenuItem item={item} open={open} />
+        </li>
+      ))}
     </ul>
   )
 }
