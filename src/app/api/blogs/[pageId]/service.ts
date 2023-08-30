@@ -12,7 +12,7 @@ export const getDatabase = async () => {
     const {
       value: { type, parent_table, content },
     } = block[pageId]
-    if (type !== 'page' || parent_table !== 'collection' || content)
+    if (type !== 'page' || parent_table !== 'collection' || !content)
       delete block[pageId]
   })
 
