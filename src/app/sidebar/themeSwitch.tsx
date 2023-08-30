@@ -9,7 +9,7 @@ export default function ThemeSwitch() {
 
   return (
     <div
-      className="menu-item flex"
+      className="menu-item"
       onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
     >
       <label className="swap swap-rotate">
