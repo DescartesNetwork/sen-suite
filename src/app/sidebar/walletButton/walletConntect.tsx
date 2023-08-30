@@ -8,11 +8,9 @@ export type WalletConnectProps = {
 
 export default function WalletConnect({ onClick }: WalletConnectProps) {
   return (
-    <li>
-      <a className="menu-item gap-2" onClick={onClick}>
-        <Wallet strokeWidth={1.5} className="menu-logo" />
-        <p className="menu-option font-semibold">Connect Wallet</p>
-      </a>
-    </li>
+    <div className="menu-item gap-2" onClick={onClick}>
+      <Wallet strokeWidth={1.5} className="menu-logo" />
+      <p className="menu-option font-semibold">Connect Wallet</p>
+    </div>
   )
 }

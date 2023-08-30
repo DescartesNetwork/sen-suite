@@ -13,11 +13,9 @@ import ThemeSwitch from './themeSwitch'
 
 export function MenuLoading() {
   return (
-    <li>
-      <a href="#">
-        <span className="menu-logo loading loading-ring loading-xs" />
-      </a>
-    </li>
+    <div>
+      <span className="menu-logo loading loading-ring loading-xs" />
+    </div>
   )
 }
 
@@ -30,9 +28,11 @@ export default function SystemMenu({
 }) {
   return (
     <ul className="menu menu-vertical menu-md">
-      <Island Loading={MenuLoading}>
-        <WalletButton />
-      </Island>
+      <li>
+        <Island Loading={MenuLoading}>
+          <WalletButton />
+        </Island>
+      </li>
       <div className="divider mx-4 my-0" />
       <li>
         <Link
@@ -56,9 +56,11 @@ export default function SystemMenu({
           <p className="menu-option">Telegram</p>
         </Link>
       </li>
-      <Island Loading={MenuLoading}>
-        <ThemeSwitch />
-      </Island>
+      <li>
+        <Island Loading={MenuLoading}>
+          <ThemeSwitch />
+        </Island>
+      </li>
       <li onClick={() => setOpen(!open)}>
         <span className="menu-item gap-1">
           <label className="menu-logo swap swap-rotate">

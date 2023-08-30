@@ -27,9 +27,10 @@ module.exports = {
           'primary-content': '#ffffff',
           secondary: '#5d6ccf',
           'secondary-content': '#ffffff',
+          'neutral-focus': '#212433',
 
-          '--neutral-block': '#212433',
-          '--neutral-text': '#ffffff'
+          '--accent': '#2B3440',
+          '--accent-text': '#ffffff'
         },
       },
       {
@@ -39,9 +40,10 @@ module.exports = {
           'primary-content': '#ffffff',
           secondary: '#5d6ccf',
           'secondary-content': '#ffffff',
+          'neutral-focus': '#A6ACBA',
 
-          '--neutral-block': '#29323C',
-          '--neutral-text': '#C1C4C6'
+          '--accent': '#F4F4F5',
+          '--accent-text': '#212433'
         },
       },
     ],

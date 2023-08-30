@@ -11,20 +11,26 @@
       .menu-logo {
         @apply h-5 w-5;
       }
+      .menu-title{
+        @apply font-semibold hover:bg-inherit text-neutral-focus #{!important};
+      }
       .menu-text {
         @apply opacity-60 font-semibold;
       }
       .menu-item {
-        @apply px-4 py-3 flex flex-row hover:bg-neutral hover:text-neutral-100 rounded-lg cursor-pointer;
+        @apply px-4 py-3 flex flex-row cursor-pointer;
       }
       li.disabled > a {
         @apply cursor-not-allowed;
       }
       li:not(.menu-title):not(.disabled) {
+        > *:not(ul):not(details):not(.menu-title):not(summary):not(.active):focus {
+          @apply bg-inherit
+        }
         > *:not(ul):not(details):not(.menu-title):not(.active):hover,
         > details > summary:not(.menu-title):not(.active):hover,
         .focus {
-          @apply bg-[--neutral-block] text-[--neutral-text] #{!important};
+          @apply bg-[--accent] text-[--accent-text] #{!important};
           > .menu-option, .menu-logo{
             @apply opacity-100
           }
@@ -60,7 +66,7 @@
     &:not(.open) {
       .menu {
         li a, li details summary{
-          @apply block text-center
+          @apply flex gap-0
         }
       }
     }

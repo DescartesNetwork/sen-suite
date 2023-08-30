@@ -9,6 +9,7 @@ import Brand from '@/components/brand'
 import Island from '@/components/island'
 import WalletButton from './walletButton'
 import NavigationMenu from './navigationMenu'
+
 import SystemMenu, { MenuLoading } from './systemMenu'
 
 import './index.scss'
@@ -32,14 +33,17 @@ export default function Sidebar({ children }: SidebarProps) {
       />
       {/* Sidebar */}
       <aside
-        className={classNames('flex flex-col sidebar vertical max-md:mobile', {
-          open,
-        })}
+        className={classNames(
+          'flex flex-col sidebar relative vertical max-md:mobile',
+          {
+            open,
+          },
+        )}
       >
         <Link className="p-4" href="/">
           <Brand size={32} style={{ marginLeft: 3 }} named={open} />
         </Link>
-        <NavigationMenu open={open} setOpen={setOpen} />
+        <NavigationMenu open={open} />
         <div className="flex-auto" />
         <SystemMenu open={open} setOpen={setOpen} />
       </aside>
@@ -47,17 +51,21 @@ export default function Sidebar({ children }: SidebarProps) {
       <main className="flex-auto flex flex-col min-h-[100dvh]">
         <header className="sidebar horizontal pl-3 py-2 md:hidden">
           <ul className="w-full menu menu-horizontal menu-md flex flex-row items-center">
-            <a href="/">
-              <Brand size={24} named />
-            </a>
-            <div className="flex-auto" />
-            <Island Loading={MenuLoading}>
-              <WalletButton />
-            </Island>
             <li>
-              <a onClick={() => setOpen(true)} href="#">
+              <Link href="/">
+                <Brand size={24} named />
+              </Link>
+            </li>
+            <div className="flex-auto" />
+            <li>
+              <Island Loading={MenuLoading}>
+                <WalletButton />
+              </Island>
+            </li>
+            <li>
+              <div className="menu-item" onClick={() => setOpen(true)}>
                 <Menu className="menu-logo" />
-              </a>
+              </div>
             </li>
           </ul>
         </header>
