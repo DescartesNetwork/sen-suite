@@ -21,7 +21,7 @@ export type MenuItemData = {
   children?: MenuItemData[]
 }
 
-type NavigaterMenuProps = {
+type NavigateMenuProps = {
   open: boolean
   setOpen: (open: boolean) => void
 }
@@ -56,7 +56,7 @@ const ROUTES: MenuItemData[] = [
   { route: '/token-creation', name: 'Token Creation', Logo: BookPlus },
 ]
 
-export default function NavigaterMenu({ open }: NavigaterMenuProps) {
+export default function NavigateMenu({ open }: NavigateMenuProps) {
   return (
     <ul className="flex flex-nowrap overflow-y-auto menu menu-vertical menu-md sidebar-menu">
       {ROUTES.map((route) => (

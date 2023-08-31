@@ -8,7 +8,7 @@ import { Menu } from 'lucide-react'
 import Brand from '@/components/brand'
 import Island from '@/components/island'
 import WalletButton from './walletButton'
-import NavigaterMenu from './navigaterMenu'
+import NavigateMenu from './navigateMenu'
 import SystemMenu from './systemMenu'
 
 import './index.scss'
@@ -16,7 +16,7 @@ import './index.scss'
 export type SidebarProps = { children: ReactNode }
 
 export const MenuLoading = () => {
-  return <div className="menu-logo loading loading-ring loading-xs mx-auto" />
+  return <span className="loading loading-ring loading-xs mx-auto" />
 }
 
 export default function Sidebar({ children }: SidebarProps) {
@@ -36,19 +36,17 @@ export default function Sidebar({ children }: SidebarProps) {
       />
       {/* Sidebar */}
       <aside
-        className={classNames('flex flex-col sidebar vertical max-md:mobile', {
-          open,
-        })}
+        className={classNames(
+          'flex flex-col gap-3 sidebar vertical max-md:mobile',
+          {
+            open,
+          },
+        )}
       >
-        <Link
-          className={classNames('px-5 py-4', {
-            '!p-4 place-self-center': !open,
-          })}
-          href="/"
-        >
-          <Brand size={32} named={open} />
+        <Link className="p-4" href="/">
+          <Brand size={32} style={{ marginLeft: 2 }} named={open} />
         </Link>
-        <NavigaterMenu open={open} setOpen={setOpen} />
+        <NavigateMenu open={open} setOpen={setOpen} />
         <div className="flex-auto" />
         <SystemMenu open={open} setOpen={setOpen} />
       </aside>
@@ -58,7 +56,7 @@ export default function Sidebar({ children }: SidebarProps) {
           <ul className="w-full menu menu-horizontal menu-md flex flex-row items-center">
             <li>
               <Link href="/">
-                <Brand size={24} named />
+                <Brand size={24} />
               </Link>
             </li>
             <div className="flex-auto" />

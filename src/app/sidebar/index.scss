@@ -23,16 +23,21 @@
       li.disabled > a {
         @apply cursor-not-allowed;
       }
-      li:not(.menu-title):not(.disabled) {
-        > *:not(ul):not(details):not(.menu-title):not(summary):not(.active):focus {
-          @apply bg-inherit
+      li:not(.menu-title) {
+        template {
+         @apply p-0;
         }
-        > *:not(ul):not(details):not(.menu-title):not(.active):hover,
-        > details > summary:not(.menu-title):not(.active):hover,
-        .focus {
-          @apply bg-[--accent] text-[--accent-text] #{!important};
-          > .menu-option, .menu-logo{
-            @apply opacity-100
+        &:not(.disabled) {
+          > *:not(ul):not(details):not(.menu-title):not(summary):not(.active):focus {
+            @apply bg-inherit
+          }
+          > *:not(ul):not(details):not(.menu-title):not(.active):hover,
+          > details > summary:not(.menu-title):not(.active):hover,
+          .focus {
+            @apply bg-[--accent] text-[--accent-text] #{!important};
+            > .menu-option, .menu-logo{
+              @apply opacity-100
+            }
           }
         }
       }
@@ -46,7 +51,7 @@
       }
     }
     .menu-vertical > li:not(.menu-title) > details > ul {
-      @apply ml-0
+      @apply ml-0;
     }
   }
 
