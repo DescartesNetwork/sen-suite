@@ -40,8 +40,13 @@ export default function Sidebar({ children }: SidebarProps) {
           open,
         })}
       >
-        <Link className="p-4" href="/">
-          <Brand size={32} style={{ marginLeft: 3 }} named={open} />
+        <Link
+          className={classNames('px-5 py-4', {
+            '!p-4 place-self-center': !open,
+          })}
+          href="/"
+        >
+          <Brand size={32} named={open} />
         </Link>
         <NavigaterMenu open={open} setOpen={setOpen} />
         <div className="flex-auto" />
