@@ -1,4 +1,3 @@
-'use client'
 import { useCallback, useMemo, useState } from 'react'
 import { Wallet } from '@solana/wallet-adapter-react'
 import copy from 'copy-to-clipboard'
