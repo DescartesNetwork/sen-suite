@@ -9,7 +9,6 @@ import Brand from '@/components/brand'
 import Island from '@/components/island'
 import WalletButton from './walletButton'
 import NavigationMenu from './navigationMenu'
-
 import SystemMenu, { MenuLoading } from './systemMenu'
 
 import './index.scss'
