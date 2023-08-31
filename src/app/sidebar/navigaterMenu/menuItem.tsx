@@ -1,4 +1,3 @@
-'use client'
 import Link from 'next/link'
 import classNames from 'classnames'
 import { usePathname } from 'next/navigation'
@@ -7,17 +6,17 @@ import ListSubMenuItem from './listSubMenuItem'
 
 import { MenuItemData } from './index'
 
-export type MenuItemProps = {
-  item: MenuItemData
-  open?: boolean
+type MenuItemProps = {
+  menuItemData: MenuItemData
+  open: boolean
 }
 
-export default function MenuItem({ item, open }: MenuItemProps) {
-  const { route, name, Logo, disabled, children } = item
+export default function MenuItem({ menuItemData, open }: MenuItemProps) {
+  const { route, name, Logo, disabled, children } = menuItemData
   const pathname = usePathname()
 
   if (children && !!children.length) {
-    return <ListSubMenuItem item={item} open={open} />
+    return <ListSubMenuItem menuItemData={menuItemData} open={open} />
   }
 
   return (

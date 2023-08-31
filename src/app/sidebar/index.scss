@@ -65,8 +65,10 @@
 
     &:not(.open) {
       .menu {
-        li a, li details summary{
-          @apply flex gap-0
+        li{
+          a, details summary{
+            @apply flex gap-0;
+          }
         }
       }
     }

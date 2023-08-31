@@ -9,22 +9,30 @@ import {
   autoUpdate,
 } from '@floating-ui/react'
 
-import { MenuItemProps } from './menuItem'
+import { MenuItemData } from './index'
 
+type SubMenuItemProps = {
+  menuItemData: MenuItemData
+}
 
-const DropdownSubMenuItem = ({ item }: MenuItemProps) =>{
+type ListSubMenuItemProps = {
+  menuItemData: MenuItemData
+  open: boolean
+}
+
+const DropdownSubMenuItem = ({ menuItemData }: SubMenuItemProps) => {
   const {
-      refs: { setReference, setFloating },
-      floatingStyles,
-    } = useFloating({
-      whileElementsMounted: autoUpdate,
-      placement: 'right-start',
-      strategy: 'fixed',
-      middleware: [offset(7), flip(), shift()],
-    })
+    refs: { setReference, setFloating },
+    floatingStyles,
+  } = useFloating({
+    whileElementsMounted: autoUpdate,
+    placement: 'right-start',
+    strategy: 'fixed',
+    middleware: [offset(7), flip(), shift()],
+  })
   const pathname = usePathname()
-  const { route, name, Logo, disabled, children } = item
-  
+  const { route, name, Logo, disabled, children } = menuItemData
+
   return (
     <div className="static dropdown p-0 flex rounded-lg">
       <label
@@ -45,8 +53,8 @@ const DropdownSubMenuItem = ({ item }: MenuItemProps) =>{
         <li>
           <p className="menu-title">{name}</p>
         </li>
-        {children && 
-          children.map(({ route, name:subName }) => (
+        {children &&
+          children.map(({ route, name: subName }) => (
             <li key={name}>
               <Link
                 href={disabled ? '#' : route}
@@ -66,22 +74,18 @@ const DropdownSubMenuItem = ({ item }: MenuItemProps) =>{
   )
 }
 
-const SubMenuItem = ({ item }: MenuItemProps) => {
+const SubMenuItem = ({ menuItemData }: SubMenuItemProps) => {
   const pathname = usePathname()
-  const { name, Logo, children } = item
+  const { name, Logo, children } = menuItemData
   return (
     <details>
-      <summary
-        className='px-4 py-3'
-      >
+      <summary className="px-4 py-3">
         {Logo && <Logo strokeWidth={1.5} className="menu-logo opacity-60" />}
         <p className="menu-option menu-text">{name}</p>
       </summary>
-      <ul
-        className='ml-0 pl-0 before:w-0'
-      >
+      <ul className="ml-0 pl-0 before:w-0">
         {children &&
-          children.map(({ route, disabled,name:subName }) => (
+          children.map(({ route, disabled, name: subName }) => (
             <li key={route} className={classNames({ disabled })}>
               <Link
                 href={disabled ? '#' : route}
@@ -98,9 +102,10 @@ const SubMenuItem = ({ item }: MenuItemProps) => {
   )
 }
 
-
-export default function ListSubMenuItem({item, open}: MenuItemProps){
-  if(open)
-    return <SubMenuItem item={item} open={open} />
-  return  <DropdownSubMenuItem item={item} />
+export default function ListSubMenuItem({
+  menuItemData,
+  open,
+}: ListSubMenuItemProps) {
+  if (open) return <SubMenuItem menuItemData={menuItemData} />
+  return <DropdownSubMenuItem menuItemData={menuItemData} />
 }

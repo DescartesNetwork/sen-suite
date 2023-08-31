@@ -15,11 +15,6 @@ import './index.scss'
 
 export type SidebarProps = { children: ReactNode }
 
-export type MenuProps = {
-  open: boolean
-  setOpen: (open: boolean) => void
-}
-
 export const MenuLoading = () => {
   return <div className="menu-logo loading loading-ring loading-xs mx-auto" />
 }

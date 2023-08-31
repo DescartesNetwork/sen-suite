@@ -1,4 +1,3 @@
-'use client'
 import classNames from 'classnames'
 
 import {
@@ -14,14 +13,17 @@ import {
 } from 'lucide-react'
 import MenuItem from './menuItem'
 
-import { MenuProps } from '../index'
-
 export type MenuItemData = {
   route: string
   name: string
   Logo?: LucideIcon
   disabled?: boolean
   children?: MenuItemData[]
+}
+
+type NavigaterMenuProps = {
+  open: boolean
+  setOpen: (open: boolean) => void
 }
 
 const ROUTES: MenuItemData[] = [
@@ -54,12 +56,15 @@ const ROUTES: MenuItemData[] = [
   { route: '/token-creation', name: 'Token Creation', Logo: BookPlus },
 ]
 
-export default function NavigaterMenu({ open }: MenuProps) {
+export default function NavigaterMenu({ open }: NavigaterMenuProps) {
   return (
     <ul className="flex flex-nowrap overflow-y-auto menu menu-vertical menu-md sidebar-menu">
-      {ROUTES.map((item) => (
-        <li key={item.name} className={classNames({ disabled: item.disabled })}>
-          <MenuItem item={item} open={open} />
+      {ROUTES.map((route) => (
+        <li
+          key={route.name}
+          className={classNames({ disabled: route.disabled })}
+        >
+          <MenuItem menuItemData={route} open={open} />
         </li>
       ))}
     </ul>

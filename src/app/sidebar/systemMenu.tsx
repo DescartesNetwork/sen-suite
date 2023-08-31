@@ -1,4 +1,3 @@
-'use client'
 import Link from 'next/link'
 
 import {
@@ -10,9 +9,14 @@ import {
 import Island from '@/components/island'
 import WalletButton from './walletButton'
 import ThemeSwitch from './themeSwitch'
-import { MenuLoading, MenuProps } from './index'
+import { MenuLoading } from './index'
 
-export default function SystemMenu({ open, setOpen }: MenuProps) {
+type SystemMenuProps = {
+  open: boolean
+  setOpen: (open: boolean) => void
+}
+
+export default function SystemMenu({ open, setOpen }: SystemMenuProps) {
   return (
     <ul className="menu menu-vertical menu-md">
       <li>
