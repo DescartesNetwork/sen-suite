@@ -8,12 +8,21 @@ import { Menu } from 'lucide-react'
 import Brand from '@/components/brand'
 import Island from '@/components/island'
 import WalletButton from './walletButton'
-import NavigationMenu from './navigationMenu'
-import SystemMenu, { MenuLoading } from './systemMenu'
+import NavigaterMenu from './navigaterMenu'
+import SystemMenu from './systemMenu'
 
 import './index.scss'
 
 export type SidebarProps = { children: ReactNode }
+
+export type MenuProps = {
+  open: boolean
+  setOpen: (open: boolean) => void
+}
+
+export const MenuLoading = () => {
+  return <div className="menu-logo loading loading-ring loading-xs mx-auto" />
+}
 
 export default function Sidebar({ children }: SidebarProps) {
   const [open, setOpen] = useState(false)
@@ -39,7 +48,7 @@ export default function Sidebar({ children }: SidebarProps) {
         <Link className="p-4" href="/">
           <Brand size={32} style={{ marginLeft: 3 }} named={open} />
         </Link>
-        <NavigationMenu open={open} />
+        <NavigaterMenu open={open} setOpen={setOpen} />
         <div className="flex-auto" />
         <SystemMenu open={open} setOpen={setOpen} />
       </aside>

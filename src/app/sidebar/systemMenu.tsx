@@ -10,22 +10,9 @@ import {
 import Island from '@/components/island'
 import WalletButton from './walletButton'
 import ThemeSwitch from './themeSwitch'
+import { MenuLoading, MenuProps } from './index'
 
-export function MenuLoading() {
-  return (
-    <div>
-      <span className="menu-logo loading loading-ring loading-xs" />
-    </div>
-  )
-}
-
-export default function SystemMenu({
-  open,
-  setOpen,
-}: {
-  open: boolean
-  setOpen: (open: boolean) => void
-}) {
+export default function SystemMenu({ open, setOpen }: MenuProps) {
   return (
     <ul className="menu menu-vertical menu-md">
       <li>

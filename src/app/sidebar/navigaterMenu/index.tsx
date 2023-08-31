@@ -10,36 +10,31 @@ import {
   Leaf,
   Rocket,
   Home,
+  LucideIcon,
 } from 'lucide-react'
-import MenuItem, { PropsMenu } from './menuItem'
+import MenuItem from './menuItem'
 
-const ROUTES: PropsMenu[] = [
-  {
-    route: '/',
-    name: 'Home',
-    Logo: Home,
-  },
-  {
-    route: '/academy',
-    name: 'Academy',
-    Logo: GraduationCap,
-  },
-  {
-    route: '/swap',
-    name: 'Swap',
-    Logo: Repeat,
-  },
+import { MenuProps } from '../index'
+
+export type MenuItemData = {
+  route: string
+  name: string
+  Logo?: LucideIcon
+  disabled?: boolean
+  children?: MenuItemData[]
+}
+
+const ROUTES: MenuItemData[] = [
+  { route: '/', name: 'Home', Logo: Home },
+  { route: '/academy', name: 'Academy', Logo: GraduationCap },
+  { route: '/swap', name: 'Swap', Logo: Repeat },
   {
     route: '/pools',
     name: 'Liquidity Pool',
     Logo: BarChartBig,
     disabled: true,
   },
-  {
-    route: '/farming',
-    name: 'Farming',
-    Logo: Leaf,
-  },
+  { route: '/farming', name: 'Farming', Logo: Leaf },
   {
     route: '/airdrop',
     name: 'Airdrop',
@@ -55,20 +50,11 @@ const ROUTES: PropsMenu[] = [
       },
     ],
   },
-  {
-    route: '/launchpad',
-    name: 'Launchpad',
-    Logo: Rocket,
-    disabled: true,
-  },
-  {
-    route: '/token-creation',
-    name: 'Token Creation',
-    Logo: BookPlus,
-  },
+  { route: '/launchpad', name: 'Launchpad', Logo: Rocket, disabled: true },
+  { route: '/token-creation', name: 'Token Creation', Logo: BookPlus },
 ]
 
-export default function NavigationMenu({ open }: { open: boolean }) {
+export default function NavigaterMenu({ open }: MenuProps) {
   return (
     <ul className="flex flex-nowrap overflow-y-auto menu menu-vertical menu-md sidebar-menu">
       {ROUTES.map((item) => (
