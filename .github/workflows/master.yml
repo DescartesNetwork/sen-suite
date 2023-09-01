@@ -10,6 +10,6 @@ jobs:
     environment: production
     steps:
       - name: Welcome
-        run: echo Start deploying Sen Suite
+        run: echo Start deploying Sen Suite to Production
       - name: Deploy static to Render
         run: curl ${{ secrets.RENDER_DEPLOY_HOOK }}
