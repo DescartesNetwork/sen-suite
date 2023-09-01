@@ -4,6 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import LazyLoad from 'react-lazy-load'
 import Empty from '@/components/empty'
 import FarmCard from '../farmCard'
+import CommonLayout from '../commonLayout'
 
 import {
   useAllDebts,
@@ -43,37 +44,43 @@ export default function MyFarms() {
   )
 
   return (
-    <div className="grid grid-cols-12 gap-4 @container">
-      <div className="col-span-full px-4 py-2 flex flex-row items-center gap-2">
-        <h5 className="opacity-60">Created Farms</h5>
-        <div className="divider divider-horizontal m-0" />
-        <p className="font-bold">{filteredCreatedFarmAddresses.length} Farms</p>
-      </div>
-      {filteredCreatedFarmAddresses.map((farmAddress) => (
-        <LazyLoad className="col-span-full @2xl:col-span-6" key={farmAddress}>
-          <FarmCard farmAddress={farmAddress} />
-        </LazyLoad>
-      ))}
-      {!filteredCreatedFarmAddresses.length && (
-        <div className="col-span-full justify-center p-4">
-          <Empty />
+    <CommonLayout>
+      <div className="grid grid-cols-12 gap-4 ">
+        <div className="col-span-full px-4 py-2 flex flex-row items-center gap-2">
+          <h5 className="opacity-60">Created Farms</h5>
+          <div className="divider divider-horizontal m-0" />
+          <p className="font-bold">
+            {filteredCreatedFarmAddresses.length} Farms
+          </p>
         </div>
-      )}
-      <div className="col-span-full px-4 py-2 flex flex-row items-center gap-2">
-        <h5 className="opacity-60">Staked Farms</h5>
-        <div className="divider divider-horizontal m-0" />
-        <p className="font-bold">{filteredStakedFarmAddresses.length} Farms</p>
-      </div>
-      {filteredStakedFarmAddresses.map((farmAddress) => (
-        <LazyLoad className="col-span-full @2xl:col-span-6" key={farmAddress}>
-          <FarmCard farmAddress={farmAddress} />
-        </LazyLoad>
-      ))}
-      {!filteredStakedFarmAddresses.length && (
-        <div className="col-span-full justify-center p-4">
-          <Empty />
+        {filteredCreatedFarmAddresses.map((farmAddress) => (
+          <LazyLoad className="col-span-full @2xl:col-span-6" key={farmAddress}>
+            <FarmCard farmAddress={farmAddress} />
+          </LazyLoad>
+        ))}
+        {!filteredCreatedFarmAddresses.length && (
+          <div className="col-span-full justify-center p-4">
+            <Empty />
+          </div>
+        )}
+        <div className="col-span-full px-4 py-2 flex flex-row items-center gap-2">
+          <h5 className="opacity-60">Staked Farms</h5>
+          <div className="divider divider-horizontal m-0" />
+          <p className="font-bold">
+            {filteredStakedFarmAddresses.length} Farms
+          </p>
         </div>
-      )}
-    </div>
+        {filteredStakedFarmAddresses.map((farmAddress) => (
+          <LazyLoad className="col-span-full @2xl:col-span-6" key={farmAddress}>
+            <FarmCard farmAddress={farmAddress} />
+          </LazyLoad>
+        ))}
+        {!filteredStakedFarmAddresses.length && (
+          <div className="col-span-full justify-center p-4">
+            <Empty />
+          </div>
+        )}
+      </div>
+    </CommonLayout>
   )
 }

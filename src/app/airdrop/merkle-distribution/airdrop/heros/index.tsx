@@ -1,17 +1,20 @@
+'use client'
+import { useCallback, useMemo } from 'react'
 import { useAsync } from 'react-use'
 import { MerkleDistributor } from '@sentre/utility'
+import useSWR from 'swr'
 
 import { MonitorDown, Send, Users } from 'lucide-react'
 import HeroCard from '@/app/airdrop/merkle-distribution/heroCard'
 
 import { undecimalize } from '@/helpers/decimals'
-import { getPrice } from '@/helpers/stat'
 import { numeric } from '@/helpers/utils'
-import { useMerkleMetadata } from '@/hooks/airdrop.hook'
+import { useGetMerkleMetadata } from '@/hooks/airdrop.hook'
 import { useDistributors, useMyDistributes } from '@/providers/airdrop.provider'
-import { useMintStore } from '@/providers/mint.provider'
+import { usePrices } from '@/providers/mint.provider'
+import { useMints } from '@/hooks/spl.hook'
 
-const Heros = () => {
+export default function Heros() {
   return (
     <div className="grid md:grid-cols-3 grid-col-1 gap-6">
       <TotalAirdrop />
@@ -20,8 +23,6 @@ const Heros = () => {
     </div>
   )
 }
-
-export default Heros
 
 const TotalCampaign = () => {
   const { airdrops } = useMyDistributes()
@@ -37,28 +38,44 @@ const TotalCampaign = () => {
 const TotalAirdrop = () => {
   const { airdrops } = useMyDistributes()
   const distributors = useDistributors()
-  const metadata = useMintStore(({ metadata }) => metadata)
 
-  const { value: totalUSD, loading } = useAsync(async () => {
-    let usd = 0
+  const mintAddresses = useMemo(() => {
+    const result: string[] = []
     for (const address of airdrops) {
-      const { total, mint } = distributors[address]
-      const { decimals } = metadata.find(
-        ({ address }) => address === mint.toBase58(),
-      ) || { decimals: 0 }
-      const numAmount = Number(undecimalize(total, decimals))
-      const price = (await getPrice(mint.toBase58())) || 0
-
-      usd += numAmount * price
+      const { mint } = distributors[address]
+      result.push(mint.toBase58())
     }
-    return usd
-  }, [airdrops, distributors])
+    return result
+  }, [distributors, airdrops])
+
+  const mints = useMints(mintAddresses)
+  const prices = usePrices(mintAddresses)
+  const decimals = mints.map((mint) => mint?.decimals || 0)
+
+  const fetcher = useCallback(
+    async ([prices, decimals]: [number[], number[]]) => {
+      let usd = 0
+      for (const index in airdrops) {
+        const distributorAddress = airdrops[index]
+        const { total } = distributors[distributorAddress]
+        const numAmount = Number(undecimalize(total, decimals[index]))
+        usd += numAmount * prices[index]
+      }
+      return usd
+    },
+    [distributors, airdrops],
+  )
+
+  const { data: totalUSD, isLoading } = useSWR(
+    [prices, decimals, 'totalAirdrop'],
+    fetcher,
+  )
 
   return (
     <HeroCard
       Icon={MonitorDown}
       label="Total Airdrop"
-      loading={loading}
+      loading={isLoading}
       value={numeric(totalUSD || 0).format('$0,0.[0000]')}
     />
   )
@@ -66,7 +83,7 @@ const TotalAirdrop = () => {
 
 const TotalRecipients = () => {
   const { airdrops } = useMyDistributes()
-  const getMetadata = useMerkleMetadata()
+  const getMetadata = useGetMerkleMetadata()
 
   const { value: amountRecipient } = useAsync(async () => {
     const mapping: Record<string, string> = {}

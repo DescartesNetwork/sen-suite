@@ -422,7 +422,11 @@ const MintSelection = () => {
   )
 }
 
-const InputConfigs = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
+export default function InputConfigs({
+  setStep,
+}: {
+  setStep: (step: CreateStep) => void
+}) {
   const [file, setFile] = useState<File>()
   const [unlimited, setUnlimited] = useState(true)
 
@@ -496,7 +500,7 @@ const InputConfigs = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
             <Expiration unlimited={unlimited} onChange={setUnlimited} />
           </div>
         </div>
-        <Dropzone file={file} onChange={setFile} />
+        <Dropzone file={file} onChange={setFile} templateFile="/vesting.csv" />
       </div>
       <div className="grid grid-cols-2 gap-6">
         <button className="btn" onClick={onBack}>
@@ -513,5 +517,3 @@ const InputConfigs = ({ setStep }: { setStep: (step: CreateStep) => void }) => {
     </div>
   )
 }
-
-export default InputConfigs

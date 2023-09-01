@@ -1,3 +1,4 @@
+'use client'
 import { useState } from 'react'
 import { Leaf, MerkleDistributor } from '@sentre/utility'
 import { useAsync } from 'react-use'
@@ -8,7 +9,7 @@ import { FileText } from 'lucide-react'
 import { MintAmount } from '@/components/mint'
 
 import {
-  useMerkleMetadata,
+  useGetMerkleMetadata,
   useReceiptByDistributorAddress,
   useUtility,
 } from '@/hooks/airdrop.hook'
@@ -25,7 +26,7 @@ const UnclaimList = ({ distributeAddress }: UnclaimListProps) => {
   const receipts = useReceiptByDistributorAddress(distributeAddress)
   const { mint } = useDistributors()[distributeAddress]
 
-  const getMetadata = useMerkleMetadata()
+  const getMetadata = useGetMerkleMetadata()
   const utility = useUtility()
 
   const { value: unclaimList } = useAsync(async () => {
@@ -78,9 +79,11 @@ const UnclaimList = ({ distributeAddress }: UnclaimListProps) => {
                       />
                     </td>
                     <td>
-                      {dayjs(startedAt.toNumber() * 1000).format(
-                        'DD/MM/YYYY, HH:mm',
-                      )}
+                      {startedAt.isZero()
+                        ? 'Immediately'
+                        : dayjs(startedAt.toNumber() * 1000).format(
+                            'DD/MM/YYYY, HH:mm',
+                          )}
                     </td>
                   </tr>
                 ))}

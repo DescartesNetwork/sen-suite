@@ -49,3 +49,25 @@ export const useNfts = (mintAddresses: string[]) => {
   const { data } = useSWR([mintAddresses, 'mpl'], fetcher)
   return data || []
 }
+
+/**
+ * Get NFT by owner
+ * @param walletAddress Wallet addresses
+ * @returns List nfts by owner
+ */
+export const useNftsByOwner = (walletAddress: string) => {
+  const mpl = useMpl()
+  const fetcher = useCallback(
+    async (walletAddress: string) => {
+      if (!isAddress(walletAddress)) return []
+      const nfts = await mpl.nfts().findAllByOwner({
+        owner: new PublicKey(walletAddress),
+      })
+      return nfts
+    },
+    [mpl],
+  )
+
+  const { data } = useSWR(walletAddress, fetcher)
+  return data || []
+}

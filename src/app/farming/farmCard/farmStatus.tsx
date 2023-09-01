@@ -29,7 +29,7 @@ export default function FarmStatus({ farmAddress }: FarmStatusProps) {
         <p className="text-xs text-lime-700">Upcoming</p>
       </div>
     )
-  if (boosting)
+  if (boosting.length)
     return (
       <div className="badge bg-yellow-200 flex flex-row items-center gap-1">
         <Zap className="w-3 h-3 stroke-yellow-700 fill-yellow-700" />

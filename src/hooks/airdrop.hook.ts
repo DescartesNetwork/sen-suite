@@ -1,12 +1,13 @@
 import { useCallback, useMemo } from 'react'
 import { useAsync } from 'react-use'
+import useSWR from 'swr'
 import { Utility, Leaf, MerkleDistributor, ReceiptData } from '@sentre/utility'
 import {
   useAnchorWallet,
   useConnection,
   useWallet,
 } from '@solana/wallet-adapter-react'
-import { PublicKey, Transaction } from '@solana/web3.js'
+import { ParsedAccountData, PublicKey, Transaction } from '@solana/web3.js'
 import { decode, encode } from 'bs58'
 import BN from 'bn.js'
 import axios from 'axios'
@@ -25,7 +26,8 @@ import {
 } from '@/providers/airdrop.provider'
 import { MetadataBackup, toFilename, uploadFileToAws } from '@/helpers/aws'
 import { useMintByAddress } from '@/providers/mint.provider'
-import { ReceiptState } from '@/app/airdrop/merkle-distribution/rewardCard'
+import { ReceiptState } from '@/app/airdrop/merkle-distribution/statusTag'
+import { utils } from '@coral-xyz/anchor'
 
 /**
  * Instantiate a utility
@@ -145,12 +147,11 @@ export const useParseMerkleType = () => {
 }
 
 /**
- * Get merkle distributor bytes by metadata
+ * Function get merkle distributor bytes by metadata
  * @param distributor distributor address
- 
- * @returns  merkle distributor bytes and createdAt
+ * @returns  Function get
  */
-export const useMerkleMetadata = () => {
+export const useGetMerkleMetadata = () => {
   const distributors = useDistributors()
   const getMetadata = useCallback(
     async (distributor: string) => {
@@ -171,6 +172,19 @@ export const useMerkleMetadata = () => {
   )
 
   return getMetadata
+}
+
+/**
+ * Get merkle distributor bytes by metadata
+ * @param address distributor address
+ * @returns  merkle distributor bytes and createdAt
+ */
+export const useMerkleMetadata = (address: string) => {
+  const getMetadata = useGetMerkleMetadata()
+  const { data } = useSWR([address, 'metadata'], ([address]) =>
+    getMetadata(address),
+  )
+  return data
 }
 
 /**
@@ -239,7 +253,7 @@ export const useTotalDistribute = () => {
  * @returns Claim reward function
  */
 export const useClaim = (address: string, recipientData: Leaf) => {
-  const getMetadata = useMerkleMetadata()
+  const getMetadata = useGetMerkleMetadata()
   const utility = useUtility()
 
   const onClaim = useCallback(async () => {
@@ -380,4 +394,32 @@ export const useReceiptByDistributorAddress = (address: string) => {
   }, [utility])
 
   return receipts
+}
+
+/**
+ *
+ * Balance on merkle tree
+ * @param address distributor's address
+ * @returns remaining balance
+ */
+export const useRemainingBalance = (address: string) => {
+  const { connection } = useConnection()
+  const distributors = useDistributors()
+  const { mint } = distributors[address]
+  const utility = useUtility()
+
+  const { value: remaining } = useAsync(async () => {
+    if (!utility) return
+    const treasurerAddress = await utility.deriveTreasurerAddress(address)
+    const associated = await utils.token.associatedAddress({
+      mint,
+      owner: new PublicKey(treasurerAddress),
+    })
+    const { value } = await connection.getParsedAccountInfo(associated)
+    if (!value) return '0'
+    const data = value.data as ParsedAccountData
+    return data.parsed.info.tokenAmount.amount || '0'
+  }, [address, utility])
+
+  return remaining
 }

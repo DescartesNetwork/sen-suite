@@ -14,7 +14,7 @@ import { isAddress } from '@/helpers/utils'
 import { useAnchorProvider } from '@/providers/wallet.provider'
 
 /**
- * Create an SPL instanse
+ * Create an SPL instance
  * @returns SPL instance
  */
 export const useSpl = () => {

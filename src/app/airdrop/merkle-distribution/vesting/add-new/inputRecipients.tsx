@@ -1,3 +1,4 @@
+'use client'
 import { useCallback, useMemo, useState } from 'react'
 import { isAddress } from '@sentre/utility'
 import { BN } from 'bn.js'

@@ -7,7 +7,7 @@ import CreateMerkle from '@/app/airdrop/merkle-distribution/createMerkle'
 
 import { CreateStep } from '@/app/airdrop/merkle-distribution/constants'
 
-const AddNew = () => {
+export default function AddNew() {
   const [step, setStep] = useState(CreateStep.InputConfigs)
 
   const renderPage = useMemo(() => {
@@ -28,5 +28,3 @@ const AddNew = () => {
     </div>
   )
 }
-
-export default AddNew

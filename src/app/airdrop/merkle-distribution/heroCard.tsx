@@ -1,3 +1,4 @@
+'use client'
 import { LucideIcon } from 'lucide-react'
 
 type HeroCardProps = {
@@ -7,7 +8,12 @@ type HeroCardProps = {
   loading?: boolean
 }
 
-const HeroCard = ({ Icon, label, value, loading }: HeroCardProps) => {
+export default function HeroCard({
+  Icon,
+  label,
+  value,
+  loading,
+}: HeroCardProps) {
   return (
     <div className="card flex flex-row py-4 px-6 rounded-xl bg-base-100 items-center">
       <div className="flex-auto flex flex-col gap-2">
@@ -24,5 +30,3 @@ const HeroCard = ({ Icon, label, value, loading }: HeroCardProps) => {
     </div>
   )
 }
-
-export default HeroCard

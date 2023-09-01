@@ -11,7 +11,7 @@ import {
   useMyReceivedList,
 } from '@/providers/airdrop.provider'
 import { useReceiptStatus } from '@/hooks/airdrop.hook'
-import { ReceiptState } from './rewardCard'
+import { ReceiptState } from './statusTag'
 
 export type ReceiveItem = {
   endedAt: number
@@ -25,7 +25,7 @@ export type ReceiveItem = {
 
 export default function MerkleDistribution() {
   const distributors = useDistributors()
-  const { receivedList } = useMyReceivedList()
+  const { receivedList, loading } = useMyReceivedList()
   const getReceiptStatus = useReceiptStatus()
 
   const { airdrops, vesting } = useMemo(() => {
@@ -78,11 +78,17 @@ export default function MerkleDistribution() {
   }, [distributors, getReceiptStatus, receivedList])
 
   return (
-    <div className="flex flex-col gap-6">
-      <h4>Dashboard</h4>
-      <Heros />
-      <AirdropList airdrops={airdrops} />
-      <VestingList vesting={vesting} />
+    <div className="grid grid-cols-12 gap-6">
+      <h4 className="col-span-full">Dashboard</h4>
+      <div className="col-span-full">
+        <Heros />
+      </div>
+      <div className="col-span-full">
+        <AirdropList loading={loading} airdrops={airdrops} />
+      </div>
+      <div className="col-span-full">
+        <VestingList loading={loading} vesting={vesting} />
+      </div>
     </div>
   )
 }
