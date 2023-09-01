@@ -2,7 +2,7 @@ name: Automatic Deployment
 
 on:
   push:
-    branches: [staging]
+    branches: [develop]
 
 jobs:
   deployment:
@@ -14,5 +14,3 @@ jobs:
           echo =================================================
           echo Start deploying Sen Suite to ${{env.environment}}
           echo =================================================
-      - name: Deploy static to Render
-        run: curl ${{ secrets.RENDER_DEPLOY_HOOK }}
