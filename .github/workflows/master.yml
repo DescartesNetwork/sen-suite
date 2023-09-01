@@ -5,7 +5,7 @@ on:
     branches: [master]
 
 jobs:
-  build:
+  deployment:
     runs-on: ubuntu-latest
     environment: production
     steps:
