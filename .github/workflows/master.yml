@@ -7,8 +7,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - name: Welcome
         run: echo Start deploying Sen Suite
       - name: Deploy static to Render
-        run: curl ${{ secrets.RENDER_DEPLOY_HOOK_MASTER }}
+        run: curl ${{ secrets.RENDER_DEPLOY_HOOK }}
