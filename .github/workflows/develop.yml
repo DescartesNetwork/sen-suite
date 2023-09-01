@@ -11,4 +11,4 @@ jobs:
     steps:
       - name: Welcome
         run: |
-          echo Start deploying Sen Suite to ${{github}}
+          echo Start deploying Sen Suite to ${{toJSON(github)}}
