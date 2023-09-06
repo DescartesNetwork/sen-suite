@@ -11,9 +11,47 @@
       .menu-logo {
         @apply h-5 w-5;
       }
+      .menu-title{
+        @apply font-semibold hover:bg-inherit text-neutral-focus #{!important};
+      }
+      .menu-text {
+        @apply opacity-60 font-semibold;
+      }
+      .menu-item {
+        @apply px-4 py-3 flex flex-row cursor-pointer rounded-lg;
+      }
       li.disabled > a {
         @apply cursor-not-allowed;
       }
+      li:not(.menu-title) {
+        template {
+         @apply p-0;
+        }
+        &:not(.disabled) {
+          > *:not(ul):not(details):not(.menu-title):not(summary):not(.active):focus {
+            @apply bg-inherit
+          }
+          > *:not(ul):not(details):not(.menu-title):not(.active):hover,
+          > details > summary:not(.menu-title):not(.active):hover,
+          .focus {
+            @apply bg-[--accent] text-[--accent-text] #{!important};
+            > .menu-option, .menu-logo{
+              @apply opacity-100
+            }
+          }
+        }
+      }
+    }
+    .sidebar-menu {
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;  /* Firefox */
+
+      &::-webkit-scrollbar {
+        @apply hidden
+      }
+    }
+    .menu-vertical > li:not(.menu-title) > details > ul {
+      @apply ml-0;
     }
   }
 
@@ -27,7 +65,19 @@
           display: inherit;
         }
       }
+
     }
+
+    &:not(.open) {
+      .menu {
+        li{
+          a, details summary{
+            @apply flex gap-0;
+          }
+        }
+      }
+    }
+   
 
     &.mobile {
       @apply fixed -translate-x-full top-0;
@@ -52,3 +102,4 @@
     }
   }
 }
+
