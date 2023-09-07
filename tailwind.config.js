@@ -14,6 +14,7 @@ module.exports = {
         'swap-dark': "url('/swap-bg-dark.png')",
         'panel-light': "url('/panel-light.jpg')",
         'panel-dark': "url('/panel-dark.jpg')",
+        'home': "url('/home-bg.png')",
       },
     },
   },
