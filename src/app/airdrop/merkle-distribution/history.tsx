@@ -1,5 +1,7 @@
 'use client'
 import { useCallback, useMemo, useState } from 'react'
+import { useAsync } from 'react-use'
+
 import { BN } from 'bn.js'
 import { MerkleDistributor } from '@sentre/utility'
 import dayjs from 'dayjs'
@@ -15,9 +17,13 @@ import {
   useMerkleMetadata,
   useRemainingBalance,
   useRevoke,
+  useUtility,
 } from '@/hooks/airdrop.hook'
 import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
+import { utils } from '@coral-xyz/anchor'
+import { Connection, PublicKey } from '@solana/web3.js'
+import solConfig from '@/configs/sol.config'
 
 const DEFAULT_AMOUNT = 4
 
@@ -77,6 +83,51 @@ export default function History({ type }: { type: Distribute }) {
   )
 }
 
+const CreatedDate = ({ address }: { address: string }) => {
+  const utility = useUtility()
+  const distributors = useDistributors()
+  const metadata = useMerkleMetadata(address)
+  const { mint } = distributors[address]
+
+  const fetchFromSolscan = useCallback(async () => {
+    if (!utility) return 0
+    const treasurerAddress = await utility.deriveTreasurerAddress(address)
+    const treasury = await utils.token.associatedAddress({
+      owner: new PublicKey(treasurerAddress),
+      mint,
+    })
+    const api_transaction = `https://public-api.solscan.io/account/transactions?account=${treasury.toBase58()}&limit=100`
+
+    const response = (await fetch(api_transaction)).json()
+    return await response
+  }, [address, mint, utility])
+
+  const { value: createdAt } = useAsync(async () => {
+    if (!metadata) return 0
+    let createdAt = metadata.createAt
+    if (createdAt) return createdAt
+
+    const conn = new Connection(solConfig.rpc)
+    const trans = await conn.getSignaturesForAddress(new PublicKey(address), {
+      limit: 1000,
+    })
+    if (trans.length) createdAt = trans.pop()?.blockTime || 0
+    else {
+      const backupTrans = await fetchFromSolscan()
+      createdAt = backupTrans.pop().blockTime || 0
+    }
+
+    return createdAt
+  }, [metadata])
+  return (
+    <span>
+      {createdAt
+        ? dayjs(createdAt * 1000).format('DD/MM/YYYY, HH:mm')
+        : 'Unknown'}
+    </span>
+  )
+}
+
 const HistoryTableItem = ({ address }: { address: string }) => {
   const [loading, setLoading] = useState(false)
   const [disabled, setDisabled] = useState(false)
@@ -113,7 +164,7 @@ const HistoryTableItem = ({ address }: { address: string }) => {
     const root = MerkleDistributor.fromBuffer(Buffer.from(metadata.data))
     const unlockTime = root.receipients[0].startedAt.toNumber() * 1000
 
-    return { unlockTime, createdAt: metadata.createAt * 1000 }
+    return { unlockTime }
   }, [metadata])
 
   const ok = useMemo(() => {
@@ -124,7 +175,9 @@ const HistoryTableItem = ({ address }: { address: string }) => {
 
   return (
     <tr className="hover cursor-pointer">
-      <td>{dayjs(time?.createdAt).format('DD/MM/YYYY, HH:mm')}</td>
+      <td>
+        <CreatedDate address={address} />
+      </td>
       <td>
         {!time?.unlockTime
           ? 'Immediately'
@@ -246,12 +299,14 @@ const HistoryExpand = ({
       <div className="flex flex-col gap-2 ">
         <div className="flex gap-2 items-center justify-between">
           <p className="opacity-60">Created date</p>
-          <p>{dayjs(time?.createdAt).format('DD/MM/YYYY, HH:mm')}</p>
+          <p>
+            <CreatedDate address={address} />
+          </p>
         </div>
         <div className="flex gap-2 items-center justify-between">
           <p className="opacity-60">Unlock date</p>
           <p>
-            {time?.unlockTime
+            {!time?.unlockTime
               ? 'Immediately'
               : dayjs(time?.unlockTime).format('DD/MM/YYYY, HH:mm')}
           </p>
