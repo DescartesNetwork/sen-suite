@@ -5,10 +5,11 @@ on:
     branches: [staging]
 
 jobs:
-  build:
+  deployment:
     runs-on: ubuntu-latest
+    environment: staging
     steps:
       - name: Welcome
-        run: echo Start deploying Sen Suite
+        run: echo Start deploying Sen Suite to Staging
       - name: Deploy static to Render
-        run: curl ${{ secrets.RENDER_DEPLOY_HOOK_STAGING }}
+        run: curl ${{ secrets.RENDER_DEPLOY_HOOK }}
