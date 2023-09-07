@@ -8,6 +8,7 @@ import { numeric } from '@/helpers/utils'
 import { useTvl } from '@/hooks/tvl.hook'
 import { usePoolByAddress } from '@/providers/pools.provider'
 import { useTokenAccountByMintAddress } from '@/providers/tokenAccount.provider'
+import { useApy } from '@/hooks/pool.hook'
 
 const HeroCard = ({
   label,
@@ -52,6 +53,7 @@ const Heros = ({ poolAddress }: { poolAddress: string }) => {
     [pool],
   )
   const tvl = useTvl(poolReserves)
+  const apy = useApy(poolAddress)
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -62,7 +64,7 @@ const Heros = ({ poolAddress }: { poolAddress: string }) => {
       />
       <HeroCard
         label="APY"
-        content={numeric(0).format('0,0.[00]a%')}
+        content={numeric(apy).format('0,0.[00]a%')}
         bg="/pool-apy.svg"
       />
       <HeroCard

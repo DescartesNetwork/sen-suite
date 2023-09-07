@@ -1,11 +1,17 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import Balancer, { MintActionState, MintActionStates, PoolData } from '@senswap/balancer'
+import Balancer, {
+  MintActionState,
+  MintActionStates,
+  PoolData,
+} from '@senswap/balancer'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { utils } from '@coral-xyz/anchor'
 import { PublicKey, SystemProgram, Transaction } from '@solana/web3.js'
 import { WRAPPED_SOL_MINT } from '@metaplex-foundation/js'
 import { initTxCreateMultiTokenAccount } from '@sen-use/web3'
 import BN from 'bn.js'
+import axios from 'axios'
+import useSWR from 'swr'
 
 import { useAnchorProvider } from '@/providers/wallet.provider'
 import { decimalize, undecimalize } from '@/helpers/decimals'
@@ -14,6 +20,8 @@ import { usePoolByAddress, usePools } from '@/providers/pools.provider'
 import { useAllTokenAccounts } from '@/providers/tokenAccount.provider'
 import { useInitPDAAccount, useMints, useSpl } from './spl.hook'
 import solConfig from '@/configs/sol.config'
+import { DateHelper } from '@/helpers/date'
+import { useTvl } from './tvl.hook'
 
 export const GENERAL_NORMALIZED_NUMBER = 10 ** 9
 export const LPT_DECIMALS = 9
@@ -576,6 +584,65 @@ export const useOracles = () => {
   }
 }
 
+export const useVol24h = (poolAddress: string) => {
+  const { treasuries } = usePoolByAddress(poolAddress)
+
+  const fetcher = useCallback(async () => {
+    const dateRange = 7
+    const secondsTo = new DateHelper().seconds()
+    const secondsFrom = new DateHelper().subtractDay(dateRange).seconds()
+    const tokenAccounts = treasuries.map((treasury) => treasury.toBase58())
+    const programId = solConfig.balancerAddress
+    const { data } = await axios.get('http://localhost:10000/volume', {
+      params: { secondsTo, secondsFrom, tokenAccounts, programId },
+    })
+    return data || { totalVol: 0, volumes: {}, totalAction: 0 }
+  }, [treasuries])
+
+  const { data: vols, isLoading } = useSWR([poolAddress, 'vol24h'], fetcher)
+
+  const vol24h = useMemo(() => {
+    if (!vols) return 0
+    const { volumes } = vols
+    const today = volumes[new DateHelper().ymd()]
+    const yesterday = volumes[new DateHelper().subtractDay(1).ymd()]
+    const hour = new Date().getHours()
+    return today + (hour * yesterday) / 24
+  }, [vols])
+
+  return { vols, isLoading, vol24h }
+}
+
+export const useApy = (poolAddress: string) => {
+  const { reserves, mints, taxFee, fee } = usePoolByAddress(poolAddress)
+  const { vols } = useVol24h(poolAddress)
+  const poolReserves = useMemo(
+    () =>
+      reserves.map((reserve, i) => ({
+        mintAddress: mints[i].toBase58(),
+        amount: reserve,
+      })),
+    [reserves, mints],
+  )
+  const tvl = useTvl(poolReserves)
+
+  const apy = useMemo(() => {
+    if (!vols || !tvl) return 0
+    const dateRange = 7
+
+    const { totalVol } = vols
+    const totalFee =
+      Number(undecimalize(fee.add(taxFee), GENERAL_DECIMALS)) * totalVol
+    const feePerDay = totalFee / dateRange
+    const roi = feePerDay / tvl
+    const apy = Math.pow(1 + roi, 365) - 1
+
+    return Number.isFinite(apy) ? apy : 0
+  }, [fee, taxFee, tvl, vols])
+
+  return apy
+}
+
 /**
  * List actions pool management
  * @param poolAddress pool address
@@ -587,62 +654,65 @@ export const usePoolManagement = (poolAddress: string) => {
   const updateWeights = useCallback(
     async (tokensInfo: Record<string, MintSetup>) => {
       const weights = Object.values(tokensInfo).map(({ weight }) => {
-        const newWeight = decimalize(weight,GENERAL_DECIMALS)
+        const newWeight = decimalize(weight, GENERAL_DECIMALS)
         return newWeight
-      })  
+      })
       const { txId } = await balancer.updateWeights({ poolAddress, weights })
       return txId
-    }
-  ,[balancer, poolAddress])
+    },
+    [balancer, poolAddress],
+  )
 
-  const freezePool = useCallback(
-    async () => {
-      const { txId } = await balancer.freezePool({ poolAddress })
-      return txId
-    }
-  ,[balancer, poolAddress])
+  const freezePool = useCallback(async () => {
+    const { txId } = await balancer.freezePool({ poolAddress })
+    return txId
+  }, [balancer, poolAddress])
 
-  const thawPool = useCallback(
-    async () => {
-      const { txId } = await balancer.thawPool({ poolAddress })
-      return txId
-    }
-  ,[balancer, poolAddress])
+  const thawPool = useCallback(async () => {
+    const { txId } = await balancer.thawPool({ poolAddress })
+    return txId
+  }, [balancer, poolAddress])
 
-  const updateFreezeAndThawToken =  useCallback(
+  const updateFreezeAndThawToken = useCallback(
     async (mintActions: MintActionState[]) => {
       const { txId } = await balancer.updateActions({
         poolAddress,
         actions: mintActions,
       })
       return txId
-    }
-  ,[balancer, poolAddress])
+    },
+    [balancer, poolAddress],
+  )
 
-  const updateFee =  useCallback(
-    async (fee:string, taxFee:string) => {
+  const updateFee = useCallback(
+    async (fee: string, taxFee: string) => {
       const { txId } = await balancer.updateFee(
         poolAddress,
         new BN((Number(fee) * PRECISION) / 100),
         new BN((Number(taxFee) * PRECISION) / 100),
       )
       return txId
-    }
-  ,[balancer, poolAddress])
+    },
+    [balancer, poolAddress],
+  )
 
-  const transferOwnership =  useCallback(
-    async (newOwner:string) => {
-      const { txId } = await balancer.transferOwnership({ poolAddress, newOwner })
+  const transferOwnership = useCallback(
+    async (newOwner: string) => {
+      const { txId } = await balancer.transferOwnership({
+        poolAddress,
+        newOwner,
+      })
       return txId
-    }
-  ,[balancer, poolAddress])
+    },
+    [balancer, poolAddress],
+  )
 
   return {
     updateWeights,
     freezePool,
     thawPool,
-    updateFreezeAndThawToken ,
+    updateFreezeAndThawToken,
     updateFee,
-    transferOwnership
+    transferOwnership,
   }
 }

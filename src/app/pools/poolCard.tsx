@@ -12,7 +12,7 @@ import { solscan } from '@/helpers/explorers'
 import { numeric, shortenAddress } from '@/helpers/utils'
 import { usePoolByAddress } from '@/providers/pools.provider'
 import { useTokenAccountByMintAddress } from '@/providers/tokenAccount.provider'
-import { StatePool, useOracles } from '@/hooks/pool.hook'
+import { StatePool, useOracles, useVol24h } from '@/hooks/pool.hook'
 import { useTvl } from '@/hooks/tvl.hook'
 
 type PoolCardProps = {
@@ -27,6 +27,7 @@ const PoolCard = ({ poolAddress }: PoolCardProps) => {
     amount: new BN(0),
   }
   const { calcNormalizedWeight } = useOracles()
+  const { vol24h, isLoading } = useVol24h(poolAddress)
 
   const poolReserves = useMemo(
     () =>
@@ -100,6 +101,16 @@ const PoolCard = ({ poolAddress }: PoolCardProps) => {
         <div className="flex gap-2 flex-col">
           <p className="text-xs opacity-60">TVL:</p>
           <p>{numeric(tvl).format('0,0.[00]$')}</p>
+        </div>
+        <div className="flex gap-2 flex-col">
+          <p className="text-xs opacity-60">Vol 24h:</p>
+          <p
+            className={classNames({
+              'loading loading-spinner loading-xs': isLoading,
+            })}
+          >
+            {numeric(vol24h).format('0,0.[00]$')}
+          </p>
         </div>
         <div className="flex gap-2 flex-col">
           <p className="text-xs opacity-60">My contribution:</p>

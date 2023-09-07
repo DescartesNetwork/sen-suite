@@ -43,8 +43,6 @@ const AddLiquidity = ({ poolAddress, setStep }: AddLiquidityProps) => {
   const lamports = useLamports()
   const pushMessage = usePushMessage()
 
-  console.log('prices: ', prices)
-
   const { deletePool } = useInitAndDeletePool()
   const onDeletePool = useCallback(async () => {
     try {
@@ -91,7 +89,6 @@ const AddLiquidity = ({ poolAddress, setStep }: AddLiquidityProps) => {
     setActiveIndx(activeIndx)
     setAmounts(nextAmounts)
   }
-  console.log('activeIndx: ', activeIndx)
   const amountSuggest = useMemo(() => {
     const result: string[] = []
     if (!prices || activeIndx === undefined) return []

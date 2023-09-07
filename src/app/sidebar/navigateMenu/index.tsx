@@ -34,7 +34,6 @@ const ROUTES: MenuItemData[] = [
     route: '/pools',
     name: 'Liquidity Pool',
     Logo: BarChartBig,
-    disabled: true,
   },
   { route: '/farming', name: 'Farming', Logo: Leaf },
   {

@@ -47,7 +47,7 @@ const PoolDetails = ({
         <Heros poolAddress={poolAddress} />
       </div>
       <div className="md:col-span-6 col-span-12">
-        <Volume24h />
+        <Volume24h poolAddress={poolAddress} />
       </div>
       <div className="md:col-span-6 col-span-12">
         <PoolWeights poolAddress={poolAddress} />

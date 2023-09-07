@@ -119,6 +119,7 @@ const CreatedDate = ({ address }: { address: string }) => {
 
     return createdAt
   }, [metadata])
+
   return (
     <span>
       {createdAt
