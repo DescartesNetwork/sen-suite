@@ -1,0 +1,21 @@
+.main{
+  -webkit-scroll-snap-type: y mandatory;
+      -ms-scroll-snap-type: y mandatory;
+        scroll-snap-type: y mandatory;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+
+  &::-webkit-scrollbar {
+    @apply hidden
+  }
+  @apply overflow-auto w-full h-[100dvh] 
+}
+
+section {
+  @apply snap-start
+}
+
+.wrap {
+    @apply h-[400vh] bg-no-repeat bg-fixed
+}
+
