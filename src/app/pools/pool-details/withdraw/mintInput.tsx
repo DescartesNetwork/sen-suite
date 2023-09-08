@@ -45,7 +45,7 @@ export default function MintInput({
             mintAddress={mintAddress}
             className="w-6 h-6 rounded-full"
           />
-          <p className="text-sm">Balansol LP</p>
+          <p className="text-sm">SenSwap LP</p>
         </div>
         <input
           type="number"

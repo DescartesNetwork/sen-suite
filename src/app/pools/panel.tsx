@@ -24,7 +24,7 @@ export default function LiquidityPoolPanel() {
       <div className="flex-auto flex flex-col gap-8 text-slate-800">
         <div className="flex flex-row gap-2">
           <h4>Liquidity Pools</h4>
-          <h5 className="opacity-60">Balansol</h5>
+          <h5 className="opacity-60">SenSwap</h5>
         </div>
       </div>
     </div>

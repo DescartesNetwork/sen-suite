@@ -102,7 +102,7 @@ export default function Fee({ poolAddress }: { poolAddress: string }) {
         currentPercent={currentTaxFee}
         onChangeValue={setTaxFee}
         tooltipContent={
-          'The portion of fee your pool will pay to Balansol for maintaining the system'
+          'The portion of fee your pool will pay to SenSwap for maintaining the system'
         }
         disabled={poolData.authority.toBase58() !== taxmanAddress}
       />

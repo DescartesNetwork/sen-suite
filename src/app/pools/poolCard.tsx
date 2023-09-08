@@ -17,9 +17,10 @@ import { useTokenAccountByMintAddress } from '@/providers/tokenAccount.provider'
 import { StatePool, useOracles, useVol24h } from '@/hooks/pool.hook'
 import { useTvl } from '@/hooks/tvl.hook'
 
-type PoolCardProps = {
+export type PoolCardProps = {
   poolAddress: string
 }
+
 export default function PoolCard({ poolAddress }: PoolCardProps) {
   const pool = usePoolByAddress(poolAddress)
   const { publicKey } = useWallet()
@@ -53,7 +54,7 @@ export default function PoolCard({ poolAddress }: PoolCardProps) {
     <Link
       href={
         isFrozen && !isPoolOwner
-          ? ''
+          ? '#'
           : `/pools/pool-details?poolAddress=${poolAddress}`
       }
       className={classNames(
@@ -96,7 +97,7 @@ export default function PoolCard({ poolAddress }: PoolCardProps) {
         </div>
       </div>
       <div className="flex flex-row gap-2 items-center mb-3 flex-wrap">
-        <p className="mr-2">Balansol LP</p>
+        <p className="mr-2">SenSwap LP</p>
         {poolWeights.map(({ mintAddress, weight }, i) => (
           <div
             key={i}

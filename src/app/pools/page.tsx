@@ -37,8 +37,8 @@ export default function Pools() {
   const IconSearch = text.length ? X : Search
 
   return (
-    <div className="flex flex-row w-full h-auto max-w-[660px]">
-      <div className="grid grid-cols-12 gap-6">
+    <div className="flex flex-row max-w-[768px] justify-center">
+      <div className="w-full grid grid-cols-12 gap-6">
         <div className="col-span-full">
           <LiquidityPoolPanel />
         </div>
@@ -77,11 +77,13 @@ export default function Pools() {
             Add New
           </button>
         </div>
-        {sortedPool.map((poolAddress) => (
-          <LazyLoad key={poolAddress} className="col-span-full">
-            <PoolCard poolAddress={poolAddress} />
-          </LazyLoad>
-        ))}
+        <div className="col-span-full grid grid-cols-12 gap-4">
+          {sortedPool.map((poolAddress) => (
+            <LazyLoad key={poolAddress} className="col-span-full">
+              <PoolCard poolAddress={poolAddress} />
+            </LazyLoad>
+          ))}
+        </div>
         {!sortedPool.length && (
           <div className="col-span-full justify-center p-4">
             <Empty />
