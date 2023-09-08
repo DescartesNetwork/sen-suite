@@ -1,6 +1,14 @@
 import { useCallback, useMemo } from 'react'
 import useSWR from 'swr'
 import { splTokenProgram } from '@coral-xyz/spl-token'
+import {
+  PublicKey,
+  SYSVAR_RENT_PUBKEY,
+  SystemProgram,
+  Transaction,
+  TransactionInstruction,
+} from '@solana/web3.js'
+import { utils } from '@coral-xyz/anchor'
 
 import { isAddress } from '@/helpers/utils'
 import { useAnchorProvider } from '@/providers/wallet.provider'
@@ -33,4 +41,67 @@ export const useMints = (mintAddresses: string[]) => {
   )
   const { data } = useSWR([mintAddresses, 'spl'], fetcher)
   return data || []
+}
+
+/**
+ * Create PDA account
+ * @param mint mint account
+ * @param owner your public key
+ * @returns Init PDA account function
+ */
+export const useInitPDAAccount = () => {
+  const initPDAAccount = useCallback(
+    async (mint: PublicKey, owner: PublicKey) => {
+      const associatedTokenAccount = await utils.token.associatedAddress({
+        mint,
+        owner,
+      })
+      const ix = new TransactionInstruction({
+        keys: [
+          {
+            pubkey: owner,
+            isSigner: true,
+            isWritable: true,
+          },
+          {
+            pubkey: associatedTokenAccount,
+            isSigner: false,
+            isWritable: true,
+          },
+          {
+            pubkey: owner,
+            isSigner: false,
+            isWritable: false,
+          },
+          {
+            pubkey: mint,
+            isSigner: false,
+            isWritable: false,
+          },
+          {
+            pubkey: SystemProgram.programId,
+            isSigner: false,
+            isWritable: false,
+          },
+          {
+            pubkey: utils.token.TOKEN_PROGRAM_ID,
+            isSigner: false,
+            isWritable: false,
+          },
+          {
+            pubkey: SYSVAR_RENT_PUBKEY,
+            isSigner: false,
+            isWritable: false,
+          },
+        ],
+        programId: utils.token.ASSOCIATED_PROGRAM_ID,
+        data: Buffer.from([]),
+      })
+      const tx = new Transaction().add(ix)
+      return tx
+    },
+    [],
+  )
+
+  return initPDAAccount
 }

@@ -38,9 +38,7 @@ export default function Sidebar({ children }: SidebarProps) {
       <aside
         className={classNames(
           'flex flex-col gap-3 sidebar vertical max-md:mobile',
-          {
-            open,
-          },
+          { open },
         )}
       >
         <Link className="p-4" href="/">
