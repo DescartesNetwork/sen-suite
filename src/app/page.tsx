@@ -1,6 +1,8 @@
 'use client'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+import Navigation from './navigation'
+
 import './index.scss'
 
 const LARGE_SCALE = 1.3
@@ -51,7 +53,9 @@ export default function Home() {
           backgroundPosition: `center ${offsetTopScreen}px`,
         }}
       />
-      <section className="bg-center bg-cover bg-home h-full"></section>
+      <section className="bg-center bg-cover bg-home h-full">
+        <Navigation />
+      </section>
     </div>
   )
 }

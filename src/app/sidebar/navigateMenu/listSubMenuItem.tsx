@@ -55,7 +55,7 @@ const DropdownSubMenuItem = ({ menuItemData }: SubMenuItemProps) => {
         </li>
         {children &&
           children.map(({ route, name: subName }) => (
-            <li key={name}>
+            <li key={subName}>
               <Link
                 href={disabled ? '#' : route}
                 className={classNames(
@@ -86,7 +86,7 @@ const SubMenuItem = ({ menuItemData }: SubMenuItemProps) => {
       <ul className="ml-0 pl-0 before:w-0">
         {children &&
           children.map(({ route, disabled, name: subName }) => (
-            <li key={route} className={classNames({ disabled })}>
+            <li key={name} className={classNames({ disabled })}>
               <Link
                 href={disabled ? '#' : route}
                 className={classNames('py-3 pl-11', {

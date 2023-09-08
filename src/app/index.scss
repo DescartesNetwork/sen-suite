@@ -16,5 +16,37 @@ section {
 }
 
 .wrap-section {
-    @apply h-[350vh] w-full bg-no-repeat bg-fixed 
+    @apply h-[300vh] w-full bg-no-repeat bg-fixed 
+}
+
+.body-navigation:not(.active){
+  .topApp-up{
+    @apply opacity-0 translate-y-1/2
+  }
+  .bottomApp-down{
+    @apply opacity-0 -translate-y-1/2
+  }
+  .title-up{
+    @apply opacity-0 translate-y-full
+  }  
+  .desc-up{
+    @apply text-2xl opacity-0 translate-y-80
+  }
+}
+
+.body-navigation.active{
+  @apply flex flex-col w-full h-full justify-center items-center;
+
+  .topApp-up{
+    @apply opacity-100 translate-y-0 transition-all ease-out duration-700 delay-2000
+  }
+  .bottomApp-down{
+    @apply opacity-100 translate-y-0 transition-all ease-out duration-700 delay-2000
+  }
+  .title-up{
+    @apply opacity-100 translate-y-0 transition-all ease-out duration-700 delay-700
+  }  
+  .desc-up{
+    @apply text-2xl opacity-60 translate-y-0 transition-all ease-out duration-1000 delay-1000
+  }
 }
