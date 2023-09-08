@@ -42,7 +42,7 @@ const DropdownSubMenuItem = ({ menuItemData }: SubMenuItemProps) => {
           focus: pathname.includes(route),
         })}
       >
-        {Logo && <Logo strokeWidth={1.5} className="menu-logo opacity-60" />}
+        {Logo && <Logo className="menu-logo opacity-60" />}
       </label>
       <ul
         tabIndex={0}
@@ -80,7 +80,7 @@ const SubMenuItem = ({ menuItemData }: SubMenuItemProps) => {
   return (
     <details>
       <summary className="px-4 py-3">
-        {Logo && <Logo strokeWidth={1.5} className="menu-logo opacity-60" />}
+        {Logo && <Logo className="menu-logo opacity-60" />}
         <p className="menu-option menu-text">{name}</p>
       </summary>
       <ul className="ml-0 pl-0 before:w-0">

@@ -17,10 +17,10 @@ export default function ThemeSwitch() {
           checked={theme === 'dark'}
         />
         <p className="swap-on">
-          <Moon strokeWidth={1.5} className="w-5 h-5" />
+          <Moon className="w-5 h-5" />
         </p>
         <p className="swap-off">
-          <Sun strokeWidth={1.5} className="w-5 h-5" />
+          <Sun className="w-5 h-5" />
         </p>
       </label>
       <p className="menu-option capitalize">{`${theme} theme`}</p>

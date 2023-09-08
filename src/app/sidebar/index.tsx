@@ -4,12 +4,18 @@ import Link from 'next/link'
 import { useKey } from 'react-use'
 import classNames from 'classnames'
 
-import { Menu } from 'lucide-react'
+import {
+  ChevronLeftSquare,
+  ChevronRightSquare,
+  Menu,
+  Send,
+  Twitter,
+} from 'lucide-react'
 import Brand from '@/components/brand'
 import Island from '@/components/island'
 import WalletButton from './walletButton'
+import ThemeSwitch from './themeSwitch'
 import NavigateMenu from './navigateMenu'
-import SystemMenu from './systemMenu'
 
 import './index.scss'
 
@@ -46,7 +52,68 @@ export default function Sidebar({ children }: SidebarProps) {
         </Link>
         <NavigateMenu open={open} setOpen={setOpen} />
         <div className="flex-auto" />
-        <SystemMenu open={open} setOpen={setOpen} />
+        <ul className="menu menu-vertical menu-md">
+          <li>
+            <Island Loading={MenuLoading}>
+              <WalletButton />
+            </Island>
+          </li>
+          <div className="divider mx-4 my-0" />
+          <li>
+            <Link
+              className="menu-item gap-2"
+              href="https://twitter.com/SentreProtocol"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <Twitter className="menu-logo" />
+              <p className="menu-option">Twitter</p>
+            </Link>
+          </li>
+          <li>
+            <Link
+              className="menu-item gap-2"
+              href="https://t.me/Sentre"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <Send className="menu-logo" />
+              <p className="menu-option">Telegram</p>
+            </Link>
+          </li>
+          <li>
+            <Island Loading={MenuLoading}>
+              <ThemeSwitch />
+            </Island>
+          </li>
+          <li onClick={() => setOpen(!open)}>
+            <span className="menu-item gap-1">
+              <label className="menu-logo swap swap-rotate">
+                <input
+                  type="checkbox"
+                  onClick={(e) => e.stopPropagation()}
+                  checked={open}
+                  readOnly
+                />
+                <p className="swap-on">
+                  <ChevronLeftSquare className="menu-logo" />
+                </p>
+                <p className="swap-off">
+                  <ChevronRightSquare className="menu-logo" />
+                </p>
+              </label>
+              <div className="menu-option pl-2 gap-1">
+                <span className="join text-neutral dark:text-neutral-100">
+                  <kbd className="join-item kbd !kbd-xs">ctrl</kbd>
+                  <kbd className="join-item kbd !kbd-xs">⌘</kbd>
+                </span>
+                <kbd className="kbd !kbd-xs text-neutral dark:text-neutral-100">
+                  K
+                </kbd>
+              </div>
+            </span>
+          </li>
+        </ul>
       </aside>
       {/* Mobile header & Page content */}
       <main className="flex-auto flex flex-col min-h-[100dvh]">
