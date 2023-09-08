@@ -1,5 +1,5 @@
 'use client'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useWallet } from '@solana/wallet-adapter-react'
 
 import { MintLogo } from '@/components/mint'
@@ -14,11 +14,9 @@ import PoolManagement from './management'
 import { usePoolByAddress } from '@/providers/pools.provider'
 import { isAddress } from '@/helpers/utils'
 
-const PoolDetails = ({
-  params: { poolAddress },
-}: {
-  params: { poolAddress: string }
-}) => {
+export default function PoolDetails() {
+  const searchParams = useSearchParams()
+  const poolAddress = searchParams.get('poolAddress') || ''
   const pool = usePoolByAddress(poolAddress)
   const { publicKey } = useWallet()
   const isOwner = publicKey?.toString() === pool.authority.toBase58()
@@ -60,5 +58,3 @@ const PoolDetails = ({
     </div>
   )
 }
-
-export default PoolDetails

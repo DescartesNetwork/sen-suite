@@ -9,7 +9,11 @@ type MintInfoProps = {
   amounts: string[]
   prices?: number[]
 }
-const ListMintInfo = ({ mintAddresses, amounts, prices }: MintInfoProps) => {
+export default function ListMintInfo({
+  mintAddresses,
+  amounts,
+  prices,
+}: MintInfoProps) {
   const totalValue = useMemo(() => {
     if (!prices) return 0
     let sum = 0
@@ -51,5 +55,3 @@ const ListMintInfo = ({ mintAddresses, amounts, prices }: MintInfoProps) => {
     </div>
   )
 }
-
-export default ListMintInfo

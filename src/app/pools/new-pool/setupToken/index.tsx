@@ -21,7 +21,10 @@ type SetupTokenProps = {
   onNext: () => void
 }
 
-const SetupToken = ({ onNext, setPoolAddress }: SetupTokenProps) => {
+export default function SetupToken({
+  onNext,
+  setPoolAddress,
+}: SetupTokenProps) {
   const [loading, setLoading] = useState(false)
   const [dataSetup, setDataSetup] = useState<MintSetup[]>([
     emptyMint,
@@ -126,5 +129,3 @@ const SetupToken = ({ onNext, setPoolAddress }: SetupTokenProps) => {
     </div>
   )
 }
-
-export default SetupToken

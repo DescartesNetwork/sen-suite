@@ -12,11 +12,11 @@ import PoolOverview from './poolOverview'
 
 import { usePools } from '@/providers/pools.provider'
 
-export const SET_UP = 0
-export const ADD_LIQUIDITY = 1
-export const CONFIRM = 2
+const SET_UP = 0
+const ADD_LIQUIDITY = 1
+const CONFIRM = 2
 
-const NewPool = () => {
+export default function NewPool() {
   const [step, setStep] = useState(SET_UP)
   const [poolAddress, setPoolAddress] = useState('')
   const pools = usePools()
@@ -91,5 +91,3 @@ const NewPool = () => {
     </div>
   )
 }
-
-export default NewPool

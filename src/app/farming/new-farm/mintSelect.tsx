@@ -10,7 +10,10 @@ type MintSelectProps = {
   onMintAddress: (mintAddress: string) => void
 }
 
-const MintSelect = ({ mintAddress, onMintAddress }: MintSelectProps) => {
+export default function MintSelect({
+  mintAddress,
+  onMintAddress,
+}: MintSelectProps) {
   const [open, setOpen] = useState(false)
 
   const onChangeMintChange = (mintAddress: string) => {
@@ -43,5 +46,3 @@ const MintSelect = ({ mintAddress, onMintAddress }: MintSelectProps) => {
     </div>
   )
 }
-
-export default MintSelect

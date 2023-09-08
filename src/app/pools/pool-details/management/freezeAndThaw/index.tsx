@@ -8,7 +8,11 @@ import FreezeAndThawToken from './token'
 import { usePoolByAddress } from '@/providers/pools.provider'
 import { StatePool } from '@/hooks/pool.hook'
 
-const FreezeAndThaw = ({ poolAddress }: { poolAddress: string }) => {
+export default function FreezeAndThaw({
+  poolAddress,
+}: {
+  poolAddress: string
+}) {
   const [activeTab, setActiveTab] = useState('pool')
   const pool = usePoolByAddress(poolAddress)
 
@@ -45,5 +49,3 @@ const FreezeAndThaw = ({ poolAddress }: { poolAddress: string }) => {
     </div>
   )
 }
-
-export default FreezeAndThaw

@@ -18,7 +18,7 @@ import { decimalize } from '@/helpers/decimals'
 
 const TOTAL_PERCENT = 100
 
-const Weight = ({ poolAddress }: { poolAddress: string }) => {
+export default function Weight({ poolAddress }: { poolAddress: string }) {
   const [tokensInfo, setTokensInfo] = useState<Record<string, MintSetup>>()
   const [loading, setLoading] = useState(false)
 
@@ -205,5 +205,3 @@ const Weight = ({ poolAddress }: { poolAddress: string }) => {
     </div>
   )
 }
-
-export default Weight

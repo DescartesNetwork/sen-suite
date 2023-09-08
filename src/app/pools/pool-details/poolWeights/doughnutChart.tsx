@@ -91,7 +91,7 @@ const STYLE = {
   },
 }
 
-const DoughnutChart = ({ data }: { data: PoolWeightData[] }) => {
+export default function DoughnutChart({ data }: { data: PoolWeightData[] }) {
   const { theme } = useTheme()
   const chartRef = useRef(null)
 
@@ -111,5 +111,3 @@ const DoughnutChart = ({ data }: { data: PoolWeightData[] }) => {
     />
   )
 }
-
-export default DoughnutChart

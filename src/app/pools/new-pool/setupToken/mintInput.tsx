@@ -12,7 +12,11 @@ type MintInputProps = {
   onDelete: () => void
 }
 
-const MintInput = ({ setupData, onChange, onDelete }: MintInputProps) => {
+export default function MintInput({
+  setupData,
+  onChange,
+  onDelete,
+}: MintInputProps) {
   const [open, setOpen] = useState(false)
 
   const { mintAddress, weight, isLocked } = setupData
@@ -62,5 +66,3 @@ const MintInput = ({ setupData, onChange, onDelete }: MintInputProps) => {
     </div>
   )
 }
-
-export default MintInput

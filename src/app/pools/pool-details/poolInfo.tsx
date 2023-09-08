@@ -12,7 +12,7 @@ type PoolInfoProps = {
   poolAddress: string
 }
 
-const PoolInfo = ({ poolAddress }: PoolInfoProps) => {
+export default function PoolInfo({ poolAddress }: PoolInfoProps) {
   const { push } = useRouter()
   const { mintLpt } = usePoolByAddress(poolAddress)
 
@@ -65,5 +65,3 @@ const PoolInfo = ({ poolAddress }: PoolInfoProps) => {
     </div>
   )
 }
-
-export default PoolInfo

@@ -20,7 +20,7 @@ const PRIORITIZE_POOLS = [
   'kPbhNnVmuhqWApxhr156XQV8hhKsysrvwVFmDhCWFY5',
 ]
 
-const Pools = () => {
+export default function Pools() {
   const [text, setText] = useState('')
   const [filterKey, setFilterKey] = useState(FilterPools.AllPools)
   const poolsFilter = useFilterPools(filterKey)
@@ -97,5 +97,3 @@ const Pools = () => {
     </div>
   )
 }
-
-export default Pools

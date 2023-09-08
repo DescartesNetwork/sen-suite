@@ -16,11 +16,11 @@ type TokenReceiveProps = {
   lptAmount: string
   mintAddress?: string
 }
-const TokenReceive = ({
+export default function TokenReceive({
   poolAddress,
   mintAddress,
   lptAmount,
-}: TokenReceiveProps) => {
+}: TokenReceiveProps) {
   const pool = usePoolByAddress(poolAddress)
   const [mintLpt] = useMints([pool.mintLpt.toBase58()])
   const mints = useMints(pool.mints.map((mint) => mint.toBase58()))
@@ -141,5 +141,3 @@ const TokenReceive = ({
     </div>
   )
 }
-
-export default TokenReceive

@@ -24,7 +24,7 @@ type MintInputProps = {
   visibleSuggest: boolean
 }
 
-const MintInput = ({
+export default function MintInput({
   mintAddress,
   amount = '',
   onAmount,
@@ -32,7 +32,7 @@ const MintInput = ({
   index,
   suggestAmount,
   visibleSuggest,
-}: MintInputProps) => {
+}: MintInputProps) {
   const [range, setRange] = useState('0')
   const { amount: mintAmount } = useTokenAccountByMintAddress(mintAddress) || {
     amount: new BN(0),
@@ -116,5 +116,3 @@ const MintInput = ({
     </div>
   )
 }
-
-export default MintInput

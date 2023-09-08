@@ -39,7 +39,11 @@ const Tab = ({
   )
 }
 
-const PoolManagement = ({ poolAddress }: { poolAddress: string }) => {
+export default function PoolManagement({
+  poolAddress,
+}: {
+  poolAddress: string
+}) {
   const [activeTab, setActiveTab] = useState('weights')
 
   const renderedBodyComponent = useMemo(() => {
@@ -62,5 +66,3 @@ const PoolManagement = ({ poolAddress }: { poolAddress: string }) => {
     </div>
   )
 }
-
-export default PoolManagement

@@ -9,7 +9,11 @@ import { usePoolManagement } from '@/hooks/pool.hook'
 import { usePoolByAddress } from '@/providers/pools.provider'
 import { usePushMessage } from '@/components/message/store'
 
-const FreezeAndThawToken = ({ poolAddress }: { poolAddress: string }) => {
+export default function FreezeAndThawToken({
+  poolAddress,
+}: {
+  poolAddress: string
+}) {
   const { mints, actions } = usePoolByAddress(poolAddress)
 
   const [mintActions, setMintActions] = useState<MintActionState[]>(
@@ -100,5 +104,3 @@ const FreezeAndThawToken = ({ poolAddress }: { poolAddress: string }) => {
     </div>
   )
 }
-
-export default FreezeAndThawToken

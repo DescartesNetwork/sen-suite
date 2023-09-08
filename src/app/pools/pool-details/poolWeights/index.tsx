@@ -7,7 +7,7 @@ import { undecimalize } from '@/helpers/decimals'
 import { useOracles } from '@/hooks/pool.hook'
 import { useMintStore } from '@/providers/mint.provider'
 
-const PoolWeights = ({ poolAddress }: { poolAddress: string }) => {
+export default function PoolWeights({ poolAddress }: { poolAddress: string }) {
   const poolData = usePoolByAddress(poolAddress)
   const { getMintInfo } = useOracles()
   const metadata = useMintStore(({ metadata }) => metadata)
@@ -38,5 +38,3 @@ const PoolWeights = ({ poolAddress }: { poolAddress: string }) => {
     </div>
   )
 }
-
-export default PoolWeights

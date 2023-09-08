@@ -6,7 +6,7 @@ import { solscan } from '@/helpers/explorers'
 import { usePoolManagement } from '@/hooks/pool.hook'
 import { usePushMessage } from '@/components/message/store'
 
-const ThawPool = ({ poolAddress }: { poolAddress: string }) => {
+export default function ThawPool({ poolAddress }: { poolAddress: string }) {
   const [loading, setLoading] = useState(false)
 
   const { thawPool } = usePoolManagement(poolAddress)
@@ -43,5 +43,3 @@ const ThawPool = ({ poolAddress }: { poolAddress: string }) => {
     </div>
   )
 }
-
-export default ThawPool

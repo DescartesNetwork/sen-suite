@@ -18,7 +18,7 @@ import { useTvl } from '@/hooks/tvl.hook'
 type PoolCardProps = {
   poolAddress: string
 }
-const PoolCard = ({ poolAddress }: PoolCardProps) => {
+export default function PoolCard({ poolAddress }: PoolCardProps) {
   const pool = usePoolByAddress(poolAddress)
   const { publicKey } = useWallet()
   const isFrozen = !!pool.state[StatePool.Frozen]
@@ -49,7 +49,11 @@ const PoolCard = ({ poolAddress }: PoolCardProps) => {
 
   return (
     <Link
-      href={isFrozen && !isPoolOwner ? '' : `/pools/${poolAddress}`}
+      href={
+        isFrozen && !isPoolOwner
+          ? ''
+          : `/pools/pool-details?poolAddress=${poolAddress}`
+      }
       className={classNames(
         'card p-4 border  bg-[#F2F4FA] dark:bg-[#212C4C] dark:border-[#394360] flex flex-col rounded-3xl gap-3 cursor-pointer ',
         {
@@ -127,5 +131,3 @@ const PoolCard = ({ poolAddress }: PoolCardProps) => {
     </Link>
   )
 }
-
-export default PoolCard
