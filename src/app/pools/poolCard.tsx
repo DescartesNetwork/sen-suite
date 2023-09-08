@@ -91,10 +91,7 @@ export default function PoolCard({ poolAddress }: PoolCardProps) {
           >
             {shortenAddress(poolAddress)}
           </p>
-          <NewWindow
-            href={solscan(poolAddress || '')}
-            className="btn btn-sm btn-square"
-          />
+          <NewWindow href={solscan(poolAddress || '')} />
           <Clipboard content={poolAddress} />
         </div>
       </div>
