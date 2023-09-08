@@ -47,12 +47,13 @@ const MintInput = ({ setupData, onChange, onDelete }: MintInputProps) => {
           placeholder="0"
           className="input bg-base-200 input-ghost flex-auto max-w-sm rounded-full focus:outline-none text-right text-xl"
           onChange={(e) => onChange('weight', e.target.value)}
+          disabled={isLocked}
         />
         <button
           onClick={() => onChange('isLocked', !isLocked)}
           className="btn btn-ghost btn-square btn-sm"
         >
-          {isLocked ? <Unlock size={16} /> : <Lock size={16} />}
+          {!isLocked ? <Unlock size={16} /> : <Lock size={16} />}
         </button>
         <button onClick={onDelete} className="btn btn-ghost btn-square btn-sm">
           <Trash2 size={16} />

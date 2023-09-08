@@ -74,18 +74,18 @@ const SetupToken = ({ onNext, setPoolAddress }: SetupTokenProps) => {
     setDataSetup(nextData)
   }
 
-  const ok = useMemo(() => {
+  const error = useMemo(() => {
     let totalWeight = 0
     for (const { mintAddress, weight } of dataSetup) {
-      if (!isAddress(mintAddress) || !Number(weight)) return false
+      if (!isAddress(mintAddress)) return 'Please select token!'
+      if (!Number(weight)) return 'Please input weight!'
       totalWeight += Number(weight)
     }
     const currAmount = dataSetup.length
-    return (
-      totalWeight === 100 &&
-      currAmount >= MIN_AMOUNT &&
-      currAmount <= MAX_AMOUNT
-    )
+    if (totalWeight !== 100) return 'Total weight must equal 100%'
+    if (currAmount < MIN_AMOUNT) return 'Must have at least 2 tokens!'
+    if (currAmount > MAX_AMOUNT) return 'Maximum only 8 tokens!'
+    return ''
   }, [dataSetup])
 
   return (
@@ -116,11 +116,11 @@ const SetupToken = ({ onNext, setPoolAddress }: SetupTokenProps) => {
       <div className="col-span-full mt-2">
         <button
           onClick={onInitPool}
-          disabled={!ok}
+          disabled={!!error}
           className="btn btn-primary w-full"
         >
           {loading && <span className="loading loading-spinner loading-xs" />}
-          Supply
+          {error ? error : 'Supply'}
         </button>
       </div>
     </div>

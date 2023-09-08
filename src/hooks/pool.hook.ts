@@ -57,6 +57,10 @@ export type MintSetup = {
   isLocked: boolean
 }
 
+/**
+ * Instantiate a balancer
+ * @returns Balancer instance
+ */
 export const useBalancer = () => {
   const provider = useAnchorProvider()
   const balancer = useMemo(
@@ -66,6 +70,12 @@ export const useBalancer = () => {
   return balancer
 }
 
+/**
+ * Get searched Pools
+ * @param pools List pools wanna search
+ * @param text search text
+ * @returns Searched Pools
+ */
 export const useSearchPool = (
   pools: Record<string, PoolData>,
   text: string,
@@ -103,6 +113,11 @@ export const useSearchPool = (
   return poolSearched
 }
 
+/**
+ * Get filtered Pools
+ * @param key filter key
+ * @returns Filtered Pools
+ */
 export const useFilterPools = (key = FilterPools.AllPools) => {
   const pools = usePools()
   const [poolsFilter, setPoolsFilter] = useState<typeof pools>({})
@@ -161,6 +176,10 @@ export const useFilterPools = (key = FilterPools.AllPools) => {
   return poolsFilter
 }
 
+/**
+ * Wrap and Unwrap sol
+ * @returns Wrap and Unwrap sol functions
+ */
 export const useWrapSol = () => {
   const spl = useSpl()
   const accounts = useAllTokenAccounts()
@@ -217,6 +236,12 @@ export const useWrapSol = () => {
   return { createTxUnwrapSol, createWrapSol }
 }
 
+/**
+ * Deposit token into pool
+ * @param poolAddress Pool address
+ * @param amountIns list amount in
+ * @returns Deposit function
+ */
 export const useDeposit = (poolAddress: string, amountIns: string[]) => {
   const balancer = useBalancer()
   const { publicKey } = useWallet()
@@ -272,6 +297,13 @@ export const useDeposit = (poolAddress: string, amountIns: string[]) => {
   return onDeposit
 }
 
+/**
+ * Withdraw token one side or full side
+ * @param poolAddress Pool address
+ * @param amount amount take out pool
+ * @param mintAddress (Optional) mint address for withdraw one side
+ * @returns Deposit function
+ */
 export const useWithdraw = (
   poolAddress: string,
   amount: string,
@@ -352,6 +384,10 @@ export const useWithdraw = (
   return onWithdraw
 }
 
+/**
+ * Init and delete pool
+ * @returns Init and delete pool functions
+ */
 export const useInitAndDeletePool = () => {
   const balancer = useBalancer()
 
@@ -389,6 +425,12 @@ export const useInitAndDeletePool = () => {
   return { initPool, deletePool }
 }
 
+/**
+ * Add liquidity when create new pool
+ * @param poolAddress Pool address
+ * @param amountIns List amount in
+ * @returns Add liquidity function
+ */
 export const useAddLiquidity = (poolAddress: string, amountIns: string[]) => {
   const balancer = useBalancer()
   const { publicKey } = useWallet()
@@ -447,6 +489,10 @@ export const useAddLiquidity = (poolAddress: string, amountIns: string[]) => {
   return onAddLiquidity
 }
 
+/**
+ * Oracles functions
+ * @returns Oracles functions
+ */
 export const useOracles = () => {
   const calcNormalizedWeight = useCallback((weights: BN[], weightToken: BN) => {
     const numWeightsIn = weights.map((value) =>
@@ -584,6 +630,11 @@ export const useOracles = () => {
   }
 }
 
+/**
+ * Calculate volumes in 7 days of pool
+ * @param poolAddress Pool address
+ * @returns Total vol in 7 days, vol24h
+ */
 export const useVol24h = (poolAddress: string) => {
   const { treasuries } = usePoolByAddress(poolAddress)
 
@@ -593,10 +644,13 @@ export const useVol24h = (poolAddress: string) => {
     const secondsFrom = new DateHelper().subtractDay(dateRange).seconds()
     const tokenAccounts = treasuries.map((treasury) => treasury.toBase58())
     const programId = solConfig.balancerAddress
-    const { data } = await axios.get('http://localhost:10000/volume', {
-      params: { secondsTo, secondsFrom, tokenAccounts, programId },
-    })
-    return data || { totalVol: 0, volumes: {}, totalAction: 0 }
+    const { data } = await axios.get(
+      'https://stat-sentre-io.onrender.com/volume',
+      {
+        params: { secondsTo, secondsFrom, tokenAccounts, programId },
+      },
+    )
+    return data || { totalVol: 0, volumes: {} }
   }, [treasuries])
 
   const { data: vols, isLoading } = useSWR([poolAddress, 'vol24h'], fetcher)
@@ -613,6 +667,11 @@ export const useVol24h = (poolAddress: string) => {
   return { vols, isLoading, vol24h }
 }
 
+/**
+ * Calculate apy pool
+ * @param poolAddress Pool address
+ * @returns apy
+ */
 export const useApy = (poolAddress: string) => {
   const { reserves, mints, taxFee, fee } = usePoolByAddress(poolAddress)
   const { vols } = useVol24h(poolAddress)

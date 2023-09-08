@@ -1,5 +1,12 @@
 'use client'
-import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  MouseEvent,
+} from 'react'
 import BN from 'bn.js'
 import classNames from 'classnames'
 import { WRAPPED_SOL_MINT } from '@metaplex-foundation/js'
@@ -37,24 +44,29 @@ const Deposit = ({ poolAddress }: { poolAddress: string }) => {
   const pushMessage = usePushMessage()
 
   const deposit = useDeposit(poolAddress, amounts)
-  const onDeposit = useCallback(async () => {
-    try {
-      setLoading(true)
-      const txId = await deposit()
-      pushMessage(
-        'alert-success',
-        'Successfully deposit token. Click here to view on explorer.',
-        {
-          onClick: () => window.open(solscan(txId || ''), '_blank'),
-        },
-      )
-      setOpen(false)
-    } catch (er: any) {
-      pushMessage('alert-error', er.message)
-    } finally {
-      setLoading(false)
-    }
-  }, [deposit, pushMessage])
+  const onDeposit = useCallback(
+    async (e: MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault()
+
+      try {
+        setLoading(true)
+        const txId = await deposit()
+        pushMessage(
+          'alert-success',
+          'Successfully deposit token. Click here to view on explorer.',
+          {
+            onClick: () => window.open(solscan(txId || ''), '_blank'),
+          },
+        )
+        setOpen(false)
+      } catch (er: any) {
+        pushMessage('alert-error', er.message)
+      } finally {
+        setLoading(false)
+      }
+    },
+    [deposit, pushMessage],
+  )
 
   const onAmounts = (index: number, amount: string) => {
     const nextAmounts = [...amounts]

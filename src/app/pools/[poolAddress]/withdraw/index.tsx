@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useMemo, useState } from 'react'
+import { Fragment, MouseEvent, useCallback, useMemo, useState } from 'react'
 import classNames from 'classnames'
 import { BN } from 'bn.js'
 
@@ -28,24 +28,28 @@ const Withdraw = ({ poolAddress }: { poolAddress: string }) => {
   const pushMessage = usePushMessage()
 
   const withdraw = useWithdraw(poolAddress, lpAmount, mintSelected)
-  const onWithdraw = useCallback(async () => {
-    try {
-      setLoading(true)
-      const txId = await withdraw()
-      pushMessage(
-        'alert-success',
-        'Successfully airdrop. Click here to view on explorer.',
-        {
-          onClick: () => window.open(solscan(txId || ''), '_blank'),
-        },
-      )
-      setOpen(false)
-    } catch (er: any) {
-      pushMessage('alert-error', er.message)
-    } finally {
-      setLoading(false)
-    }
-  }, [withdraw, pushMessage])
+  const onWithdraw = useCallback(
+    async (e: MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault()
+      try {
+        setLoading(true)
+        const txId = await withdraw()
+        pushMessage(
+          'alert-success',
+          'Successfully airdrop. Click here to view on explorer.',
+          {
+            onClick: () => window.open(solscan(txId || ''), '_blank'),
+          },
+        )
+        setOpen(false)
+      } catch (er: any) {
+        pushMessage('alert-error', er.message)
+      } finally {
+        setLoading(false)
+      }
+    },
+    [withdraw, pushMessage],
+  )
 
   const ok = useMemo(() => {
     if (!lpAmount) return false

@@ -36,7 +36,7 @@ const Pools = () => {
   const IconSearch = text.length ? X : Search
 
   return (
-    <div className="flex w-full max-w-[660px]">
+    <div className="flex w-full h-auto max-w-[660px]">
       <div className="grid grid-cols-12 gap-4  w-full">
         <div className="col-span-12 grid grid-cols-12 gap-2">
           <div className="col-span-3">
