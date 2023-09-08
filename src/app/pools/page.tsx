@@ -38,7 +38,8 @@ export default function Pools() {
   return (
     <div className="flex w-full h-auto max-w-[660px]">
       <div className="grid grid-cols-12 gap-4  w-full">
-        <div className="col-span-12 grid grid-cols-12 gap-2">
+        <h4 className="col-span-full mb-2">Liquidity Pool</h4>
+        <div className="col-span-12 grid grid-cols-12 gap-2 mb-4">
           <div className="col-span-3">
             <select
               value={filterKey}
@@ -79,7 +80,7 @@ export default function Pools() {
               className="btn btn-sm w-full rounded-3xl"
             >
               <Plus size={16} />
-              Add New
+              <span className="hidden md:block">Add New</span>
             </button>
           </div>
         </div>

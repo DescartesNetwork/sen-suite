@@ -22,7 +22,7 @@ export default function PoolInfo({ poolAddress }: PoolInfoProps) {
       <div className="flex-auto">
         <button
           onClick={() => push('/pools')}
-          className="btn btn-sm btn-ghost "
+          className="btn btn-sm btn-ghost rounded-full"
         >
           <ArrowLeft size={16} />
           Back

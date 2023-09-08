@@ -644,12 +644,9 @@ export const useVol24h = (poolAddress: string) => {
     const secondsFrom = new DateHelper().subtractDay(dateRange).seconds()
     const tokenAccounts = treasuries.map((treasury) => treasury.toBase58())
     const programId = solConfig.balancerAddress
-    const { data } = await axios.get(
-      'https://stat-sentre-io.onrender.com/volume',
-      {
-        params: { secondsTo, secondsFrom, tokenAccounts, programId },
-      },
-    )
+    const { data } = await axios.get(solConfig.statRpc + 'volume', {
+      params: { secondsTo, secondsFrom, tokenAccounts, programId },
+    })
     return data || { totalVol: 0, volumes: {} }
   }, [treasuries])
 

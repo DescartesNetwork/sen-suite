@@ -1,13 +1,14 @@
 'use client'
 import { useMemo } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
+import Link from 'next/link'
 import BN from 'bn.js'
 import classNames from 'classnames'
 
-import Link from 'next/link'
 import { Snowflake, User } from 'lucide-react'
 import Clipboard from '@/components/clipboard'
 import { MintAmount, MintLogo, MintSymbol } from '@/components/mint'
+import NewWindow from '@/components/newWindow'
 
 import { solscan } from '@/helpers/explorers'
 import { numeric, shortenAddress } from '@/helpers/utils'
@@ -64,11 +65,14 @@ export default function PoolCard({ poolAddress }: PoolCardProps) {
       )}
     >
       <div className="flex flex-row items-center">
-        <div className="flex-auto">
+        <div className="flex-auto flex gap-2 items-center">
           <MintLogo
             className="w-8 h-8 rounded-full"
             mintAddress={pool.mintLpt.toBase58()}
           />
+          <p className="font-bold">
+            <MintSymbol mintAddress={pool.mintLpt.toBase58()} />
+          </p>
         </div>
         <div className="flex flex-row gap-2 items-center">
           {isFrozen && (
@@ -87,6 +91,10 @@ export default function PoolCard({ poolAddress }: PoolCardProps) {
           >
             {shortenAddress(poolAddress)}
           </p>
+          <NewWindow
+            href={solscan(poolAddress || '')}
+            className="btn btn-sm btn-square"
+          />
           <Clipboard content={poolAddress} />
         </div>
       </div>

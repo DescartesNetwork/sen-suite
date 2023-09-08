@@ -2,7 +2,7 @@
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useWallet } from '@solana/wallet-adapter-react'
 
-import { MintLogo } from '@/components/mint'
+import { MintLogo, MintSymbol } from '@/components/mint'
 import Withdraw from './withdraw'
 import Deposit from './deposit'
 import PoolInfo from './poolInfo'
@@ -34,7 +34,9 @@ export default function PoolDetails() {
             className="h-10 w-10 rounded-full"
             mintAddress={pool.mintLpt.toBase58()}
           />
-          <h5>Balansol LP</h5>
+          <h5>
+            <MintSymbol mintAddress={pool.mintLpt.toBase58()} />
+          </h5>
         </div>
         <div className="flex gap-2 items-center">
           <Withdraw poolAddress={poolAddress} />
