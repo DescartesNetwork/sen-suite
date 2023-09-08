@@ -1,3 +1,4 @@
+'use client'
 import { useEffect, useRef } from 'react'
 import * as echarts from 'echarts/core'
 import { BarChart as BC } from 'echarts/charts'

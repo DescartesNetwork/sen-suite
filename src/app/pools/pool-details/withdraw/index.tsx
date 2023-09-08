@@ -1,3 +1,4 @@
+'use client'
 import { Fragment, MouseEvent, useCallback, useMemo, useState } from 'react'
 import classNames from 'classnames'
 import { BN } from 'bn.js'

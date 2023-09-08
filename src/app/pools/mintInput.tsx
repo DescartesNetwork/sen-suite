@@ -1,3 +1,4 @@
+'use client'
 import { ChangeEvent, useCallback, useMemo, useState } from 'react'
 import { WRAPPED_SOL_MINT } from '@metaplex-foundation/js'
 import BN from 'bn.js'

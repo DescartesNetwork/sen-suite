@@ -1,3 +1,4 @@
+'use client'
 import classNames from 'classnames'
 
 import { Info } from 'lucide-react'

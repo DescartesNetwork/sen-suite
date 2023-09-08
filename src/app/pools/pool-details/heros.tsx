@@ -1,3 +1,4 @@
+'use client'
 import { ReactNode, useMemo } from 'react'
 import { BN } from 'bn.js'
 import classNames from 'classnames'

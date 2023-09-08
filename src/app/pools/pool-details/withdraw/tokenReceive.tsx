@@ -1,3 +1,4 @@
+'use client'
 import { useMemo } from 'react'
 import { PublicKey } from '@solana/web3.js'
 import classNames from 'classnames'

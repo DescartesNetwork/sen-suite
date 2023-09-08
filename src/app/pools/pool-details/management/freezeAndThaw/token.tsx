@@ -1,3 +1,4 @@
+'use client'
 import { useState } from 'react'
 import { MintActionState, MintActionStates } from '@senswap/balancer'
 

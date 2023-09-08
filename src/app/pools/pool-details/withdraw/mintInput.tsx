@@ -1,3 +1,4 @@
+'use client'
 import { ChangeEvent, useCallback, useState } from 'react'
 import BN from 'bn.js'
 
