@@ -1,3 +1,4 @@
+'use client'
 import { ReactNode, useMemo } from 'react'
 import { BN } from 'bn.js'
 import classNames from 'classnames'
@@ -38,7 +39,7 @@ const HeroCard = ({
   )
 }
 
-const Heros = ({ poolAddress }: { poolAddress: string }) => {
+export default function Heros({ poolAddress }: { poolAddress: string }) {
   const pool = usePoolByAddress(poolAddress)
   const { amount } = useTokenAccountByMintAddress(pool.mintLpt.toBase58()) || {
     amount: new BN(0),
@@ -80,5 +81,3 @@ const Heros = ({ poolAddress }: { poolAddress: string }) => {
     </div>
   )
 }
-
-export default Heros

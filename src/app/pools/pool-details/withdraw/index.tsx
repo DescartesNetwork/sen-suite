@@ -1,3 +1,4 @@
+'use client'
 import { Fragment, MouseEvent, useCallback, useMemo, useState } from 'react'
 import classNames from 'classnames'
 import { BN } from 'bn.js'
@@ -14,7 +15,7 @@ import { LPT_DECIMALS, useWithdraw } from '@/hooks/pool.hook'
 import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
 
-const Withdraw = ({ poolAddress }: { poolAddress: string }) => {
+export default function Withdraw({ poolAddress }: { poolAddress: string }) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [lpAmount, setLpAmount] = useState('')
@@ -125,5 +126,3 @@ const Withdraw = ({ poolAddress }: { poolAddress: string }) => {
     </Fragment>
   )
 }
-
-export default Withdraw

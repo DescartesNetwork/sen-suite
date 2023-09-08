@@ -1,3 +1,4 @@
+'use client'
 import { useState } from 'react'
 import classNames from 'classnames'
 
@@ -55,7 +56,7 @@ const Content = ({
   </div>
 )
 
-const Fee = ({ poolAddress }: { poolAddress: string }) => {
+export default function Fee({ poolAddress }: { poolAddress: string }) {
   const poolData = usePoolByAddress(poolAddress)
 
   const currentFee = (poolData.fee.toNumber() * 100) / PRECISION
@@ -119,4 +120,3 @@ const Fee = ({ poolAddress }: { poolAddress: string }) => {
     </div>
   )
 }
-export default Fee

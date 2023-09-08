@@ -1,3 +1,4 @@
+'use client'
 import { useMemo } from 'react'
 
 import BarChart from './barChart'
@@ -5,7 +6,7 @@ import BarChart from './barChart'
 import { numeric } from '@/helpers/utils'
 import { VolumeData, useVol24h } from '@/hooks/pool.hook'
 
-const Volume24h = ({ poolAddress }: { poolAddress: string }) => {
+export default function Volume24h({ poolAddress }: { poolAddress: string }) {
   const { vols, isLoading, vol24h } = useVol24h(poolAddress)
 
   const vol24hIn7Date = useMemo(() => {
@@ -37,5 +38,3 @@ const Volume24h = ({ poolAddress }: { poolAddress: string }) => {
     </div>
   )
 }
-
-export default Volume24h

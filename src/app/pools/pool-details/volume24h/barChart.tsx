@@ -1,3 +1,4 @@
+'use client'
 import { useEffect, useRef } from 'react'
 import * as echarts from 'echarts/core'
 import { BarChart as BC } from 'echarts/charts'
@@ -65,7 +66,7 @@ const buildOptions = (data: VolumeData[]) => ({
   },
 })
 
-const BarChart = ({ data }: { data: VolumeData[] }) => {
+export default function BarChart({ data }: { data: VolumeData[] }) {
   const { theme } = useTheme()
   const chartRef = useRef(null)
 
@@ -79,5 +80,3 @@ const BarChart = ({ data }: { data: VolumeData[] }) => {
 
   return <div ref={chartRef} style={{ width: '100%', height: '306px' }} />
 }
-
-export default BarChart

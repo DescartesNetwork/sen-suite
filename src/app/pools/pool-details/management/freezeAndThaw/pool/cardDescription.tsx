@@ -1,16 +1,17 @@
+'use client'
 import classNames from 'classnames'
 
 import { Info } from 'lucide-react'
 
 import { StatePool } from '@/hooks/pool.hook'
 
-const CardDescription = ({
+export default function CardDescription({
   description,
   statusContent,
 }: {
   description: string
   statusContent: string
-}) => {
+}) {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-row gap-4">
@@ -30,5 +31,3 @@ const CardDescription = ({
     </div>
   )
 }
-
-export default CardDescription

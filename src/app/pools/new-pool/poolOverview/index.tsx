@@ -1,3 +1,4 @@
+'use client'
 import { useRouter } from 'next/navigation'
 import { useMemo } from 'react'
 
@@ -9,7 +10,7 @@ import { useMints } from '@/hooks/spl.hook'
 import { usePrices } from '@/providers/mint.provider'
 import { usePoolByAddress } from '@/providers/pools.provider'
 
-const PoolOverview = ({ poolAddress }: { poolAddress: string }) => {
+export default function PoolOverview({ poolAddress }: { poolAddress: string }) {
   const pool = usePoolByAddress(poolAddress)
   const mintAddresses = pool.mints.map((mint) => mint.toBase58())
   const prices = usePrices(mintAddresses)
@@ -85,5 +86,3 @@ const PoolOverview = ({ poolAddress }: { poolAddress: string }) => {
     </div>
   )
 }
-
-export default PoolOverview

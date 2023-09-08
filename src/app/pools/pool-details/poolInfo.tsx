@@ -1,3 +1,4 @@
+'use client'
 import { useRouter } from 'next/navigation'
 
 import Clipboard from '@/components/clipboard'
@@ -12,7 +13,7 @@ type PoolInfoProps = {
   poolAddress: string
 }
 
-const PoolInfo = ({ poolAddress }: PoolInfoProps) => {
+export default function PoolInfo({ poolAddress }: PoolInfoProps) {
   const { push } = useRouter()
   const { mintLpt } = usePoolByAddress(poolAddress)
 
@@ -21,7 +22,7 @@ const PoolInfo = ({ poolAddress }: PoolInfoProps) => {
       <div className="flex-auto">
         <button
           onClick={() => push('/pools')}
-          className="btn btn-sm btn-ghost "
+          className="btn btn-sm btn-ghost rounded-full"
         >
           <ArrowLeft size={16} />
           Back
@@ -65,5 +66,3 @@ const PoolInfo = ({ poolAddress }: PoolInfoProps) => {
     </div>
   )
 }
-
-export default PoolInfo

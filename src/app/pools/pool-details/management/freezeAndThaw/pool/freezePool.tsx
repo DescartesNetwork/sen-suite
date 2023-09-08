@@ -1,3 +1,4 @@
+'use client'
 import { useState } from 'react'
 
 import { Snowflake } from 'lucide-react'
@@ -7,7 +8,7 @@ import { solscan } from '@/helpers/explorers'
 import { usePoolManagement } from '@/hooks/pool.hook'
 import { usePushMessage } from '@/components/message/store'
 
-const FreezePool = ({ poolAddress }: { poolAddress: string }) => {
+export default function FreezePool({ poolAddress }: { poolAddress: string }) {
   const [loading, setLoading] = useState(false)
 
   const { freezePool } = usePoolManagement(poolAddress)
@@ -48,5 +49,3 @@ const FreezePool = ({ poolAddress }: { poolAddress: string }) => {
     </div>
   )
 }
-
-export default FreezePool

@@ -83,7 +83,7 @@ type BoostNFTProps = {
   boostsData: BoostData[]
   onBoostsData: (boostsData: BoostData[]) => void
 }
-const BoostNFT = ({ boostsData, onBoostsData }: BoostNFTProps) => {
+export default function BoostNFT({ boostsData, onBoostsData }: BoostNFTProps) {
   const [isBoost, setIsBoost] = useState(false)
 
   const onToggle = (e: ChangeEvent<HTMLInputElement>) => {
@@ -152,5 +152,3 @@ const BoostNFT = ({ boostsData, onBoostsData }: BoostNFTProps) => {
     </div>
   )
 }
-
-export default BoostNFT

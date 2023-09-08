@@ -26,7 +26,7 @@ import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
 import { useLamports } from '@/providers/wallet.provider'
 
-const Deposit = ({ poolAddress }: { poolAddress: string }) => {
+export default function Deposit({ poolAddress }: { poolAddress: string }) {
   const pool = usePoolByAddress(poolAddress)
   const [open, setOpen] = useState(false)
   const [acceptAnyway, setAcceptAnyway] = useState(false)
@@ -240,5 +240,3 @@ const Deposit = ({ poolAddress }: { poolAddress: string }) => {
     </Fragment>
   )
 }
-
-export default Deposit

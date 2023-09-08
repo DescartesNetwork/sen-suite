@@ -1,3 +1,4 @@
+'use client'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { BN } from 'bn.js'
 import { WRAPPED_SOL_MINT } from '@metaplex-foundation/js'
@@ -20,13 +21,18 @@ import {
 } from '@/hooks/pool.hook'
 import { decimalize } from '@/helpers/decimals'
 import { solscan } from '@/helpers/explorers'
-import { CONFIRM, SET_UP } from '../page'
+
+const SET_UP = 0
+const CONFIRM = 2
 
 type AddLiquidityProps = {
   poolAddress: string
   setStep: (step: number) => void
 }
-const AddLiquidity = ({ poolAddress, setStep }: AddLiquidityProps) => {
+export default function AddLiquidity({
+  poolAddress,
+  setStep,
+}: AddLiquidityProps) {
   const [amounts, setAmounts] = useState<string[]>([])
   const [activeIndx, setActiveIndx] = useState<number>()
   const [closing, setClosing] = useState(false)
@@ -198,5 +204,3 @@ const AddLiquidity = ({ poolAddress, setStep }: AddLiquidityProps) => {
     </div>
   )
 }
-
-export default AddLiquidity

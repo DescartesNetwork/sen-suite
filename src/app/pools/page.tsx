@@ -20,7 +20,7 @@ const PRIORITIZE_POOLS = [
   'kPbhNnVmuhqWApxhr156XQV8hhKsysrvwVFmDhCWFY5',
 ]
 
-const Pools = () => {
+export default function Pools() {
   const [text, setText] = useState('')
   const [filterKey, setFilterKey] = useState(FilterPools.AllPools)
   const poolsFilter = useFilterPools(filterKey)
@@ -38,7 +38,8 @@ const Pools = () => {
   return (
     <div className="flex w-full h-auto max-w-[660px]">
       <div className="grid grid-cols-12 gap-4  w-full">
-        <div className="col-span-12 grid grid-cols-12 gap-2">
+        <h4 className="col-span-full mb-2">Liquidity Pool</h4>
+        <div className="col-span-12 grid grid-cols-12 gap-2 mb-4">
           <div className="col-span-3">
             <select
               value={filterKey}
@@ -79,7 +80,7 @@ const Pools = () => {
               className="btn btn-sm w-full rounded-3xl"
             >
               <Plus size={16} />
-              Add New
+              <span className="hidden md:block">Add New</span>
             </button>
           </div>
         </div>
@@ -97,5 +98,3 @@ const Pools = () => {
     </div>
   )
 }
-
-export default Pools

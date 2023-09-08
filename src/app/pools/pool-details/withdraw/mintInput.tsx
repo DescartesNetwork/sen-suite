@@ -1,3 +1,4 @@
+'use client'
 import { ChangeEvent, useCallback, useState } from 'react'
 import BN from 'bn.js'
 
@@ -13,12 +14,12 @@ type MintInputProps = {
   onLpChange: (val: string) => void
 }
 
-const MintInput = ({
+export default function MintInput({
   poolAddress,
   amountLp = '',
   isSingle = false,
   onLpChange,
-}: MintInputProps) => {
+}: MintInputProps) {
   const [range, setRange] = useState('0')
   const pool = usePoolByAddress(poolAddress)
   const mintAddress = pool.mintLpt.toBase58()
@@ -90,5 +91,3 @@ const MintInput = ({
     </div>
   )
 }
-
-export default MintInput
