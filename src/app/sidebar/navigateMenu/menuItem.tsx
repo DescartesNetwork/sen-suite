@@ -26,7 +26,7 @@ export default function MenuItem({ menuItemData, open }: MenuItemProps) {
         focus: pathname === route,
       })}
     >
-      {Logo && <Logo className="menu-logo opacity-60" />}
+      {Logo && <Logo className="menu-logo" />}
       <p className="menu-option menu-text">{name}</p>
     </Link>
   )
