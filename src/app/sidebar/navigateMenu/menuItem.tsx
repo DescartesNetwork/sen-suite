@@ -15,6 +15,8 @@ export default function MenuItem({ menuItemData, open }: MenuItemProps) {
   const { route, name, Logo, disabled, children } = menuItemData
   const pathname = usePathname()
 
+  const isFocus = route === '/' ? route === pathname : pathname.includes(route)
+
   if (children && !!children.length) {
     return <ListSubMenuItem menuItemData={menuItemData} open={open} />
   }
@@ -23,7 +25,7 @@ export default function MenuItem({ menuItemData, open }: MenuItemProps) {
     <Link
       href={disabled ? '#' : route}
       className={classNames('px-4 py-3', {
-        focus: pathname === route,
+        focus: isFocus,
       })}
     >
       {Logo && <Logo strokeWidth={1.5} className="menu-logo opacity-60" />}

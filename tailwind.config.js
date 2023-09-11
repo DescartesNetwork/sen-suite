@@ -16,9 +16,6 @@ module.exports = {
         'panel-dark': "url('/panel-dark.jpg')",
         'home': "url('/home-bg.png')",
       },
-      transitionDelay: {
-        '2000': '2000ms',
-      }  
     },
   },
   plugins: [require('@tailwindcss/container-queries'), require('daisyui')],
@@ -34,8 +31,9 @@ module.exports = {
           'neutral-focus': '#212433',
 
           '--accent': '#2B3440',
-          '--accent-text': '#ffffff',
-          '--card-home': '#ffffffb3'
+          '--accent-content': '#ffffff',
+          '--opaline': '#ffffffb3',
+          '--opaline-content': "#000"
         },
       },
       {
@@ -48,7 +46,9 @@ module.exports = {
           'neutral-focus': '#A6ACBA',
 
           '--accent': '#F4F4F5',
-          '--accent-text': '#212433'
+          '--accent-content': '#212433',
+          '--opaline': '#ffffffb3',
+          '--opaline-content': "#F4F4F5"
         },
       },
     ],

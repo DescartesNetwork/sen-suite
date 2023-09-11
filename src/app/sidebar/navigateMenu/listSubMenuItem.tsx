@@ -55,13 +55,13 @@ const DropdownSubMenuItem = ({ menuItemData }: SubMenuItemProps) => {
         </li>
         {children &&
           children.map(({ route, name: subName }) => (
-            <li key={subName}>
+            <li key={route}>
               <Link
                 href={disabled ? '#' : route}
                 className={classNames(
                   'pl-8 text-neutral-focus opacity-60 hover:opacity-100',
                   {
-                    '!opacity-100': pathname === route,
+                    '!opacity-100': pathname.includes(route),
                   },
                 )}
               >
@@ -86,11 +86,11 @@ const SubMenuItem = ({ menuItemData }: SubMenuItemProps) => {
       <ul className="ml-0 pl-0 before:w-0">
         {children &&
           children.map(({ route, disabled, name: subName }) => (
-            <li key={name} className={classNames({ disabled })}>
+            <li key={route} className={classNames({ disabled })}>
               <Link
                 href={disabled ? '#' : route}
                 className={classNames('py-3 pl-11', {
-                  focus: pathname === route,
+                  focus: pathname.includes(route),
                 })}
               >
                 <p className="menu-option menu-text">{subName}</p>
