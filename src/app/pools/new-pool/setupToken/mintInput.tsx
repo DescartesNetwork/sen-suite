@@ -23,7 +23,7 @@ export default function MintInput({
   const { mintAddress, weight, isLocked } = setupData
 
   return (
-    <div className="flex items-center">
+    <div className="flex gap-2 items-center">
       <div className="flex-auto">
         <div
           onClick={() => setOpen(true)}
@@ -50,7 +50,7 @@ export default function MintInput({
           value={weight}
           type="number"
           placeholder="0"
-          className="input bg-base-200 input-ghost flex-auto max-w-sm rounded-full focus:outline-none text-right text-xl"
+          className="input bg-base-200 input-ghost w-full flex-auto rounded-full focus:outline-none text-right text-xl"
           onChange={(e) => onChange('weight', e.target.value)}
           disabled={isLocked}
         />

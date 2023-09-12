@@ -5,11 +5,11 @@ import classNames from 'classnames'
 
 import { Plus, Search, X } from 'lucide-react'
 import PoolCard from './poolCard'
+import LiquidityPoolPanel from './panel'
 import LazyLoad from 'react-lazy-load'
 import Empty from '@/components/empty'
 
 import { FilterPools, useFilterPools, useSearchPool } from '@/hooks/pool.hook'
-import LiquidityPoolPanel from './panel'
 
 const PRIORITIZE_POOLS = [
   'CT2QmamF6kBBDVbkg8WkvF5gnq6q8mDranPi21tdGeeL',
@@ -74,7 +74,7 @@ export default function Pools() {
             className="col-span-3 btn w-full rounded-full"
           >
             <Plus className="h-4 w-4" />
-            Add New
+            <span className="hidden md:block"> Add New</span>
           </button>
         </div>
         <div className="col-span-full grid grid-cols-12 gap-4">
