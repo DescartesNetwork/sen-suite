@@ -1,14 +1,30 @@
-import { Fragment, useEffect } from 'react'
+import { Fragment, RefObject, useEffect } from 'react'
 
-type ElementIObsProps = { querySelector: HTMLDivElement }
-const ElementIObs = ({ querySelector }: ElementIObsProps) => {
+type ElementIObsProps = {
+  querySelector: RefObject<HTMLDivElement | null>
+  threshold?: IntersectionObserverInit['threshold']
+  force?: boolean
+}
+
+const ElementIObs = ({
+  querySelector,
+  threshold = 0.5,
+  force = false,
+}: ElementIObsProps) => {
   useEffect(() => {
-    const observer = new IntersectionObserver(([e]) =>
-      e.target.classList.toggle('active', e.isIntersecting),
+    if (!querySelector.current) return
+    const observer = new IntersectionObserver(
+      ([e]) => {
+        if (force) return e.isIntersecting && e.target.classList.add('active')
+        return e.target.classList.toggle('active', e.isIntersecting)
+      },
+      {
+        threshold,
+      },
     )
 
-    observer.observe(querySelector)
-  }, [querySelector])
+    observer.observe(querySelector.current)
+  }, [force, querySelector, threshold])
 
   return <Fragment />
 }

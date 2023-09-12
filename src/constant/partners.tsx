@@ -13,7 +13,7 @@ import {
   logoSolDarkSvg,
   solendLight,
   solendDark,
-} from '../static/images/parnertsLogo'
+} from '@/static/images/partners'
 
 export const LIST_PARTNER = {
   light: [
