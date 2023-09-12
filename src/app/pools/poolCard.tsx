@@ -97,7 +97,6 @@ export default function PoolCard({ poolAddress }: PoolCardProps) {
         </div>
       </div>
       <div className="flex flex-row gap-2 items-center mb-3 flex-wrap">
-        <p className="mr-2">SenSwap LP</p>
         {poolWeights.map(({ mintAddress, weight }, i) => (
           <div
             key={i}

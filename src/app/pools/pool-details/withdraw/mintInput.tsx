@@ -2,7 +2,12 @@
 import { ChangeEvent, useCallback, useState } from 'react'
 import BN from 'bn.js'
 
-import { MintAmount, MintLogo, useMintAmount } from '@/components/mint'
+import {
+  MintAmount,
+  MintLogo,
+  MintSymbol,
+  useMintAmount,
+} from '@/components/mint'
 
 import { useTokenAccountByMintAddress } from '@/providers/tokenAccount.provider'
 import { usePoolByAddress } from '@/providers/pools.provider'
@@ -45,7 +50,9 @@ export default function MintInput({
             mintAddress={mintAddress}
             className="w-6 h-6 rounded-full"
           />
-          <p className="text-sm">SenSwap LP</p>
+          <p className="text-sm">
+            <MintSymbol mintAddress={mintAddress} />
+          </p>
         </div>
         <input
           type="number"
