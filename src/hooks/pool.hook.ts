@@ -640,12 +640,12 @@ export const useVol24h = (poolAddress: string) => {
 
   const fetcher = useCallback(async () => {
     const dateRange = 7
-    const secondsTo = new DateHelper().seconds()
-    const secondsFrom = new DateHelper().subtractDay(dateRange).seconds()
+    const ymdTo = new DateHelper().ymd()
+    const ymdFrom = new DateHelper().subtractDay(dateRange).ymd()
     const tokenAccounts = treasuries.map((treasury) => treasury.toBase58())
     const programId = solConfig.balancerAddress
     const { data } = await axios.get(solConfig.statRpc + 'volume', {
-      params: { secondsTo, secondsFrom, tokenAccounts, programId },
+      params: { ymdTo, ymdFrom, tokenAccounts, programId },
     })
     return data || { totalVol: 0, volumes: {} }
   }, [treasuries])

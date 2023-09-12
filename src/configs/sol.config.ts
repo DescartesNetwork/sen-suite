@@ -34,7 +34,7 @@ const conf: Record<Env, Conf> = {
     utilityProgram: DEFAULT_SEN_UTILITY_PROGRAM_ID,
     taxman: '9doo2HZQEmh2NgfT3Yx12M89aoBheycYqH1eaR5gKb3e',
     fee: 10 ** 6, // lamports
-    statRpc: 'https://stat-sentre-io.onrender.com/',
+    statRpc: 'https://stat.sentre.io/',
   },
 
   /**
@@ -48,7 +48,7 @@ const conf: Record<Env, Conf> = {
     utilityProgram: DEFAULT_SEN_UTILITY_PROGRAM_ID,
     taxman: '9doo2HZQEmh2NgfT3Yx12M89aoBheycYqH1eaR5gKb3e',
     fee: 10 ** 6, // lamports
-    statRpc: 'https://stat-sentre-io.onrender.com/',
+    statRpc: 'https://stat.sentre.io/',
   },
 }
 
