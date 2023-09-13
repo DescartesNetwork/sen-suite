@@ -4,8 +4,8 @@ import Image from 'next/image'
 import Island from '@/components/island'
 import ElementIObs from '@/components/IntersectionObserver'
 
-import { LIST_PARTNER } from '@/constant/partners'
 import { useTheme } from '@/providers/ui.provider'
+import { LIST_PARTNER } from '@/constant/partners'
 
 type PartnerProps = {
   logo: string
