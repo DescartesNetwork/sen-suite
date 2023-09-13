@@ -11,7 +11,7 @@ import Message from '@/components/message'
 import Sidebar from '@/app/sidebar'
 
 import { DMSans } from '../static/fonts'
-import '../static/styles/global.scss'
+import '@/static/styles/global.scss'
 import 'react-datepicker/dist/react-datepicker.css'
 
 export const metadata: Metadata = {

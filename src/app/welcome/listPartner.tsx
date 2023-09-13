@@ -29,8 +29,10 @@ export default function ListPartner() {
   return (
     <div ref={listPartnerRef} className="partners center h-full w-full gap-16">
       <div className="center gap-4">
-        <h3 className="title-partners">Our Partner</h3>
-        <p className="desc-partners text-2xl opacity-60">
+        <h3 className="title-partners text-center text-secondary-content">
+          Our Partner
+        </h3>
+        <p className="desc-partners text-center text-secondary-content text-2xl opacity-60">
           Join us on our journey to the moon!
         </p>
       </div>

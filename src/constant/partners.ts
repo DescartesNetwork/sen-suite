@@ -15,7 +15,18 @@ import {
   solendDark,
 } from '@/static/images/partners'
 
-export const LIST_PARTNER = {
+type ListPartnerProps = {
+  light: {
+    logo: string
+    description: string
+  }[]
+  dark: {
+    logo: string
+    description: string
+  }[]
+}
+
+export const LIST_PARTNER: ListPartnerProps = {
   light: [
     {
       logo: logoSolSvg,

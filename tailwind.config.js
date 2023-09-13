@@ -27,7 +27,7 @@ module.exports = {
           primary: '#f9575e',
           'primary-content': '#ffffff',
           secondary: '#5d6ccf',
-          'secondary-content': '#ffffff',
+          'secondary-content': '#000',
           'neutral-focus': '#212433',
 
           '--accent': '#2B3440',

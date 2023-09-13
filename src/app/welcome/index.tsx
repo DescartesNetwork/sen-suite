@@ -9,6 +9,7 @@ import ElementIObs from '@/components/IntersectionObserver'
 
 import { screenLaptop, screenMobile } from '@/static/images/systems'
 import './index.scss'
+import Island from '@/components/island'
 
 export default function Welcome() {
   const imageZoomRef = useRef<HTMLDivElement>(null)
@@ -26,7 +27,9 @@ export default function Welcome() {
       <section className="section-screen">
         <div className="zoom-image">
           <div className="wrap-image">
-            <Image alt="" src={screenImage} />
+            <Island>
+              <Image alt="" src={screenImage} />
+            </Island>
           </div>
         </div>
         <div className="start-scroll"></div>
@@ -39,7 +42,7 @@ export default function Welcome() {
       <section className="w-full px-8 pt-32 pb-32 md:pb-10">
         <ListPartner />
       </section>
-      <section className="px-8 py-32 md:h-[85vh] xl:h-[60vh] w-full">
+      <section className="px-8 py-32 w-full sm:h-[85vh] xl:h-[60vh]">
         <ListSocial />
       </section>
 

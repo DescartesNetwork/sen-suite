@@ -42,7 +42,7 @@ const App = ({ route, name, icon }: AppProps) => {
       >
         <Image className="h-20 w-20 md:h-36 md:w-36" src={icon} alt="" />
       </Link>
-      <p className="text-2xl max-w-[12rem] text-black text-center font-semibold">
+      <p className="text-2xl max-w-[9rem] md:max-w-[12rem] text-black text-center font-semibold">
         {name}
       </p>
     </div>
@@ -54,18 +54,20 @@ export default function ListApp() {
 
   return (
     <div ref={listAppRef} className="list-app gap-10">
-      <div className="flex flex-row justify-center gap-10 md:gap-16 top-app">
+      <div className="top-apps flex flex-row justify-center gap-8 md:gap-16 ">
         {TOP_APPS.map(({ route, name, icon }) => (
           <App key={route} route={route} name={name} icon={icon} />
         ))}
       </div>
       <div className="center gap-4">
-        <h3 className="title-apps text-black">Let&apos;s explore Sen Suite</h3>
-        <p className="desc-apps opacity-60 text-black">
+        <h3 className="title-apps text-center text-black">
+          Let&apos;s explore Sen Suite
+        </h3>
+        <p className="desc-apps text-center opacity-60 text-black">
           The limit breaker for projects on Solana.
         </p>
       </div>
-      <div className="flex flex-row justify-center gap-10 md:gap-16 bottom-app">
+      <div className="bottom-apps flex flex-row justify-center gap-8 md:gap-16">
         {BOTTOM_APPS.map(({ route, name, icon }) => (
           <App key={route} route={route} name={name} icon={icon} />
         ))}
