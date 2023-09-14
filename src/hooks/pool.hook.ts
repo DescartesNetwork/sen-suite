@@ -215,7 +215,7 @@ export const useWrapSol = () => {
       })
       if (!accounts[ataSol.toBase58()]) {
         const txInitAcc = await onInitAccount(WRAPPED_SOL_MINT, publicKey)
-        tx.add(txInitAcc)
+        if (txInitAcc) tx.add(txInitAcc)
       }
       const txSolTransfer = await SystemProgram.transfer({
         fromPubkey: publicKey,

@@ -1,5 +1,12 @@
 'use client'
-import { Fragment, MouseEvent, useCallback, useMemo, useState } from 'react'
+import {
+  Fragment,
+  MouseEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { utils } from '@coral-xyz/anchor'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { PublicKey, Transaction } from '@solana/web3.js'
@@ -10,7 +17,6 @@ import { usePushMessage } from '@/components/message/store'
 import { decimalize } from '@/helpers/decimals'
 import { useInitPDAAccount, useMints, useSpl } from '@/hooks/spl.hook'
 import { useAnchorProvider } from '@/providers/wallet.provider'
-import { useAllTokenAccounts } from '@/providers/tokenAccount.provider'
 import { isAddress } from '@/helpers/utils'
 
 type MintTokenProps = {
@@ -19,58 +25,50 @@ type MintTokenProps = {
 
 export default function MintToken({ mintAddress }: MintTokenProps) {
   const [loading, setLoading] = useState(false)
+  const [receiver, setReceiver] = useState('')
+
   const [open, setOpen] = useState(false)
-  const [amount, setAmount] = useState('0')
+  const [amount, setAmount] = useState<string>()
   const { publicKey } = useWallet()
   const spl = useSpl()
   const pushMessage = usePushMessage()
   const [mint] = useMints([mintAddress])
   const initPDAAccount = useInitPDAAccount()
   const provider = useAnchorProvider()
-  const accounts = useAllTokenAccounts()
-
-  const associatedAddress = useMemo(() => {
-    if (!publicKey) return ''
-    const ataAddress = utils.token.associatedAddress({
-      mint: new PublicKey(mintAddress),
-      owner: publicKey,
-    })
-    return ataAddress.toBase58()
-  }, [mintAddress, publicKey])
 
   const ok = useMemo(() => {
-    if (!associatedAddress || !mint?.mintAuthority || !publicKey) return false
+    if (!mint?.mintAuthority || !publicKey) return false
     const mintAuthority = mint?.mintAuthority as PublicKey
 
     return publicKey.equals(mintAuthority)
-  }, [associatedAddress, mint?.mintAuthority, publicKey])
+  }, [mint?.mintAuthority, publicKey])
 
   const onMintTo = useCallback(
     async (e: MouseEvent<HTMLButtonElement>) => {
       e.preventDefault()
-      if (!publicKey || !isAddress(associatedAddress)) return
+      if (!publicKey || !isAddress(receiver) || !amount) return
       try {
         setLoading(true)
 
         const tx = new Transaction()
-        if (!accounts[associatedAddress]) {
+        const ataAddress = utils.token.associatedAddress({
+          mint: new PublicKey(mintAddress),
+          owner: new PublicKey(receiver),
+        })
+
+        const accountInfo = await spl.account.mint.getAccountInfo(ataAddress)
+        if (!accountInfo) {
           const txInitAccount = await initPDAAccount(
             new PublicKey(mintAddress),
-            publicKey,
+            new PublicKey(receiver),
           )
-          tx.add(txInitAccount)
+          if (txInitAccount) tx.add(txInitAccount)
         }
-
-        const { state } = accounts[associatedAddress] || {
-          state: { uninitialized: {} },
-        }
-        if (Object.keys(state)[0] === 'frozen')
-          throw new Error('Your account is Frozen.')
 
         const txMintTo = await spl.methods
           .mintTo(decimalize(amount, mint?.decimals || 0))
           .accounts({
-            account: associatedAddress,
+            account: ataAddress,
             mint: new PublicKey(mintAddress),
             owner: publicKey,
           })
@@ -84,6 +82,7 @@ export default function MintToken({ mintAddress }: MintTokenProps) {
           { onClick: () => window.open(txId, '_blank') },
         )
         setOpen(false)
+        setAmount('0')
       } catch (er: any) {
         pushMessage('alert-error', er.message)
       } finally {
@@ -92,17 +91,21 @@ export default function MintToken({ mintAddress }: MintTokenProps) {
     },
     [
       publicKey,
-      associatedAddress,
-      accounts,
+      mintAddress,
+      receiver,
+      spl.account.mint,
       spl.methods,
       amount,
       mint?.decimals,
-      mintAddress,
       provider,
       pushMessage,
       initPDAAccount,
     ],
   )
+
+  useEffect(() => {
+    if (publicKey) setReceiver(publicKey.toBase58())
+  }, [publicKey])
 
   return (
     <Fragment>
@@ -116,6 +119,15 @@ export default function MintToken({ mintAddress }: MintTokenProps) {
       <Modal open={open} onCancel={() => setOpen(false)}>
         <div className="grid grid-cols-12 gap-4">
           <h5 className="col-span-full">Mint Token</h5>
+          <div className="col-span-full flex flex-col gap-2">
+            <p className="text-sm">Receiver</p>
+            <input
+              className="input bg-base-200 w-full"
+              type="text"
+              value={receiver}
+              onChange={(e) => setReceiver(e.target.value)}
+            />
+          </div>
           <div className="col-span-full flex flex-col gap-2">
             <p className="text-sm">Amount</p>
             <input

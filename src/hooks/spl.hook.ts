@@ -9,6 +9,7 @@ import {
   TransactionInstruction,
 } from '@solana/web3.js'
 import { utils, web3 } from '@coral-xyz/anchor'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 import { isAddress } from '@/helpers/utils'
 import { useAnchorProvider } from '@/providers/wallet.provider'
@@ -66,8 +67,10 @@ export const useMints = (mintAddresses: string[]) => {
  * @returns Init PDA account function
  */
 export const useInitPDAAccount = () => {
+  const { publicKey } = useWallet()
   const initPDAAccount = useCallback(
     async (mint: PublicKey, owner: PublicKey) => {
+      if (!publicKey) return
       const associatedTokenAccount = await utils.token.associatedAddress({
         mint,
         owner,
@@ -75,7 +78,7 @@ export const useInitPDAAccount = () => {
       const ix = new TransactionInstruction({
         keys: [
           {
-            pubkey: owner,
+            pubkey: publicKey,
             isSigner: true,
             isWritable: true,
           },
@@ -116,7 +119,7 @@ export const useInitPDAAccount = () => {
       const tx = new Transaction().add(ix)
       return tx
     },
-    [],
+    [publicKey],
   )
 
   return initPDAAccount
