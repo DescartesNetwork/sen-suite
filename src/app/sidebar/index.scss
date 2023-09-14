@@ -34,7 +34,7 @@
           > *:not(ul):not(details):not(.menu-title):not(.active):hover,
           > details > summary:not(.menu-title):not(.active):hover,
           .focus {
-            @apply bg-[--accent] text-[--accent-content] #{!important};
+            @apply bg-[--accent] text-[--accent-text] #{!important};
             > .menu-option, .menu-logo{
               @apply opacity-100
             }

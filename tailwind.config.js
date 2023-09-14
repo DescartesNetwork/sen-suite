@@ -35,7 +35,7 @@ module.exports = {
           'neutral-focus': '#212433',
 
           '--accent': '#2B3440',
-          '--accent-content': '#ffffff',
+          '--accent-text': '#ffffff',
           '--opaline': '#ffffffb3',
           '--opaline-content': "#000"
         },
@@ -50,7 +50,7 @@ module.exports = {
           'neutral-focus': '#A6ACBA',
 
           '--accent': '#F4F4F5',
-          '--accent-content': '#212433',
+          '--accent-text': '#212433',
           '--opaline': '#ffffffb3',
           '--opaline-content': "#F4F4F5"
         },
