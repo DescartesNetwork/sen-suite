@@ -1,7 +1,7 @@
 import { Fragment, RefObject, useEffect } from 'react'
 
 type ElementIObsProps = {
-  querySelector: RefObject<HTMLDivElement | null>
+  querySelector: RefObject<HTMLElement | null>
   threshold?: IntersectionObserverInit['threshold']
   force?: boolean
 }

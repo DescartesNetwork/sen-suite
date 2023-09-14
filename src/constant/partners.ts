@@ -13,7 +13,7 @@ import {
   logoSolDarkSvg,
   solendLight,
   solendDark,
-} from '@/static/images/partners'
+} from '@/static/images/welcome/partners'
 
 type ListPartnerProps = {
   light: {

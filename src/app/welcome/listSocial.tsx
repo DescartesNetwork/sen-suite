@@ -10,7 +10,7 @@ import {
   telegramIcon,
   youtubeIcon,
   discordIcon,
-} from '@/static/images/socials'
+} from '@/static/images/welcome/socials'
 
 type SocialProps = {
   icon: ReactNode
@@ -46,14 +46,18 @@ const SOCIALS: SocialProps[] = [
   },
 ]
 
-const Social = ({ icon, name, url }: SocialProps) => {
+function Social({ icon, name, url }: SocialProps) {
+  const cardSocialRef = useRef<HTMLAnchorElement | null>(null)
+
   return (
     <Link
       href={url}
-      className="center gap-6 p-6 w-full h-full bg-base-100 rounded-3xl"
+      ref={cardSocialRef}
+      className="card-social pos-center gap-6 p-6 w-full h-full bg-base-100 hover:border-primary border-2 rounded-3xl"
     >
       {icon}
       <p className="text-center">{name}</p>
+      <ElementIObs threshold={0.08} force querySelector={cardSocialRef} />
     </Link>
   )
 }
@@ -62,7 +66,10 @@ export default function ListSocial() {
   const listSocialRef = useRef<HTMLDivElement | null>(null)
 
   return (
-    <div ref={listSocialRef} className="socials center h-full w-full gap-16">
+    <div
+      ref={listSocialRef}
+      className="socials pos-center h-full w-full gap-16 px-8 py-32"
+    >
       <h3 className="title-socials text-center text-secondary-content">
         Get in touch
       </h3>
@@ -71,7 +78,7 @@ export default function ListSocial() {
           <Social key={name} icon={icon} name={name} url={url} />
         ))}
       </div>
-      <ElementIObs querySelector={listSocialRef} />
+      <ElementIObs threshold={0.1} force querySelector={listSocialRef} />
     </div>
   )
 }
