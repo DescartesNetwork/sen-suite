@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { Keypair } from '@solana/web3.js'
+import { KeypairSigner, generateSigner } from '@metaplex-foundation/umi'
+
 import { encode } from 'bs58'
 import copy from 'copy-to-clipboard'
 import classNames from 'classnames'
@@ -8,27 +9,26 @@ import classNames from 'classnames'
 import { Copy, Info, Settings, Shuffle } from 'lucide-react'
 import { SmActionInput } from './actionInput'
 
+import { useUmi } from '@/hooks/mpl.hook'
+
 export type TokenKeypairProps = {
-  keypair: Keypair
-  onChange: (keypair: Keypair) => void
+  keypair?: KeypairSigner
+  onChange: (keypair: KeypairSigner) => void
 }
 
 export default function TokenKeypair({ keypair, onChange }: TokenKeypairProps) {
   const [prefix, setPrefix] = useState('')
   const [loading, setLoading] = useState(false)
+  const umi = useUmi()
 
   useEffect(() => {
-    if (loading) {
-      if (
-        keypair.publicKey
-          .toBase58()
-          .toLowerCase()
-          .startsWith(prefix.toLowerCase())
-      )
+    if (!keypair) onChange(generateSigner(umi))
+    if (loading && keypair) {
+      if (keypair.publicKey.toLowerCase().startsWith(prefix.toLowerCase()))
         setLoading(false)
-      else onChange(new Keypair())
+      else onChange(generateSigner(umi))
     }
-  }, [loading, keypair, prefix, onChange])
+  }, [loading, keypair, prefix, onChange, umi])
 
   return (
     <div className="grid-cols-12 gap-2">
@@ -43,12 +43,12 @@ export default function TokenKeypair({ keypair, onChange }: TokenKeypairProps) {
             className="input w-full px-12 bg-base-200"
             type="text"
             name="token-keypair"
-            value={keypair.publicKey.toBase58()}
+            value={keypair?.publicKey}
             readOnly
           />
           <button
             className="absolute left-2 btn btn-sm btn-square"
-            onClick={() => onChange(new Keypair())}
+            onClick={() => onChange(generateSigner(umi))}
           >
             <Shuffle className="w-4 h-4" />
           </button>
@@ -69,8 +69,8 @@ export default function TokenKeypair({ keypair, onChange }: TokenKeypairProps) {
                   <SmActionInput
                     type="text"
                     name="token-keypair"
-                    value={keypair.publicKey.toBase58()}
-                    onClick={() => copy(keypair.publicKey.toBase58())}
+                    value={keypair?.publicKey}
+                    onClick={() => copy(keypair?.publicKey || '')}
                     readOnly
                   >
                     <Copy className="w-4 h-4" />
@@ -91,7 +91,7 @@ export default function TokenKeypair({ keypair, onChange }: TokenKeypairProps) {
                     </span>
                     <button
                       className="label-text-alt btn btn-xs"
-                      onClick={() => onChange(new Keypair())}
+                      onClick={() => onChange(generateSigner(umi))}
                       disabled={loading}
                     >
                       Shuffle
@@ -101,8 +101,8 @@ export default function TokenKeypair({ keypair, onChange }: TokenKeypairProps) {
                   <SmActionInput
                     type="text"
                     name="token-keypair"
-                    value={encode(keypair.secretKey)}
-                    onClick={() => copy(encode(keypair.secretKey))}
+                    value={encode(keypair?.secretKey || [])}
+                    onClick={() => copy(encode(keypair?.secretKey || []))}
                     readOnly
                   >
                     <Copy className="w-4 h-4" />
