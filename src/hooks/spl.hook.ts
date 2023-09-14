@@ -8,11 +8,14 @@ import {
   Transaction,
   TransactionInstruction,
 } from '@solana/web3.js'
-import { utils } from '@coral-xyz/anchor'
+import { utils, web3 } from '@coral-xyz/anchor'
 
 import { isAddress } from '@/helpers/utils'
 import { useAnchorProvider } from '@/providers/wallet.provider'
 
+export const TOKEN_20202_PROGRAM_ID = new web3.PublicKey(
+  'TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb',
+)
 /**
  * Create an SPL instance
  * @returns SPL instance
@@ -21,6 +24,19 @@ export const useSpl = () => {
   const provider = useAnchorProvider()
   const spl = useMemo(() => splTokenProgram({ provider }), [provider])
   return spl
+}
+
+/**
+ * Create an Token2022 instance
+ * @returns Token2022 instance
+ */
+export const useToken2022 = () => {
+  const provider = useAnchorProvider()
+  const token2022 = useMemo(
+    () => splTokenProgram({ provider, programId: TOKEN_20202_PROGRAM_ID }),
+    [provider],
+  )
+  return token2022
 }
 
 /**
