@@ -1,3 +1,4 @@
+'use client'
 import Link from 'next/link'
 import classNames from 'classnames'
 import { usePathname } from 'next/navigation'
@@ -42,7 +43,7 @@ const DropdownSubMenuItem = ({ menuItemData }: SubMenuItemProps) => {
           focus: pathname.includes(route),
         })}
       >
-        {Logo && <Logo className="menu-logo opacity-60" />}
+        {Logo && <Logo className="menu-logo" />}
       </label>
       <ul
         tabIndex={0}
@@ -55,13 +56,13 @@ const DropdownSubMenuItem = ({ menuItemData }: SubMenuItemProps) => {
         </li>
         {children &&
           children.map(({ route, name: subName }) => (
-            <li key={name}>
+            <li key={route}>
               <Link
                 href={disabled ? '#' : route}
                 className={classNames(
                   'pl-8 text-neutral-focus opacity-60 hover:opacity-100',
                   {
-                    '!opacity-100': pathname === route,
+                    '!opacity-100': pathname.includes(route),
                   },
                 )}
               >
@@ -90,7 +91,7 @@ const SubMenuItem = ({ menuItemData }: SubMenuItemProps) => {
               <Link
                 href={disabled ? '#' : route}
                 className={classNames('py-3 pl-11', {
-                  focus: pathname === route,
+                  focus: pathname.includes(route),
                 })}
               >
                 <p className="menu-option menu-text">{subName}</p>
