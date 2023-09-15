@@ -1,3 +1,4 @@
+'use client'
 import { Fragment, RefObject, useEffect } from 'react'
 
 type ElementIObsProps = {

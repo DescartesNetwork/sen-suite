@@ -1,3 +1,4 @@
+'use client'
 import { useRef } from 'react'
 import Image from 'next/image'
 
@@ -5,7 +6,7 @@ import Island from '@/components/island'
 import ElementIObs from '@/components/IntersectionObserver'
 
 import { useTheme } from '@/providers/ui.provider'
-import { LIST_PARTNER } from '@/constant/partners'
+import { LIST_PARTNER } from '@/app/welcome/list-partner/partners'
 
 type PartnerProps = {
   logo: string
@@ -14,14 +15,13 @@ type PartnerProps = {
 
 function Partner({ logo, description }: PartnerProps) {
   const cardPartnerRef = useRef<HTMLDivElement | null>(null)
-
   return (
     <div
       ref={cardPartnerRef}
       className="card-partner flex flex-col items-center gap-6 p-6 h-full w-full bg-base-100 rounded-3xl"
     >
       <Island>
-        <Image src={logo} height={48} alt="" />
+        <Image src={logo} height={40} alt="" />
       </Island>
       <p className="opacity-60 text-center md:text-sm">{description}</p>
       <ElementIObs threshold={0.08} force querySelector={cardPartnerRef} />
@@ -31,6 +31,11 @@ function Partner({ logo, description }: PartnerProps) {
 export default function ListPartner() {
   const listPartnerRef = useRef<HTMLDivElement | null>(null)
   const { theme } = useTheme()
+
+  const partners = LIST_PARTNER.map((partner) => ({
+    logo: theme === 'light' ? partner.logoLight : partner.logoDark,
+    description: partner.description,
+  }))
 
   return (
     <div className="partners">
@@ -44,7 +49,7 @@ export default function ListPartner() {
           </p>
         </div>
         <div className="list-partner grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 place-items-center">
-          {LIST_PARTNER[theme].map(({ logo, description }) => (
+          {partners.map(({ logo, description }) => (
             <Partner key={description} logo={logo} description={description} />
           ))}
         </div>
@@ -53,7 +58,7 @@ export default function ListPartner() {
         ref={listPartnerRef}
         className="h-[100vh] w-full -translate-y-[150vh] md:translate-y-0 check-viewport"
       />
-      <ElementIObs threshold={0.5} force querySelector={listPartnerRef} />
+      <ElementIObs threshold={0.3} force querySelector={listPartnerRef} />
     </div>
   )
 }
