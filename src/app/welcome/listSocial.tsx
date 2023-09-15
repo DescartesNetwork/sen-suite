@@ -91,8 +91,8 @@ export default function ListSocial() {
         Get in touch
       </h3>
       <div className="list-social text-center text-secondary-content w-full grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-6">
-        {SOCIALS.map(({ icon, name, url }) => (
-          <Social key={name} icon={icon} name={name} url={url} />
+        {SOCIALS.map((social) => (
+          <Social key={social.name} {...social} />
         ))}
       </div>
       <ElementIObs threshold={0.1} force querySelector={listSocialRef} />

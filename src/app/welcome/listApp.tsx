@@ -65,14 +65,8 @@ export default function ListApp() {
     <div className="list-app relative">
       <div className="sticky pos-center top-0 left-0 h-[100vh] md:h-[120vh] w-full gap-10 bg-center bg-no-repeat bg-cover bg-[url('/apps-bg.png')]">
         <div className="top-apps flex flex-row justify-center gap-5 md:gap-16 ">
-          {TOP_APPS.map(({ route, name, icon, disabled }) => (
-            <App
-              key={route}
-              route={route}
-              name={name}
-              icon={icon}
-              disabled={disabled}
-            />
+          {TOP_APPS.map((app) => (
+            <App key={app.route} {...app} />
           ))}
         </div>
         <div className="pos-center gap-4">
@@ -84,14 +78,8 @@ export default function ListApp() {
           </p>
         </div>
         <div className="bottom-apps flex flex-row justify-center gap-7 md:gap-16">
-          {BOTTOM_APPS.map(({ route, name, icon, disabled }) => (
-            <App
-              key={route}
-              route={route}
-              name={name}
-              icon={icon}
-              disabled={disabled}
-            />
+          {BOTTOM_APPS.map((app) => (
+            <App key={app.route} {...app} />
           ))}
         </div>
       </div>

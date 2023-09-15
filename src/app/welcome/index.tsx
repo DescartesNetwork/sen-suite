@@ -19,8 +19,8 @@ export default function Welcome() {
             <div className="dark:bg-[url('/mobile-dark.png')] bg-[url('/mobile-light.png')] dark:md:bg-[url('/laptop-dark.png')] md:bg-[url('/laptop-light.png')] bg-contain bg-no-repeat bg-center w-full aspect-[2/4] md:aspect-[5/5]" />
           </div>
         </div>
-        <div className="start-scroll"></div>
-        <div className="stop-scroll" ref={imageZoomRef}></div>
+        <div className="start-scroll" />
+        <div className="stop-scroll" ref={imageZoomRef} />
       </section>
 
       <section className="w-full relative mt-[-100vh] z-40">
