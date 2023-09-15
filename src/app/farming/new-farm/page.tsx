@@ -19,7 +19,7 @@ import { useMints } from '@/hooks/spl.hook'
 import { useAllTokenAccounts } from '@/providers/tokenAccount.provider'
 import { decimalize } from '@/helpers/decimals'
 
-const NewFarm = () => {
+export default function NewFarm() {
   const [loading, setLoading] = useState(false)
   const [mintFarm, setMintFarm] = useState('')
   const [tokenRewards, setTokenRewards] = useState<Reward[]>([EMPTY_REWARD])
@@ -126,5 +126,3 @@ const NewFarm = () => {
     </div>
   )
 }
-
-export default NewFarm

@@ -1,3 +1,5 @@
+import { useCallback, useMemo } from 'react'
+import useSWR from 'swr'
 import {
   Metaplex,
   PublicKey,
@@ -5,13 +7,15 @@ import {
   walletAdapterIdentity,
 } from '@metaplex-foundation/js'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { useCallback, useMemo } from 'react'
-import useSWR from 'swr'
+import { createUmi } from '@metaplex-foundation/umi-bundle-defaults'
+import { mplTokenMetadata } from '@metaplex-foundation/mpl-token-metadata'
+import { walletAdapterIdentity as umiWalletAdapter } from '@metaplex-foundation/umi-signer-wallet-adapters'
 
 import { isAddress } from '@/helpers/utils'
+import solConfig from '@/configs/sol.config'
 
 /**
- * Create an MPL instanse
+ * Create an MPL instance
  * @returns MPL instance
  */
 export const useMpl = () => {
@@ -21,9 +25,30 @@ export const useMpl = () => {
     if (!wallet) return new Metaplex(connection)
     return Metaplex.make(connection)
       .use(walletAdapterIdentity(wallet.adapter))
-      .use(bundlrStorage())
+      .use(
+        bundlrStorage({
+          address: solConfig.bundlStorage,
+          providerUrl: solConfig.rpc,
+          timeout: 6000,
+        }),
+      )
   }, [connection, wallet])
   return mpl
+}
+
+/**
+ * Create an Umi instance
+ * @returns Umi instance
+ */
+export const useUmi = () => {
+  const { wallet } = useWallet()
+  const umi = useMemo(() => {
+    if (!wallet) return createUmi(solConfig.rpc).use(mplTokenMetadata())
+    return createUmi(solConfig.rpc)
+      .use(mplTokenMetadata())
+      .use(umiWalletAdapter(wallet.adapter))
+  }, [wallet])
+  return umi
 }
 
 /**

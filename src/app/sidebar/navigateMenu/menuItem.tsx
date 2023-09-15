@@ -28,7 +28,7 @@ export default function MenuItem({ menuItemData, open }: MenuItemProps) {
         focus: isFocus,
       })}
     >
-      {Logo && <Logo strokeWidth={1.5} className="menu-logo opacity-60" />}
+      {Logo && <Logo className="menu-logo" />}
       <p className="menu-option menu-text">{name}</p>
     </Link>
   )

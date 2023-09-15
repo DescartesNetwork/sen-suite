@@ -17,7 +17,7 @@ type UnstakeNftProps = {
   farmAddress: string
 }
 
-const UnstakeNft = ({ farmAddress }: UnstakeNftProps) => {
+export default function UnstakeNft({ farmAddress }: UnstakeNftProps) {
   const [loading, setLoading] = useState(false)
   const [nftSelected, setNftSelect] = useState('')
 
@@ -139,5 +139,3 @@ const UnstakeNft = ({ farmAddress }: UnstakeNftProps) => {
     </div>
   )
 }
-
-export default UnstakeNft

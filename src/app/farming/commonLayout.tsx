@@ -5,7 +5,7 @@ import FarmingNavigation from './navigation'
 import FarmingPanel from './panel'
 import FarmingSearch from './search'
 
-const CommonLayout = ({ children }: { children: ReactNode }) => {
+export default function CommonLayout({ children }: { children: ReactNode }) {
   return (
     <div className="grid grid-cols-12 gap-4 @container">
       <div className="col-span-full">
@@ -21,5 +21,3 @@ const CommonLayout = ({ children }: { children: ReactNode }) => {
     </div>
   )
 }
-
-export default CommonLayout

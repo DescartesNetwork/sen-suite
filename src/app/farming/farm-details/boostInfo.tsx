@@ -21,7 +21,11 @@ type BoostInfoType = {
   amount: number
 }
 
-const BoostInfo = ({ farmAddress, amount, nfts }: BoostInfoType) => {
+export default function BoostInfo({
+  farmAddress,
+  amount,
+  nfts,
+}: BoostInfoType) {
   const { inputMint } = useFarmByAddress(farmAddress)
   const debt = useDebtByFarmAddress(farmAddress)
   const boosting = useBoostingByFarmAddress(farmAddress)
@@ -108,5 +112,3 @@ const BoostInfo = ({ farmAddress, amount, nfts }: BoostInfoType) => {
     </div>
   )
 }
-
-export default BoostInfo

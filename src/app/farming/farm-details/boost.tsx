@@ -13,7 +13,7 @@ type BoostNftProps = {
   onNfts: (value: string[]) => void
 }
 
-const BoostNft = ({ farmAddress, nfts, onNfts }: BoostNftProps) => {
+export default function BoostNft({ farmAddress, nfts, onNfts }: BoostNftProps) {
   const [open, setOpen] = useState(false)
   const boosting = useBoostingByFarmAddress(farmAddress)
   const collections = boosting.map(({ boostingCollection }) =>
@@ -64,5 +64,3 @@ const BoostNft = ({ farmAddress, nfts, onNfts }: BoostNftProps) => {
     </div>
   )
 }
-
-export default BoostNft
