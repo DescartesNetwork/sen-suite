@@ -13,7 +13,7 @@ export default function Welcome() {
 
   return (
     <div className="welcome-container">
-      <section className="section-screen bg-cover bg-swap-light dark:bg-swap-dark z-30">
+      <section className="section-screen bg-cover bg-swap-light dark:bg-swap-dark z-20">
         <div className="zoom-image">
           <div className="wrap-image">
             <div className="dark:bg-[url('/mobile-dark.png')] bg-[url('/mobile-light.png')] dark:md:bg-[url('/laptop-dark.png')] md:bg-[url('/laptop-light.png')] bg-contain bg-no-repeat bg-center w-full aspect-[2/4] md:aspect-[5/5]" />
@@ -23,10 +23,10 @@ export default function Welcome() {
         <div className="stop-scroll" ref={imageZoomRef} />
       </section>
 
-      <section className="w-full relative mt-[-100vh] z-20">
+      <section className="w-full relative mt-[-100vh] z-10">
         <ListApp />
       </section>
-      <section className="w-full relative mt-[-100vh] z-10">
+      <section className="w-full relative mt-[-100vh]">
         <ListPartner />
       </section>
       <section className="w-full">
