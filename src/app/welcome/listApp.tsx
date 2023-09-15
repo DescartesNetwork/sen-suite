@@ -12,11 +12,12 @@ import {
   merkleDistribution,
   swap,
 } from '@/static/images/welcome/appsIcon'
+import classNames from 'classnames'
 
 const TOP_APPS = [
-  { route: '/swap', name: 'Swap', icon: swap },
-  { route: '/academy', name: 'Booster', icon: booster },
-  { route: '/farming', name: 'Farming', icon: farming },
+  { route: '/swap', name: 'Swap', icon: swap, disabled: false },
+  { route: '/academy', name: 'Booster', icon: booster, disabled: true },
+  { route: '/farming', name: 'Farming', icon: farming, disabled: false },
 ]
 
 const BOTTOM_APPS = [
@@ -24,22 +25,29 @@ const BOTTOM_APPS = [
     route: '/airdrop/merkle-distribution',
     name: 'Merkle Distribution',
     icon: merkleDistribution,
+    disabled: false,
   },
-  { route: '/launchpad', name: 'Launchpad', icon: launchpad },
+  { route: '/launchpad', name: 'Launchpad', icon: launchpad, disabled: true },
 ]
 
 type AppProps = {
   route: string
   name: string
   icon: string
+  disabled: boolean
 }
 
-const App = ({ route, name, icon }: AppProps) => {
+const App = ({ route, name, icon, disabled }: AppProps) => {
   return (
     <div className="flex flex-col items-center gap-2">
       <Link
-        href={route}
-        className="pos-center rounded-full p-4 md:p-6 bg-[--opaline] hover:border-primary border-2"
+        href={disabled ? '#' : route}
+        className={classNames(
+          'pos-center rounded-full p-4 md:p-6 bg-[--opaline] hover:border-primary border-2',
+          {
+            'opacity-60 border-0 cursor-not-allowed': disabled,
+          },
+        )}
       >
         <Image className="h-20 w-20 md:h-36 md:w-36" src={icon} alt="" />
       </Link>
@@ -55,10 +63,16 @@ export default function ListApp() {
 
   return (
     <div className="list-app relative">
-      <div className="sticky pos-center top-0 left-0 h-[100vh] md:h-[120vh] w-full gap-10 bg-center bg-no-repeat bg-cover bg-apps">
+      <div className="sticky pos-center top-0 left-0 h-[100vh] md:h-[120vh] w-full gap-10 bg-center bg-no-repeat bg-cover bg-[url('/apps-bg.png')]">
         <div className="top-apps flex flex-row justify-center gap-5 md:gap-16 ">
-          {TOP_APPS.map(({ route, name, icon }) => (
-            <App key={route} route={route} name={name} icon={icon} />
+          {TOP_APPS.map(({ route, name, icon, disabled }) => (
+            <App
+              key={route}
+              route={route}
+              name={name}
+              icon={icon}
+              disabled={disabled}
+            />
           ))}
         </div>
         <div className="pos-center gap-4">
@@ -70,8 +84,14 @@ export default function ListApp() {
           </p>
         </div>
         <div className="bottom-apps flex flex-row justify-center gap-7 md:gap-16">
-          {BOTTOM_APPS.map(({ route, name, icon }) => (
-            <App key={route} route={route} name={name} icon={icon} />
+          {BOTTOM_APPS.map(({ route, name, icon, disabled }) => (
+            <App
+              key={route}
+              route={route}
+              name={name}
+              icon={icon}
+              disabled={disabled}
+            />
           ))}
         </div>
       </div>
