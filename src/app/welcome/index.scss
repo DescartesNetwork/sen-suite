@@ -26,7 +26,7 @@
     @apply sticky w-0 h-0 top-1/2 left-1/2;
 
     .wrap-image {
-      @apply w-[100dvw] duration-[2000ms] ease-in-out -translate-x-1/2 -translate-y-1/2 md:-translate-y-[40%] xl:-translate-y-[43%] scale-125 sm:scale-110 md:scale-[1.9] xl:scale-[1.5] 2xl:scale-[1.4];
+      @apply w-[100dvw] duration-[2000ms] ease-in-out -translate-x-1/2 -translate-y-[55%] md:-translate-y-[40%] xl:-translate-y-[43%] scale-125 sm:scale-110 md:scale-[1.9] xl:scale-[1.5] 2xl:scale-[1.4];
     }
   }
 }
