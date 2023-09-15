@@ -13,9 +13,10 @@ Because DaisyUI mounts the component exactly where the code was placed, the comp
 
 Plus, the TailwindCSS just supports upto z-index of 50 at default, then we follow that for consistency.
 
-| Compomnent           | Z-Index |
+| Component            | Z-Index |
 | -------------------- | ------- |
 | Splash               | 9999    |
+| Alert                | 9998    |
 | Drawer               | 50      |
 | Drawer-based Sidebar | 40      |
 | Sticky Header        | 30      |

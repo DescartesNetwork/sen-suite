@@ -11,6 +11,7 @@ import {
   UploadMetadataInput,
   toMetaplexFileFromBrowser,
 } from '@metaplex-foundation/js'
+import { encode } from 'bs58'
 
 import TokenKeypair from './tokenKeypair'
 import MintLogoUpload from '../edit-token/imgUpload'
@@ -20,7 +21,6 @@ import { usePushMessage } from '@/components/message/store'
 import { TOKEN_20202_PROGRAM_ID } from '@/hooks/spl.hook'
 import { solscan } from '@/helpers/explorers'
 import { useMpl, useUmi } from '@/hooks/mpl.hook'
-import { encode } from 'bs58'
 
 export default function NewToken() {
   const [mint, setMint] = useState<KeypairSigner>()
