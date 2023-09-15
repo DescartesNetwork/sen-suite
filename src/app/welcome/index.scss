@@ -1,23 +1,9 @@
 .welcome-container{
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
-
-  &::-webkit-scrollbar {
-    @apply hidden
-  }
-
-  @apply relative overflow-auto w-full h-[90dvh] md:h-[100dvh] rounded-3xl bg-cover transition-all
+  @apply relative overflow-auto w-full h-[calc(100dvh-77px)] md:h-[calc(100dvh-1rem)] rounded-3xl bg-cover transition-all;
 }
 
 .section-screen{
-  scroll-snap-type: y mandatory;
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
-
-  &::-webkit-scrollbar {
-    @apply hidden
-  }
-  @apply relative h-[100vh] overflow-auto;
+  @apply relative h-[100vh] overflow-auto snap-y;
 
   .start-scroll , .stop-scroll {
     @apply snap-start h-[100vh]

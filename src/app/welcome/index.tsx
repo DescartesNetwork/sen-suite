@@ -12,8 +12,8 @@ export default function Welcome() {
   const imageZoomRef = useRef<HTMLDivElement>(null)
 
   return (
-    <div className="welcome-container">
-      <section className="section-screen bg-cover bg-swap-light dark:bg-swap-dark z-20">
+    <div className="welcome-container no-scrollbar">
+      <section className="section-screen bg-cover bg-swap-light dark:bg-swap-dark z-20 no-scrollbar">
         <div className="zoom-image">
           <div className="wrap-image">
             <div className="dark:bg-[url('/mobile-dark.png')] bg-[url('/mobile-light.png')] dark:md:bg-[url('/laptop-dark.png')] md:bg-[url('/laptop-light.png')] bg-contain bg-no-repeat bg-center w-full aspect-[2/4] md:aspect-[5/5]" />
