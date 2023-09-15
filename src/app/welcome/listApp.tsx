@@ -45,7 +45,7 @@ const App = ({ route, name, icon, disabled }: AppProps) => {
         className={classNames(
           'pos-center rounded-full p-4 md:p-6 bg-[--opaline] hover:border-primary border-2',
           {
-            'opacity-60 hover:!border-inherit cursor-not-allowed': disabled,
+            'opacity-60 hover:border-inherit cursor-not-allowed': disabled,
           },
         )}
       >
