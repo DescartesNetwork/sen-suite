@@ -32,6 +32,11 @@ export default function Welcome() {
       <section className="w-full">
         <ListSocial />
       </section>
+      <section className="pos-center p-6">
+        <p className="opacity-60 text-secondary-content">
+          Sentre © 2023, All Rights Reserved
+        </p>
+      </section>
 
       <ElementIObs threshold={0.08} force querySelector={imageZoomRef} />
     </div>
