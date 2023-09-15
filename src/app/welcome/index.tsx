@@ -2,7 +2,7 @@
 import { useRef } from 'react'
 
 import ListApp from './listApp'
-import ListPartner from './list-partner'
+import ListPartner from './listPartner'
 import ListSocial from './listSocial'
 import ElementIObs from '@/components/IntersectionObserver'
 

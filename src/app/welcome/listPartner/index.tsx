@@ -6,7 +6,7 @@ import Island from '@/components/island'
 import ElementIObs from '@/components/IntersectionObserver'
 
 import { useTheme } from '@/providers/ui.provider'
-import { LIST_PARTNER } from '@/app/welcome/list-partner/partners'
+import { LIST_PARTNER } from '@/app/welcome/listPartner/partners'
 
 type PartnerProps = {
   logo: string
