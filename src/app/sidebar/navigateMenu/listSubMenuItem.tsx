@@ -1,3 +1,4 @@
+'use client'
 import Link from 'next/link'
 import classNames from 'classnames'
 import { usePathname } from 'next/navigation'
@@ -42,7 +43,7 @@ const DropdownSubMenuItem = ({ menuItemData }: SubMenuItemProps) => {
           focus: pathname.includes(route),
         })}
       >
-        {Logo && <Logo className="menu-logo opacity-60" />}
+        {Logo && <Logo className="menu-logo" />}
       </label>
       <ul
         tabIndex={0}

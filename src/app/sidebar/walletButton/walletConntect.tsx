@@ -1,3 +1,4 @@
+'use client'
 import { Wallet } from 'lucide-react'
 
 export type WalletConnectProps = {

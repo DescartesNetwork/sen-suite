@@ -2,6 +2,7 @@
 import { useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import classNames from 'classnames'
 
 import ElementIObs from '@/components/IntersectionObserver'
 
@@ -12,7 +13,6 @@ import {
   merkleDistribution,
   swap,
 } from '@/static/images/welcome/appsIcon'
-import classNames from 'classnames'
 
 const TOP_APPS = [
   { route: '/swap', name: 'Swap', icon: swap, disabled: false },
