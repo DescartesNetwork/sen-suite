@@ -84,7 +84,7 @@ export default function ListApp() {
         </div>
       </div>
       <div ref={listAppRef} className="h-[100vh] w-full" />
-      <ElementIObs threshold={0.6} force querySelector={listAppRef} />
+      <ElementIObs threshold={0.2} force querySelector={listAppRef} />
     </div>
   )
 }
