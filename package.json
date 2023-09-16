@@ -23,6 +23,7 @@
     "@coral-xyz/anchor": "^0.28.1-beta.1",
     "@coral-xyz/spl-token": "^0.28.1-beta.1",
     "@floating-ui/react": "^0.25.0",
+    "@headlessui/react": "^1.7.17",
     "@mdx-js/react": "^2.3.0",
     "@metaplex-foundation/js": "^0.18.3",
     "@metaplex-foundation/mpl-token-metadata": "^3.0.0",
