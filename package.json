@@ -31,6 +31,7 @@
     "@metaplex-foundation/umi-signer-wallet-adapters": "^0.8.9",
     "@senswap/balancer": "^3.0.1",
     "@sentre/farming": "^2.0.2",
+    "@sentre/launchpad": "^0.3.1",
     "@sentre/utility": "^1.0.3",
     "@solana/wallet-adapter-base": "^0.9.22",
     "@solana/wallet-adapter-react": "^0.15.32",

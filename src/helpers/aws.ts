@@ -37,6 +37,21 @@ export const uploadFileToAws = async (file: File) => {
   return data.cid
 }
 
+export const LaunchpadMetadata: Record<string, string> = {
+  FvTEXuzBpuYvUqSNACHA9TtNEHjY9RPGj2xn1BHtCA3t:
+    '49myDU2P9qCWgscd2Vo2DExC5M47erg22zAP4ZbYRjPZ',
+  CvdjxwAfjRX9oaRfyGVHiguUu7G1WbrK1Ff693S1okNx:
+    'EHVnjigRYWBxJ9a1Zv4m5URL69je2jDsyaPX8GcgBkUj',
+  APy3dPj8dVy45Rj4ux8AtTtbepgXJYUGDBU5pGm7Vdzb:
+    'BLdMDy7aS2WkTjstnNhP1GpBZdMAQyfeEhBKX8xZmfmd',
+  H8jVSuHhee7hvB9nsbkHeAB8QXWKNnTSrWY6Cp7ma2qs:
+    'H9vVGiK82VKwrKHLo5xn4wS9mC3Xc8RHXd5n2PNA3dVD',
+  '7KNJwYnVRuUaX9EtqFP8CAazdwk4o7UAXfvpSbXreqdg':
+    'sKtcifKQZc2VRdRgFxigFDU1CqdM8vRZE9VWvX51Nts',
+  '7qXmXapvwXRSqYuMoJbpmyqRT58f9qniuM1YbQwN7Dou':
+    '5tepMpjjvcmVxLXGe6hkrTqQPEMHSQzQEdcE3ZzgRT5M',
+}
+
 type DistributorAddress = string
 export const MetadataBackup: Record<DistributorAddress, string> = {
   Hrn5D4pH4HFcKd747ScN8yCpd3dz6EBqAhfQmXpkqGxy:

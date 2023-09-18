@@ -1510,6 +1510,14 @@
     "@project-serum/anchor" "^0.24.2"
     "@sen-use/web3" "^2.0.11"
 
+"@sentre/launchpad@^0.3.1":
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@sentre/launchpad/-/launchpad-0.3.1.tgz#9e8c3f7f09eeda0c9d530ece647d62aeaa620158"
+  integrity sha512-WL8xJM/JrqSQqSNm5MAWt5X377Y3W2g/tSxa1KPX8zHnmpsNEA4Nrt3PznKXtiwLJ8okF4wM9v3RYukMgN/h2g==
+  dependencies:
+    "@project-serum/anchor" "^0.24.2"
+    "@senswap/balancer" "^3.0.1"
+
 "@sentre/utility@^1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@sentre/utility/-/utility-1.0.3.tgz#843b0c01903d79da7fb115759407cfd5914f7daa"
