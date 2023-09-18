@@ -15,12 +15,12 @@ export default function ListLaunchpad({ state }: ListLaunchpadProps) {
   const completed = state === LaunchpadSate.completed
 
   return (
-    <div className="grid grid-cols-12 gap-8">
-      <div className="col-span-full flex items-center justify-between">
-        <h5 className="capitalize">
-          {state}{' '}
+    <div className="w-full grid grid-cols-12 gap-8">
+      <div className="col-span-full flex items-center">
+        <div className="flex items-center gap-3 flex-auto">
+          <h4 className="capitalize">{state}</h4>
           <span className="badge rounded-lg">{launchpadAddresses.length}</span>
-        </h5>
+        </div>
         <button className="btn btn-ghost btn-sm">View all</button>
       </div>
       <div className="col-span-full grid grid-cols-12 gap-6">
