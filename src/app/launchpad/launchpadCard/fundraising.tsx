@@ -41,10 +41,13 @@ export default function Fundraising({
   return (
     <div className="grid grid-cols-12 gap-2">
       <div
-        className={classNames('col-span-full gap-3 flex justify-between', {
-          'flex-col': direction === 'col',
-          'flex-row': direction === 'row',
-        })}
+        className={classNames(
+          'col-span-full gap-3 flex justify-between flex-row',
+          {
+            'md:flex-col': direction === 'col',
+            'md:flex-row': direction === 'row',
+          },
+        )}
       >
         <p className="opacity-60 text-sm">Fundraising</p>
         <div className=" flex gap-2 items-baseline ">

@@ -24,11 +24,11 @@ export default function CompletedCard({
       <div className="col-span-full md:col-span-5">
         <ProjectProfile launchpadAddress={launchpadAddress} />
       </div>
-      <div className="col-span-full flex md:col-span-2 md:flex-col gap-3 ">
+      <div className="col-span-full flex justify-between md:col-span-2 md:flex-col md:justify-normal  gap-3 ">
         <p className="opacity-60 text-sm">Participants</p>
         <p>{totalUsers}</p>
       </div>
-      <div className="col-span-full flex md:col-span-2 md:flex-col gap-3 ">
+      <div className="col-span-full flex justify-between md:col-span-2 md:flex-col md:justify-normal gap-3 ">
         <p className="opacity-60 text-sm">Price</p>
         <p>{numeric(price).format('$0a.[0000]')}</p>
       </div>

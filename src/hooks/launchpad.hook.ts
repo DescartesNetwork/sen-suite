@@ -17,6 +17,7 @@ import solConfig from '@/configs/sol.config'
 import { usePrices } from '@/providers/mint.provider'
 import { usePoolByAddress } from '@/providers/pools.provider'
 import { decimalize } from '@/helpers/decimals'
+import { useWallet } from '@solana/wallet-adapter-react'
 
 export type ProjectInfo = {
   projectName: string
@@ -35,6 +36,7 @@ export enum LaunchpadSate {
   active = 'active',
   upcoming = 'upcoming',
   completed = 'completed',
+  yourPurchase = 'Your purchased',
 }
 
 /**
@@ -136,6 +138,7 @@ export const useTokenPrice = (launchpadAddr: string) => {
  */
 export const useFilterLaunchpad = (state?: LaunchpadSate) => {
   const launchpads = useLaunchpads()
+  const { publicKey } = useWallet()
 
   const filteredLaunchpads = useMemo(() => {
     const result = []
@@ -158,6 +161,7 @@ export const useFilterLaunchpad = (state?: LaunchpadSate) => {
       let valid = true
       const startTime = launchpadData.startTime.toNumber() * 1000
       const endTime = launchpadData.endTime.toNumber() * 1000
+      const authority = launchpadData.authority
       const now = Date.now()
 
       switch (state) {
@@ -170,12 +174,15 @@ export const useFilterLaunchpad = (state?: LaunchpadSate) => {
         case LaunchpadSate.completed:
           if (endTime >= now) valid = false
           break
+        case LaunchpadSate.yourPurchase:
+          if (!publicKey || !publicKey.equals(authority)) valid = false
+          break
       }
       if (valid) result.push(address)
     }
 
     return result
-  }, [launchpads, state])
+  }, [launchpads, publicKey, state])
 
   return filteredLaunchpads
 }
