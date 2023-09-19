@@ -50,7 +50,7 @@ export default function BulkSender() {
         <ChevronLeft size={16} />
         Back
       </Link>
-      <div className="card bg-base-100 p-6 rounded-box shadow-xl grid grid-cols-12 gap-6 ">
+      <div className="card bg-base-100 p-6 rounded-3xl shadow-xl grid grid-cols-12 gap-6 ">
         <div className="col-span-12">
           <h5 className="mb-2">Bulk Sender</h5>
         </div>

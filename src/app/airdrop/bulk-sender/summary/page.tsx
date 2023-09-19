@@ -34,6 +34,7 @@ export default function SummaryBulkSender() {
   const [loading, setLoading] = useState(false)
   const [newAmount, setNewAmount] = useState('')
   const [newAddress, setNewAddress] = useState('')
+  const [isRetry, setIsRetry] = useState(false)
   const { mintAddress } = useBulkSenderMint()
   const { data, setData } = useBulkSenderData()
   const { decimalized, setDecimalized } = useBulkSenderDecimalized()
@@ -136,20 +137,31 @@ export default function SummaryBulkSender() {
   const onSend = useCallback(async () => {
     try {
       setLoading(true)
-      const txId = await sendBulk(data)
-      pushMessage(
-        'alert-success',
-        'Successfully send bulks. Click here to view on explorer.',
-        {
-          onClick: () => window.open(solscan(txId), '_blank'),
-        },
-      )
+      const { errorData, txIds } = await sendBulk(data)
+      setData(errorData)
+      setIsRetry(!!errorData.length)
+
+      errorData.length &&
+        pushMessage(
+          'alert-error',
+          'Transaction interrupted. Please retry unexecuted transactions',
+        )
+
+      for (const txId of txIds) {
+        pushMessage(
+          'alert-success',
+          'Successfully send bulks. Click here to view on explorer.',
+          {
+            onClick: () => window.open(solscan(txId), '_blank'),
+          },
+        )
+      }
     } catch (er: any) {
       pushMessage('alert-error', er.message)
     } finally {
       setLoading(false)
     }
-  }, [data, pushMessage, sendBulk])
+  }, [data, pushMessage, sendBulk, setData])
 
   useEffect(() => {
     if (data.length) return () => {}
@@ -174,7 +186,7 @@ export default function SummaryBulkSender() {
         <ChevronLeft size={16} />
         Back
       </Link>
-      <div className="card bg-base-100 p-6 rounded-box shadow-xl grid grid-cols-12 gap-6 ">
+      <div className="card bg-base-100 rounded-3xl p-6 shadow-xl grid grid-cols-12 gap-6 ">
         <div className="col-span-12">
           <h5 className="mb-2">Bulk Sender</h5>
         </div>
@@ -286,7 +298,7 @@ export default function SummaryBulkSender() {
               {loading && (
                 <span className="loading loading-spinner loading-sm" />
               )}
-              Send
+              {isRetry ? 'Retry' : 'Send'}
             </button>
           </div>
         </div>

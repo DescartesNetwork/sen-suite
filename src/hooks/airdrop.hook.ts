@@ -7,7 +7,12 @@ import {
   useConnection,
   useWallet,
 } from '@solana/wallet-adapter-react'
-import { ParsedAccountData, PublicKey, Transaction } from '@solana/web3.js'
+import {
+  BlockheightBasedTransactionConfirmationStrategy,
+  ParsedAccountData,
+  PublicKey,
+  Transaction,
+} from '@solana/web3.js'
 import { decode, encode } from 'bs58'
 import BN from 'bn.js'
 import axios from 'axios'
@@ -26,6 +31,7 @@ import {
 } from '@/providers/airdrop.provider'
 import { MetadataBackup, toFilename, uploadFileToAws } from '@/helpers/aws'
 import { useMintByAddress } from '@/providers/mint.provider'
+import { useAnchorProvider } from '@/providers/wallet.provider'
 import { ReceiptState } from '@/app/airdrop/merkle-distribution/statusTag'
 import { utils } from '@coral-xyz/anchor'
 
@@ -55,8 +61,11 @@ export const useSendBulk = (mintAddress: string) => {
   const { publicKey, sendTransaction } = useWallet()
   const { connection } = useConnection()
   const [mint] = useMints([mintAddress])
+  const { wallet } = useAnchorProvider()
 
   const decimals = useMemo(() => mint?.decimals, [mint?.decimals])
+
+  const SIZE_TRANSACTION = 7
 
   const sendBulk = useCallback(
     async (data: string[][]) => {
@@ -65,7 +74,7 @@ export const useSendBulk = (mintAddress: string) => {
       if (!isAddress(mintAddress)) throw new Error('Invalid mint address.')
       if (decimals === undefined) throw new Error('Cannot read onchain data.')
       // Instructions
-      const ixs = await Promise.all(
+      const txInstructions = await Promise.all(
         data
           .map(([address, amount]): [string, BN] => [
             address,
@@ -85,27 +94,75 @@ export const useSendBulk = (mintAddress: string) => {
             return tx
           }),
       )
-      // Transaction
+
+      const numTransactions = Math.ceil(
+        txInstructions.length / SIZE_TRANSACTION,
+      )
+      const allTransaction: Transaction[] = []
+
       const {
-        context: { slot: minContextSlot },
         value: { blockhash, lastValidBlockHeight },
       } = await connection.getLatestBlockhashAndContext()
-      const tx = new Transaction({
-        blockhash,
-        lastValidBlockHeight,
-        feePayer: publicKey,
-      }).add(...ixs)
-      const signature = await sendTransaction(tx, connection, {
-        minContextSlot,
-      })
-      await connection.confirmTransaction({
-        blockhash,
-        lastValidBlockHeight,
-        signature,
-      })
-      return signature
+
+      for (let i = 0; i < numTransactions; i++) {
+        const transaction = new Transaction({
+          blockhash,
+          lastValidBlockHeight,
+          feePayer: publicKey,
+        })
+        const lowerIndex = i * SIZE_TRANSACTION
+        const upperIndex = (i + 1) * SIZE_TRANSACTION
+        for (let j = lowerIndex; j < upperIndex; j++) {
+          if (txInstructions[j]) transaction.add(txInstructions[j])
+        }
+        allTransaction.push(transaction)
+      }
+
+      // Transaction
+      const signedTxs = await wallet.signAllTransactions(allTransaction)
+      const txIds: string[] = []
+
+      const errorTxs: boolean[] = await Promise.all(
+        signedTxs.map(async (tx) => {
+          try {
+            const signature = await connection.sendRawTransaction(
+              tx.serialize(),
+            )
+            const confirmStrategy: BlockheightBasedTransactionConfirmationStrategy =
+              { blockhash, lastValidBlockHeight, signature }
+            await connection.confirmTransaction(confirmStrategy)
+            txIds.push(signature)
+
+            return false
+          } catch {
+            return true
+          }
+        }),
+      )
+
+      const errorData: string[][] = []
+      for (const error of errorTxs) {
+        if (!error) continue
+
+        const errorIndex = errorTxs.indexOf(error)
+        const lowerIndex = errorIndex * SIZE_TRANSACTION
+        const upperIndex = (errorIndex + 1) * SIZE_TRANSACTION
+        for (let i = lowerIndex; i < upperIndex; i++) {
+          if (data[i]) errorData.push(data[i])
+        }
+      }
+
+      return { errorData, txIds }
     },
-    [decimals, utility, mintAddress, publicKey, sendTransaction, connection],
+    [
+      utility,
+      publicKey,
+      sendTransaction,
+      mintAddress,
+      decimals,
+      connection,
+      wallet,
+    ],
   )
 
   return sendBulk
