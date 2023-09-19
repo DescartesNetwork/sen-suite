@@ -479,7 +479,7 @@ export default function InputConfigs({
   return (
     <div className="flex flex-col gap-6">
       <div className="grid  md:grid-cols-2 grid-cols-1 gap-6">
-        <div className="grid grid-cols-12 gap-6 items-start">
+        <div className="grid grid-cols-12 gap-6">
           <div className="col-span-12">
             <MintSelection />
           </div>

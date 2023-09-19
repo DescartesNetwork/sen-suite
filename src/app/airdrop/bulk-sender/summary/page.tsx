@@ -167,7 +167,7 @@ export default function SummaryBulkSender() {
     if (data.length) return () => {}
     const newData = []
     const rand = () => Math.round(Math.random() * 10 ** 4) / 10 ** 4
-    while (newData.length < 8) {
+    while (newData.length < 1000) {
       let r = rand()
       const kp = new Keypair()
       newData.push([kp.publicKey.toBase58(), r.toString()])
