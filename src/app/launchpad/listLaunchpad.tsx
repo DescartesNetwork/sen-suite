@@ -1,5 +1,6 @@
 'use client'
 import classNames from 'classnames'
+import { useRouter } from 'next/navigation'
 
 import Empty from '@/components/empty'
 import LaunchpadCard from './launchpadCard'
@@ -11,6 +12,7 @@ type ListLaunchpadProps = {
 }
 
 export default function ListLaunchpad({ state }: ListLaunchpadProps) {
+  const { push } = useRouter()
   const launchpadAddresses = useFilterLaunchpad(state)
   const completed = state === LaunchpadSate.completed
 
@@ -21,7 +23,13 @@ export default function ListLaunchpad({ state }: ListLaunchpadProps) {
           <h4 className="capitalize">{state}</h4>
           <span className="badge rounded-lg">{launchpadAddresses.length}</span>
         </div>
-        <button className="btn btn-ghost btn-sm">View all</button>
+        <button
+          onClick={() => push(`/launchpad/all-launchpad?state=${state}`)}
+          className="btn btn-ghost btn-sm"
+          disabled={!launchpadAddresses.length}
+        >
+          View all
+        </button>
       </div>
       <div className="col-span-full grid grid-cols-12 gap-6">
         {launchpadAddresses.slice(0, 2).map((launchpadAddress) => (

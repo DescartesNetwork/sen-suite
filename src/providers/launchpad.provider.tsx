@@ -1,7 +1,7 @@
 'use client'
-import { Fragment, ReactNode, useCallback, useEffect } from 'react'
-import { LaunchpadData } from '@sentre/launchpad'
-import { SystemProgram } from '@solana/web3.js'
+import { Fragment, ReactNode, useCallback, useEffect, useMemo } from 'react'
+import { ChequeData, LaunchpadData } from '@sentre/launchpad'
+import { PublicKey, SystemProgram } from '@solana/web3.js'
 import { produce } from 'immer'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
@@ -14,6 +14,8 @@ import { useBalancer } from '@/hooks/pool.hook'
 export type LaunchpadStore = {
   launchpads: Record<string, LaunchpadData>
   upsertLaunchpad: (address: string, launchpad: LaunchpadData) => void
+  cheques: Record<string, ChequeData>
+  upsertCheque: (address: string, cheque: ChequeData) => void
 }
 
 /**
@@ -31,9 +33,18 @@ export const useLaunchpadStore = create<LaunchpadStore>()(
           false,
           'upsertLaunchpad',
         ),
+      cheques: {},
+      upsertCheque: (address: string, cheque: ChequeData) =>
+        set(
+          produce<LaunchpadStore>(({ cheques }) => {
+            cheques[address] = cheque
+          }),
+          false,
+          'upsertCheque',
+        ),
     }),
     {
-      name: 'pools',
+      name: 'launchpad',
       enabled: env === 'development',
     },
   ),
@@ -47,6 +58,7 @@ export function LaunchpadProvider({ children }: { children: ReactNode }) {
   const upsertLaunchpad = useLaunchpadStore(
     ({ upsertLaunchpad }) => upsertLaunchpad,
   )
+  const upsertCheque = useLaunchpadStore(({ upsertCheque }) => upsertCheque)
   const launchpad = useLaunchpadProgram()
   const balancer = useBalancer()
 
@@ -63,6 +75,16 @@ export function LaunchpadProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     fetchLaunchpads()
   }, [fetchLaunchpads])
+
+  const fetchCheques = useCallback(async () => {
+    const accounts = await launchpad.program.account.cheque.all()
+    for (const { account, publicKey } of accounts)
+      upsertCheque(publicKey.toBase58(), account as any)
+  }, [launchpad.program.account.cheque, upsertCheque])
+
+  useEffect(() => {
+    fetchCheques()
+  }, [fetchCheques])
 
   return <Fragment>{children}</Fragment>
 }
@@ -98,4 +120,81 @@ export const useLaunchpadByAddress = (launchpadAddress: string) => {
     startTime: new BN(0),
   }
   return launchpad
+}
+
+/**
+ * Get all cheques
+ * @returns cheque list
+ */
+export const useCheques = () => {
+  const cheques = useLaunchpadStore(({ cheques }) => cheques)
+  return cheques
+}
+
+/**
+ * Filter cheques
+ * @returns cheque address list
+ */
+export const useFilterCheques = (
+  launchpadAddress: string,
+  owner?: PublicKey,
+) => {
+  const cheques = useLaunchpadStore(({ cheques }) => cheques)
+
+  const filteredCheques = useMemo(
+    () =>
+      Object.keys(cheques).filter((address) => {
+        const { authority, launchpad } = cheques[address]
+        if (!owner) return launchpad.toBase58() === launchpadAddress
+        return (
+          authority.equals(owner) && launchpad.toBase58() === launchpadAddress
+        )
+      }),
+    [cheques, launchpadAddress, owner],
+  )
+  return filteredCheques
+}
+
+/**
+ * Calculate metric in cheques list
+ * @returns {totalAsk, totalBid, totalUsers}
+ */
+export const useCalculateMetric = (chequeAddresses: string[]) => {
+  const cheques = useCheques()
+
+  const { totalAsk, totalBid, totalUsers } = useMemo(() => {
+    let totalBid = new BN(0)
+    let totalAsk = new BN(0)
+    const boughtAddress: string[] = []
+    for (const address of chequeAddresses) {
+      const { authority, bidAmount, askAmount } = cheques[address]
+      totalBid = totalBid.add(bidAmount)
+      totalAsk = totalAsk.add(askAmount)
+      if (boughtAddress.includes(authority.toBase58())) continue
+      boughtAddress.push(authority.toBase58())
+    }
+    return {
+      totalUsers: boughtAddress.length,
+      totalBid,
+      totalAsk,
+    }
+  }, [cheques, chequeAddresses])
+
+  return { totalAsk, totalBid, totalUsers }
+}
+
+/**
+ * Get cheque data by address
+ * @returns cheque data
+ */
+export const useChequeByAddress = (chequeAddress: string) => {
+  const cheque = useLaunchpadStore(({ cheques }) => cheques[chequeAddress]) || {
+    askAmount: new BN(0),
+    authority: SystemProgram.programId,
+    bidAmount: new BN(0),
+    createAt: new BN(0),
+    launchpad: SystemProgram.programId,
+    state: { uninitialized: {} },
+  }
+  return cheque
 }
