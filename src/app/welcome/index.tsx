@@ -17,10 +17,10 @@ export default function Welcome() {
         <div className="zoom-image">
           <div className="wrap-image">
             <div className="dark:bg-[url('/mobile-dark.png')] bg-[url('/mobile-light.png')] dark:md:bg-[url('/laptop-dark.png')] md:bg-[url('/laptop-light.png')] bg-contain bg-no-repeat bg-center pos-center gap-2 w-full aspect-[2/4] md:aspect-[5/5]">
-              <h2 className="text-4xl sm:text-5xl md:text-4xl lg:text-6xl">
+              <h2 className="text-secondary-content text-4xl sm:text-5xl md:text-4xl lg:text-6xl">
                 Sentre Protocol
               </h2>
-              <p className="text-xl sm:text-3xl md:text-2xl lg:text-4xl mb-16 md:mb-20">
+              <p className="text-secondary-content text-xl sm:text-3xl md:text-2xl lg:text-4xl mb-16 md:mb-20">
                 The Suite for Startups on Solana
               </p>
             </div>
