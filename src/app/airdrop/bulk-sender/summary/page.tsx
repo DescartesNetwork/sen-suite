@@ -168,7 +168,7 @@ export default function SummaryBulkSender() {
     if (data.length) return () => {}
     const newData = []
     const rand = () => Math.round(Math.random() * 10 ** 4) / 10 ** 4
-    while (newData.length < 8) {
+    while (newData.length < 1) {
       let r = rand()
       const kp = new Keypair()
       newData.push([kp.publicKey.toBase58(), r.toString()])
@@ -182,7 +182,7 @@ export default function SummaryBulkSender() {
 
   if (!isAddress(mintAddress)) return redirect('/airdrop/bulk-sender')
   return (
-    <div className="max-w-[480px]">
+    <div className="max-w-md pt-20">
       <Link href={'/airdrop/bulk-sender'} className="btn btn-sm btn-ghost mb-2">
         <ChevronLeft size={16} />
         Back

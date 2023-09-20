@@ -1,10 +1,9 @@
 'use client'
 import { useCallback, useEffect, useState } from 'react'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { parse } from 'papaparse'
 
-import { ChevronDown, ChevronLeft } from 'lucide-react'
+import { ChevronDown } from 'lucide-react'
 import { MintLogo, MintSymbol } from '@/components/mint'
 import TokenSelection from '@/components/tokenSelection'
 import Dropzone from '@/components/dropzone'
@@ -45,11 +44,7 @@ export default function BulkSender() {
   }, [file, pushMessage, setData])
 
   return (
-    <div className="max-w-[480px]">
-      <Link href={'/airdrop'} className="btn btn-sm btn-ghost mb-2">
-        <ChevronLeft size={16} />
-        Back
-      </Link>
+    <div className="max-w-md pt-20">
       <div className="card bg-base-100 p-6 rounded-3xl shadow-xl grid grid-cols-12 gap-6 ">
         <div className="col-span-12">
           <h5 className="mb-2">Bulk Sender</h5>
