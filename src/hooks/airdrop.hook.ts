@@ -108,10 +108,9 @@ export const useSendBulk = (mintAddress: string) => {
           lastValidBlockHeight,
           feePayer: publicKey,
         })
-        const lowerIndex = i * SIZE_TRANSACTION
-        const upperIndex = (i + 1) * SIZE_TRANSACTION
-        for (let j = lowerIndex; j < upperIndex; j++) {
-          if (ixs[j]) transaction.add(ixs[j])
+        const curIdx = i * SIZE_TRANSACTION
+        for (let i = 0; i < SIZE_TRANSACTION; i++) {
+          if (ixs[curIdx + i]) transaction.add(ixs[curIdx + i])
         }
         allTransaction.push(transaction)
       }

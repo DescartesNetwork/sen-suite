@@ -30,6 +30,8 @@ enum RowStatus {
   ZeroAmount,
 }
 
+const SIZE_TRANSACTION_DATA = 7
+
 export default function SummaryBulkSender() {
   const [loading, setLoading] = useState(false)
   const [newAmount, setNewAmount] = useState('')
@@ -141,21 +143,33 @@ export default function SummaryBulkSender() {
       setData(errorData)
       setIsRetry(!!errorData.length)
 
-      for (const txId of txIds) {
+      !errorData.length &&
         pushMessage(
           'alert-success',
-          'Successfully send bulks. Click here to view on explorer.',
+          `Successfully send ${data.length} receiver. Click here to view on explorer.`,
           {
-            onClick: () => window.open(solscan(txId), '_blank'),
+            onClick: () => window.open(solscan(txIds.pop() || ''), '_blank'),
           },
         )
-      }
 
-      errorData.length &&
+      if (errorData.length) {
+        for (let i = 1; i <= txIds.length; i++) {
+          const curIdx = i * SIZE_TRANSACTION_DATA
+          pushMessage(
+            'alert-success',
+            `Successfully send ${curIdx} to ${
+              curIdx + SIZE_TRANSACTION_DATA
+            } receiver. Click here to view on explorer.`,
+            {
+              onClick: () => window.open(solscan(txIds[i]), '_blank'),
+            },
+          )
+        }
         pushMessage(
           'alert-error',
           'Transaction interrupted. Please retry unexecuted transactions',
         )
+      }
     } catch (er: any) {
       pushMessage('alert-error', er.message)
     } finally {
@@ -167,7 +181,7 @@ export default function SummaryBulkSender() {
     if (data.length) return () => {}
     const newData = []
     const rand = () => Math.round(Math.random() * 10 ** 4) / 10 ** 4
-    while (newData.length < 1) {
+    while (newData.length < 49) {
       let r = rand()
       const kp = new Keypair()
       newData.push([kp.publicKey.toBase58(), r.toString()])
