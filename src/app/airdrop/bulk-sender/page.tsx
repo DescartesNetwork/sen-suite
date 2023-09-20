@@ -44,7 +44,7 @@ export default function BulkSender() {
   }, [file, pushMessage, setData])
 
   return (
-    <div className="max-w-md pt-20">
+    <div className="max-w-[480px] pt-20">
       <div className="card bg-base-100 p-6 rounded-3xl shadow-xl grid grid-cols-12 gap-6 ">
         <div className="col-span-12">
           <h5 className="mb-2">Bulk Sender</h5>
@@ -52,7 +52,7 @@ export default function BulkSender() {
         <div className="col-span-12">
           <div className="grid grid-cols-12 gap-6">
             <div
-              className="rounded-full border-2 px-4 py-2 col-span-12 flex flex-row justify-between items-center cursor-pointer"
+              className="rounded-3xl border-2 px-4 py-2 col-span-12 flex flex-row justify-between items-center cursor-pointer"
               onClick={() => setOpen(true)}
             >
               {mintAddress ? (
@@ -86,7 +86,7 @@ export default function BulkSender() {
             </div>
             <div className="col-span-12">
               <button
-                className="btn btn-primary w-full rounded-full"
+                className="btn btn-primary w-full rounded-3xl"
                 onClick={() => push('/airdrop/bulk-sender/summary')}
                 disabled={!isAddress(mintAddress)}
               >

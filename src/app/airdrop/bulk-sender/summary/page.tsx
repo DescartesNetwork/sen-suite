@@ -141,12 +141,6 @@ export default function SummaryBulkSender() {
       setData(errorData)
       setIsRetry(!!errorData.length)
 
-      errorData.length &&
-        pushMessage(
-          'alert-error',
-          'Transaction interrupted. Please retry unexecuted transactions',
-        )
-
       for (const txId of txIds) {
         pushMessage(
           'alert-success',
@@ -156,8 +150,13 @@ export default function SummaryBulkSender() {
           },
         )
       }
+
+      errorData.length &&
+        pushMessage(
+          'alert-error',
+          'Transaction interrupted. Please retry unexecuted transactions',
+        )
     } catch (er: any) {
-      console.log(er)
       pushMessage('alert-error', er.message)
     } finally {
       setLoading(false)
@@ -182,7 +181,7 @@ export default function SummaryBulkSender() {
 
   if (!isAddress(mintAddress)) return redirect('/airdrop/bulk-sender')
   return (
-    <div className="max-w-md pt-20">
+    <div className="max-w-[480px] pt-20">
       <Link href={'/airdrop/bulk-sender'} className="btn btn-sm btn-ghost mb-2">
         <ChevronLeft size={16} />
         Back
@@ -292,7 +291,7 @@ export default function SummaryBulkSender() {
               </div>
             </div>
             <button
-              className="col-span-full btn btn-primary rounded-full"
+              className="col-span-full btn btn-primary rounded-3xl"
               onClick={onSend}
               disabled={loading}
             >

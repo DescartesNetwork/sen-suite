@@ -14,6 +14,7 @@ import {
   Transaction,
 } from '@solana/web3.js'
 import { decode, encode } from 'bs58'
+import { utils } from '@coral-xyz/anchor'
 import BN from 'bn.js'
 import axios from 'axios'
 
@@ -33,7 +34,6 @@ import { MetadataBackup, toFilename, uploadFileToAws } from '@/helpers/aws'
 import { useMintByAddress } from '@/providers/mint.provider'
 import { useAnchorProvider } from '@/providers/wallet.provider'
 import { ReceiptState } from '@/app/airdrop/merkle-distribution/statusTag'
-import { utils } from '@coral-xyz/anchor'
 
 /**
  * Instantiate a utility
@@ -74,7 +74,7 @@ export const useSendBulk = (mintAddress: string) => {
       if (!isAddress(mintAddress)) throw new Error('Invalid mint address.')
       if (decimals === undefined) throw new Error('Cannot read onchain data.')
       // Instructions
-      const txInstructions = await Promise.all(
+      const ixs = await Promise.all(
         data
           .map(([address, amount]): [string, BN] => [
             address,
@@ -95,9 +95,7 @@ export const useSendBulk = (mintAddress: string) => {
           }),
       )
 
-      const numTransactions = Math.ceil(
-        txInstructions.length / SIZE_TRANSACTION,
-      )
+      const numTransactions = Math.ceil(ixs.length / SIZE_TRANSACTION)
       const allTransaction: Transaction[] = []
 
       const {
@@ -113,7 +111,7 @@ export const useSendBulk = (mintAddress: string) => {
         const lowerIndex = i * SIZE_TRANSACTION
         const upperIndex = (i + 1) * SIZE_TRANSACTION
         for (let j = lowerIndex; j < upperIndex; j++) {
-          if (txInstructions[j]) transaction.add(txInstructions[j])
+          if (ixs[j]) transaction.add(ixs[j])
         }
         allTransaction.push(transaction)
       }
@@ -121,9 +119,10 @@ export const useSendBulk = (mintAddress: string) => {
       // Transaction
       const signedTxs = await wallet.signAllTransactions(allTransaction)
       const txIds: string[] = []
+      const errorIndexData: number[] = []
 
-      const errorTxs: boolean[] = await Promise.all(
-        signedTxs.map(async (tx) => {
+      await Promise.all(
+        signedTxs.map(async (tx, idx) => {
           try {
             const signature = await connection.sendRawTransaction(
               tx.serialize(),
@@ -131,24 +130,20 @@ export const useSendBulk = (mintAddress: string) => {
             const confirmStrategy: BlockheightBasedTransactionConfirmationStrategy =
               { blockhash, lastValidBlockHeight, signature }
             await connection.confirmTransaction(confirmStrategy)
-            txIds.push(signature)
 
-            return false
+            txIds.push(signature)
           } catch {
-            return true
+            errorIndexData.push(idx)
           }
         }),
       )
 
       const errorData: string[][] = []
-      for (const error of errorTxs) {
-        if (!error) continue
+      for (const errorIndex of errorIndexData) {
+        const curIdx = errorIndex * SIZE_TRANSACTION
 
-        const errorIndex = errorTxs.indexOf(error)
-        const lowerIndex = errorIndex * SIZE_TRANSACTION
-        const upperIndex = (errorIndex + 1) * SIZE_TRANSACTION
-        for (let i = lowerIndex; i < upperIndex; i++) {
-          if (data[i]) errorData.push(data[i])
+        for (let i = 0; i < SIZE_TRANSACTION; i++) {
+          if (data[curIdx + i]) errorData.push(data[curIdx + i])
         }
       }
 
