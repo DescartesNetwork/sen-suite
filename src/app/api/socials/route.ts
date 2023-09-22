@@ -4,7 +4,7 @@ import {
   getFollowsTwitter,
   getJoinersDiscord,
   getJoinersTelegram,
-  getResGithub,
+  getRepoGithub,
   getSubYoutube,
 } from './service'
 
@@ -15,7 +15,7 @@ export async function GET(_req: NextRequest) {
       getJoinersDiscord(),
       getJoinersTelegram(),
       getFollowsTwitter(),
-      getResGithub(),
+      getRepoGithub(),
     ])
 
   return NextResponse.json({

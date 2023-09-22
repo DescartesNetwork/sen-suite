@@ -21,7 +21,7 @@ type SocialProps = {
   name: string
   community: string
   url: string
-  numCommunity?: string
+  dataCommunity?: string
 }
 
 type SocialData = {
@@ -82,7 +82,7 @@ const SOCIALS: SocialProps[] = [
   },
 ]
 
-function Social({ icon, name, url, community, numCommunity }: SocialProps) {
+function Social({ icon, name, url, community, dataCommunity }: SocialProps) {
   const cardSocialRef = useRef<HTMLAnchorElement | null>(null)
 
   return (
@@ -99,7 +99,7 @@ function Social({ icon, name, url, community, numCommunity }: SocialProps) {
         {icon}
       </div>
       <div className="flex flex-row justify-between items-center">
-        <h5>{numCommunity}</h5>
+        <h5>+{dataCommunity}</h5>
         <p className="opacity-60 md:text-xs">{community}</p>
       </div>
 
@@ -142,38 +142,41 @@ export default function ListSocial() {
       </h3>
       <div className="list-social text-center text-secondary-content w-full grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-6">
         {SOCIALS.map((social) => {
-          let numCommunity: string = '--'
+          let dataCommunity: string = '0'
           if (cachedDataSocial)
             switch (social.name) {
               case 'Twitter':
-                numCommunity =
-                  '+' +
-                  numeric(Math.ceil(cachedDataSocial.followersTwt)).format('0a')
+                dataCommunity = numeric(
+                  Math.ceil(cachedDataSocial.followersTwt),
+                ).format('0a')
                 break
               case 'Telegram':
-                numCommunity =
-                  '+' +
-                  numeric(Math.ceil(cachedDataSocial.joinersTele)).format('0a')
+                dataCommunity = numeric(
+                  Math.ceil(cachedDataSocial.joinersTele),
+                ).format('0a')
                 break
               case 'Youtube':
-                numCommunity =
-                  '+' + numeric(Math.ceil(cachedDataSocial.subYtb)).format('0a')
+                dataCommunity = numeric(
+                  Math.ceil(cachedDataSocial.subYtb),
+                ).format('0a')
                 break
               case 'GitHub':
-                numCommunity =
-                  '+' +
-                  numeric(
-                    Math.ceil(cachedDataSocial.repoGithub / 10) * 10,
-                  ).format('0a')
+                dataCommunity = numeric(
+                  Math.ceil(cachedDataSocial.repoGithub / 10) * 10,
+                ).format('0a')
                 break
               case 'Discord':
-                numCommunity =
-                  '+' +
-                  numeric(Math.ceil(cachedDataSocial.joinersDis)).format('0a')
+                dataCommunity = numeric(
+                  Math.ceil(cachedDataSocial.joinersDis),
+                ).format('0a')
                 break
             }
           return (
-            <Social key={social.name} {...social} numCommunity={numCommunity} />
+            <Social
+              key={social.name}
+              {...social}
+              dataCommunity={dataCommunity}
+            />
           )
         })}
       </div>

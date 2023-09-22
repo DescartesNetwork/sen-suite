@@ -50,7 +50,7 @@ export const getJoinersDiscord = async () => {
   return joiners
 }
 
-export const getResGithub = async () => {
+export const getRepoGithub = async () => {
   const githubUser = 'DescartesNetwork'
   const { data } = await axios.get(`https://api.github.com/users/${githubUser}`)
   const repositories = data.public_repos
