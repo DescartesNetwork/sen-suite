@@ -1,10 +1,14 @@
 'use client'
-import { ReactNode, useRef } from 'react'
+import { ReactNode, useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import useSWR from 'swr'
+import axios from 'axios'
 
+import { ArrowUpRightFromCircle } from 'lucide-react'
 import ElementIObs from '@/components/IntersectionObserver'
 
+import { numeric } from '@/helpers/utils'
 import {
   twitterIcon,
   telegramIcon,
@@ -15,14 +19,23 @@ import {
 type SocialProps = {
   icon: ReactNode
   name: string
+  community: string
   url: string
+  numCommunity?: string
+}
+
+type SocialData = {
+  followersTwt: number
+  joinersTele: number
+  subYtb: number
+  repoGithub: number
+  joinersDis: number
 }
 
 function GitHubIcon() {
   return (
     <svg
-      width="65"
-      height="53"
+      className="h-8 w-8"
       viewBox="0 0 65 64"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -37,43 +50,59 @@ function GitHubIcon() {
 
 const SOCIALS: SocialProps[] = [
   {
-    icon: <Image src={twitterIcon} height={53} alt="twitter" />,
+    icon: <Image src={twitterIcon} className="h-8 w-8" alt="twitter" />,
     name: 'Twitter',
+    community: 'followers',
     url: 'https://twitter.com/SentreProtocol',
   },
+
   {
-    icon: <Image src={discordIcon} height={53} alt="discord" />,
+    icon: <Image src={telegramIcon} className="h-8 w-8" alt="telegram" />,
+    name: 'Telegram',
+    community: 'joiners',
+    url: 'https://t.me/Sentre',
+  },
+  {
+    icon: <Image src={discordIcon} className="h-8 w-8" alt="discord" />,
     name: 'Discord',
+    community: 'joiners',
     url: 'https://discord.com/invite/VD7UBAp2HN',
   },
   {
-    icon: <Image src={telegramIcon} height={53} alt="telegram" />,
-    name: 'Telegram',
-    url: 'https://t.me/Sentre',
+    icon: <Image src={youtubeIcon} className="h-8 w-8" alt="youtube" />,
+    name: 'Youtube',
+    community: 'subscribers',
+    url: 'https://www.youtube.com/channel/UC7P7lwc-6sLEr0yLzWfFUyg',
   },
   {
     icon: <GitHubIcon />,
     name: 'GitHub',
+    community: 'repositories',
     url: 'https://github.com/DescartesNetwork',
-  },
-  {
-    icon: <Image src={youtubeIcon} height={53} alt="youtube" />,
-    name: 'Youtube',
-    url: 'https://www.youtube.com/channel/UC7P7lwc-6sLEr0yLzWfFUyg',
   },
 ]
 
-function Social({ icon, name, url }: SocialProps) {
+function Social({ icon, name, url, community, numCommunity }: SocialProps) {
   const cardSocialRef = useRef<HTMLAnchorElement | null>(null)
 
   return (
     <Link
       href={url}
       ref={cardSocialRef}
-      className="card-social pos-center gap-6 p-6 w-full h-full bg-base-100 hover:border-primary border-2 border-base-100 rounded-3xl"
+      className="card-social flex flex-col gap-5 px-6 py-4 w-full h-full bg-base-100 hover:border-primary border-2 border-base-100 rounded-3xl"
     >
-      {icon}
-      <p className="text-center">{name}</p>
+      <div className="flex flex-row justify-between md:flex-col md:justify-start gap-5">
+        <div className="flex flex-row justify-between items-center">
+          <p>{name}</p>
+          <ArrowUpRightFromCircle className="direction-icon" size={16} />
+        </div>
+        {icon}
+      </div>
+      <div className="flex flex-row justify-between items-center">
+        <h5>{numCommunity}</h5>
+        <p className="opacity-60 md:text-xs">{community}</p>
+      </div>
+
       <ElementIObs threshold={0.08} force querySelector={cardSocialRef} />
     </Link>
   )
@@ -81,6 +110,27 @@ function Social({ icon, name, url }: SocialProps) {
 
 export default function ListSocial() {
   const listSocialRef = useRef<HTMLDivElement | null>(null)
+  const [cachedDataSocial, setCachedDataSocial] = useState<SocialData>()
+
+  const fetchDataSocials = useCallback(async () => {
+    const { data } = await axios.get('/api/socials')
+    localStorage.setItem('socialData', JSON.stringify(data))
+    return data
+  }, [])
+
+  const { data: dataSocial, error } = useSWR<SocialData>(
+    '/api/socials',
+    fetchDataSocials,
+  )
+
+  useEffect(() => {
+    setCachedDataSocial(dataSocial)
+
+    if (error) {
+      const cachedData = localStorage.getItem('socialData')
+      setCachedDataSocial(JSON.parse(cachedData ?? ''))
+    }
+  }, [dataSocial, error])
 
   return (
     <div
@@ -91,9 +141,41 @@ export default function ListSocial() {
         Get in touch
       </h3>
       <div className="list-social text-center text-secondary-content w-full grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-6">
-        {SOCIALS.map((social) => (
-          <Social key={social.name} {...social} />
-        ))}
+        {SOCIALS.map((social) => {
+          let numCommunity: string = '--'
+          if (cachedDataSocial)
+            switch (social.name) {
+              case 'Twitter':
+                numCommunity =
+                  '+' +
+                  numeric(Math.ceil(cachedDataSocial.followersTwt)).format('0a')
+                break
+              case 'Telegram':
+                numCommunity =
+                  '+' +
+                  numeric(Math.ceil(cachedDataSocial.joinersTele)).format('0a')
+                break
+              case 'Youtube':
+                numCommunity =
+                  '+' + numeric(Math.ceil(cachedDataSocial.subYtb)).format('0a')
+                break
+              case 'GitHub':
+                numCommunity =
+                  '+' +
+                  numeric(
+                    Math.ceil(cachedDataSocial.repoGithub / 10) * 10,
+                  ).format('0a')
+                break
+              case 'Discord':
+                numCommunity =
+                  '+' +
+                  numeric(Math.ceil(cachedDataSocial.joinersDis)).format('0a')
+                break
+            }
+          return (
+            <Social key={social.name} {...social} numCommunity={numCommunity} />
+          )
+        })}
       </div>
       <ElementIObs threshold={0.1} force querySelector={listSocialRef} />
     </div>
