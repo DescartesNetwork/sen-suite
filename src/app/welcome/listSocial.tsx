@@ -1,5 +1,5 @@
 'use client'
-import { ReactNode, useCallback, useEffect, useRef, useState } from 'react'
+import { ReactNode, useCallback, useRef, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import useSWR from 'swr'
@@ -19,17 +19,8 @@ import {
 type SocialProps = {
   icon: ReactNode
   name: string
-  community: string
+  nameInteraction: string
   url: string
-  dataCommunity?: string
-}
-
-type SocialData = {
-  followersTwt: number
-  joinersTele: number
-  subYtb: number
-  repoGithub: number
-  joinersDis: number
 }
 
 function GitHubIcon() {
@@ -52,38 +43,55 @@ const SOCIALS: SocialProps[] = [
   {
     icon: <Image src={twitterIcon} className="h-8 w-8" alt="twitter" />,
     name: 'Twitter',
-    community: 'followers',
+    nameInteraction: 'followers',
     url: 'https://twitter.com/SentreProtocol',
   },
 
   {
     icon: <Image src={telegramIcon} className="h-8 w-8" alt="telegram" />,
     name: 'Telegram',
-    community: 'joiners',
+    nameInteraction: 'joiners',
     url: 'https://t.me/Sentre',
   },
   {
     icon: <Image src={discordIcon} className="h-8 w-8" alt="discord" />,
     name: 'Discord',
-    community: 'joiners',
+    nameInteraction: 'joiners',
     url: 'https://discord.com/invite/VD7UBAp2HN',
   },
   {
     icon: <Image src={youtubeIcon} className="h-8 w-8" alt="youtube" />,
     name: 'Youtube',
-    community: 'subscribers',
+    nameInteraction: 'subscribers',
     url: 'https://www.youtube.com/channel/UC7P7lwc-6sLEr0yLzWfFUyg',
   },
   {
     icon: <GitHubIcon />,
-    name: 'GitHub',
-    community: 'repositories',
+    name: 'Github',
+    nameInteraction: 'repositories',
     url: 'https://github.com/DescartesNetwork',
   },
 ]
 
-function Social({ icon, name, url, community, dataCommunity }: SocialProps) {
+function Social({ icon, name, url, nameInteraction }: SocialProps) {
   const cardSocialRef = useRef<HTMLAnchorElement | null>(null)
+  const [cachedNumInteract, setCachedNumInteract] = useState(0)
+
+  const fetchInteractionSocial = useCallback(async ([name]: [string]) => {
+    const {
+      data: { totalInteraction },
+    } = await axios.get(`/api/socials/${name}`)
+    localStorage.setItem(name, JSON.stringify(totalInteraction))
+    setCachedNumInteract(totalInteraction)
+    return totalInteraction
+  }, [])
+
+  const { error } = useSWR([name, 'totalInteraction'], fetchInteractionSocial)
+
+  if (error) {
+    const cachedNumInteraction = localStorage.getItem(name)
+    setCachedNumInteract(JSON.parse(cachedNumInteraction ?? ''))
+  }
 
   return (
     <Link
@@ -99,8 +107,8 @@ function Social({ icon, name, url, community, dataCommunity }: SocialProps) {
         {icon}
       </div>
       <div className="flex flex-row justify-between items-center">
-        <h5>+{dataCommunity}</h5>
-        <p className="opacity-60 md:text-xs">{community}</p>
+        <h5>{numeric(cachedNumInteract).format('+0a')}</h5>
+        <p className="opacity-60 md:text-xs">{nameInteraction}</p>
       </div>
 
       <ElementIObs threshold={0.08} force querySelector={cardSocialRef} />
@@ -110,27 +118,6 @@ function Social({ icon, name, url, community, dataCommunity }: SocialProps) {
 
 export default function ListSocial() {
   const listSocialRef = useRef<HTMLDivElement | null>(null)
-  const [cachedDataSocial, setCachedDataSocial] = useState<SocialData>()
-
-  const fetchDataSocials = useCallback(async () => {
-    const { data } = await axios.get('/api/socials')
-    localStorage.setItem('socialData', JSON.stringify(data))
-    return data
-  }, [])
-
-  const { data: dataSocial, error } = useSWR<SocialData>(
-    '/api/socials',
-    fetchDataSocials,
-  )
-
-  useEffect(() => {
-    setCachedDataSocial(dataSocial)
-
-    if (error) {
-      const cachedData = localStorage.getItem('socialData')
-      setCachedDataSocial(JSON.parse(cachedData ?? ''))
-    }
-  }, [dataSocial, error])
 
   return (
     <div
@@ -141,44 +128,9 @@ export default function ListSocial() {
         Get in touch
       </h3>
       <div className="list-social text-center text-secondary-content w-full grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-6">
-        {SOCIALS.map((social) => {
-          let dataCommunity: string = '0'
-          if (cachedDataSocial)
-            switch (social.name) {
-              case 'Twitter':
-                dataCommunity = numeric(
-                  Math.ceil(cachedDataSocial.followersTwt),
-                ).format('0a')
-                break
-              case 'Telegram':
-                dataCommunity = numeric(
-                  Math.ceil(cachedDataSocial.joinersTele),
-                ).format('0a')
-                break
-              case 'Youtube':
-                dataCommunity = numeric(
-                  Math.ceil(cachedDataSocial.subYtb),
-                ).format('0a')
-                break
-              case 'GitHub':
-                dataCommunity = numeric(
-                  Math.ceil(cachedDataSocial.repoGithub / 10) * 10,
-                ).format('0a')
-                break
-              case 'Discord':
-                dataCommunity = numeric(
-                  Math.ceil(cachedDataSocial.joinersDis),
-                ).format('0a')
-                break
-            }
-          return (
-            <Social
-              key={social.name}
-              {...social}
-              dataCommunity={dataCommunity}
-            />
-          )
-        })}
+        {SOCIALS.map((social) => (
+          <Social key={social.name} {...social} />
+        ))}
       </div>
       <ElementIObs threshold={0.1} force querySelector={listSocialRef} />
     </div>

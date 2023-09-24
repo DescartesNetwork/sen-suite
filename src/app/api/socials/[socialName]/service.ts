@@ -2,7 +2,26 @@ import axios from 'axios'
 
 import deplConfig from '@/configs/depl.config'
 
-export const getSubYoutube = async () => {
+export const getInteractSocials = (socialName: string) => {
+  switch (socialName) {
+    case 'Telegram':
+      return getJoinersTelegram()
+
+    case 'Youtube':
+      return getSubYoutube()
+
+    case 'Discord':
+      return getJoinersDiscord()
+
+    case 'Github':
+      return getRepoGithub()
+
+    case 'Twitter':
+      return getFollowsTwitter()
+  }
+}
+
+const getSubYoutube = async () => {
   const youtubeTokenAPI = deplConfig.youtubeTokenAPI
   const youtubeUser = 'UC7P7lwc-6sLEr0yLzWfFUyg'
   const { data } = await axios.get(
@@ -13,7 +32,7 @@ export const getSubYoutube = async () => {
   return subYtb
 }
 
-export const getFollowsTwitter = async () => {
+const getFollowsTwitter = async () => {
   const twitterTokenAPI = deplConfig.twitterTokenAPI
   const twitterUser = 'SentreProtocol'
   const { data } = await axios.get(
@@ -29,7 +48,7 @@ export const getFollowsTwitter = async () => {
   return followers
 }
 
-export const getJoinersTelegram = async () => {
+const getJoinersTelegram = async () => {
   const telegramTokenAPI = deplConfig.telegramTokenAPI
   const telegramUser = '@SentreAnnouncements'
   const { data } = await axios.get(
@@ -40,7 +59,7 @@ export const getJoinersTelegram = async () => {
   return joiners
 }
 
-export const getJoinersDiscord = async () => {
+const getJoinersDiscord = async () => {
   const discordID = 'VD7UBAp2HN'
   const { data } = await axios.get(
     `https://discord.com/api/v9/invites/${discordID}?with_counts=true&with_expiration=true`,
@@ -50,7 +69,7 @@ export const getJoinersDiscord = async () => {
   return joiners
 }
 
-export const getRepoGithub = async () => {
+const getRepoGithub = async () => {
   const githubUser = 'DescartesNetwork'
   const { data } = await axios.get(`https://api.github.com/users/${githubUser}`)
   const repositories = data.public_repos
