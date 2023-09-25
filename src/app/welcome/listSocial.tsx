@@ -5,6 +5,7 @@ import useSWR from 'swr'
 import axios from 'axios'
 
 import { ArrowUpRightFromCircle } from 'lucide-react'
+import Island from '@/components/island'
 import ElementIObs from '@/components/IntersectionObserver'
 
 import { numeric } from '@/helpers/utils'
@@ -14,7 +15,6 @@ import {
   youtubeIcon,
   discordIcon,
 } from '@/static/images/welcome/socials'
-import Island from '@/components/island'
 
 type SocialProps = {
   icon: ReactNode
