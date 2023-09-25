@@ -1,6 +1,5 @@
 'use client'
-import { ReactNode, useCallback, useRef, useState } from 'react'
-import Link from 'next/link'
+import { ReactNode, useCallback, useMemo, useRef } from 'react'
 import Image from 'next/image'
 import useSWR from 'swr'
 import axios from 'axios'
@@ -15,11 +14,12 @@ import {
   youtubeIcon,
   discordIcon,
 } from '@/static/images/welcome/socials'
+import Island from '@/components/island'
 
 type SocialProps = {
   icon: ReactNode
   name: string
-  nameInteraction: string
+  community: string
   url: string
 }
 
@@ -43,61 +43,61 @@ const SOCIALS: SocialProps[] = [
   {
     icon: <Image src={twitterIcon} className="h-8 w-8" alt="twitter" />,
     name: 'Twitter',
-    nameInteraction: 'followers',
+    community: 'followers',
     url: 'https://twitter.com/SentreProtocol',
   },
 
   {
     icon: <Image src={telegramIcon} className="h-8 w-8" alt="telegram" />,
     name: 'Telegram',
-    nameInteraction: 'joiners',
+    community: 'joiners',
     url: 'https://t.me/Sentre',
   },
   {
     icon: <Image src={discordIcon} className="h-8 w-8" alt="discord" />,
     name: 'Discord',
-    nameInteraction: 'joiners',
+    community: 'joiners',
     url: 'https://discord.com/invite/VD7UBAp2HN',
   },
   {
     icon: <Image src={youtubeIcon} className="h-8 w-8" alt="youtube" />,
     name: 'Youtube',
-    nameInteraction: 'subscribers',
+    community: 'subscribers',
     url: 'https://www.youtube.com/channel/UC7P7lwc-6sLEr0yLzWfFUyg',
   },
   {
     icon: <GitHubIcon />,
     name: 'Github',
-    nameInteraction: 'repositories',
+    community: 'repositories',
     url: 'https://github.com/DescartesNetwork',
   },
 ]
 
-function Social({ icon, name, url, nameInteraction }: SocialProps) {
-  const cardSocialRef = useRef<HTMLAnchorElement | null>(null)
-  const [cachedNumInteract, setCachedNumInteract] = useState(0)
+function Social({ icon, name, url, community }: SocialProps) {
+  const cardSocialRef = useRef<HTMLDivElement | null>(null)
 
-  const fetchInteractionSocial = useCallback(async ([name]: [string]) => {
+  const fetcher = useCallback(async ([name]: [string]) => {
     const {
-      data: { totalInteraction },
+      data: { numInteraction },
     } = await axios.get(`/api/socials/${name}`)
-    localStorage.setItem(name, JSON.stringify(totalInteraction))
-    setCachedNumInteract(totalInteraction)
-    return totalInteraction
+    if (numInteraction)
+      localStorage.setItem(name, JSON.stringify(numInteraction))
+    return numInteraction || 0
   }, [])
 
-  const { error } = useSWR([name, 'totalInteraction'], fetchInteractionSocial)
+  const { data } = useSWR([name, 'numInteractSocial'], fetcher)
 
-  if (error) {
-    const cachedNumInteraction = localStorage.getItem(name)
-    setCachedNumInteract(JSON.parse(cachedNumInteraction ?? ''))
-  }
+  const metric = useMemo(() => {
+    if (data) return data
+    const cacheData = localStorage.getItem(name)
+    return cacheData
+  }, [data, name])
 
   return (
-    <Link
-      href={url}
+    <div
+      onClick={() => window.open(url, '_blank')}
       ref={cardSocialRef}
-      className="card-social flex flex-col gap-5 px-6 py-4 w-full h-full bg-base-100 hover:border-primary border-2 border-base-100 rounded-3xl"
+      className="card-social flex flex-col gap-5 px-6 py-4 w-full h-full bg-base-100 hover:border-primary border-2 border-base-100 rounded-3xl cursor-pointer"
     >
       <div className="flex flex-row justify-between md:flex-col md:justify-start gap-5">
         <div className="flex flex-row justify-between items-center">
@@ -107,12 +107,12 @@ function Social({ icon, name, url, nameInteraction }: SocialProps) {
         {icon}
       </div>
       <div className="flex flex-row justify-between items-center">
-        <h5>{numeric(cachedNumInteract).format('+0a')}</h5>
-        <p className="opacity-60 md:text-xs">{nameInteraction}</p>
+        <h5>{numeric(metric).format('+0a')}</h5>
+        <p className="opacity-60 md:text-xs">{community}</p>
       </div>
 
       <ElementIObs threshold={0.08} force querySelector={cardSocialRef} />
-    </Link>
+    </div>
   )
 }
 
@@ -129,7 +129,9 @@ export default function ListSocial() {
       </h3>
       <div className="list-social text-center text-secondary-content w-full grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-6">
         {SOCIALS.map((social) => (
-          <Social key={social.name} {...social} />
+          <Island key={social.name}>
+            <Social {...social} />
+          </Island>
         ))}
       </div>
       <ElementIObs threshold={0.1} force querySelector={listSocialRef} />

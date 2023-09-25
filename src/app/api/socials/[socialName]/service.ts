@@ -2,7 +2,7 @@ import axios from 'axios'
 
 import deplConfig from '@/configs/depl.config'
 
-export const getInteractSocials = (socialName: string) => {
+export const getNumInteractSocials = (socialName: string) => {
   switch (socialName) {
     case 'Telegram':
       return getJoinersTelegram()
