@@ -40,7 +40,6 @@ export default function UpdateAuthority({ mintAddress }: UpdateAuthorityProps) {
         { onClick: () => window.open(txId, '_blank') },
       )
     } catch (er: any) {
-      console.log(er)
       pushMessage('alert-error', er.message)
     } finally {
       setLoading(false)

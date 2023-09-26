@@ -78,7 +78,7 @@ export default function PoolOverview({ poolAddress }: { poolAddress: string }) {
         <h5>{numeric(totalValue).format('$0,0.[0000]')}</h5>
       </div>
       <button
-        onClick={() => push(poolAddress)}
+        onClick={() => push(`/pools/pool-details?poolAddress=${poolAddress}`)}
         className="col-span-full btn btn-primary"
       >
         Go to pool

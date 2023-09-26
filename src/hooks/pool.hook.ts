@@ -443,12 +443,13 @@ export const useAddLiquidity = (poolAddress: string, amountIns: string[]) => {
 
   const onAddLiquidity = useCallback(async () => {
     if (!publicKey) return
-    const transaction = new Transaction()
+    const transaction: Transaction[] = []
     const dAmountIns = amountIns.map((amount, i) =>
       decimalize(amount, decimals[i]),
     )
 
     for (const i in pool.mints) {
+      const tx = new Transaction()
       const mint = pool.mints[i]
       if (!pool.reserves[i].isZero()) continue
       const ataAddress = utils.token.associatedAddress({
@@ -461,7 +462,7 @@ export const useAddLiquidity = (poolAddress: string, amountIns: string[]) => {
       // Wrap sol token if needed
       if (mint.equals(WRAPPED_SOL_MINT) && dAmountIns[i].gt(amount)) {
         const txWrapSol = await createWrapSol(dAmountIns[i].sub(amount))
-        if (txWrapSol) transaction.add(txWrapSol)
+        if (txWrapSol) tx.add(txWrapSol)
       }
       const { transaction: txAddLiquidity } = await balancer.initializeJoin({
         amountIn: dAmountIns[i],
@@ -469,10 +470,12 @@ export const useAddLiquidity = (poolAddress: string, amountIns: string[]) => {
         poolAddress,
         sendAndConfirm: false,
       })
-      transaction.add(txAddLiquidity)
+      tx.add(txAddLiquidity)
+      transaction.push(tx)
     }
+    console.log('transaction: ', transaction, provider.connection.commitment)
 
-    const txId = await provider.sendAndConfirm(transaction)
+    const [txId] = await provider.sendAll(transaction.map((tx) => ({ tx: tx })))
     return txId
   }, [
     accounts,
