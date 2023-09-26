@@ -30,9 +30,11 @@ module.exports = {
           'neutral-focus': '#212433',
 
           '--accent': '#2B3440',
+          '--accent-card': "#F2F4FA",
           '--accent-text': '#ffffff',
           '--opaline': '#ffffffb3',
-          '--opaline-content': "#000"
+          '--opaline-content': "#000",
+          '--opaline-line': "#C8CBD3"
         },
       },
       {
@@ -45,9 +47,11 @@ module.exports = {
           'neutral-focus': '#A6ACBA',
 
           '--accent': '#F4F4F5',
+          '--accent-card': "#212C4C",
           '--accent-text': '#212433',
           '--opaline': '#ffffffb3',
-          '--opaline-content': "#F4F4F5"
+          '--opaline-content': "#F4F4F5",
+          '--opaline-line': "#3B4662"
         },
       },
     ],
