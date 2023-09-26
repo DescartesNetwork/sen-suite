@@ -1,4 +1,6 @@
 'use client'
+import Link from 'next/link'
+
 import Fundraising from './fundraising'
 import ProjectProfile from './projectProfile'
 
@@ -20,7 +22,10 @@ export default function CompletedCard({
   const { totalUsers } = useCalculateMetric(cheques)
 
   return (
-    <div className="grid grid-cols-12 gap-4 card bg-base-100 p-6 rounded-3xl cursor-pointer border border-base-100 hover:border-[#63E0B3]">
+    <Link
+      href={`/launchpad/launchpad-details?launchpadAddress=${launchpadAddress}`}
+      className="grid grid-cols-12 gap-4 card bg-base-100 p-6 rounded-3xl border border-base-100 hover:border-[#63E0B3]"
+    >
       <div className="col-span-full md:col-span-5">
         <ProjectProfile launchpadAddress={launchpadAddress} />
       </div>
@@ -39,6 +44,6 @@ export default function CompletedCard({
           showProgress={false}
         />
       </div>
-    </div>
+    </Link>
   )
 }
