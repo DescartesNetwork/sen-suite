@@ -5,7 +5,7 @@ type BuyTokenProps = {
 }
 export default function BuyToken({ launchpadAddress }: BuyTokenProps) {
   return (
-    <div className="card rounded-3xl p-6 bg-[#F2F4FA] dark:bg-[#212C4C] flex flex-col gap-4 ">
+    <div className="card rounded-3xl p-6 bg-[--accent-card] flex flex-col gap-4 ">
       Buy Token
     </div>
   )

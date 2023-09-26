@@ -18,7 +18,7 @@ export default function Resource({ launchpadAddress }: ResourceProps) {
         <Globe size={14} />
         <p className="text-sm">Website</p>
       </div>
-      <div className="w-[1px] h-4 bg-[#C8CBD3]" />
+      <div className="w-[1px] h-4 bg-[--opaline-line]" />
       <div
         onClick={() => window.open(projectInfo?.whitepaper)}
         className="flex flex-row items-center gap-2 cursor-pointer"
@@ -26,7 +26,7 @@ export default function Resource({ launchpadAddress }: ResourceProps) {
         <BookOpen size={14} />
         <p className="text-sm">Whitepaper</p>
       </div>
-      <div className="w-[1px] h-4 bg-[#C8CBD3]" />
+      <div className="w-[1px] h-4 bg-[--opaline-line]" />
       <div
         onClick={() => window.open(projectInfo?.github)}
         className="flex flex-row items-center gap-2 cursor-pointer"

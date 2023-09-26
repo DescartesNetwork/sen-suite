@@ -34,7 +34,7 @@ const Tab = ({ activeTab, setActiveTab }: TabProps) => {
         </div>
       ))}
       {/* Line border bottom tabs */}
-      <div className="flex-auto h-[2px] w-auto bg-[#C8CBD3]" />
+      <div className="flex-auto h-[2px] w-auto bg-[--opaline-line]" />
     </div>
   )
 }
@@ -48,7 +48,7 @@ export default function Information({ launchpadAddress }: InformationProps) {
   }, [activeTab, launchpadAddress])
 
   return (
-    <div className="card rounded-3xl p-6 bg-[#F2F4FA] dark:bg-[#212C4C] flex flex-col">
+    <div className="card rounded-3xl p-6 bg-[--accent-card] flex flex-col">
       <Tab activeTab={activeTab} setActiveTab={setActiveTab} />
       <div>{renderedBodyComponent}</div>
     </div>

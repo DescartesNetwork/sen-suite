@@ -83,24 +83,20 @@ export default function ProjectInfo({ launchpadAddress }: ProjectInfoProps) {
       {projectInfo && (
         <div className="flex flex-col gap-2">
           <p className="text-base font-bold">Social media</p>
-          {projectInfo.socials.map((social, index) => {
-            if (!social) return null
-
-            return (
-              <div key={social} className="flex flex-row items-center gap-4">
-                <div
-                  onClick={() => onRedirect(social)}
-                  className="flex items-center cursor-pointer"
-                >
-                  <SocialInfo key={social} url={social} showName />
-                </div>
-                {/* Divide line */}
-                {index !== projectInfo.socials.length - 1 && (
-                  <div className="w-[1px] h-4 bg-[#C8CBD3]" />
-                )}
+          {projectInfo.socials.map((social, index) => (
+            <div key={social} className="flex flex-row items-center gap-4">
+              <div
+                onClick={() => onRedirect(social)}
+                className="flex items-center cursor-pointer"
+              >
+                <SocialInfo key={social} url={social} showName />
               </div>
-            )
-          })}
+              {/* Divide line */}
+              {index !== projectInfo.socials.length - 1 && (
+                <div className="w-[1px] h-4 bg-[--opaline-line]" />
+              )}
+            </div>
+          ))}
         </div>
       )}
       {projectInfo && !!projectInfo.vCs.length && (
@@ -122,7 +118,7 @@ export default function ProjectInfo({ launchpadAddress }: ProjectInfoProps) {
                 </div>
                 {/* Divide line */}
                 {index !== projectInfo.socials.length - 1 && (
-                  <div className="w-[1px] h-4 bg-[#C8CBD3]" />
+                  <div className="w-[1px] h-4 bg-[--opaline-line]" />
                 )}
               </div>
             )
