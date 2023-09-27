@@ -123,13 +123,13 @@ export default function BuyToken({ launchpadAddress }: BuyTokenProps) {
   useDebounce(syncsAskAmount, 500, [syncsAskAmount])
 
   return (
-    <div className="card rounded-3xl p-6 bg-[--accent-card] flex flex-col gap-4">
+    <div className="card rounded-3xl p-6 bg-[--accent-card] flex flex-col gap-6">
       {/* Ask amount */}
       <div className="flex flex-col gap-2">
         <p className="text-sm">You pay</p>
         <div className="card bg-base-100 p-4 rounded-3xl grid grid-cols-12 gap-x-2 gap-y-4">
-          <div className="col-span-12 flex flex-row gap-2 items-center justify-between">
-            <div className="card bg-base-100  rounded-full flex flex-row gap-2 items-center cursor-pointer">
+          <div className="col-span-12 flex items-center justify-between">
+            <div className="flex gap-2 items-center ">
               <MintLogo
                 mintAddress={stableMint.toBase58()}
                 className="w-8 h-8 rounded-full"
@@ -146,7 +146,7 @@ export default function BuyToken({ launchpadAddress }: BuyTokenProps) {
               className="input input-ghost bg-base-100 w-full max-w-sm rounded-full focus:outline-none flex-auto text-right text-xl"
             />
           </div>
-          <div className="col-span-12 flex flex-row gap-2 items-start justify-between">
+          <div className="col-span-12 flex gap-2 justify-between">
             <div className="flex flex-col">
               <p className="text-xs font-bold opacity-60">Available</p>
               <p>
@@ -156,7 +156,7 @@ export default function BuyToken({ launchpadAddress }: BuyTokenProps) {
                 />
               </p>
             </div>
-            <div className="flex-auto max-w-[112px]">
+            <div className="max-w-[112px]">
               <input
                 type="range"
                 min={0}

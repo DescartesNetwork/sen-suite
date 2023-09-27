@@ -431,7 +431,7 @@ export const useAVGPrice = (launchpadAddress: string) => {
         price = bidAmount.toNumber() / askAmount.toNumber()
       totalPrice += price
     }
-    return totalPrice
+    return totalPrice / filteredCheques.length
   }, [cheques, filteredCheques])
 
   return avgPrice
@@ -491,6 +491,8 @@ export const useInitLaunchpad = (props: LaunchpadInfo) => {
     const { amount, mint, endTime, endPrice, fee } = props
     const { stableMint, projectInfo, startPrice, startTime } = props
     const { baseAmount } = projectInfo
+    projectInfo.socials = projectInfo.socials.filter((url) => !!url)
+    projectInfo.vCs = projectInfo.vCs.filter((url) => !!url)
     const launchpad = Keypair.generate()
     const transaction = new Transaction()
 

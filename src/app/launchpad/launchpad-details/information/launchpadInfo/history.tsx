@@ -1,13 +1,22 @@
 'use client'
+import { useState } from 'react'
+import dayjs from 'dayjs'
 
 import Empty from '@/components/empty'
+import { MintAmount, MintSymbol } from '@/components/mint'
+
 import { shortenAddress } from '@/helpers/utils'
-import { useFilterCheques } from '@/providers/launchpad.provider'
+import {
+  useChequeByAddress,
+  useFilterCheques,
+  useLaunchpadByAddress,
+} from '@/providers/launchpad.provider'
 
 type HistoryProps = {
   launchpadAddress: string
 }
 export default function History({ launchpadAddress }: HistoryProps) {
+  const [pageSize, setPageSize] = useState(4)
   const cheques = useFilterCheques(launchpadAddress)
 
   return (
@@ -27,16 +36,46 @@ export default function History({ launchpadAddress }: HistoryProps) {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <th>16 Nov, 2022 16:00</th>
-              <th>{shortenAddress('asdasdasdasd')}</th>
-              <td>1 USCD</td>
-              <td>10 ZETA</td>
-            </tr>
+            {cheques.slice(0, pageSize).map((chequeAddress) => (
+              <HistoryItem key={chequeAddress} chequeAddress={chequeAddress} />
+            ))}
           </tbody>
         </table>
       </div>
-      <div className="col-span-full">{!cheques.length && <Empty />}</div>
+      {!cheques.length && (
+        <div className="col-span-full">
+          <Empty />
+        </div>
+      )}
+      <div className="col-span-full text-center">
+        <button
+          onClick={() => setPageSize(pageSize + 4)}
+          className="btn btn-ghost"
+          disabled={!cheques.length || pageSize >= cheques.length}
+        >
+          View more
+        </button>
+      </div>
     </div>
+  )
+}
+
+const HistoryItem = ({ chequeAddress }: { chequeAddress: string }) => {
+  const { createAt, authority, askAmount, bidAmount, launchpad } =
+    useChequeByAddress(chequeAddress)
+  const { mint, stableMint } = useLaunchpadByAddress(launchpad.toBase58())
+  return (
+    <tr>
+      <th>{dayjs(createAt.toNumber() * 1000).format('MMM DD, YYYY HH:mm')}</th>
+      <th>{shortenAddress(authority.toBase58())}</th>
+      <td>
+        <MintAmount amount={bidAmount} mintAddress={stableMint.toBase58()} />{' '}
+        <MintSymbol mintAddress={stableMint.toBase58()} />
+      </td>
+      <td>
+        <MintAmount amount={askAmount} mintAddress={mint.toBase58()} />{' '}
+        <MintSymbol mintAddress={mint.toBase58()} />
+      </td>
+    </tr>
   )
 }

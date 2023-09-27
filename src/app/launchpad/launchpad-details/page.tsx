@@ -39,17 +39,12 @@ export default function LaunchpadDetails() {
           className="btn btn-sm btn-circle"
         />
       </div>
-
-      <div className="md:col-span-7 col-span-12">
+      <div className="md:col-span-7 col-span-full">
         <Information launchpadAddress={launchpadAddress} />
       </div>
-      <div className="grid grid-rows-2 md:col-span-5 col-span-12 gap-6">
-        <div className="col-span-full">
-          <BuyToken launchpadAddress={launchpadAddress} />
-        </div>
-        <div className="col-span-full">
-          <PeriodToken launchpadAddress={launchpadAddress} />
-        </div>
+      <div className="flex flex-col md:col-span-5 col-span-full gap-6">
+        <BuyToken launchpadAddress={launchpadAddress} />
+        <PeriodToken launchpadAddress={launchpadAddress} />
       </div>
     </div>
   )
