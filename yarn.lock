@@ -594,6 +594,13 @@
     "@solana/wallet-adapter-base" "^0.9.17"
     bs58 "^5.0.0"
 
+"@headlessui/react@^1.7.17":
+  version "1.7.17"
+  resolved "https://registry.yarnpkg.com/@headlessui/react/-/react-1.7.17.tgz#a0ec23af21b527c030967245fd99776aa7352bc6"
+  integrity sha512-4am+tzvkqDSSgiwrsEpGWqgGo9dz8qU5M3znCkC4PgkpY4HcCZzEDEvozltGGGHIKl9jbXbZPSH5TWn4sWJdow==
+  dependencies:
+    client-only "^0.0.1"
+
 "@humanwhocodes/config-array@^0.11.10":
   version "0.11.10"
   resolved "https://registry.yarnpkg.com/@humanwhocodes/config-array/-/config-array-0.11.10.tgz#5a3ffe32cc9306365fb3fd572596cd602d5e12d2"
@@ -1499,6 +1506,13 @@
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/@senswap/balancer/-/balancer-3.0.1.tgz#8bb23897ec092204851a64381d89ce5e7acec1e3"
   integrity sha512-rYdsEiNQXaSOB0ckzl1zsFgd4tchQdazQd3HEXUAtTwtOo1FdKkc3p6WlFi6uGnVU+o2RsuY+Sw/OP2bQadItw==
+  dependencies:
+    "@project-serum/anchor" "^0.24.2"
+
+"@senswap/balancer@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@senswap/balancer/-/balancer-4.0.0.tgz#1ec6a1ee1ae0e61d011ddb83ded59e0588fb006f"
+  integrity sha512-kyv3lAE5tjQUu0HdumoIynYyHoXnzVUQVoCR3fRDQAn4bJzkMdQnwpGs838Z5hG/8gAGwiUoqpAR5BxAL7dtcg==
   dependencies:
     "@project-serum/anchor" "^0.24.2"
 

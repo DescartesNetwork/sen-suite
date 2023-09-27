@@ -64,3 +64,19 @@ export const isValidURL = (url: string) => {
     url,
   )
 }
+
+/**
+ * Convert from file to base64
+ * @param file File
+ * @param callback callback function
+ */
+export const fileToBase64 = (
+  file: File,
+  callback: (result: string) => void,
+) => {
+  const reader = new FileReader()
+  reader.readAsDataURL(file)
+  reader.onload = async () => {
+    if (reader.result) callback(reader.result.toString())
+  }
+}

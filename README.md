@@ -26,3 +26,7 @@ Plus, the TailwindCSS just supports upto z-index of 50 at default, then we follo
 | Popover/Popper       | 10      |
 | Overlay              | inherit |
 | Others               | unset   |
+
+## Manual Deploy
+
+[Deploy](https://api.render.com/deploy/srv-cinmuv59aq06u3ibuls0?key=tozv2150X_U)

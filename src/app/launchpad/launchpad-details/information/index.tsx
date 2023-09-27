@@ -43,7 +43,8 @@ export default function Information({ launchpadAddress }: InformationProps) {
   const [activeTab, setActiveTab] = useState('launchpadInfo')
 
   const renderedBodyComponent = useMemo(() => {
-    if (activeTab === 'launchpadInfo') return <LaunchpadInfo />
+    if (activeTab === 'launchpadInfo')
+      return <LaunchpadInfo launchpadAddress={launchpadAddress} />
     return <ProjectInfo launchpadAddress={launchpadAddress} />
   }, [activeTab, launchpadAddress])
 

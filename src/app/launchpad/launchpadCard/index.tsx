@@ -1,5 +1,6 @@
 'use client'
 import { useWallet } from '@solana/wallet-adapter-react'
+import Link from 'next/link'
 
 import { User } from 'lucide-react'
 import ProjectProfile from './projectProfile'
@@ -34,7 +35,10 @@ export default function LaunchpadCard({
 
   if (completed) return <CompletedCard launchpadAddress={launchpadAddress} />
   return (
-    <div className="h-full relative border cursor-pointer rounded-3xl">
+    <Link
+      href={`/launchpad/launchpad-details?launchpadAddress=${launchpadAddress}`}
+      className="h-full relative border cursor-pointer rounded-3xl"
+    >
       <img
         src={projectProfile?.coverPhoto}
         alt="launchpad-img"
@@ -73,6 +77,6 @@ export default function LaunchpadCard({
           <p className="text-sm line-clamp-2">{projectProfile?.description}</p>
         </div>
       </div>
-    </div>
+    </Link>
   )
 }

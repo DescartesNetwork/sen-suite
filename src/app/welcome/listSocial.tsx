@@ -37,17 +37,17 @@ function GitHubIcon() {
 
 const SOCIALS: SocialProps[] = [
   {
-    icon: <Image src={twitterIcon} height={53} alt="" />,
+    icon: <Image src={twitterIcon} height={53} alt="twitter" />,
     name: 'Twitter',
     url: 'https://twitter.com/SentreProtocol',
   },
   {
-    icon: <Image src={discordIcon} height={53} alt="" />,
+    icon: <Image src={discordIcon} height={53} alt="discord" />,
     name: 'Discord',
     url: 'https://discord.com/invite/VD7UBAp2HN',
   },
   {
-    icon: <Image src={telegramIcon} height={53} alt="" />,
+    icon: <Image src={telegramIcon} height={53} alt="telegram" />,
     name: 'Telegram',
     url: 'https://t.me/Sentre',
   },
@@ -57,7 +57,7 @@ const SOCIALS: SocialProps[] = [
     url: 'https://github.com/DescartesNetwork',
   },
   {
-    icon: <Image src={youtubeIcon} height={53} alt="" />,
+    icon: <Image src={youtubeIcon} height={53} alt="youtube" />,
     name: 'Youtube',
     url: 'https://www.youtube.com/channel/UC7P7lwc-6sLEr0yLzWfFUyg',
   },

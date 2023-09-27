@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { encode } from 'bs58'
+import { encode, decode } from 'bs58'
 import { utilsBN } from '@sen-use/web3'
+import { MintActionStates, MintConfigs } from '@senswap/balancer'
+import { Keypair, PublicKey, Transaction } from '@solana/web3.js'
+import { useWallet } from '@solana/wallet-adapter-react'
 import Launchpad from '@sentre/launchpad'
 import axios from 'axios'
 import useSWR from 'swr'
@@ -9,15 +12,17 @@ import BN from 'bn.js'
 import { useAnchorProvider } from '@/providers/wallet.provider'
 import {
   useCheques,
+  useFilterCheques,
   useLaunchpadByAddress,
   useLaunchpads,
 } from '@/providers/launchpad.provider'
-import { LaunchpadMetadata, toFilename } from '@/helpers/aws'
+import { LaunchpadMetadata, toFilename, uploadFileToAws } from '@/helpers/aws'
 import solConfig from '@/configs/sol.config'
 import { usePrices } from '@/providers/mint.provider'
 import { usePoolByAddress } from '@/providers/pools.provider'
 import { decimalize } from '@/helpers/decimals'
-import { useWallet } from '@solana/wallet-adapter-react'
+import { useMints } from './spl.hook'
+import { useBalancer } from './pool.hook'
 
 export type ProjectInfo = {
   projectName: string
@@ -29,7 +34,19 @@ export type ProjectInfo = {
   socials: string[]
   coverPhoto: string
   category: string[]
-  baseAmount: number
+  baseAmount: string
+}
+
+export type LaunchpadInfo = {
+  projectInfo: ProjectInfo
+  mint: string
+  stableMint: string
+  amount: string
+  fee: string
+  startPrice: string
+  endPrice: string
+  startTime: number
+  endTime: number
 }
 
 export enum LaunchpadSate {
@@ -38,6 +55,7 @@ export enum LaunchpadSate {
   completed = 'completed',
   yourPurchase = 'Your purchased',
 }
+const DEFAULT_TAX_FEE = new BN(500_000) // 0.05%
 
 /**
  * Instantiate a balancer
@@ -66,12 +84,14 @@ export const useLaunchpadMetadata = (launchpadAddress: string) => {
         let cid = encode(Buffer.from(metadata))
         if (LaunchpadMetadata[launchpadAddress])
           cid = LaunchpadMetadata[launchpadAddress]
-
+        console.log('cid', cid)
         const fileName = toFilename(cid)
         const url = 'https://sen-storage.s3.us-west-2.amazonaws.com/' + fileName
+        console.log('url ', url)
         const { data } = await axios.get(url)
         return data as ProjectInfo
       } catch (error) {
+        console.log(error)
         return undefined
       }
     },
@@ -94,7 +114,7 @@ export const useLaunchpadMetadata = (launchpadAddress: string) => {
 export const useTokenPrice = (launchpadAddr: string) => {
   const { stableMint, pool, endTime } = useLaunchpadByAddress(launchpadAddr)
   const { reserves } = usePoolByAddress(pool.toBase58())
-  const [stbPrice] = usePrices([stableMint.toBase58()]) || [1]
+  const [stbPrice] = usePrices([stableMint.toBase58()]) || [0]
   const getLaunchpadWeights = useGetLaunchpadWeight()
   const getBalanceAtTime = useGetBalanceAtTime(launchpadAddr)
   const calcPrice = useCalcPrice()
@@ -246,14 +266,19 @@ export const useGetLaunchpadWeight = () => {
     (
       currentTime: number,
       launchpadAddr = '',
-      startWeights = [0, 0],
-      endWeights = [0, 0],
+      startWeights = [new BN(0), new BN(0)],
+      endWeights = [new BN(0), new BN(0)],
       startTime = 0,
       endTime = 0,
     ) => {
       const MINT_IDX = 0
       const BASE_MINT_IDX = 1
-      const launchpadData = launchpads[launchpadAddr]
+      const launchpadData = launchpads[launchpadAddr] || {
+        startWeights: [new BN(0), new BN(0)],
+        endWeights: [new BN(0), new BN(0)],
+        startTime: new BN(0),
+        endTime: new BN(0),
+      }
       const start_time = launchpadAddr
         ? launchpadData.startTime.toNumber()
         : startTime
@@ -263,19 +288,19 @@ export const useGetLaunchpadWeight = () => {
 
       const start_weight_mint = launchpadAddr
         ? launchpadData.startWeights[MINT_IDX].toNumber()
-        : startWeights[MINT_IDX]
+        : startWeights[MINT_IDX].toNumber()
 
       const start_weight_base_mint = launchpadAddr
         ? launchpadData.startWeights[BASE_MINT_IDX].toNumber()
-        : startWeights[BASE_MINT_IDX]
+        : startWeights[BASE_MINT_IDX].toNumber()
 
       const end_weight_mint = launchpadAddr
         ? launchpadData.endWeights[MINT_IDX].toNumber()
-        : endWeights[MINT_IDX]
+        : endWeights[MINT_IDX].toNumber()
 
       const end_weight_base_mint = launchpadAddr
         ? launchpadData.endWeights[BASE_MINT_IDX].toNumber()
-        : endWeights[BASE_MINT_IDX]
+        : endWeights[BASE_MINT_IDX].toNumber()
 
       const ratio = (currentTime / 1000 - start_time) / (end_time - start_time)
       return [
@@ -332,4 +357,186 @@ export const useCalcPrice = () => {
     [],
   )
   return calcPrice
+}
+
+/**
+ * Calculate weight in Pool
+ * @returns  Calc function
+ */
+export const useCalcWeight = () => {
+  const calcWeight = useCallback(
+    (priceA: number, balanceA: number, priceB: number, balanceB: number) => {
+      const total = priceA * balanceA + priceB * balanceB
+      const weightA = (priceA * balanceA) / total
+      const weightB = 1 - weightA
+      return {
+        weightA: utilsBN.decimalize(weightA, 9),
+        weightB: utilsBN.decimalize(weightB, 9),
+      }
+    },
+    [],
+  )
+  return calcWeight
+}
+
+/**
+ * Calculate avg price
+ * @returns  avg price
+ */
+export const useAVGPrice = (launchpadAddress: string) => {
+  const cheques = useCheques()
+  const filteredCheques = useFilterCheques(launchpadAddress)
+
+  const avgPrice = useMemo(() => {
+    if (!filteredCheques.length) return 0
+    let totalPrice = 0
+
+    for (const chequeAddress of filteredCheques) {
+      const { askAmount, bidAmount } = cheques[chequeAddress]
+      let price = 0
+      if (askAmount.toNumber())
+        price = bidAmount.toNumber() / askAmount.toNumber()
+      totalPrice += price
+    }
+    return totalPrice
+  }, [cheques, filteredCheques])
+
+  return avgPrice
+}
+
+export const useInitLaunchpad = (props: LaunchpadInfo) => {
+  const mints = useMints([props.mint, props.stableMint])
+  const [baseDecimal, stableDecimal] = mints.map((mint) => mint?.decimals || 0)
+  const provider = useAnchorProvider()
+  const launchpadProgram = useLaunchpadProgram()
+  const [stablePrice] = usePrices([props.stableMint]) || [1]
+  const calcWeight = useCalcWeight()
+  const balancer = useBalancer()
+
+  const onCreate = useCallback(async () => {
+    const { amount, mint, endTime, endPrice, fee } = props
+    const { stableMint, projectInfo, startPrice, startTime } = props
+    const { baseAmount } = projectInfo
+    const launchpad = Keypair.generate()
+    const transaction = new Transaction()
+
+    const bnAmount = decimalize(amount, baseDecimal)
+    const bnBaseAmount = decimalize(baseAmount, stableDecimal)
+    const blob = [
+      new Blob([JSON.stringify(projectInfo, null, 2)], {
+        type: 'application/json',
+      }),
+    ]
+    const file = new File(blob, 'metadata.txt')
+    const cid = await uploadFileToAws(file)
+    const swapFee = decimalize(fee, 9)
+
+    /** Initialize launchpad */
+    await launchpadProgram.initializeLaunchpad({
+      baseAmount: bnBaseAmount,
+      stableMint: new PublicKey(stableMint),
+      mint: new PublicKey(mint),
+      sendAndConfirm: true,
+      launchpad,
+    })
+
+    const baseMint = await launchpadProgram.deriveBaseMintAddress(
+      launchpad.publicKey,
+    )
+    const startWeights = calcWeight(
+      Number(startPrice),
+      Number(amount),
+      stablePrice || 1,
+      Number(baseAmount),
+    )
+    const endWeights = calcWeight(
+      Number(endPrice),
+      Number(amount),
+      stablePrice || 1,
+      Number(baseAmount),
+    )
+
+    const mintsConfigs: MintConfigs[] = [
+      {
+        publicKey: mint,
+        action: MintActionStates.Active,
+        amountIn: bnAmount,
+        weight: startWeights.weightA,
+      },
+      {
+        publicKey: baseMint,
+        action: MintActionStates.Active,
+        amountIn: bnBaseAmount,
+        weight: startWeights.weightB,
+      },
+    ]
+    /** Initialize Pool  */
+    const { poolAddress } = await balancer.initializePool({
+      fee: swapFee,
+      taxFee: DEFAULT_TAX_FEE,
+      mintsConfigs,
+      taxMan: solConfig.taxman,
+    })
+
+    /** Join to Pool  */
+    const { transaction: txMintJoin } = await balancer.initializeJoin({
+      poolAddress,
+      mint,
+      amountIn: bnAmount,
+      sendAndConfirm: false,
+    })
+
+    const { transaction: txBaseMintJoin } = await balancer.initializeJoin({
+      poolAddress,
+      mint: baseMint,
+      amountIn: bnBaseAmount,
+      sendAndConfirm: false,
+    })
+
+    transaction.add(txMintJoin)
+    transaction.add(txBaseMintJoin)
+
+    /** Update action */
+    const { tx: txUpdateAction } = await balancer.updateActions({
+      poolAddress,
+      actions: [MintActionStates.AskOnly, MintActionStates.BidOnly],
+      sendAndConfirm: false,
+    })
+    transaction.add(txUpdateAction)
+
+    /** Transfer pool Owner */
+    const treasurer = await launchpadProgram.deriveTreasurerAddress(
+      launchpad.publicKey,
+    )
+    const { tx: txTransfer } = await balancer.transferOwnership({
+      poolAddress,
+      newOwner: treasurer,
+      sendAndConfirm: false,
+    })
+    transaction.add(txTransfer)
+    /** Active launchpad */
+    const { tx: txActive } = await launchpadProgram.activeLaunchpad({
+      pool: new PublicKey(poolAddress),
+      startTime: new BN(startTime / 1000),
+      endTime: new BN(endTime / 1000),
+      launchpad: launchpad.publicKey,
+      metadata: Array.from(decode(cid)),
+      endWeights: [endWeights.weightA, endWeights.weightB],
+      sendAndConfirm: false,
+    })
+    transaction.add(txActive)
+
+    return await provider.sendAndConfirm(transaction)
+  }, [
+    balancer,
+    baseDecimal,
+    calcWeight,
+    launchpadProgram,
+    props,
+    provider,
+    stableDecimal,
+    stablePrice,
+  ])
+
+  return onCreate
 }
