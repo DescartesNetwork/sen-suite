@@ -4,6 +4,8 @@ import { useMemo } from 'react'
 import { MintAmount, MintSymbol } from '@/components/mint'
 import LaunchpadTimeLine from '../../launchpadCard/launchpadTimeLine'
 import Sold from '../../launchpadCard/sold'
+import Island from '@/components/island'
+import YourBought from './yourBought'
 
 import {
   useCalculateMetric,
@@ -13,7 +15,6 @@ import {
 import { undecimalize } from '@/helpers/decimals'
 import { useMints } from '@/hooks/spl.hook'
 import { numeric } from '@/helpers/utils'
-import YourBought from './yourBought'
 
 type TradingInfoProps = {
   launchpadAddress: string
@@ -37,7 +38,9 @@ export default function TradingInfo({ launchpadAddress }: TradingInfoProps) {
 
   return (
     <div className="card rounded-3xl p-6 bg-[--accent-card] flex flex-col gap-4 ">
-      <YourBought launchpadAddress={launchpadAddress} />
+      <Island>
+        <YourBought launchpadAddress={launchpadAddress} />
+      </Island>
       <div className="flex flex-row items-start justify-between">
         <p className="text-sm opacity-60">Participants</p>
         <p>{totalUsers}</p>

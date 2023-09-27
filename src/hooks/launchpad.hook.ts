@@ -487,12 +487,43 @@ export const useClaim = (launchpadAddress: string) => {
   const launchpadProgram = useLaunchpadProgram()
 
   const onClaim = useCallback(async () => {
-    const { txId } = await launchpadProgram.claim({
+    const { txId } = await launchpadProgram.redeem({
       launchpad: new PublicKey(launchpadAddress),
     })
     return txId
   }, [launchpadAddress, launchpadProgram])
   return onClaim
+}
+
+/**
+ * withdraw token in pool
+ * @param launchpadAddress launchpad address
+ * @param supply total mpt supply in pool
+ * @returns transaction id
+ */
+export const useWithdraw = (launchpadAddress: string, supply: BN) => {
+  const launchpadProgram = useLaunchpadProgram()
+  const { pool } = useLaunchpadByAddress(launchpadAddress)
+  const balancer = useBalancer()
+  const provider = useAnchorProvider()
+
+  const onWithdraw = useCallback(async () => {
+    const txs: Transaction[] = []
+    const { tx: txClaim } = await launchpadProgram.claim({
+      launchpad: new PublicKey(launchpadAddress),
+      sendAndConfirm: false,
+    })
+    txs.push(txClaim)
+    const { transaction } = await balancer.createRemoveLiquidityTransaction(
+      pool,
+      supply,
+    )
+    txs.push(transaction)
+    const [txId] = await provider.sendAll(txs.map((tx) => ({ tx })))
+    return txId
+  }, [balancer, launchpadAddress, launchpadProgram, pool, provider, supply])
+
+  return onWithdraw
 }
 
 export const useInitLaunchpad = (props: LaunchpadInfo) => {

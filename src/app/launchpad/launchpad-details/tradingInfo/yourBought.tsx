@@ -1,6 +1,7 @@
 'use client'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
+import { utils } from '@coral-xyz/anchor'
 
 import { MintAmount, MintSymbol } from '@/components/mint'
 import { Info } from 'lucide-react'
@@ -10,9 +11,10 @@ import {
   useFilterCheques,
   useLaunchpadByAddress,
 } from '@/providers/launchpad.provider'
-import { useClaim } from '@/hooks/launchpad.hook'
+import { useClaim, useLaunchpadProgram } from '@/hooks/launchpad.hook'
 import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
+import { useSpl } from '@/hooks/spl.hook'
 
 const TOOLTIP_CONTENT =
   'The tokens you bought will be locked while the launchpad is active, you can claim your tokens after it ends.'
@@ -22,6 +24,7 @@ type YourBoughtProp = {
 }
 export default function YourBought({ launchpadAddress }: YourBoughtProp) {
   const [loading, setLoading] = useState(false)
+  const [claimed, setClaimed] = useState(true)
   const { publicKey } = useWallet()
   const cheques = useFilterCheques(launchpadAddress, publicKey)
   const { endTime, mint } = useLaunchpadByAddress(launchpadAddress)
@@ -29,6 +32,23 @@ export default function YourBought({ launchpadAddress }: YourBoughtProp) {
   const completed = Number(endTime) < Date.now() / 1000
   const pushMessage = usePushMessage()
   const claim = useClaim(launchpadAddress)
+  const launchpad = useLaunchpadProgram()
+  const spl = useSpl()
+
+  const fetchBalance = useCallback(async () => {
+    const master = await launchpad.deriveMasterAddress(launchpadAddress)
+    const treasury = await utils.token.associatedAddress({
+      mint,
+      owner: master,
+    })
+    const accountData = await spl.account.account.fetch(treasury)
+
+    setClaimed(!Number(accountData.amount.toString()))
+  }, [launchpad, launchpadAddress, mint, spl.account.account])
+
+  useEffect(() => {
+    fetchBalance()
+  }, [fetchBalance])
 
   const onClaim = useCallback(async () => {
     try {
@@ -41,6 +61,7 @@ export default function YourBought({ launchpadAddress }: YourBoughtProp) {
           onClick: () => window.open(solscan(txId || ''), '_blank'),
         },
       )
+      setClaimed(true)
     } catch (er: any) {
       pushMessage('alert-error', er.message)
     } finally {
@@ -62,12 +83,14 @@ export default function YourBought({ launchpadAddress }: YourBoughtProp) {
           <MintSymbol mintAddress={mint.toBase58()} />
         </h5>
       ) : (
-        <button onClick={onClaim} className="btn btn-primary rounded-full">
+        <button
+          disabled={totalAsk.isZero() || claimed}
+          onClick={onClaim}
+          className="btn btn-primary rounded-full"
+        >
           {loading && <span className="loading loading-spinner loading-xs" />}
-          Claim <MintAmount
-            amount={totalAsk}
-            mintAddress={mint.toBase58()}
-          />{' '}
+          {claimed ? 'Claimed' : 'Claim'}{' '}
+          <MintAmount amount={totalAsk} mintAddress={mint.toBase58()} />{' '}
           <MintSymbol mintAddress={mint.toBase58()} />
         </button>
       )}

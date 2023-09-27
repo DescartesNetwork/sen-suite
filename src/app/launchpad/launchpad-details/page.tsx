@@ -10,11 +10,14 @@ import Clipboard from '@/components/clipboard'
 
 import { solscan } from '@/helpers/explorers'
 import { shortenAddress } from '@/helpers/utils'
+import { useLaunchpadByAddress } from '@/providers/launchpad.provider'
 
 export default function LaunchpadDetails() {
   const { push, back } = useRouter()
   const searchParams = useSearchParams()
   const launchpadAddress = searchParams.get('launchpadAddress') || ''
+  const { endTime } = useLaunchpadByAddress(launchpadAddress)
+  const completed = endTime.toNumber() < Date.now() / 1000
 
   if (!launchpadAddress) return push('/launchpad')
   return (
@@ -43,7 +46,7 @@ export default function LaunchpadDetails() {
         <Information launchpadAddress={launchpadAddress} />
       </div>
       <div className="flex flex-col md:col-span-5 col-span-full gap-6">
-        <BuyToken launchpadAddress={launchpadAddress} />
+        {!completed && <BuyToken launchpadAddress={launchpadAddress} />}
         <TradingInfo launchpadAddress={launchpadAddress} />
       </div>
     </div>
