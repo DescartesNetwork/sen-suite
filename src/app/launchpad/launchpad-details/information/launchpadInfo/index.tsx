@@ -3,10 +3,10 @@
 import { InfoIcon } from 'lucide-react'
 import ProjectProfile from '@/app/launchpad/launchpadCard/projectProfile'
 import LaunchpadLineChart from '@/app/launchpad/lineChart.tsx'
+import History from './history'
 
 import { numeric } from '@/helpers/utils'
 import { useAVGPrice, useTokenPrice } from '@/hooks/launchpad.hook'
-import History from './history'
 
 type LaunchpadInfoProps = {
   launchpadAddress: string
@@ -43,7 +43,7 @@ export default function LaunchpadInfo({
         <LaunchpadLineChart launchpadAddress={launchpadAddress} />
       </div>
       <div className="col-span-full">
-        <History />
+        <History launchpadAddress={launchpadAddress} />
       </div>
     </div>
   )

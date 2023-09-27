@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 
 import { LaunchpadProvider } from '@/providers/launchpad.provider'
 import { PoolProvider } from '@/providers/pools.provider'
+import LaunchpadWAtcher from '@/watchers/launchpad.watcher'
 
 export const metadata: Metadata = {
   title: 'Launchpad',
@@ -18,6 +19,8 @@ export default function LaunchpadLayout({ children }: { children: ReactNode }) {
           <div className="max-w-[1024px] w-full flex flex-row justify-center">
             {children}
           </div>
+          {/* Watcher */}
+          <LaunchpadWAtcher />
         </LaunchpadProvider>
       </PoolProvider>
     </div>

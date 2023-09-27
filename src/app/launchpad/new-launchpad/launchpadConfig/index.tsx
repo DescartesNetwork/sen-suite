@@ -86,7 +86,6 @@ export default function LaunchpadConfig({ onBack }: LaunchpadConfigProps) {
       )
       push('/launchpad')
     } catch (er: any) {
-      console.log(er)
       pushMessage('alert-error', er.message)
     } finally {
       setLoading(false)
