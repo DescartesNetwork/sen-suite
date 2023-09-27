@@ -1,29 +1,28 @@
 'use client'
-import { Info } from 'lucide-react'
-import LaunchpadTimeLine from '../launchpadCard/launchpadTimeLine'
-import Sold from '../launchpadCard/sold'
+import { useMemo } from 'react'
+
 import { MintAmount, MintSymbol } from '@/components/mint'
+import LaunchpadTimeLine from '../../launchpadCard/launchpadTimeLine'
+import Sold from '../../launchpadCard/sold'
 
 import {
   useCalculateMetric,
   useFilterCheques,
   useLaunchpadByAddress,
 } from '@/providers/launchpad.provider'
-import { useMemo } from 'react'
 import { undecimalize } from '@/helpers/decimals'
 import { useMints } from '@/hooks/spl.hook'
 import { numeric } from '@/helpers/utils'
+import YourBought from './yourBought'
 
-type PeriodTokenProps = {
+type TradingInfoProps = {
   launchpadAddress: string
 }
-const TOOLTIP_CONTENT =
-  'The tokens you bought will be locked while the launchpad is active, you can claim your tokens after it ends.'
 
-export default function PeriodToken({ launchpadAddress }: PeriodTokenProps) {
+export default function TradingInfo({ launchpadAddress }: TradingInfoProps) {
   const cheques = useFilterCheques(launchpadAddress)
   const { totalUsers, totalBid } = useCalculateMetric(cheques)
-  const { startTime, mint, startReserves, stableMint } =
+  const { startTime, startReserves, stableMint } =
     useLaunchpadByAddress(launchpadAddress)
   const isStarted = Date.now() / 1000 > startTime.toNumber()
   const [mintInfo] = useMints([stableMint.toBase58()])
@@ -38,17 +37,7 @@ export default function PeriodToken({ launchpadAddress }: PeriodTokenProps) {
 
   return (
     <div className="card rounded-3xl p-6 bg-[--accent-card] flex flex-col gap-4 ">
-      <div className="flex flex-row items-center justify-between">
-        <div className="flex flex-row items-center gap-2">
-          <p className="text-sm opacity-60">Your bought</p>
-          <div className="tooltip" data-tip={TOOLTIP_CONTENT}>
-            <Info className="w-3 h-3" />
-          </div>
-        </div>
-        <button className="btn btn-primary rounded-full">
-          Claim 0 <MintSymbol mintAddress={mint.toBase58()} />
-        </button>
-      </div>
+      <YourBought launchpadAddress={launchpadAddress} />
       <div className="flex flex-row items-start justify-between">
         <p className="text-sm opacity-60">Participants</p>
         <p>{totalUsers}</p>

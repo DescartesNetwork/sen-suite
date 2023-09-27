@@ -3,8 +3,8 @@ import { useRouter, useSearchParams } from 'next/navigation'
 
 import { ArrowLeft } from 'lucide-react'
 import BuyToken from './buyToken'
-import PeriodToken from './periodToken'
 import Information from './information'
+import TradingInfo from './tradingInfo'
 import NewWindow from '@/components/newWindow'
 import Clipboard from '@/components/clipboard'
 
@@ -44,7 +44,7 @@ export default function LaunchpadDetails() {
       </div>
       <div className="flex flex-col md:col-span-5 col-span-full gap-6">
         <BuyToken launchpadAddress={launchpadAddress} />
-        <PeriodToken launchpadAddress={launchpadAddress} />
+        <TradingInfo launchpadAddress={launchpadAddress} />
       </div>
     </div>
   )

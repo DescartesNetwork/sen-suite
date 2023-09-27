@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import dayjs from 'dayjs'
+import classNames from 'classnames'
 
 import Empty from '@/components/empty'
 import { MintAmount, MintSymbol } from '@/components/mint'
@@ -26,7 +27,7 @@ export default function History({ launchpadAddress }: HistoryProps) {
         <span className="badge rounded-lg">{cheques.length}</span>
       </div>
       <div className="col-span-full overflow-x-auto">
-        <table className="table table-zebra">
+        <table className="table">
           <thead className="bg-base-100 ">
             <tr className="rounded-lg">
               <th className="rounded-tl-lg rounded-bl-lg">TIME</th>
@@ -36,8 +37,12 @@ export default function History({ launchpadAddress }: HistoryProps) {
             </tr>
           </thead>
           <tbody>
-            {cheques.slice(0, pageSize).map((chequeAddress) => (
-              <HistoryItem key={chequeAddress} chequeAddress={chequeAddress} />
+            {cheques.slice(0, pageSize).map((chequeAddress, index) => (
+              <HistoryItem
+                key={chequeAddress}
+                chequeAddress={chequeAddress}
+                index={index}
+              />
             ))}
           </tbody>
         </table>
@@ -60,19 +65,31 @@ export default function History({ launchpadAddress }: HistoryProps) {
   )
 }
 
-const HistoryItem = ({ chequeAddress }: { chequeAddress: string }) => {
+const HistoryItem = ({
+  chequeAddress,
+  index,
+}: {
+  chequeAddress: string
+  index: number
+}) => {
   const { createAt, authority, askAmount, bidAmount, launchpad } =
     useChequeByAddress(chequeAddress)
   const { mint, stableMint } = useLaunchpadByAddress(launchpad.toBase58())
   return (
-    <tr>
-      <th>{dayjs(createAt.toNumber() * 1000).format('MMM DD, YYYY HH:mm')}</th>
-      <th>{shortenAddress(authority.toBase58())}</th>
+    <tr
+      className={classNames('rounded-lg', {
+        'bg-base-100': index % 2 !== 0,
+      })}
+    >
+      <td className="rounded-tl-lg rounded-bl-lg">
+        {dayjs(createAt.toNumber() * 1000).format('MMM DD, YYYY HH:mm')}
+      </td>
+      <td>{shortenAddress(authority.toBase58())}</td>
       <td>
         <MintAmount amount={bidAmount} mintAddress={stableMint.toBase58()} />{' '}
         <MintSymbol mintAddress={stableMint.toBase58()} />
       </td>
-      <td>
+      <td className="rounded-tr-lg rounded-br-lg">
         <MintAmount amount={askAmount} mintAddress={mint.toBase58()} />{' '}
         <MintSymbol mintAddress={mint.toBase58()} />
       </td>

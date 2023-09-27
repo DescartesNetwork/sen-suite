@@ -138,7 +138,7 @@ export const useCheques = () => {
  */
 export const useFilterCheques = (
   launchpadAddress: string,
-  owner?: PublicKey,
+  owner?: PublicKey | null | undefined,
 ) => {
   const cheques = useLaunchpadStore(({ cheques }) => cheques)
 

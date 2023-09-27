@@ -478,6 +478,23 @@ export const useBuyToken = (amount: string, launchpadAddress: string) => {
   return onBuyToken
 }
 
+/**
+ * Claim token when the campaign ended
+ * @param launchpadAddress launchpad address
+ * @returns transaction id
+ */
+export const useClaim = (launchpadAddress: string) => {
+  const launchpadProgram = useLaunchpadProgram()
+
+  const onClaim = useCallback(async () => {
+    const { txId } = await launchpadProgram.claim({
+      launchpad: new PublicKey(launchpadAddress),
+    })
+    return txId
+  }, [launchpadAddress, launchpadProgram])
+  return onClaim
+}
+
 export const useInitLaunchpad = (props: LaunchpadInfo) => {
   const mints = useMints([props.mint, props.stableMint])
   const [baseDecimal, stableDecimal] = mints.map((mint) => mint?.decimals || 0)
