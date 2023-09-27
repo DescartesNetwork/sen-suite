@@ -118,6 +118,7 @@ export const useLaunchpadByAddress = (launchpadAddress: string) => {
     pool: SystemProgram.programId,
     stableMint: SystemProgram.programId,
     startTime: new BN(0),
+    startReserves: [new BN(0), new BN(0)],
   }
   return launchpad
 }

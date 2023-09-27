@@ -21,10 +21,10 @@ export default function LaunchpadDetails() {
           Back
         </Link>
       </div>
-      <div className="md:col-span-6 col-span-12">
+      <div className="md:col-span-7 col-span-12">
         <Information launchpadAddress={launchpadAddress} />
       </div>
-      <div className="grid md:col-span-6 col-span-12 gap-6">
+      <div className="grid md:col-span-5 col-span-12 gap-6">
         <div>
           <BuyToken launchpadAddress={launchpadAddress} />
         </div>

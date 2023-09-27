@@ -102,7 +102,7 @@ const LaunchpadLineChart = ({ launchpadAddress }: LaunchpadLineChartProps) => {
   const calcPriceInPool = useCalcPrice()
   const getLaunchpadWeight = useGetLaunchpadWeight()
   const getBalanceAtTime = useGetBalanceAtTime(launchpadAddress)
-  const [stablePrice] = usePrices([stableMint.toBase58()]) || [0]
+  const [stablePrice] = usePrices([stableMint.toBase58()]) || [1]
   const chartRef = useRef(null)
 
   const durations = useMemo(() => {

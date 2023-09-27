@@ -12,6 +12,7 @@ import BN from 'bn.js'
 import { useAnchorProvider } from '@/providers/wallet.provider'
 import {
   useCheques,
+  useFilterCheques,
   useLaunchpadByAddress,
   useLaunchpads,
 } from '@/providers/launchpad.provider'
@@ -272,7 +273,12 @@ export const useGetLaunchpadWeight = () => {
     ) => {
       const MINT_IDX = 0
       const BASE_MINT_IDX = 1
-      const launchpadData = launchpads[launchpadAddr]
+      const launchpadData = launchpads[launchpadAddr] || {
+        startWeights: [new BN(0), new BN(0)],
+        endWeights: [new BN(0), new BN(0)],
+        startTime: new BN(0),
+        endTime: new BN(0),
+      }
       const start_time = launchpadAddr
         ? launchpadData.startTime.toNumber()
         : startTime
@@ -371,6 +377,31 @@ export const useCalcWeight = () => {
     [],
   )
   return calcWeight
+}
+
+/**
+ * Calculate avg price
+ * @returns  avg price
+ */
+export const useAVGPrice = (launchpadAddress: string) => {
+  const cheques = useCheques()
+  const filteredCheques = useFilterCheques(launchpadAddress)
+
+  const avgPrice = useMemo(() => {
+    if (!filteredCheques.length) return 0
+    let totalPrice = 0
+
+    for (const chequeAddress of filteredCheques) {
+      const { askAmount, bidAmount } = cheques[chequeAddress]
+      let price = 0
+      if (askAmount.toNumber())
+        price = bidAmount.toNumber() / askAmount.toNumber()
+      totalPrice += price
+    }
+    return totalPrice
+  }, [cheques, filteredCheques])
+
+  return avgPrice
 }
 
 export const useInitLaunchpad = (props: LaunchpadInfo) => {

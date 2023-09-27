@@ -43,12 +43,13 @@ export default function Information({ launchpadAddress }: InformationProps) {
   const [activeTab, setActiveTab] = useState('launchpadInfo')
 
   const renderedBodyComponent = useMemo(() => {
-    if (activeTab === 'launchpadInfo') return <LaunchpadInfo />
+    if (activeTab === 'launchpadInfo')
+      return <LaunchpadInfo launchpadAddress={launchpadAddress} />
     return <ProjectInfo launchpadAddress={launchpadAddress} />
   }, [activeTab, launchpadAddress])
 
   return (
-    <div className="card rounded-3xl p-6 bg-[--accent-card] flex flex-col">
+    <div className="card rounded-3xl p-6 bg-[--accent-card] flex flex-col gap-4">
       <Tab activeTab={activeTab} setActiveTab={setActiveTab} />
       <div>{renderedBodyComponent}</div>
     </div>

@@ -40,7 +40,7 @@ export default function ProjectInfo({ launchpadAddress }: ProjectInfoProps) {
   }
 
   return (
-    <div className="flex flex-col gap-6 py-4">
+    <div className="flex flex-col gap-6 ">
       <Resource launchpadAddress={launchpadAddress} />
 
       {/* Description */}
