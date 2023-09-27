@@ -49,9 +49,9 @@ export default function Information({ launchpadAddress }: InformationProps) {
   }, [activeTab, launchpadAddress])
 
   return (
-    <div className="card rounded-3xl p-6 bg-base-100 flex flex-col">
+    <div className="card rounded-3xl p-6 bg-[--accent-card] flex flex-col ">
       <Tab activeTab={activeTab} setActiveTab={setActiveTab} />
-      <div>{renderedBodyComponent}</div>
+      <div className="pt-4">{renderedBodyComponent}</div>
     </div>
   )
 }

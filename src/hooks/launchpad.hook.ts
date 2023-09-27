@@ -22,7 +22,7 @@ import { usePrices } from '@/providers/mint.provider'
 import { usePoolByAddress } from '@/providers/pools.provider'
 import { decimalize } from '@/helpers/decimals'
 import { useMints } from './spl.hook'
-import { useBalancer } from './pool.hook'
+import { GENERAL_NORMALIZED_NUMBER, useBalancer } from './pool.hook'
 
 export type ProjectInfo = {
   projectName: string
@@ -360,6 +360,39 @@ export const useCalcPrice = () => {
 }
 
 /**
+ * Calculate amount swap out
+ * @returns amount out
+ */
+export const useCalcInGivenOutSwap = () => {
+  const calcInGivenOutSwap = useCallback(
+    (
+      amountIn: BN,
+      balanceOut: BN,
+      balanceIn: BN,
+      weightOut: number,
+      weightIn: number,
+      swapFee: BN,
+    ) => {
+      const numBalanceOut = utilsBN.toNumber(balanceOut)
+      const numBalanceIn = utilsBN.toNumber(balanceIn)
+      const numAmountIn = utilsBN.toNumber(amountIn)
+      const numSwapFee = utilsBN.toNumber(swapFee) / GENERAL_NORMALIZED_NUMBER
+      const ratioBeforeAfterBalance =
+        numBalanceIn / (numBalanceIn + numAmountIn)
+
+      const ratioInOutWeight = weightIn / weightOut
+      return new BN(
+        numBalanceOut *
+          (1 - ratioBeforeAfterBalance ** ratioInOutWeight) *
+          (1 - numSwapFee),
+      )
+    },
+    [],
+  )
+  return calcInGivenOutSwap
+}
+
+/**
  * Calculate weight in Pool
  * @returns  Calc function
  */
@@ -402,6 +435,47 @@ export const useAVGPrice = (launchpadAddress: string) => {
   }, [cheques, filteredCheques])
 
   return avgPrice
+}
+
+/**
+ * Buy token
+ * @param amount amount token
+ * @param launchpadAddress launchpad address
+ * @returns transaction id
+ */
+export const useBuyToken = (amount: string, launchpadAddress: string) => {
+  const { mint } = useLaunchpadByAddress(launchpadAddress)
+  const [mintInfo] = useMints([mint.toBase58()])
+  const decimals = mintInfo?.decimals || 0
+  const launchpadProgram = useLaunchpadProgram()
+  const provider = useAnchorProvider()
+
+  const onBuyToken = useCallback(async () => {
+    const cheque = Keypair.generate()
+    const tx = new Transaction()
+    const bnAmount = decimalize(amount, decimals)
+
+    const { tx: txPrint } = await launchpadProgram.printBaseMint({
+      launchpad: new PublicKey(launchpadAddress),
+      amount: bnAmount,
+      sendAndConfirm: false,
+      cheque,
+    })
+    tx.add(txPrint)
+    const { tx: txBuy } = await launchpadProgram.buyLaunchpad({
+      launchpad: new PublicKey(launchpadAddress),
+      bidAmount: bnAmount,
+      cheque: cheque.publicKey,
+      sendAndConfirm: false,
+    })
+    tx.add(txBuy)
+
+    const txId = await provider.sendAndConfirm(tx, [cheque])
+
+    return txId
+  }, [amount, decimals, launchpadAddress, launchpadProgram, provider])
+
+  return onBuyToken
 }
 
 export const useInitLaunchpad = (props: LaunchpadInfo) => {

@@ -37,7 +37,7 @@ export default function PeriodToken({ launchpadAddress }: PeriodTokenProps) {
   }, [decimals, startReserves, totalBid])
 
   return (
-    <div className="card rounded-3xl p-6 bg-base-100 flex flex-col gap-4 ">
+    <div className="card rounded-3xl p-6 bg-[--accent-card] flex flex-col gap-4 ">
       <div className="flex flex-row items-center justify-between">
         <div className="flex flex-row items-center gap-2">
           <p className="text-sm opacity-60">Your bought</p>

@@ -19,7 +19,7 @@ export default function LaunchpadDetails() {
   if (!launchpadAddress) return push('/launchpad')
   return (
     <div className="grid grid-cols-12 w-full gap-6">
-      <div className="col-span-full card bg-base-100 rounded-full p-2 flex flex-row items-center gap-2">
+      <div className="col-span-full card bg-[--accent-card] rounded-full p-2 flex flex-row items-center gap-2">
         <div className="flex-auto">
           <button className="btn btn-sm rounded-full" onClick={back}>
             <ArrowLeft className="h-4 w-4" /> Back
