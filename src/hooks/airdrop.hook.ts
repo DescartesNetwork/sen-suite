@@ -7,12 +7,7 @@ import {
   useConnection,
   useWallet,
 } from '@solana/wallet-adapter-react'
-import {
-  BlockheightBasedTransactionConfirmationStrategy,
-  ParsedAccountData,
-  PublicKey,
-  Transaction,
-} from '@solana/web3.js'
+import { ParsedAccountData, PublicKey, Transaction } from '@solana/web3.js'
 import { decode, encode } from 'bs58'
 import { utils } from '@coral-xyz/anchor'
 import BN from 'bn.js'
@@ -59,13 +54,13 @@ export const useUtility = () => {
 export const useSendBulk = (mintAddress: string) => {
   const utility = useUtility()
   const { publicKey, sendTransaction } = useWallet()
-  const { connection } = useConnection()
-  const [mint] = useMints([mintAddress])
+  const { connection: conn } = useConnection()
   const { wallet } = useAnchorProvider()
+  const [mint] = useMints([mintAddress])
 
   const decimals = useMemo(() => mint?.decimals, [mint?.decimals])
 
-  const SIZE_TRANSACTION = 7
+  const TX_SIZE = 7
 
   const sendBulk = useCallback(
     async (data: string[][]) => {
@@ -73,6 +68,10 @@ export const useSendBulk = (mintAddress: string) => {
         throw new Error('Wallet is not connected yet.')
       if (!isAddress(mintAddress)) throw new Error('Invalid mint address.')
       if (decimals === undefined) throw new Error('Cannot read onchain data.')
+
+      const totalTx = Math.ceil(data.length / TX_SIZE)
+      const transactions: Transaction[] = []
+
       // Instructions
       const ixs = await Promise.all(
         data
@@ -95,68 +94,57 @@ export const useSendBulk = (mintAddress: string) => {
           }),
       )
 
-      const numTransactions = Math.ceil(ixs.length / SIZE_TRANSACTION)
-      const allTransaction: Transaction[] = []
-
       const {
         value: { blockhash, lastValidBlockHeight },
-      } = await connection.getLatestBlockhashAndContext()
+      } = await conn.getLatestBlockhashAndContext()
 
-      for (let i = 0; i < numTransactions; i++) {
+      for (let i = 0; i < totalTx; i++) {
         const transaction = new Transaction({
           blockhash,
           lastValidBlockHeight,
           feePayer: publicKey,
         })
-        const curIdx = i * SIZE_TRANSACTION
-        for (let i = 0; i < SIZE_TRANSACTION; i++) {
-          if (ixs[curIdx + i]) transaction.add(ixs[curIdx + i])
+        const curIdx = i * TX_SIZE
+        for (let j = 0; j < TX_SIZE; j++) {
+          const insIndex = curIdx + j
+          if (ixs[insIndex]) transaction.add(ixs[insIndex])
         }
-        allTransaction.push(transaction)
+        transactions.push(transaction)
       }
 
-      // Transaction
-      const signedTxs = await wallet.signAllTransactions(allTransaction)
+      // Sign all and broadcast transactions
+      const signedTxs = await wallet.signAllTransactions(transactions)
       const txIds: string[] = []
-      const errorIndexData: number[] = []
+      const listErrLocation: number[] = []
 
       await Promise.all(
         signedTxs.map(async (tx, idx) => {
           try {
-            const signature = await connection.sendRawTransaction(
-              tx.serialize(),
-            )
-            const confirmStrategy: BlockheightBasedTransactionConfirmationStrategy =
-              { blockhash, lastValidBlockHeight, signature }
-            await connection.confirmTransaction(confirmStrategy)
-
+            const signature = await conn.sendRawTransaction(tx.serialize())
+            await conn.confirmTransaction({
+              blockhash,
+              lastValidBlockHeight,
+              signature,
+            })
             txIds.push(signature)
           } catch {
-            errorIndexData.push(idx)
+            listErrLocation.push(idx)
           }
         }),
       )
 
+      // Get errors data
       const errorData: string[][] = []
-      for (const errorIndex of errorIndexData) {
-        const curIdx = errorIndex * SIZE_TRANSACTION
-
-        for (let i = 0; i < SIZE_TRANSACTION; i++) {
-          if (data[curIdx + i]) errorData.push(data[curIdx + i])
+      listErrLocation.forEach((errorIndex) => {
+        for (let i = 0; i < TX_SIZE; i++) {
+          const dataIndex = errorIndex * TX_SIZE + i
+          if (data[dataIndex]) errorData.push(data[dataIndex])
         }
-      }
+      })
 
       return { errorData, txIds }
     },
-    [
-      utility,
-      publicKey,
-      sendTransaction,
-      mintAddress,
-      decimals,
-      connection,
-      wallet,
-    ],
+    [utility, publicKey, sendTransaction, mintAddress, decimals, conn, wallet],
   )
 
   return sendBulk

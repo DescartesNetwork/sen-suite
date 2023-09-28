@@ -1,9 +1,8 @@
 'use client'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
 import BN from 'bn.js'
-import { Keypair } from '@solana/web3.js'
+import { redirect } from 'next/navigation'
 
 import { ChevronLeft } from 'lucide-react'
 import { MintLogo, MintSymbol } from '@/components/mint'
@@ -30,7 +29,7 @@ enum RowStatus {
   ZeroAmount,
 }
 
-const SIZE_TRANSACTION_DATA = 7
+const TX_SIZE = 7
 
 export default function SummaryBulkSender() {
   const [loading, setLoading] = useState(false)
@@ -140,36 +139,31 @@ export default function SummaryBulkSender() {
     try {
       setLoading(true)
       const { errorData, txIds } = await sendBulk(data)
-      setData(errorData)
-      setIsRetry(!!errorData.length)
-
-      !errorData.length &&
-        pushMessage(
+      if (!errorData.length) {
+        setIsRetry(false)
+        return pushMessage(
           'alert-success',
           `Successfully send ${data.length} receiver. Click here to view on explorer.`,
-          {
-            onClick: () => window.open(solscan(txIds.pop() || ''), '_blank'),
-          },
-        )
-
-      if (errorData.length) {
-        for (let i = 1; i <= txIds.length; i++) {
-          const curIdx = i * SIZE_TRANSACTION_DATA
-          pushMessage(
-            'alert-success',
-            `Successfully send ${curIdx} to ${
-              curIdx + SIZE_TRANSACTION_DATA
-            } receiver. Click here to view on explorer.`,
-            {
-              onClick: () => window.open(solscan(txIds[i]), '_blank'),
-            },
-          )
-        }
-        pushMessage(
-          'alert-error',
-          'Transaction interrupted. Please retry unexecuted transactions',
+          { onClick: () => window.open(solscan(txIds.pop() || ''), '_blank') },
         )
       }
+
+      for (let i = 1; i <= txIds.length; i++) {
+        const curIdx = i * TX_SIZE
+        pushMessage(
+          'alert-success',
+          `Successfully sent from receiver ${curIdx} to ${
+            curIdx + TX_SIZE
+          } receiver. Click here to view on explorer.`,
+          { onClick: () => window.open(solscan(txIds[i]), '_blank') },
+        )
+      }
+      setData(errorData)
+      setIsRetry(true)
+      return pushMessage(
+        'alert-error',
+        'Transaction interrupted. Please retry unexecuted transactions',
+      )
     } catch (er: any) {
       pushMessage('alert-error', er.message)
     } finally {
@@ -177,145 +171,125 @@ export default function SummaryBulkSender() {
     }
   }, [data, pushMessage, sendBulk, setData])
 
-  useEffect(() => {
-    if (data.length) return () => {}
-    const newData = []
-    const rand = () => Math.round(Math.random() * 10 ** 4) / 10 ** 4
-    while (newData.length < 49) {
-      let r = rand()
-      const kp = new Keypair()
-      newData.push([kp.publicKey.toBase58(), r.toString()])
-      while (r >= 0.95) {
-        r = rand()
-        newData.push([kp.publicKey.toBase58(), r.toString()])
-      }
-    }
-    setData(newData)
-  }, [data, setData])
-
   if (!isAddress(mintAddress)) return redirect('/airdrop/bulk-sender')
   return (
-    <div className="max-w-[480px] pt-20">
-      <Link href={'/airdrop/bulk-sender'} className="btn btn-sm btn-ghost mb-2">
-        <ChevronLeft size={16} />
-        Back
-      </Link>
-      <div className="card bg-base-100 rounded-3xl p-6 shadow-xl grid grid-cols-12 gap-6 ">
-        <div className="col-span-12">
-          <h5 className="mb-2">Bulk Sender</h5>
-        </div>
-        <div className="col-span-12">
-          <div className="grid grid-cols-12 gap-x-2 gap-y-6">
-            <div className="col-span-12 card p-2 flex flex-row gap-2 items-center">
-              <MintLogo
-                className="h-9 w-9 rounded-full"
-                mintAddress={mintAddress}
+    <div className="grid grid-cols-12 gap-4">
+      <div className="col-span-full">
+        <Link href={'/airdrop/bulk-sender'} className="btn btn-sm btn-ghost ">
+          <ChevronLeft size={16} />
+          Back
+        </Link>
+      </div>
+      <div className="col-span-full card bg-base-100 rounded-3xl p-6 shadow-xl grid grid-cols-12 gap-8 ">
+        <h5 className="col-span-full">Bulk Sender</h5>
+        <div className="col-span-full grid grid-cols-12 gap-x-2 gap-y-6">
+          <div className="col-span-full card flex flex-row gap-2 items-center">
+            <MintLogo
+              className="h-9 w-9 rounded-full"
+              mintAddress={mintAddress}
+            />
+            <p className="font-bold flex-auto">
+              <MintSymbol mintAddress={mintAddress} />
+            </p>
+            <label className="label cursor-pointer gap-2">
+              <span className="label-text">Enable decimals</span>
+              <input
+                type="checkbox"
+                className="checkbox"
+                checked={decimalized}
+                onChange={(e) => setDecimalized(e.target.checked)}
               />
-              <p className="font-bold flex-auto">
-                <MintSymbol mintAddress={mintAddress} />
-              </p>
-              <label className="label cursor-pointer gap-2">
-                <span className="label-text">Enable decimals</span>
-                <input
-                  type="checkbox"
-                  className="checkbox"
-                  checked={decimalized}
-                  onChange={(e) => setDecimalized(e.target.checked)}
-                />
-              </label>
-            </div>
-            <div className="col-span-full flex flex-col gap-2">
-              {data.map(([address, amount], i) => (
-                <EditRowBulkSender
-                  key={`${address}-${i}`}
-                  index={String(i + 1)}
-                  address={address}
-                  amount={amount}
-                  onClick={() => onDelete(i)}
-                  error={
-                    statuses[i] === RowStatus.BadAddress ||
-                    statuses[i] === RowStatus.BadAmount
-                  }
-                  warning={
-                    statuses[i] === RowStatus.Duplicated ||
-                    statuses[i] === RowStatus.ZeroAmount
-                  }
-                />
-              ))}
+            </label>
+          </div>
+          <div className="col-span-full flex flex-col gap-2">
+            {data.map(([address, amount], i) => (
               <EditRowBulkSender
-                index={String(data.length + 1)}
-                address={newAddress}
-                onAddress={setNewAddress}
-                amount={newAmount}
-                onAmount={setNewAmount}
-                onClick={onAdd}
-                toAdd
+                key={`${address}-${i}`}
+                index={String(i + 1)}
+                address={address}
+                amount={amount}
+                onClick={() => onDelete(i)}
+                error={
+                  statuses[i] === RowStatus.BadAddress ||
+                  statuses[i] === RowStatus.BadAmount
+                }
+                warning={
+                  statuses[i] === RowStatus.Duplicated ||
+                  statuses[i] === RowStatus.ZeroAmount
+                }
               />
-            </div>
-            <div className="col-span-full @container">
-              <div className="flex flex-row justify-between items-center mb-6">
-                {errors > 0 && (
-                  <span className="text-error text-sm font-semibold">{`${errors} error(s)`}</span>
-                )}
-                {warnings > 0 && (
-                  <span className="text-warning text-sm font-semibold">{`${warnings} warning(s)`}</span>
-                )}
-                {!errors && !warnings && (
-                  <span className="text-success text-sm font-semibold">
-                    Optimized
-                  </span>
-                )}
-                <div className="flex flex-row gap-2 items-center">
-                  <button
-                    className="btn btn-xs btn-outline rounded-full btn-error"
-                    onClick={onFilterZeros}
-                    disabled={!statuses.find((e) => e === RowStatus.ZeroAmount)}
-                  >
-                    Remove zeros
-                  </button>
-
-                  <button
-                    className="btn btn-xs btn-outline rounded-full btn-error"
-                    onClick={onMergeDuplicates}
-                    disabled={!statuses.find((e) => e === RowStatus.Duplicated)}
-                  >
-                    Merge duplicates
-                  </button>
-                </div>
-              </div>
-              <div className="card flex flex-col bg-base-200 rounded-box w-full p-4 gap-2">
-                <div className=" flex flex-row justify-between">
-                  <p className="text-sm opacity-60">Receivers</p>
-                  {numeric(data.length).format('0,0')}
-                </div>
-                <div className="flex flex-row justify-between">
-                  <p className="text-sm opacity-60">Total value</p>
-                  <div className="flex flex-col gap-1">
-                    <div className="flex flex-row text-xl font-bold">
-                      {numeric(
-                        undecimalize(amount, mint?.decimals || 0),
-                      ).format('0,0.[0000]')}{' '}
-                      <MintSymbol mintAddress={mintAddress} />
-                    </div>
-                    <p className="text-right opacity-60">
-                      {numeric(tvl).format('$0a.[0000]')}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <button
-              className="col-span-full btn btn-primary rounded-3xl"
-              onClick={onSend}
-              disabled={loading}
-            >
-              {loading && (
-                <span className="loading loading-spinner loading-sm" />
+            ))}
+            <EditRowBulkSender
+              index={String(data.length + 1)}
+              address={newAddress}
+              onAddress={setNewAddress}
+              amount={newAmount}
+              onAmount={setNewAmount}
+              onClick={onAdd}
+              toAdd
+            />
+          </div>
+          <div className="col-span-full  @container">
+            <div className="flex flex-row justify-between items-center mb-6">
+              {errors > 0 && (
+                <span className="text-error text-sm font-semibold">{`${errors} error(s)`}</span>
               )}
-              {isRetry ? 'Retry' : 'Send'}
-            </button>
+              {warnings > 0 && (
+                <span className="text-warning text-sm font-semibold">{`${warnings} warning(s)`}</span>
+              )}
+              {!errors && !warnings && (
+                <span className="text-success text-sm font-semibold">
+                  Optimized
+                </span>
+              )}
+              <div className="flex flex-row gap-2 items-center">
+                <button
+                  className="btn btn-xs btn-outline rounded-full btn-error"
+                  onClick={onFilterZeros}
+                  disabled={!statuses.find((e) => e === RowStatus.ZeroAmount)}
+                >
+                  Remove zeros
+                </button>
+
+                <button
+                  className="btn btn-xs btn-outline rounded-full btn-error"
+                  onClick={onMergeDuplicates}
+                  disabled={!statuses.find((e) => e === RowStatus.Duplicated)}
+                >
+                  Merge duplicates
+                </button>
+              </div>
+            </div>
+            <div className="card flex flex-col bg-base-200 rounded-box w-full p-4 gap-2">
+              <div className=" flex flex-row justify-between">
+                <p className="text-sm opacity-60">Receivers</p>
+                {numeric(data.length).format('0,0')}
+              </div>
+              <div className="flex flex-row justify-between">
+                <p className="text-sm opacity-60">Total value</p>
+                <div className="flex flex-col gap-1">
+                  <div className="flex flex-row text-xl font-bold">
+                    {numeric(undecimalize(amount, mint?.decimals || 0)).format(
+                      '0,0.[0000]',
+                    )}{' '}
+                    <MintSymbol mintAddress={mintAddress} />
+                  </div>
+                  <p className="text-right opacity-60">
+                    {numeric(tvl).format('$0a.[0000]')}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+        <button
+          className="col-span-full btn btn-primary rounded-3xl"
+          onClick={onSend}
+          disabled={loading || !data.length}
+        >
+          {loading && <span className="loading loading-spinner loading-sm" />}
+          {isRetry ? 'Retry' : 'Send'}
+        </button>
       </div>
     </div>
   )
