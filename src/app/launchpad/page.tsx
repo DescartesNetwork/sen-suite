@@ -20,7 +20,7 @@ export default function Launchpad() {
           onClick={() =>
             push(`/launchpad/all-launchpad?state=${LaunchpadSate.yourPurchase}`)
           }
-          className="tooltip cursor-pointer"
+          className="tooltip cursor-pointer tooltip-left"
           data-tip="View your purchase"
         >
           <Backpack

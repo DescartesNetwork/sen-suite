@@ -83,46 +83,50 @@ export default function ProjectInfo({ launchpadAddress }: ProjectInfoProps) {
       {projectInfo && (
         <div className="flex flex-col gap-2">
           <p className="text-base font-bold">Social media</p>
-          {projectInfo.socials.map((social, index) => (
-            <div key={social} className="flex flex-row items-center gap-4">
-              <div
-                onClick={() => onRedirect(social)}
-                className="flex items-center cursor-pointer"
-              >
-                <SocialInfo key={social} url={social} showName />
-              </div>
-              {/* Divide line */}
-              {index !== projectInfo.socials.length - 1 && (
-                <div className="w-[1px] h-4 bg-[--opaline-line]" />
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-      {projectInfo && !!projectInfo.vCs.length && (
-        <div className="flex flex-col gap-2">
-          <p className="text-base font-bold">Leading venture capital</p>
-          {projectInfo.vCs.map(({ link, logo }, index) => {
-            if (!link) return null
-            return (
-              <div key={link} className="flex flex-row items-center gap-4">
-                <div className="flex flex-row items-center gap-2 cursor-pointer">
-                  <Image
-                    className="rounded-full"
-                    src={logo}
-                    height={21}
-                    width={21}
-                    alt=""
-                  />
-                  <p className="text-sm">{link}</p>
+          <div className="flex flex-row items-center gap-4">
+            {projectInfo.socials.map((social, index) => (
+              <div key={social} className="flex flex-row items-center gap-4">
+                <div
+                  onClick={() => onRedirect(social)}
+                  className="flex items-center cursor-pointer"
+                >
+                  <SocialInfo key={social} url={social} showName />
                 </div>
                 {/* Divide line */}
                 {index !== projectInfo.socials.length - 1 && (
                   <div className="w-[1px] h-4 bg-[--opaline-line]" />
                 )}
               </div>
-            )
-          })}
+            ))}
+          </div>
+        </div>
+      )}
+      {projectInfo && !!projectInfo.vCs.length && (
+        <div className="flex flex-col gap-2">
+          <p className="text-base font-bold">Leading venture capital</p>
+          <div className="flex flex-row items-center gap-4">
+            {projectInfo.vCs.map(({ link, logo }, index) => {
+              if (!link) return null
+              return (
+                <div key={link} className="flex flex-row items-center gap-4">
+                  <div className="flex flex-row items-center gap-2 cursor-pointer">
+                    <Image
+                      className="rounded-full aspect-square object-cover align-middle"
+                      src={logo}
+                      width={24}
+                      height={24}
+                      alt=""
+                    />
+                    <p className="text-sm">{link}</p>
+                  </div>
+                  {/* Divide line */}
+                  {index !== projectInfo.vCs.length - 1 && (
+                    <div className="w-[1px] h-4 bg-[--opaline-line]" />
+                  )}
+                </div>
+              )
+            })}
+          </div>
         </div>
       )}
     </div>
