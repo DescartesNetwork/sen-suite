@@ -84,10 +84,8 @@ export const useLaunchpadMetadata = (launchpadAddress: string) => {
         let cid = encode(Buffer.from(metadata))
         if (LaunchpadMetadata[launchpadAddress])
           cid = LaunchpadMetadata[launchpadAddress]
-        console.log('cid', cid)
         const fileName = toFilename(cid)
         const url = 'https://sen-storage.s3.us-west-2.amazonaws.com/' + fileName
-        console.log('url ', url)
         const { data } = await axios.get(url)
         return data as ProjectInfo
       } catch (error) {

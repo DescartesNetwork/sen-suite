@@ -36,15 +36,20 @@ export default function YourBought({ launchpadAddress }: YourBoughtProp) {
   const spl = useSpl()
 
   const fetchBalance = useCallback(async () => {
-    const master = await launchpad.deriveMasterAddress(launchpadAddress)
-    const treasury = await utils.token.associatedAddress({
-      mint,
-      owner: master,
-    })
-    const accountData = await spl.account.account.fetch(treasury)
+    try {
+      if (!completed) return
+      const master = await launchpad.deriveMasterAddress(launchpadAddress)
+      const treasury = await utils.token.associatedAddress({
+        mint,
+        owner: master,
+      })
+      const accountData = await spl.account.account.fetch(treasury)
 
-    setClaimed(!Number(accountData.amount.toString()))
-  }, [launchpad, launchpadAddress, mint, spl.account.account])
+      setClaimed(!Number(accountData.amount.toString()))
+    } catch (error) {
+      setClaimed(false)
+    }
+  }, [completed, launchpad, launchpadAddress, mint, spl.account.account])
 
   useEffect(() => {
     fetchBalance()

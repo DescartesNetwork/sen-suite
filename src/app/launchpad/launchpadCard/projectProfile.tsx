@@ -18,6 +18,10 @@ export default function ProjectProfile({
         src={projectProfile?.coverPhoto}
         alt="launchpad-img"
         className="h-16 w-16 rounded-lg object-cover"
+        onError={({ currentTarget }) => {
+          currentTarget.onerror = null // prevents looping
+          currentTarget.src = '/panel-light.jpg'
+        }}
       />
       <div className="flex flex-col gap-1">
         <p className="font-bold">{projectProfile?.projectName}</p>

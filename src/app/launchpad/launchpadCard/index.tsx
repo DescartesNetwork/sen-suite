@@ -44,6 +44,10 @@ export default function LaunchpadCard({
         alt="launchpad-img"
         className="w-full aspect-video rounded-t-3xl object-cover"
         width={100}
+        onError={({ currentTarget }) => {
+          currentTarget.onerror = null // prevents looping
+          currentTarget.src = '/panel-light.jpg'
+        }}
       />
       <div className="rounded-3xl min-h-[400px] card bg-base-100 p-6 grid grid-cols-12 gap-4 -mt-6">
         <div className="col-span-full flex justify-between items-start">
