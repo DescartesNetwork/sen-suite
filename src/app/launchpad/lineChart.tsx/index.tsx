@@ -97,7 +97,9 @@ const buildOptions = (
   }
 }
 
-const LaunchpadLineChart = ({ launchpadAddress }: LaunchpadLineChartProps) => {
+export default function LaunchpadLineChart({
+  launchpadAddress,
+}: LaunchpadLineChartProps) {
   const { stableMint, startTime, endTime, startReserves } =
     useLaunchpadByAddress(launchpadAddress)
   const calcPriceInPool = useCalcPrice()
@@ -172,5 +174,3 @@ const LaunchpadLineChart = ({ launchpadAddress }: LaunchpadLineChartProps) => {
 
   return <div ref={chartRef} style={{ width: '100%', height: '306px' }} />
 }
-
-export default LaunchpadLineChart

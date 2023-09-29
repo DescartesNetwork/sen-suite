@@ -82,7 +82,7 @@ const buildOptions = (defaultValue: number[], durations: number[]) => {
   }
 }
 
-const LaunchpadChartInit = ({
+export default function LaunchpadChartInit({
   startPrice,
   endPrice,
   balanceA,
@@ -91,7 +91,7 @@ const LaunchpadChartInit = ({
   startTime,
   endTime,
   mint,
-}: LaunchpadLineChartProps) => {
+}: LaunchpadLineChartProps) {
   const calcPriceInPool = useCalcPrice()
   const getLaunchpadWeight = useGetLaunchpadWeight()
   const mints = useMints([mint, baseMint])
@@ -176,4 +176,4 @@ const LaunchpadChartInit = ({
   return <div ref={chartRef} style={{ width: '100%', height: '306px' }} />
 }
 
-export default LaunchpadChartInit
+LaunchpadChartInit

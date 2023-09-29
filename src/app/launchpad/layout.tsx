@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 
 import { LaunchpadProvider } from '@/providers/launchpad.provider'
 import { PoolProvider } from '@/providers/pools.provider'
-import LaunchpadWAtcher from '@/watchers/launchpad.watcher'
+import LaunchpadWatcher from '@/watchers/launchpad.watcher'
 
 export const metadata: Metadata = {
   title: 'Launchpad',
@@ -20,7 +20,7 @@ export default function LaunchpadLayout({ children }: { children: ReactNode }) {
             {children}
           </div>
           {/* Watcher */}
-          <LaunchpadWAtcher />
+          <LaunchpadWatcher />
         </LaunchpadProvider>
       </PoolProvider>
     </div>
