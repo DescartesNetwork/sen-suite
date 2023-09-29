@@ -529,7 +529,7 @@ export const useInitLaunchpad = (props: LaunchpadInfo) => {
   const [baseDecimal, stableDecimal] = mints.map((mint) => mint?.decimals || 0)
   const provider = useAnchorProvider()
   const launchpadProgram = useLaunchpadProgram()
-  const [stablePrice] = usePrices([props.stableMint]) || [1]
+  const [stablePrice] = usePrices([props.stableMint]) || [0]
   const calcWeight = useCalcWeight()
   const balancer = useBalancer()
 
