@@ -13,6 +13,7 @@ import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { useFloating, offset, flip, shift } from '@floating-ui/react'
+import classNames from 'classnames'
 
 import { ChevronDown } from 'lucide-react'
 import { MintLogo, MintSymbol } from '@/components/mint'
@@ -368,14 +369,16 @@ const Expiration = ({
         showIcon
         selected={expiration ? new Date(expiration) : null}
         onChange={(date) => upsertConfigs({ expiration: date?.getTime() })}
-        className="bg-base-200 !p-3 rounded-lg w-full"
+        className={classNames('bg-base-200 !p-3 rounded-lg w-full', {
+          'opacity-60 cursor-not-allowed': unlimited,
+        })}
         placeholderText="Select time"
         dateFormat={'dd/MM/yyyy, HH:mm'}
         showTimeInput
         showTimeSelect
         disabled={unlimited}
       />
-      {error && <p className="text-xs text-[#F9575E]">{error}</p>}
+      {error && <p className="text-xs text-primary">{error}</p>}
     </div>
   )
 }
@@ -476,7 +479,7 @@ export default function InputConfigs({
   return (
     <div className="flex flex-col gap-6">
       <div className="grid  md:grid-cols-2 grid-cols-1 gap-6">
-        <div className="grid grid-cols-12 gap-6 items-center">
+        <div className="grid grid-cols-12 gap-6">
           <div className="col-span-12">
             <MintSelection />
           </div>

@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { parse } from 'papaparse'
+import classNames from 'classnames'
 
 import { ChevronDown } from 'lucide-react'
 import Dropzone from '@/components/dropzone'
@@ -115,7 +116,7 @@ export default function InputConfigs({
               onChange={onMintAddress}
             />
           </div>
-          <div className="grid grid-cols-2 gap-6 items-center">
+          <div className="grid grid-cols-2 gap-6">
             <div className="flex flex-col gap-3">
               <p className="text-xs opacity-60">Unlock time</p>
               <DatePicker
@@ -148,16 +149,16 @@ export default function InputConfigs({
                 showIcon
                 selected={expiration ? new Date(expiration) : null}
                 onChange={(date) => onTimeChange('expiration', date)}
-                className="bg-base-200 !p-3 rounded-lg w-full"
+                className={classNames('bg-base-200 !p-3 rounded-lg w-full', {
+                  'opacity-60 cursor-not-allowed': !timeError,
+                })}
                 placeholderText="Select time"
                 dateFormat={'dd/MM/yyyy, HH:mm'}
                 showTimeInput
                 showTimeSelect
                 disabled={unlimited}
               />
-              {timeError && (
-                <p className="text-xs text-[#F9575E]">{timeError}</p>
-              )}
+              {timeError && <p className="text-xs text-primary">{timeError}</p>}
             </div>
           </div>
         </div>

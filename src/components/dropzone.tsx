@@ -50,7 +50,7 @@ export default function Dropzone({
   return (
     <div className="flex flex-col gap-3">
       <div
-        className=" h-full card bg-base-200 p-8 cursor-pointer border-dashed border-2 flex flex-col gap-4 items-center"
+        className=" h-full rounded-3xl card bg-base-200 p-8 cursor-pointer border-dashed border-2 flex flex-col gap-4 items-center"
         {...getRootProps()}
       >
         <div className="bg-[#f9575e1a] p-3 rounded-xl">
