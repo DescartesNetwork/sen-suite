@@ -1,3 +1,4 @@
+'use client'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import moment from 'dayjs'
 import * as echarts from 'echarts/core'

@@ -15,7 +15,7 @@ import {
 type SoldProps = {
   launchpadAddress: string
 }
-const Sold = ({ launchpadAddress }: SoldProps) => {
+export default function Sold({ launchpadAddress }: SoldProps) {
   const cheques = useFilterCheques(launchpadAddress)
   const { startReserves, mint, startTime } =
     useLaunchpadByAddress(launchpadAddress)
@@ -48,5 +48,3 @@ const Sold = ({ launchpadAddress }: SoldProps) => {
     </div>
   )
 }
-
-export default Sold

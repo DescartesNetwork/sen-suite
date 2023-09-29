@@ -1,3 +1,4 @@
+'use client'
 import { useEffect, useMemo, useRef } from 'react'
 import dayjs from 'dayjs'
 import { utilsBN } from '@sen-use/web3'
