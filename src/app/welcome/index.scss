@@ -139,10 +139,19 @@
 }
 
 .card-social {
+  @apply opacity-0 translate-y-1/2;
+  
   &.active {
     @apply animation-appear opacity-100;
   }
-  @apply opacity-0 translate-y-1/2;
+  &:hover{
+    .direction-icon{
+      @apply hidden md:block 
+    }
+  }
+  .direction-icon{
+    @apply hidden
+  }
 }
 
 
