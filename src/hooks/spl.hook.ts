@@ -17,6 +17,7 @@ import { useAnchorProvider } from '@/providers/wallet.provider'
 export const TOKEN_20202_PROGRAM_ID = new web3.PublicKey(
   'TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb',
 )
+
 /**
  * Create an SPL instance
  * @returns SPL instance
