@@ -1,10 +1,14 @@
 'use client'
-import { ReactNode, useRef } from 'react'
-import Link from 'next/link'
+import { ReactNode, useCallback, useMemo, useRef } from 'react'
 import Image from 'next/image'
+import useSWR from 'swr'
+import axios from 'axios'
 
+import { ArrowUpRightFromCircle } from 'lucide-react'
+import Island from '@/components/island'
 import ElementIObs from '@/components/IntersectionObserver'
 
+import { numeric } from '@/helpers/utils'
 import {
   twitterIcon,
   telegramIcon,
@@ -15,14 +19,14 @@ import {
 type SocialProps = {
   icon: ReactNode
   name: string
+  community: string
   url: string
 }
 
 function GitHubIcon() {
   return (
     <svg
-      width="65"
-      height="53"
+      className="h-8 w-8"
       viewBox="0 0 65 64"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -37,45 +41,78 @@ function GitHubIcon() {
 
 const SOCIALS: SocialProps[] = [
   {
-    icon: <Image src={twitterIcon} height={53} alt="twitter" />,
+    icon: <Image src={twitterIcon} className="h-8 w-8" alt="twitter" />,
     name: 'Twitter',
+    community: 'followers',
     url: 'https://twitter.com/SentreProtocol',
   },
+
   {
-    icon: <Image src={discordIcon} height={53} alt="discord" />,
-    name: 'Discord',
-    url: 'https://discord.com/invite/VD7UBAp2HN',
-  },
-  {
-    icon: <Image src={telegramIcon} height={53} alt="telegram" />,
+    icon: <Image src={telegramIcon} className="h-8 w-8" alt="telegram" />,
     name: 'Telegram',
+    community: 'joiners',
     url: 'https://t.me/Sentre',
   },
   {
-    icon: <GitHubIcon />,
-    name: 'GitHub',
-    url: 'https://github.com/DescartesNetwork',
+    icon: <Image src={discordIcon} className="h-8 w-8" alt="discord" />,
+    name: 'Discord',
+    community: 'joiners',
+    url: 'https://discord.com/invite/VD7UBAp2HN',
   },
   {
-    icon: <Image src={youtubeIcon} height={53} alt="youtube" />,
+    icon: <Image src={youtubeIcon} className="h-8 w-8" alt="youtube" />,
     name: 'Youtube',
+    community: 'subscribers',
     url: 'https://www.youtube.com/channel/UC7P7lwc-6sLEr0yLzWfFUyg',
+  },
+  {
+    icon: <GitHubIcon />,
+    name: 'Github',
+    community: 'repositories',
+    url: 'https://github.com/DescartesNetwork',
   },
 ]
 
-function Social({ icon, name, url }: SocialProps) {
-  const cardSocialRef = useRef<HTMLAnchorElement | null>(null)
+function Social({ icon, name, url, community }: SocialProps) {
+  const cardSocialRef = useRef<HTMLDivElement | null>(null)
+
+  const fetcher = useCallback(async ([name]: [string]) => {
+    const {
+      data: { numInteraction },
+    } = await axios.get(`/api/socials/${name}`)
+    if (numInteraction)
+      localStorage.setItem(name, JSON.stringify(numInteraction))
+    return numInteraction || 0
+  }, [])
+
+  const { data } = useSWR([name, 'numInteractSocial'], fetcher)
+
+  const metric = useMemo(() => {
+    if (data) return data
+    const cacheData = localStorage.getItem(name)
+    return cacheData
+  }, [data, name])
 
   return (
-    <Link
-      href={url}
+    <div
+      onClick={() => window.open(url, '_blank')}
       ref={cardSocialRef}
-      className="card-social pos-center gap-6 p-6 w-full h-full bg-base-100 hover:border-primary border-2 border-base-100 rounded-3xl"
+      className="card-social flex flex-col gap-5 px-6 py-4 w-full h-full bg-base-100 hover:border-primary border-2 border-base-100 rounded-3xl cursor-pointer"
     >
-      {icon}
-      <p className="text-center">{name}</p>
+      <div className="flex flex-row justify-between md:flex-col md:justify-start gap-5">
+        <div className="flex flex-row justify-between items-center">
+          <p>{name}</p>
+          <ArrowUpRightFromCircle className="direction-icon" size={16} />
+        </div>
+        {icon}
+      </div>
+      <div className="flex flex-row justify-between items-center">
+        <h5>{numeric(metric).format('+0a')}</h5>
+        <p className="opacity-60 md:text-xs">{community}</p>
+      </div>
+
       <ElementIObs threshold={0.08} force querySelector={cardSocialRef} />
-    </Link>
+    </div>
   )
 }
 
@@ -92,7 +129,9 @@ export default function ListSocial() {
       </h3>
       <div className="list-social text-center text-secondary-content w-full grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-6">
         {SOCIALS.map((social) => (
-          <Social key={social.name} {...social} />
+          <Island key={social.name}>
+            <Social {...social} />
+          </Island>
         ))}
       </div>
       <ElementIObs threshold={0.1} force querySelector={listSocialRef} />
