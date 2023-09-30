@@ -2,23 +2,21 @@ import axios from 'axios'
 
 import deplConfig from '@/configs/depl.config'
 
+export const DATA_SOCIAL = [
+  { name: 'twitter', numInteraction: () => getFollowsTwitter() },
+  { name: 'telegram', numInteraction: () => getJoinersTelegram() },
+  { name: 'youtube', numInteraction: () => getSubYoutube() },
+  { name: 'github', numInteraction: () => getRepoGithub() },
+  { name: 'discord', numInteraction: () => getJoinersDiscord() },
+]
+
 export const getNumInteractSocials = (socialName: string) => {
-  switch (socialName) {
-    case 'Telegram':
-      return getJoinersTelegram()
-
-    case 'Youtube':
-      return getSubYoutube()
-
-    case 'Discord':
-      return getJoinersDiscord()
-
-    case 'Github':
-      return getRepoGithub()
-
-    case 'Twitter':
-      return getFollowsTwitter()
+  for (const social of DATA_SOCIAL) {
+    if (social.name === socialName) {
+      return social.numInteraction()
+    }
   }
+  return null
 }
 
 const getSubYoutube = async () => {
