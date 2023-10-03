@@ -43,7 +43,7 @@ export const useAcademyPaging = (pageIds: string[], metadata: PageMap) => {
   const availableIds = useMemo(
     () =>
       pageIds.filter((pageId) => {
-        const { publishedAt } = metadata[pageId]
+        const { publishedAt } = metadata[pageId] || { publishedAt: Date.now() }
         return publishedAt < Date.now()
       }),
     [pageIds, metadata],
@@ -51,7 +51,7 @@ export const useAcademyPaging = (pageIds: string[], metadata: PageMap) => {
 
   const pinnedIds = useMemo(() => {
     return availableIds.filter((pageId) => {
-      const { pinned } = metadata[pageId]
+      const { pinned } = metadata[pageId] || { pinned: false }
       return pinned
     })
   }, [availableIds, metadata])
@@ -59,7 +59,7 @@ export const useAcademyPaging = (pageIds: string[], metadata: PageMap) => {
   const taggedIds = useMemo(
     () =>
       availableIds.filter((pageId) => {
-        const { tags } = metadata[pageId]
+        const { tags } = metadata[pageId] || { tags: [] }
         if (!tag) return true
         if (tag === 'Others')
           return !TAGS.map(({ tag }) => tags.includes(tag)).reduce(

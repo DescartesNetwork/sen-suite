@@ -10,7 +10,11 @@ export async function generateMetadata({
   params: { pageId: string }
 }): Promise<Metadata> {
   const { metadata } = await getDatabase()
-  const { title, description, thumbnail } = metadata[pageId]
+  const {
+    title = '',
+    description = '',
+    thumbnail = '',
+  } = metadata[pageId] || {}
   return {
     title: `Sentre Academy | ${title}`,
     description,
