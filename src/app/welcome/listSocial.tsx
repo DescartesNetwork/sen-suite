@@ -42,32 +42,32 @@ function GitHubIcon() {
 const SOCIALS: SocialProps[] = [
   {
     icon: <Image src={twitterIcon} className="h-8 w-8" alt="twitter" />,
-    name: 'Twitter',
+    name: 'twitter',
     community: 'followers',
     url: 'https://twitter.com/SentreProtocol',
   },
 
   {
     icon: <Image src={telegramIcon} className="h-8 w-8" alt="telegram" />,
-    name: 'Telegram',
+    name: 'telegram',
     community: 'joiners',
     url: 'https://t.me/Sentre',
   },
   {
     icon: <Image src={discordIcon} className="h-8 w-8" alt="discord" />,
-    name: 'Discord',
+    name: 'discord',
     community: 'joiners',
     url: 'https://discord.com/invite/VD7UBAp2HN',
   },
   {
     icon: <Image src={youtubeIcon} className="h-8 w-8" alt="youtube" />,
-    name: 'Youtube',
+    name: 'youtube',
     community: 'subscribers',
     url: 'https://www.youtube.com/channel/UC7P7lwc-6sLEr0yLzWfFUyg',
   },
   {
     icon: <GitHubIcon />,
-    name: 'Github',
+    name: 'github',
     community: 'repositories',
     url: 'https://github.com/DescartesNetwork',
   },
@@ -101,7 +101,7 @@ function Social({ icon, name, url, community }: SocialProps) {
     >
       <div className="flex flex-row justify-between md:flex-col md:justify-start gap-5">
         <div className="flex flex-row justify-between items-center">
-          <p>{name}</p>
+          <p className="capitalize">{name}</p>
           <ArrowUpRightFromCircle className="direction-icon" size={16} />
         </div>
         {icon}
