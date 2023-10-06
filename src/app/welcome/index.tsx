@@ -1,6 +1,7 @@
 'use client'
 import { useRef } from 'react'
 
+import Description from './description'
 import ListApp from './listApp'
 import ListPartner from './listPartner'
 import ListSocial from './listSocial'
@@ -29,7 +30,9 @@ export default function Welcome() {
         <div className="start-scroll" />
         <div className="stop-scroll" ref={imageZoomRef} />
       </section>
-
+      <section className="w-full relative mt-[-100vh] z-20">
+        <Description />
+      </section>
       <section className="w-full relative mt-[-100vh] z-10">
         <ListApp />
       </section>
