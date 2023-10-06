@@ -1,6 +1,7 @@
 'use client'
 import { useRef } from 'react'
 
+import Description from './description'
 import ListApp from './listApp'
 import ListPartner from './listPartner'
 import ListSocial from './listSocial'
@@ -13,7 +14,7 @@ export default function Welcome() {
 
   return (
     <div className="welcome-container no-scrollbar">
-      <section className="section-screen bg-cover bg-swap-light dark:bg-swap-dark z-20 no-scrollbar">
+      <section className="section-screen bg-cover bg-swap-light dark:bg-swap-dark z-30 no-scrollbar">
         <div className="zoom-image">
           <div className="wrap-image">
             <div className="dark:bg-[url('/mobile-dark.png')] bg-[url('/mobile-light.png')] dark:md:bg-[url('/laptop-dark.png')] md:bg-[url('/laptop-light.png')] bg-contain bg-no-repeat bg-center pos-center gap-2 w-full aspect-[2/4] md:aspect-[5/5]">
@@ -29,7 +30,9 @@ export default function Welcome() {
         <div className="start-scroll" />
         <div className="stop-scroll" ref={imageZoomRef} />
       </section>
-
+      <section className="w-full relative mt-[-100vh] z-20">
+        <Description />
+      </section>
       <section className="w-full relative mt-[-100vh] z-10">
         <ListApp />
       </section>
