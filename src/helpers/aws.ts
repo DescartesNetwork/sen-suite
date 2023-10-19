@@ -31,7 +31,6 @@ export const uploadFileToAws = async (file: File) => {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
-      withCredentials: true,
     },
   )
   return data.cid

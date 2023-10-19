@@ -39,7 +39,7 @@ export default function EditRecipient({
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-xs">Wallet address 1</p>
+      <p className="text-xs">Receiver Address {index}</p>
       <div className="relative flex flex-row items-center">
         <div className="flex-auto grid grid-cols-12 join">
           <input
