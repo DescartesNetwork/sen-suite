@@ -84,10 +84,9 @@ export default function TokenAccountProvider({
     if (!publicKey) return () => {}
     const id = spl.provider.connection.onProgramAccountChange(
       spl.programId,
-      (accountInfo: KeyedAccountInfo) => {
-        const buf = accountInfo.accountInfo.data
-        const data = spl.coder.accounts.decode('account', buf)
-        return upsertTokenAccount(data.mint.toBase58(), data)
+      ({ accountId, accountInfo }: KeyedAccountInfo) => {
+        const data = spl.coder.accounts.decode('account', accountInfo.data)
+        return upsertTokenAccount(accountId.toBase58(), data)
       },
       'confirmed',
       [{ memcmp: { bytes: publicKey.toBase58(), offset: 32 } }],

@@ -31,6 +31,7 @@ export default function TokenCard({
   const { amount } = useTokenAccountByMintAddress(mintAddress) || {
     amount: new BN(0),
   }
+
   return (
     <div
       className={classNames(
