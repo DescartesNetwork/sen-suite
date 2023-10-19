@@ -7,7 +7,12 @@ import Bid from './bid'
 import SwapSettings from './swapSettings'
 import SwapInfo from './swapInfo'
 
-import { useSwap, useSwitch, useUnsafeSwap } from '@/hooks/swap.hook'
+import {
+  useSwap,
+  useSwapStore,
+  useSwitch,
+  useUnsafeSwap,
+} from '@/hooks/swap.hook'
 import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
 
@@ -17,6 +22,7 @@ export default function Swap() {
   const { routes, fetching } = useUnsafeSwap()
   const { swap } = useSwap()
   const pushMessage = usePushMessage()
+  const setBidAmount = useSwapStore(({ setBidAmount }) => setBidAmount)
 
   const onSwap = useCallback(async () => {
     try {
@@ -29,12 +35,13 @@ export default function Swap() {
           onClick: () => window.open(solscan(txId), '_blank'),
         },
       )
+      setBidAmount('')
     } catch (er: any) {
       pushMessage('alert-error', er.message)
     } finally {
       setLoading(false)
     }
-  }, [swap, pushMessage])
+  }, [swap, setBidAmount, pushMessage])
 
   return (
     <div className="grid grid-cols-12 gap-2 card rounded-3xl bg-base-100 shadow-xl p-4">

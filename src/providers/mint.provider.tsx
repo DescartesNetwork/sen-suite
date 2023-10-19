@@ -156,6 +156,7 @@ export const useSearchMint = () => {
 export const usePrices = (mintAddresses: string[]) => {
   const prices = useMintStore(({ prices }) => prices)
   const upsertPrices = useMintStore(({ upsertPrices }) => upsertPrices)
+
   const getPrices = useCallback(
     async (mintAddresses: string[]) => {
       const data = await Promise.all(
@@ -174,6 +175,7 @@ export const usePrices = (mintAddresses: string[]) => {
     },
     [prices, upsertPrices],
   )
+
   const { data } = useSWR([mintAddresses, 'prices'], ([mintAddresses]) =>
     getPrices(mintAddresses),
   )

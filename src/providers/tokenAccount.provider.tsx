@@ -1,14 +1,15 @@
 'use client'
-import { Fragment, ReactNode } from 'react'
+import { Fragment, ReactNode, useCallback, useEffect } from 'react'
 import { splTokenProgram } from '@coral-xyz/spl-token'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { useWallet } from '@solana/wallet-adapter-react'
-import { useAsync } from 'react-use'
 
 import { env } from '@/configs/env'
 import { isAddress } from '@/helpers/utils'
 import { useSpl } from '@/hooks/spl.hook'
+import { produce } from 'immer'
+import { KeyedAccountInfo } from '@solana/web3.js'
 
 export type TokenAccount = Awaited<
   ReturnType<ReturnType<typeof splTokenProgram>['account']['account']['fetch']>
@@ -21,6 +22,7 @@ export type TokenAccount = Awaited<
 export type TokenAccountStore = {
   tokenAccounts: Record<string, TokenAccount>
   setTokenAccounts: (tokenAccounts: Record<string, TokenAccount>) => void
+  upsertTokenAccount: (address: string, tokenAccountData: TokenAccount) => void
 }
 
 export const useTokenAccountStore = create<TokenAccountStore>()(
@@ -29,6 +31,14 @@ export const useTokenAccountStore = create<TokenAccountStore>()(
       tokenAccounts: {},
       setTokenAccounts: (tokenAccounts: Record<string, TokenAccount>) =>
         set({ tokenAccounts }, false, 'setTokenAccounts'),
+      upsertTokenAccount: (address: string, tokenAccountData: TokenAccount) =>
+        set(
+          produce<TokenAccountStore>(({ tokenAccounts }) => {
+            tokenAccounts[address] = tokenAccountData
+          }),
+          false,
+          'upsertTokenAccount',
+        ),
     }),
     {
       name: 'toke-account',
@@ -49,10 +59,13 @@ export default function TokenAccountProvider({
   const setTokenAccounts = useTokenAccountStore(
     ({ setTokenAccounts }) => setTokenAccounts,
   )
+  const upsertTokenAccount = useTokenAccountStore(
+    ({ upsertTokenAccount }) => upsertTokenAccount,
+  )
   const spl = useSpl()
   const { publicKey } = useWallet()
 
-  useAsync(async () => {
+  const fetch = useCallback(async () => {
     if (!publicKey) return []
     const data = await spl.account.account.all([
       {
@@ -66,6 +79,26 @@ export default function TokenAccountProvider({
     )
     return setTokenAccounts(tokenAccounts)
   }, [publicKey, spl, setTokenAccounts])
+
+  const watch = useCallback(() => {
+    if (!publicKey) return () => {}
+    const id = spl.provider.connection.onProgramAccountChange(
+      spl.programId,
+      (accountInfo: KeyedAccountInfo) => {
+        const buf = accountInfo.accountInfo.data
+        const data = spl.coder.accounts.decode('account', buf)
+        return upsertTokenAccount(data.mint.toBase58(), data)
+      },
+      'confirmed',
+      [{ memcmp: { bytes: publicKey.toBase58(), offset: 32 } }],
+    )
+    return () => spl.provider.connection.removeProgramAccountChangeListener(id)
+  }, [publicKey, spl, upsertTokenAccount])
+
+  useEffect(() => {
+    fetch()
+    return watch()
+  }, [fetch, watch])
 
   return <Fragment>{children}</Fragment>
 }
