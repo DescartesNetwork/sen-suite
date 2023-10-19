@@ -30,9 +30,7 @@ export default function MintLogoUpload({
 
   const onUpload = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      console.log(12)
       if (!setLogo) return
-      console.log(1)
       const [logo] = Array.from(e.target.files || [])
       return setLogo(logo)
     },

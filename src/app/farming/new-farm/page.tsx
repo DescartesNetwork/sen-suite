@@ -53,7 +53,6 @@ export default function NewFarm() {
       )
       push(`/farming/farm-details?farmAddress=${farmAddress}`)
     } catch (er: any) {
-      console.log(er.message)
       pushMessage('alert-error', er.message)
     } finally {
       setLoading(false)
