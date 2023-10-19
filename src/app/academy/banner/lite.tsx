@@ -3,6 +3,8 @@ import Link from 'next/link'
 import dayjs from 'dayjs'
 import { Pin } from 'lucide-react'
 
+import { normalizePageTitle } from '@/app/api/blogs/[pageId]/utils'
+
 export type LiteProps = {
   pageId: string
   metadata: PageMetadata
@@ -15,7 +17,7 @@ export default function Lite({
   return (
     <Link
       className="card card-side h-full bg-base-100 rounded-box shadow"
-      href={`/academy/${pageId}`}
+      href={`/academy/${normalizePageTitle(title)}/${pageId}`}
     >
       <div className="w-full flex flex-col gap-4 p-6">
         <div className="flex flex-row gap-2 items-center">

@@ -21,11 +21,11 @@ export const getDatabase = async () => {
   Object.keys(block).forEach((pageId) => {
     const { value } = block[pageId]
     const page = extractProperties(value, map, pageId)
-    metadata[pageId] = page
+    if (page.title) metadata[pageId] = page
   })
 
   // Sorted pages
-  const pageIds = Object.keys(block).sort((prevPageId, nextPageId) => {
+  const pageIds = Object.keys(metadata).sort((prevPageId, nextPageId) => {
     const { publishedAt: prevPublishedTime } = metadata[prevPageId]
     const { publishedAt: nextPublishedTime } = metadata[nextPageId]
     if (prevPublishedTime < nextPublishedTime) return 1

@@ -2,6 +2,8 @@
 import Link from 'next/link'
 import dayjs from 'dayjs'
 
+import { normalizePageTitle } from '@/app/api/blogs/[pageId]/utils'
+
 export type ThumbnailProps = {
   pageId: string
   metadata: PageMetadata
@@ -14,7 +16,7 @@ export default function Thumbnail({
   return (
     <Link
       className="card h-full bg-base-100 rounded-box"
-      href={`/academy/${pageId}`}
+      href={`/academy/${normalizePageTitle(title)}/${pageId}`}
     >
       <figure>
         <img src={thumbnail} alt={pageId} />

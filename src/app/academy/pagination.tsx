@@ -1,4 +1,5 @@
 'use client'
+import { ChangeEvent, useCallback, useMemo } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import classNames from 'classnames'
@@ -6,7 +7,6 @@ import classNames from 'classnames'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 
 import { useAcademyPaging } from '@/hooks/academy.hook'
-import { ChangeEvent, useCallback, useMemo } from 'react'
 
 export type PaginationProps = {
   pageIds: string[]

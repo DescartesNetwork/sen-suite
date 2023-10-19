@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 
 import { getDatabase } from '@/app/api/blogs/[pageId]/service'
 import deplConfig from '@/configs/depl.config'
+import { normalizePageTitle } from '@/app/api/blogs/[pageId]/utils'
 
 export async function generateMetadata({
   params: { pageId },
@@ -36,7 +37,10 @@ export default function PageLayout({ children }: { children: ReactNode }) {
 }
 
 export async function generateStaticParams() {
-  const { pageIds } = await getDatabase()
-  const params = pageIds.map((pageId) => ({ pageId }))
+  const { pageIds, metadata } = await getDatabase()
+  const params = pageIds.map((pageId) => ({
+    pageId,
+    title: normalizePageTitle(metadata[pageId].title),
+  }))
   return params
 }

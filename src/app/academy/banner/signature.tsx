@@ -3,6 +3,7 @@ import Link from 'next/link'
 import dayjs from 'dayjs'
 
 import { Pin } from 'lucide-react'
+import { normalizePageTitle } from '@/app/api/blogs/[pageId]/utils'
 
 export type SignatureProps = {
   pageId: string
@@ -16,7 +17,7 @@ export default function Signature({
   return (
     <Link
       className="card min-[672px]:card-side h-full w-full bg-base-100 rounded-box shadow grid grid-cols-12 gap-4 overflow-clip @container"
-      href={`/academy/${pageId}`}
+      href={`/academy/${normalizePageTitle(title)}/${pageId}`}
     >
       <figure className="col-span-full @2xl:col-span-6">
         <img
