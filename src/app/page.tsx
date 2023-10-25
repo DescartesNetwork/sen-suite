@@ -1,5 +1,10 @@
+'use client'
+import Welcome from './welcome'
+
 export default function Home() {
   return (
-    <div className="flex flex-row flex-auto w-full h-full rounded-3xl bg-panel-light dark:bg-panel-dark bg-center bg-cover transition-all p-4 items-center gap-4"></div>
+    <div className="w-full h-full rounded-3xl bg-cover bg-swap-light dark:bg-swap-dark">
+      <Welcome />
+    </div>
   )
 }

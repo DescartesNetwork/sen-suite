@@ -79,9 +79,11 @@ const UnclaimList = ({ distributeAddress }: UnclaimListProps) => {
                       />
                     </td>
                     <td>
-                      {dayjs(startedAt.toNumber() * 1000).format(
-                        'DD/MM/YYYY, HH:mm',
-                      )}
+                      {startedAt.isZero()
+                        ? 'Immediately'
+                        : dayjs(startedAt.toNumber() * 1000).format(
+                            'DD/MM/YYYY, HH:mm',
+                          )}
                     </td>
                   </tr>
                 ))}

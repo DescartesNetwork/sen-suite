@@ -14,8 +14,8 @@ export default function BulkSenderLayout({
 }) {
   return (
     <BulkSenderProvider>
-      <div className="w-full h-full flex flex-col justify-center items-center">
-        {children}
+      <div className="w-full h-full flex flex-col items-center justify-center">
+        <div className="max-w-[480px]">{children}</div>
       </div>
     </BulkSenderProvider>
   )

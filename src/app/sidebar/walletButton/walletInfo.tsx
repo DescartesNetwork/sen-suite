@@ -48,8 +48,8 @@ export default function WalletInfo({
   const tolltipText = copied ? 'Copied' : 'Copy'
 
   return (
-    <li className="dropdown">
-      <label tabIndex={0} ref={setReference}>
+    <div className="dropdown p-0 flex">
+      <label tabIndex={0} ref={setReference} className="menu-item gap-2 w-full">
         <WalletIcon className="avatar h-5 w-5" wallet={wallet} />
         <p className="menu-option font-semibold">{shortenAddress(address)}</p>
       </label>
@@ -78,7 +78,7 @@ export default function WalletInfo({
           </div>
         </li>
         <li>
-          <a className="flex" onClick={onCopy} href="#">
+          <a className="flex text-neutral-focus" onClick={onCopy} href="#">
             <span className="flex-auto">Copy Address</span>
             <span className={tolltipClassName} data-tip={tolltipText}>
               <Copy className="h-4 w-4" />
@@ -87,7 +87,7 @@ export default function WalletInfo({
         </li>
         <li>
           <a
-            className="flex"
+            className="flex text-neutral-focus"
             href={solscan(address)}
             target="_blank"
             rel="noreferrer"
@@ -103,6 +103,6 @@ export default function WalletInfo({
           </a>
         </li>
       </ul>
-    </li>
+    </div>
   )
 }

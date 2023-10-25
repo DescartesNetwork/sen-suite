@@ -1,90 +1,126 @@
 'use client'
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Keypair, PublicKey, SYSVAR_RENT_PUBKEY } from '@solana/web3.js'
+import { useCallback, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useWallet } from '@solana/wallet-adapter-react'
-import classNames from 'classnames'
+import {
+  createV1,
+  TokenStandard,
+} from '@metaplex-foundation/mpl-token-metadata'
+import { percentAmount, KeypairSigner } from '@metaplex-foundation/umi'
+import {
+  UploadMetadataInput,
+  toMetaplexFileFromBrowser,
+} from '@metaplex-foundation/js'
+import { encode } from 'bs58'
 
 import TokenKeypair from './tokenKeypair'
+import MintLogoUpload from '../edit-token/imgUpload'
+import NewWindow from '@/components/newWindow'
 
 import { usePushMessage } from '@/components/message/store'
-import { useSpl } from '@/hooks/spl.hook'
-import { isAddress } from '@/helpers/utils'
+import { TOKEN_20202_PROGRAM_ID } from '@/hooks/spl.hook'
 import { solscan } from '@/helpers/explorers'
+import { useMpl, useUmi } from '@/hooks/mpl.hook'
 
 export default function NewToken() {
-  const { push } = useRouter()
-  const [keypair, setKeypair] = useState<Keypair>(new Keypair())
+  const [mint, setMint] = useState<KeypairSigner>()
+  const [logo, setLogo] = useState<File>()
+  const [urlImg, setUrlImg] = useState<string>()
   const [decimals, setDecimals] = useState(9)
-  const { publicKey } = useWallet()
-  const [mintAuthority, setMintAuthority] = useState('')
-  const [freezeAuthority, setFreezeAuthority] = useState('')
+  const [mintSymbol, setMintSymbol] = useState<string>()
+  const [mintName, setMintName] = useState<string>()
+  const [isToken2022, setIsToken2022] = useState(false)
   const [loading, setLoading] = useState(false)
+  const { wallet } = useWallet()
+  const { push } = useRouter()
   const pushMessage = usePushMessage()
-  const spl = useSpl()
+  const mpl = useMpl()
+  const umi = useUmi()
 
-  const ok = useMemo(() => {
-    if (!keypair) return false
-    if (decimals < 0 || decimals > 18) return false
-    if (!isAddress(mintAuthority)) return false
-    if (!isAddress(freezeAuthority)) return false
-    return true
-  }, [keypair, decimals, mintAuthority, freezeAuthority])
+  const err = useMemo(() => {
+    if (decimals < 0 || decimals > 18) return 'Invalid decimals.'
+    if (!logo && !urlImg) return 'Please select logo.'
+    if (!mintName) return 'Please input mint name.'
+    if (!mint) return 'Please input mint address.'
+    return ''
+  }, [decimals, mint, logo, mintName, urlImg])
 
   const onCreate = useCallback(async () => {
     try {
       setLoading(true)
-      if (!ok) throw new Error('Please double check your inputs.')
-      if (!spl.provider.sendAndConfirm)
-        throw new Error('Wallet is not connected yet.')
-      const txId = await spl.methods
-        .initializeMint(
-          decimals,
-          new PublicKey(mintAuthority),
-          new PublicKey(freezeAuthority),
-        )
-        .accounts({
-          mint: keypair.publicKey,
-          rent: SYSVAR_RENT_PUBKEY,
-        })
-        .preInstructions([await spl.account.mint.createInstruction(keypair)])
-        .signers([keypair])
-        .rpc()
+      if (!wallet) throw new Error('Please connect wallet first.')
+      if (err) throw new Error(err)
+      if (!mint || !mintName) return
+
+      const tokenMetadata: UploadMetadataInput = {
+        name: mintName,
+        symbol: mintSymbol,
+        image: urlImg ? urlImg : await toMetaplexFileFromBrowser(logo!),
+      }
+      const { uri } = await mpl.nfts().uploadMetadata(tokenMetadata)
+
+      const { signature } = await createV1(umi, {
+        mint,
+        uri: uri,
+        name: mintName,
+        symbol: mintSymbol,
+        decimals: decimals,
+        isMutable: true,
+        sellerFeeBasisPoints: percentAmount(0),
+        tokenStandard: TokenStandard.Fungible,
+      }).sendAndConfirm(umi)
+
       pushMessage(
         'alert-success',
         'Successfully created a new token. Click here to view on explorer.',
         {
-          onClick: () => window.open(solscan(txId), '_blank'),
+          onClick: () => window.open(solscan(encode(signature)), '_blank'),
         },
       )
-      push(
-        `/token-creation/edit-token/details?mintAddress=${keypair.publicKey.toBase58()}`,
-      )
+      push(`/token-creation/edit-token/details?mintAddress=${mint.publicKey}`)
     } catch (er: any) {
       pushMessage('alert-error', er.message)
     } finally {
       setLoading(false)
     }
   }, [
-    ok,
+    wallet,
+    err,
+    mint,
+    mintName,
+    mintSymbol,
+    urlImg,
+    logo,
+    mpl,
+    umi,
+    decimals,
     pushMessage,
     push,
-    spl,
-    keypair,
-    decimals,
-    mintAuthority,
-    freezeAuthority,
   ])
-
-  useEffect(() => {
-    setMintAuthority(publicKey?.toBase58() || '')
-    setFreezeAuthority(publicKey?.toBase58() || '')
-  }, [publicKey])
 
   return (
     <div className="grid grid-cols-12 gap-x-2 gap-y-4">
+      <div className="col-span-full flex justify-end">
+        <div className="tooltip" data-tip="Token 2022 (Coming soon)">
+          <input
+            type="checkbox"
+            className="toggle toggle-xs"
+            checked={isToken2022}
+            onChange={(e) => setIsToken2022(e.target.checked)}
+            disabled
+          />
+        </div>
+      </div>
       <div className="col-span-full">
-        <TokenKeypair keypair={keypair} onChange={setKeypair} />
+        <MintLogoUpload
+          urlImg={urlImg}
+          setUrlImg={setUrlImg}
+          logo={logo}
+          setLogo={setLogo}
+        />
+      </div>
+      <div className="col-span-full">
+        <TokenKeypair keypair={mint} onChange={setMint} />
       </div>
       <div className="col-span-full flex flex-col gap-2">
         <p className="text-sm font-bold">Token Decimals</p>
@@ -100,42 +136,52 @@ export default function NewToken() {
           onChange={(e) => setDecimals(Number(e.target.value))}
         />
       </div>
-      <div className="col-span-full flex flex-col gap-2">
-        <p className="text-sm font-bold">Mint Authority</p>
+      <div className="col-span-6 flex flex-col gap-2">
+        <p className="text-sm font-bold">Token Name</p>
         <input
-          className={classNames('input w-full bg-base-200', {
-            'ring-2 ring-primary': !isAddress(mintAuthority),
-          })}
+          className="input bg-base-200 w-full"
           type="text"
-          name="mint-authority"
-          placeholder="Mint Authority"
-          value={mintAuthority}
-          onChange={(e) => setMintAuthority(e.target.value)}
+          name="token-name"
+          placeholder="Token Name"
+          value={mintName}
+          onChange={(e) => setMintName(e.target.value)}
         />
       </div>
-      <div className="col-span-full flex flex-col gap-2">
-        <p className="text-sm font-bold">Freeze Authority</p>
+      <div className="col-span-6 flex flex-col gap-2">
+        <p className="text-sm font-bold">Token Symbol</p>
         <input
-          className={classNames('input w-full bg-base-200', {
-            'ring-2 ring-primary': !isAddress(freezeAuthority),
-          })}
+          className="input bg-base-200 w-full"
           type="text"
-          name="freeze-authority"
-          placeholder="Freeze Authority"
-          value={freezeAuthority}
-          onChange={(e) => setFreezeAuthority(e.target.value)}
+          name="token-symbol"
+          placeholder="Token Symbol"
+          value={mintSymbol}
+          onChange={(e) => setMintSymbol(e.target.value)}
         />
       </div>
+
       <div className="col-span-full">
         <button
           className="btn btn-primary w-full"
           onClick={onCreate}
-          disabled={loading || !ok}
+          disabled={loading || !!err}
         >
           {loading && <div className="loading loading-spinner" />}
-          Create
+          {err ? err : 'Create'}
         </button>
       </div>
+      {isToken2022 && (
+        <div
+          onClick={() =>
+            window.open(solscan(TOKEN_20202_PROGRAM_ID.toBase58()), '_blank')
+          }
+          className="col-span-full hover:cursor-pointer flex items-center gap-1"
+        >
+          <p className="text-sm opacity-60">
+            * You are working with Token-2022 Program
+          </p>
+          <NewWindow href={solscan(TOKEN_20202_PROGRAM_ID.toBase58())} />
+        </div>
+      )}
     </div>
   )
 }

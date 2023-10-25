@@ -3,7 +3,7 @@ import TotalBalance from './balance'
 import TotalDistribution from './distribution'
 import TotalReceived from './received'
 
-const Heros = () => {
+export default function Heros() {
   return (
     <div className="grid md:grid-cols-3 grid-col-1 gap-6">
       <TotalBalance />
@@ -12,5 +12,3 @@ const Heros = () => {
     </div>
   )
 }
-
-export default Heros

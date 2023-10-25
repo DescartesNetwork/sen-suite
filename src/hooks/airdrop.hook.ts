@@ -9,6 +9,7 @@ import {
 } from '@solana/wallet-adapter-react'
 import { ParsedAccountData, PublicKey, Transaction } from '@solana/web3.js'
 import { decode, encode } from 'bs58'
+import { utils } from '@coral-xyz/anchor'
 import BN from 'bn.js'
 import axios from 'axios'
 
@@ -26,8 +27,8 @@ import {
 } from '@/providers/airdrop.provider'
 import { MetadataBackup, toFilename, uploadFileToAws } from '@/helpers/aws'
 import { useMintByAddress } from '@/providers/mint.provider'
+import { useAnchorProvider } from '@/providers/wallet.provider'
 import { ReceiptState } from '@/app/airdrop/merkle-distribution/statusTag'
-import { utils } from '@coral-xyz/anchor'
 
 /**
  * Instantiate a utility
@@ -53,10 +54,13 @@ export const useUtility = () => {
 export const useSendBulk = (mintAddress: string) => {
   const utility = useUtility()
   const { publicKey, sendTransaction } = useWallet()
-  const { connection } = useConnection()
+  const { connection: conn } = useConnection()
+  const { wallet } = useAnchorProvider()
   const [mint] = useMints([mintAddress])
 
   const decimals = useMemo(() => mint?.decimals, [mint?.decimals])
+
+  const TX_SIZE = 7
 
   const sendBulk = useCallback(
     async (data: string[][]) => {
@@ -64,6 +68,10 @@ export const useSendBulk = (mintAddress: string) => {
         throw new Error('Wallet is not connected yet.')
       if (!isAddress(mintAddress)) throw new Error('Invalid mint address.')
       if (decimals === undefined) throw new Error('Cannot read onchain data.')
+
+      const totalTx = Math.ceil(data.length / TX_SIZE)
+      const transactions: Transaction[] = []
+
       // Instructions
       const ixs = await Promise.all(
         data
@@ -85,27 +93,58 @@ export const useSendBulk = (mintAddress: string) => {
             return tx
           }),
       )
-      // Transaction
+
       const {
-        context: { slot: minContextSlot },
         value: { blockhash, lastValidBlockHeight },
-      } = await connection.getLatestBlockhashAndContext()
-      const tx = new Transaction({
-        blockhash,
-        lastValidBlockHeight,
-        feePayer: publicKey,
-      }).add(...ixs)
-      const signature = await sendTransaction(tx, connection, {
-        minContextSlot,
+      } = await conn.getLatestBlockhashAndContext()
+
+      for (let i = 0; i < totalTx; i++) {
+        const transaction = new Transaction({
+          blockhash,
+          lastValidBlockHeight,
+          feePayer: publicKey,
+        })
+        const curIdx = i * TX_SIZE
+        for (let j = 0; j < TX_SIZE; j++) {
+          const insIndex = curIdx + j
+          if (ixs[insIndex]) transaction.add(ixs[insIndex])
+        }
+        transactions.push(transaction)
+      }
+
+      // Sign all and broadcast transactions
+      const signedTxs = await wallet.signAllTransactions(transactions)
+      const txIds: string[] = []
+      const listErrLocation: number[] = []
+
+      await Promise.all(
+        signedTxs.map(async (tx, idx) => {
+          try {
+            const signature = await conn.sendRawTransaction(tx.serialize())
+            await conn.confirmTransaction({
+              blockhash,
+              lastValidBlockHeight,
+              signature,
+            })
+            txIds.push(signature)
+          } catch {
+            listErrLocation.push(idx)
+          }
+        }),
+      )
+
+      // Get errors data
+      const errorData: string[][] = []
+      listErrLocation.forEach((errorIndex) => {
+        for (let i = 0; i < TX_SIZE; i++) {
+          const dataIndex = errorIndex * TX_SIZE + i
+          if (data[dataIndex]) errorData.push(data[dataIndex])
+        }
       })
-      await connection.confirmTransaction({
-        blockhash,
-        lastValidBlockHeight,
-        signature,
-      })
-      return signature
+
+      return { errorData, txIds }
     },
-    [decimals, utility, mintAddress, publicKey, sendTransaction, connection],
+    [utility, publicKey, sendTransaction, mintAddress, decimals, conn, wallet],
   )
 
   return sendBulk

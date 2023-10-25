@@ -101,7 +101,7 @@ type AddRewardProps = {
   rewards: Reward[]
   onRewards: (rewards: Reward[]) => void
 }
-const AddReward = ({ rewards, onRewards }: AddRewardProps) => {
+export default function AddReward({ rewards, onRewards }: AddRewardProps) {
   const onAddReward = () => {
     const nextReward = [...rewards]
     nextReward.push(EMPTY_REWARD)
@@ -143,5 +143,3 @@ const AddReward = ({ rewards, onRewards }: AddRewardProps) => {
     </div>
   )
 }
-
-export default AddReward

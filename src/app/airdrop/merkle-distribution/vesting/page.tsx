@@ -7,7 +7,7 @@ import Heros from './heros'
 
 import { Distribute } from '@/hooks/airdrop.hook'
 
-const Vesting = () => {
+export default function Vesting() {
   const { push } = useRouter()
 
   return (
@@ -27,5 +27,3 @@ const Vesting = () => {
     </div>
   )
 }
-
-export default Vesting

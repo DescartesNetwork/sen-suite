@@ -17,7 +17,7 @@ const STATUS_COLOR: Record<ReceiptState, string> = {
   Loading: '#F4F5F5',
 }
 
-const StatusTag = ({ state }: { state?: ReceiptState }) => {
+export default function StatusTag({ state }: { state?: ReceiptState }) {
   const tagColor = useMemo(() => {
     const color = !state
       ? STATUS_COLOR[ReceiptState.loading]
@@ -34,4 +34,3 @@ const StatusTag = ({ state }: { state?: ReceiptState }) => {
     </div>
   )
 }
-export default StatusTag

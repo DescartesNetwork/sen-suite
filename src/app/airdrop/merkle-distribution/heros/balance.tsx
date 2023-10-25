@@ -14,7 +14,7 @@ import { numeric } from '@/helpers/utils'
 import { useLamports } from '@/providers/wallet.provider'
 import { useMints } from '@/hooks/spl.hook'
 
-const TotalBalance = () => {
+export default function TotalBalance() {
   const myAccounts = useAllTokenAccounts()
   const lamports = useLamports()
 
@@ -28,21 +28,24 @@ const TotalBalance = () => {
   const prices = usePrices(mintAddresses)
   const decimals = mints.map((mint) => mint?.decimals || 0)
 
-  const fetchTotal = useCallback(async () => {
-    if (!prices || !prices.length) return 0
-    let total = Number(undecimalize(new BN(lamports), 9)) * prices[0]
-    let mintIdx = 1
-    for (const address in myAccounts) {
-      const { amount } = myAccounts[address]
-      const numAmount = Number(undecimalize(amount, decimals[mintIdx]))
-      total += numAmount * prices[mintIdx]
-      mintIdx++
-    }
-    return total
-  }, [decimals, lamports, myAccounts, prices])
+  const fetchTotal = useCallback(
+    async ([prices, decimals]: [number[], number[]]) => {
+      if (!prices || !prices.length) return 0
+      let total = Number(undecimalize(new BN(lamports), 9)) * prices[0]
+      let mintIdx = 1
+      for (const address in myAccounts) {
+        const { amount } = myAccounts[address]
+        const numAmount = Number(undecimalize(amount, decimals[mintIdx]))
+        total += numAmount * prices[mintIdx]
+        mintIdx++
+      }
+      return total
+    },
+    [lamports, myAccounts],
+  )
 
   const { data: totalUSD, isLoading } = useSWR(
-    [mintAddresses, prices, decimals, 'totalBalance'],
+    [prices, decimals, 'totalBalance'],
     fetchTotal,
   )
 
@@ -55,5 +58,3 @@ const TotalBalance = () => {
     />
   )
 }
-
-export default TotalBalance

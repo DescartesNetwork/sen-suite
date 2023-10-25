@@ -5,7 +5,7 @@ type AddTimeProps = {
   time: { startAt: number; endAt: number }
   onTime: (val: { startAt: number; endAt: number }) => void
 }
-const AddTime = ({ time, onTime }: AddTimeProps) => {
+export default function AddTime({ time, onTime }: AddTimeProps) {
   return (
     <div className="grid grid-cols-12 gap-4">
       <div className="col-span-6 flex flex-col gap-2">
@@ -39,5 +39,3 @@ const AddTime = ({ time, onTime }: AddTimeProps) => {
     </div>
   )
 }
-
-export default AddTime
