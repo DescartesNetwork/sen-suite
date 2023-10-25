@@ -1,8 +1,9 @@
 'use client'
 import { useState } from 'react'
-import { Leaf, MerkleDistributor } from '@sentre/utility'
+import { Leaf, MerkleDistributor, findReceipt } from '@sentre/utility'
 import { useAsync } from 'react-use'
 import dayjs from 'dayjs'
+import { PublicKey } from '@solana/web3.js'
 
 import Modal from '@/components/modal'
 import { FileText } from 'lucide-react'
@@ -36,11 +37,13 @@ const UnclaimList = ({ distributeAddress }: UnclaimListProps) => {
 
     const result = await Promise.all(
       root.receipients.map(async (recipient) => {
-        const receiptAddr = await utility.deriveReceiptAddress(
+        const receipt = await findReceipt(
           recipient.salt,
-          distributeAddress,
+          new PublicKey(distributeAddress),
+          recipient.authority,
+          utility.program.programId,
         )
-        if (!receipts[receiptAddr]) return recipient
+        if (!receipts[receipt.toBase58()]) return recipient
       }),
     )
 
