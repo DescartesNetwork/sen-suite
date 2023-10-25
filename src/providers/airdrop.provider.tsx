@@ -196,13 +196,14 @@ export const useMyDistributes = () => {
     const airdrops: string[] = []
     const vesting: string[] = []
     if (!publicKey) return { airdrops, vesting }
-
+    const createdTime: { [address: string]: number } = {}
     for (const address in distributors) {
       const { authority } = distributors[address]
       if (!authority.equals(publicKey)) continue
 
       const metadata = await getMetadata(address)
       const root = MerkleDistributor.fromBuffer(Buffer.from(metadata.data))
+      createdTime[address] = metadata.createAt // for sorted purpose
       const merkleType = parseMerkleType(root)
       if (!merkleType) continue
 
@@ -210,7 +211,14 @@ export const useMyDistributes = () => {
       if (merkleType === Distribute.Vesting) vesting.push(address)
     }
 
-    return { airdrops, vesting }
+    const sortedAirdrops = airdrops.sort(
+      (a, b) => createdTime[b] - createdTime[a],
+    )
+    const sortedVesting = vesting.sort(
+      (a, b) => createdTime[b] - createdTime[a],
+    )
+
+    return { airdrops: sortedAirdrops, vesting: sortedVesting }
   }, [publicKey, distributors])
 
   return { airdrops: value?.airdrops || [], vesting: value?.vesting || [] }
