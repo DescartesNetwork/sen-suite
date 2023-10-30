@@ -2,8 +2,9 @@ import { ReactNode } from 'react'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'SenSwap',
-  description: 'The asymmetric pools (Balancer model) on Solana.',
+  title: 'SenSwap | Sentre',
+  description:
+    'SenSwap: The asymmetric pools (Balancer model) on Solana. Powered by Sentre.',
 }
 
 export default function SwapLayout({ children }: { children: ReactNode }) {

@@ -2,7 +2,6 @@ import { ReactNode } from 'react'
 import type { Metadata } from 'next'
 import Script from 'next/script'
 
-// Providers
 import UiProvider from '@/providers/ui.provider'
 import WalletProvider from '@/providers/wallet.provider'
 import MintProvider from '@/providers/mint.provider'

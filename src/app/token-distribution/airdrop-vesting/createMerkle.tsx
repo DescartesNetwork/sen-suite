@@ -14,7 +14,7 @@ import {
   useAirdropMintAddress,
   useAirdropStore,
 } from '@/providers/airdrop.provider'
-import { CreateStep } from '@/app/airdrop/merkle-distribution/constants'
+import { CreateStep } from '@/app/token-distribution/airdrop-vesting/constants'
 import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
 
@@ -34,7 +34,7 @@ export default function CreateMerkle({
 
   const type = useMemo(() => {
     const hops = pathname.split('/')
-    if (hops.slice(2, hops.length).includes('airdrop'))
+    if (hops.slice(2, hops.length).includes('token-distribution'))
       return Distribute.Airdrop
     return Distribute.Vesting
   }, [pathname])
@@ -52,7 +52,7 @@ export default function CreateMerkle({
         },
       )
       destroy()
-      push('/airdrop/merkle-distribution')
+      push('/token-distribution/airdrop-vesting')
     } catch (er: any) {
       pushMessage('alert-error', er.message)
     } finally {

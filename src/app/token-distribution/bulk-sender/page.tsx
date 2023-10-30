@@ -83,7 +83,7 @@ export default function BulkSender() {
       </div>
       <button
         className="btn btn-primary col-span-full rounded-3xl"
-        onClick={() => push('/airdrop/bulk-sender/summary')}
+        onClick={() => push('/token-distribution/bulk-sender/summary')}
         disabled={!isAddress(mintAddress)}
       >
         Skip

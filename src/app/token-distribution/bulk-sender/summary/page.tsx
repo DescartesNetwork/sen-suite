@@ -171,11 +171,15 @@ export default function SummaryBulkSender() {
     }
   }, [data, pushMessage, sendBulk, setData])
 
-  if (!isAddress(mintAddress)) return redirect('/airdrop/bulk-sender')
+  if (!isAddress(mintAddress))
+    return redirect('/token-distribution/bulk-sender')
   return (
     <div className="grid grid-cols-12 gap-4">
       <div className="col-span-full">
-        <Link href={'/airdrop/bulk-sender'} className="btn btn-sm btn-ghost ">
+        <Link
+          href={'/token-distribution/bulk-sender'}
+          className="btn btn-sm btn-ghost "
+        >
           <ChevronLeft size={16} />
           Back
         </Link>

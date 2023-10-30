@@ -10,7 +10,7 @@ import DatePicker from 'react-datepicker'
 import TokenSelection from '@/components/tokenSelection'
 import { MintLogo, MintSymbol } from '@/components/mint'
 
-import { CreateStep } from '@/app/airdrop/merkle-distribution/constants'
+import { CreateStep } from '@/app/token-distribution/airdrop-vesting/constants'
 import { isAddress } from '@/helpers/utils'
 import { usePushMessage } from '@/components/message/store'
 import {
@@ -53,7 +53,7 @@ export default function InputConfigs({
 
   const onBack = () => {
     destroy()
-    return push('/airdrop/merkle-distribution/airdrop')
+    return push('/token-distribution/airdrop-vesting/airdrop')
   }
 
   const timeError = useMemo(() => {

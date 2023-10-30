@@ -19,19 +19,19 @@ enum MenuKey {
 
 const menus = [
   {
-    route: '/airdrop/merkle-distribution',
+    route: '/token-distribution/airdrop-vesting',
     name: 'Main',
     key: MenuKey.Dashboard,
     Logo: LayoutDashboard,
   },
   {
-    route: '/airdrop/merkle-distribution/airdrop',
+    route: '/token-distribution/airdrop-vesting/airdrop',
     name: 'Airdrop',
     key: MenuKey.Airdrop,
     Logo: DownloadCloud,
   },
   {
-    route: '/airdrop/merkle-distribution/vesting',
+    route: '/token-distribution/airdrop-vesting/vesting',
     name: 'Vesting',
     key: MenuKey.Vesting,
     Logo: ScrollText,
@@ -49,7 +49,8 @@ export default function MerkleDistributionHeader() {
   }, [push, pathname])
 
   const activeKey = useMemo(() => {
-    if (pathname === '/airdrop/merkle-distribution') return MenuKey.Dashboard
+    if (pathname === '/token-distribution/airdrop-vesting')
+      return MenuKey.Dashboard
     const hops = pathname.split('/')
     if (hops.slice(2, hops.length).includes('airdrop')) return MenuKey.Airdrop
     return MenuKey.Vesting

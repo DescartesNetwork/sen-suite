@@ -22,8 +22,8 @@ const TOP_APPS = [
 
 const BOTTOM_APPS = [
   {
-    route: '/airdrop/merkle-distribution',
-    name: 'Merkle Distribution',
+    route: '/token-distribution/airdrop-vesting',
+    name: 'Token Distribution',
     icon: merkleDistribution,
     disabled: false,
   },

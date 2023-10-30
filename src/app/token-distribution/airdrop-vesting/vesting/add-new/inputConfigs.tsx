@@ -27,7 +27,7 @@ import {
   useAirdropStore,
   useRecipients,
 } from '@/providers/airdrop.provider'
-import { CreateStep } from '@/app/airdrop/merkle-distribution/constants'
+import { CreateStep } from '@/app/token-distribution/airdrop-vesting/constants'
 import { usePushMessage } from '@/components/message/store'
 
 dayjs.extend(duration)
@@ -442,7 +442,7 @@ export default function InputConfigs({
 
   const onBack = () => {
     destroy()
-    return push('/airdrop/merkle-distribution/vesting')
+    return push('/token-distribution/airdrop-vesting/vesting')
   }
 
   const ok = useMemo(() => {

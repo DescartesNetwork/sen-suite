@@ -3,9 +3,9 @@ import { useMemo, useState } from 'react'
 
 import InputConfigs from './inputConfigs'
 import InputRecipient from './inputRecipient'
-import CreateMerkle from '@/app/airdrop/merkle-distribution/createMerkle'
+import CreateMerkle from '@/app/token-distribution/airdrop-vesting/createMerkle'
 
-import { CreateStep } from '@/app/airdrop/merkle-distribution/constants'
+import { CreateStep } from '@/app/token-distribution/airdrop-vesting/constants'
 
 export default function AddNew() {
   const [step, setStep] = useState(CreateStep.InputConfigs)

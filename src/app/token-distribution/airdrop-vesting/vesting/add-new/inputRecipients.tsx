@@ -5,7 +5,7 @@ import { BN } from 'bn.js'
 import dayjs from 'dayjs'
 
 import EditRecipient from './row'
-import CardOverview from '@/app/airdrop/merkle-distribution/cardOverview'
+import CardOverview from '@/app/token-distribution/airdrop-vesting/cardOverview'
 import { Trash } from 'lucide-react'
 
 import {
@@ -19,7 +19,7 @@ import { useMintByAddress } from '@/providers/mint.provider'
 import { shortenAddress } from '@/helpers/utils'
 import { useTotalDistribute } from '@/hooks/airdrop.hook'
 import { useTokenAccountByMintAddress } from '@/providers/tokenAccount.provider'
-import { CreateStep } from '@/app/airdrop/merkle-distribution/constants'
+import { CreateStep } from '@/app/token-distribution/airdrop-vesting/constants'
 
 const RecipientsList = () => {
   const { recipients, setRecipients } = useRecipients()

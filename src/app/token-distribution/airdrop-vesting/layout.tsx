@@ -1,13 +1,8 @@
 import { ReactNode } from 'react'
-import type { Metadata } from 'next'
 
 import MerkleDistributionHeader from './header'
 
-export const metadata: Metadata = {
-  title: 'Merkle Distribution | Merkle Distribution for SPL Tokens on Solana',
-}
-
-export default function MerkleDistributionLayout({
+export default function AirdropVestingLayout({
   children,
 }: {
   children: ReactNode

@@ -7,23 +7,25 @@ import Heros from './heros'
 
 import { Distribute } from '@/hooks/airdrop.hook'
 
-export default function Airdrop() {
+export default function Vesting() {
   const { push } = useRouter()
 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex">
-        <h4 className="flex-auto">Airdrop</h4>
+        <h4 className="flex-auto">Vesting</h4>
         <button
           className="btn btn-primary"
-          onClick={() => push('/airdrop/merkle-distribution/airdrop/add-new')}
+          onClick={() =>
+            push('/token-distribution/airdrop-vesting/vesting/add-new')
+          }
         >
           <Plus className="h-4 w-4" />
           Add New
         </button>
       </div>
       <Heros />
-      <History type={Distribute.Airdrop} />
+      <History type={Distribute.Vesting} />
     </div>
   )
 }

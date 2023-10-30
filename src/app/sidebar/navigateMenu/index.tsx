@@ -38,17 +38,17 @@ const ROUTES: MenuItemData[] = [
   },
   { route: '/farming', name: 'Farming', Logo: Leaf },
   {
-    route: '/airdrop',
-    name: 'Airdrop',
+    route: '/token-distribution',
+    name: 'Token Distribution',
     Logo: Droplets,
     children: [
       {
-        route: '/airdrop/bulk-sender',
+        route: '/token-distribution/bulk-sender',
         name: 'Bulk Sender',
       },
       {
-        route: '/airdrop/merkle-distribution',
-        name: 'Merkle Distribution',
+        route: '/token-distribution/airdrop-vesting',
+        name: 'Airdrop & Vesting',
       },
     ],
   },

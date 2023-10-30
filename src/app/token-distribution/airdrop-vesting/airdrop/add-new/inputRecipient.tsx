@@ -3,7 +3,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { BN } from 'bn.js'
 
 import EditRecipient from './row'
-import CardOverview from '@/app/airdrop/merkle-distribution/cardOverview'
+import CardOverview from '@/app/token-distribution/airdrop-vesting/cardOverview'
 
 import {
   RecipientData,
@@ -12,7 +12,7 @@ import {
   useRecipients,
 } from '@/providers/airdrop.provider'
 import { isAddress } from '@/helpers/utils'
-import { CreateStep } from '@/app/airdrop/merkle-distribution/constants'
+import { CreateStep } from '@/app/token-distribution/airdrop-vesting/constants'
 import { useTokenAccountByMintAddress } from '@/providers/tokenAccount.provider'
 import { useTotalDistribute } from '@/hooks/airdrop.hook'
 import { useMintByAddress } from '@/providers/mint.provider'

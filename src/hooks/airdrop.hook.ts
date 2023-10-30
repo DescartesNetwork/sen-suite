@@ -28,7 +28,7 @@ import {
 import { MetadataBackup, toFilename, uploadFileToAws } from '@/helpers/aws'
 import { useMintByAddress } from '@/providers/mint.provider'
 import { useAnchorProvider } from '@/providers/wallet.provider'
-import { ReceiptState } from '@/app/airdrop/merkle-distribution/statusTag'
+import { ReceiptState } from '@/app/token-distribution/airdrop-vesting/statusTag'
 
 /**
  * Instantiate a utility
