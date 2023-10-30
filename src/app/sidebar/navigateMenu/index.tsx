@@ -52,7 +52,7 @@ const ROUTES: MenuItemData[] = [
       },
     ],
   },
-  { route: '/launchpad', name: 'Launchpad', Logo: Rocket, disabled: true },
+  { route: '/launchpad', name: 'Launchpad', Logo: Rocket },
   { route: '/token-creation', name: 'Token Creation', Logo: BookPlus },
 ]
 

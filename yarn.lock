@@ -1509,6 +1509,13 @@
   dependencies:
     "@project-serum/anchor" "^0.24.2"
 
+"@senswap/balancer@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@senswap/balancer/-/balancer-4.0.0.tgz#1ec6a1ee1ae0e61d011ddb83ded59e0588fb006f"
+  integrity sha512-kyv3lAE5tjQUu0HdumoIynYyHoXnzVUQVoCR3fRDQAn4bJzkMdQnwpGs838Z5hG/8gAGwiUoqpAR5BxAL7dtcg==
+  dependencies:
+    "@project-serum/anchor" "^0.24.2"
+
 "@sentre/farming@^2.0.2":
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/@sentre/farming/-/farming-2.0.2.tgz#50868cee7a3d22608688a5ce6eb3cddeea5375b1"
@@ -1516,6 +1523,14 @@
   dependencies:
     "@project-serum/anchor" "^0.24.2"
     "@sen-use/web3" "^2.0.11"
+
+"@sentre/launchpad@^0.3.1":
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@sentre/launchpad/-/launchpad-0.3.1.tgz#9e8c3f7f09eeda0c9d530ece647d62aeaa620158"
+  integrity sha512-WL8xJM/JrqSQqSNm5MAWt5X377Y3W2g/tSxa1KPX8zHnmpsNEA4Nrt3PznKXtiwLJ8okF4wM9v3RYukMgN/h2g==
+  dependencies:
+    "@project-serum/anchor" "^0.24.2"
+    "@senswap/balancer" "^3.0.1"
 
 "@sentre/utility@^1.0.3":
   version "1.0.3"
