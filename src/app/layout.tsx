@@ -48,14 +48,16 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       </head>
       <body className="w-full flex flex-row">
         <UiProvider>
-          <Sidebar>
-            <WalletProvider>
-              <MintProvider>
-                <TokenAccountProvider>{children}</TokenAccountProvider>
-              </MintProvider>
-            </WalletProvider>
-            <Message />
-          </Sidebar>
+          <WalletProvider>
+            <MintProvider>
+              <TokenAccountProvider>
+                <Sidebar>
+                  {children}
+                  <Message />
+                </Sidebar>
+              </TokenAccountProvider>
+            </MintProvider>
+          </WalletProvider>
         </UiProvider>
       </body>
     </html>
