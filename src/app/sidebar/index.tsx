@@ -50,7 +50,7 @@ export default function Sidebar({ children }: SidebarProps) {
         <Link className="p-4" href="/">
           <Brand size={32} style={{ marginLeft: 2 }} named={open} />
         </Link>
-        <NavigateMenu open={open} setOpen={setOpen} />
+        <NavigateMenu open={open} />
         <div className="flex-auto" />
         <ul className="menu menu-vertical menu-md">
           <li>

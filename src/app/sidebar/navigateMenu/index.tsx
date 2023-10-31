@@ -24,7 +24,6 @@ export type MenuItemData = {
 
 type NavigateMenuProps = {
   open: boolean
-  setOpen: (open: boolean) => void
 }
 
 const ROUTES: MenuItemData[] = [
