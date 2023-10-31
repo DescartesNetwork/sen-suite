@@ -37,25 +37,25 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         {/* Google Analytics */}
         <Script
           async
-          src="https://www.googletagmanager.com/gtag/js?id=G-G57JYZBDBP"
+          src="https://www.googletagmanager.com/gtag/js?id=G-YZGWFX3N5E"
         />
         <Script id="google-analytics">
           {`window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'G-G57JYZBDBP');`}
+            gtag('config', 'G-YZGWFX3N5E');`}
         </Script>
       </head>
       <body className="w-full flex flex-row">
         <UiProvider>
-          <WalletProvider>
-            <MintProvider>
-              <TokenAccountProvider>
-                <Sidebar>{children}</Sidebar>
-                <Message />
-              </TokenAccountProvider>
-            </MintProvider>
-          </WalletProvider>
+          <Sidebar>
+            <WalletProvider>
+              <MintProvider>
+                <TokenAccountProvider>{children}</TokenAccountProvider>
+              </MintProvider>
+            </WalletProvider>
+            <Message />
+          </Sidebar>
         </UiProvider>
       </body>
     </html>

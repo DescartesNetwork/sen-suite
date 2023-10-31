@@ -44,7 +44,7 @@ export default function Welcome() {
       </section>
       <section className="pos-center p-6">
         <p className="opacity-60 text-secondary-content">
-          Sentre © 2023, All Rights Reserved
+          Sentre © 2023, All Rights Reserved.
         </p>
       </section>
 
