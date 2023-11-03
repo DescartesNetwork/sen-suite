@@ -99,9 +99,7 @@ export default function FarmDetails() {
                     className={classNames('tab', {
                       'tab-active': tab === value,
                     })}
-                    onClick={() => {
-                      if (auth) setTab(value)
-                    }}
+                    onClick={() => setTab(value)}
                     disabled={value === FarmAction.Admin && !auth}
                   >
                     {value}
