@@ -4,10 +4,13 @@ import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger'
 
+import ElementIObs from '@/components/IntersectionObserver'
+
 const PARAGRAPH =
   'full potential with Sentre—Offering swap, airdrop tool, launchpad, and more. Begin scaling your decentralized journey with us today.'
 
 export default function Description() {
+  const descRef = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLDivElement>(null)
   const useArrayRef = () => {
     const lettersRef = useRef<HTMLSpanElement[]>([])
@@ -54,9 +57,10 @@ export default function Description() {
           ))}
         </h3>
       </div>
-      <div className="h-[50vh] w-full" />
+      <div className="h-[50vh] w-full" ref={descRef} />
       <div className="h-[100vh] w-full" ref={triggerRef} />
       <div className="h-[30vh] w-full" />
+      <ElementIObs threshold={1} force querySelector={descRef} />
     </div>
   )
 }
