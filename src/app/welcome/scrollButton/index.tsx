@@ -7,7 +7,7 @@ export default function ScrollButton() {
     <span id="isHidden" className={styles['scroll-btn']}>
       <a href="#">
         <span className={styles['mouse']}>
-          <span></span>
+          <span />
         </span>
       </a>
       <p className={styles['action-btn']}>scroll me</p>
