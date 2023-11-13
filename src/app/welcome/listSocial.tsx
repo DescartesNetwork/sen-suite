@@ -82,16 +82,19 @@ function Social({ icon, name, url, community }: SocialProps) {
     } = await axios.get(`/api/socials/${name}`)
     if (numInteraction)
       localStorage.setItem(name, JSON.stringify(numInteraction))
-    return numInteraction || 0
+    return numInteraction
   }, [])
 
-  const { data } = useSWR([name, 'numInteractSocial'], fetcher)
+  const { data: numInteractSocial } = useSWR(
+    [name, 'numInteractSocial'],
+    fetcher,
+  )
 
   const metric = useMemo(() => {
-    if (data) return data
+    if (numInteractSocial) return numInteractSocial
     const cacheData = localStorage.getItem(name)
     return cacheData
-  }, [data, name])
+  }, [numInteractSocial, name])
 
   return (
     <div

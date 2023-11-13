@@ -5,6 +5,7 @@ import Description from './description'
 import ListApp from './listApp'
 import ListPartner from './listPartner'
 import ListSocial from './listSocial'
+import ScrollButton from './scrollButton'
 import ElementIObs from '@/components/IntersectionObserver'
 
 import './index.scss'
@@ -47,7 +48,7 @@ export default function Welcome() {
           Sentre © 2023, All Rights Reserved.
         </p>
       </section>
-
+      <ScrollButton />
       <ElementIObs threshold={0.08} force querySelector={imageZoomRef} />
     </div>
   )
