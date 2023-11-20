@@ -17,6 +17,7 @@ import Empty from '@/components/empty'
 import Modal from '@/components/modal'
 
 import { LIMIT, TAGS, useAcademyPaging } from '@/hooks/academy.hook'
+import { normalizePageTitle } from '@/app/api/blogs/[pageId]/utils'
 
 export type NavigationProps = {
   pageIds: string[]
@@ -130,7 +131,7 @@ export default function Navigation({ pageIds, metadata }: NavigationProps) {
                 <Link
                   key={id}
                   className="col-span-full bg-base-200 rounded-xl p-4"
-                  href={`/academy/${id}`}
+                  href={`/academy/${normalizePageTitle(title)}/${id}`}
                 >
                   <p className="font-bold">{title}</p>
                   <p className="opacity-60 text-sm">{description}</p>
