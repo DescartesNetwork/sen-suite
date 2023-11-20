@@ -26,7 +26,7 @@ export const MenuLoading = () => {
 }
 
 export default function Sidebar({ children }: SidebarProps) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(window.innerWidth > 1024)
 
   useKey(
     (e) => e.metaKey && e.key === 'k',
