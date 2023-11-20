@@ -1,7 +1,7 @@
 'use client'
 import { Fragment, ReactNode, useState } from 'react'
 import Link from 'next/link'
-import { useKey } from 'react-use'
+import { useEffectOnce, useKey } from 'react-use'
 import classNames from 'classnames'
 
 import {
@@ -26,12 +26,16 @@ export const MenuLoading = () => {
 }
 
 export default function Sidebar({ children }: SidebarProps) {
-  const [open, setOpen] = useState(window.innerWidth > 1024)
+  const [open, setOpen] = useState(false)
 
   useKey(
     (e) => e.metaKey && e.key === 'k',
     () => setOpen(!open),
   )
+
+  useEffectOnce(() => {
+    setOpen(window.innerWidth > 1024)
+  })
 
   return (
     <Fragment>
