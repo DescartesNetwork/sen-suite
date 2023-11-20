@@ -9,7 +9,7 @@ export type BrandLogoProps = {
 export function BrandLogo({ size = 32 }: BrandLogoProps) {
   return (
     <div className="avatar">
-      <div className={'mask mask-squircle'} style={{ width: size }}>
+      <div className="mask mask-squircle" style={{ width: size }}>
         <Image
           className="!object-contain"
           src="/web.svg"
