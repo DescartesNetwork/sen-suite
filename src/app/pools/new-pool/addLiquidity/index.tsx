@@ -50,7 +50,7 @@ export default function AddLiquidity({
   const pushMessage = usePushMessage()
 
   const { deletePool } = useInitAndDeletePool()
-  const onDeletePool = useCallback(async () => {
+  const onCancelPool = useCallback(async () => {
     try {
       setClosing(true)
       const txId = await deletePool(poolAddress)
@@ -95,6 +95,7 @@ export default function AddLiquidity({
     setActiveIndx(activeIndx)
     setAmounts(nextAmounts)
   }
+
   const amountSuggest = useMemo(() => {
     const result: string[] = []
     if (!prices || activeIndx === undefined) return []
@@ -188,9 +189,9 @@ export default function AddLiquidity({
         />
       </div>
       <div className="col-span-full grid grid-cols-12 gap-2 mt-4">
-        <button onClick={onDeletePool} className="col-span-6 btn">
+        <button onClick={onCancelPool} className="col-span-6 btn">
           {closing && <span className="loading loading-spinner loading-xs" />}
-          Delete Pool
+          Cancel Pool
         </button>
         <button
           onClick={onAddLiquidity}

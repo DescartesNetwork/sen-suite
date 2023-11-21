@@ -448,7 +448,7 @@ export const useAddLiquidity = (poolAddress: string, amountIns: string[]) => {
       decimalize(amount, decimals[i]),
     )
 
-    for (const i in pool.mints) {
+    for (let i = 0; i < pool.mints.length; i++) {
       const mint = pool.mints[i]
       if (!pool.reserves[i].isZero()) continue
       const ataAddress = utils.token.associatedAddress({
@@ -468,6 +468,7 @@ export const useAddLiquidity = (poolAddress: string, amountIns: string[]) => {
         mint,
         poolAddress,
         sendAndConfirm: false,
+        addCompute: i === 0 ? 1400000 : 0,
       })
       transaction.add(txAddLiquidity)
     }
