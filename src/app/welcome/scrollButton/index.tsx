@@ -4,7 +4,7 @@ import styles from './index.module.scss'
 
 export default function ScrollButton() {
   return (
-    <span id="isHidden" className={styles['scroll-btn']}>
+    <span className={styles['scroll-btn']}>
       <a href="#">
         <span className={styles['mouse']}>
           <span />

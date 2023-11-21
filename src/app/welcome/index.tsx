@@ -30,6 +30,7 @@ export default function Welcome() {
         </div>
         <div className="start-scroll" />
         <div className="stop-scroll" ref={imageZoomRef} />
+        <ScrollButton />
       </section>
       <section className="w-full relative mt-[-100vh] z-20">
         <Description />
@@ -48,7 +49,6 @@ export default function Welcome() {
           Sentre © 2023, All Rights Reserved.
         </p>
       </section>
-      <ScrollButton />
       <ElementIObs threshold={0.08} force querySelector={imageZoomRef} />
     </div>
   )
