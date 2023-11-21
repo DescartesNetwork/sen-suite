@@ -1,8 +1,9 @@
 'use client'
-import { useRouter } from 'next/navigation'
 import { useMemo } from 'react'
+import Link from 'next/link'
 
 import { MintAmount, MintLogo, MintSymbol } from '@/components/mint'
+
 import { undecimalize } from '@/helpers/decimals'
 import { numeric } from '@/helpers/utils'
 import { useOracles } from '@/hooks/pool.hook'
@@ -17,7 +18,6 @@ export default function PoolOverview({ poolAddress }: { poolAddress: string }) {
   const mints = useMints(mintAddresses)
   const decimals = mints.map((mint) => mint?.decimals || 0)
   const { getMintInfo } = useOracles()
-  const { push } = useRouter()
 
   const { poolMintInfos, totalValue } = useMemo(() => {
     if (!prices) return { poolMintInfos: [], totalValue: 0 }
@@ -77,12 +77,12 @@ export default function PoolOverview({ poolAddress }: { poolAddress: string }) {
         <p className="text-sm opacity-60">Total value</p>
         <h5>{numeric(totalValue).format('$0,0.[0000]')}</h5>
       </div>
-      <button
-        onClick={() => push(poolAddress)}
+      <Link
         className="col-span-full btn btn-primary"
+        href={`/pool-details?poolAddress=${poolAddress}`}
       >
-        Go to pool
-      </button>
+        To the pool
+      </Link>
     </div>
   )
 }
