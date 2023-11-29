@@ -5,11 +5,11 @@ import styles from './index.module.scss'
 export default function ScrollButton() {
   return (
     <span className={styles['scroll-btn']}>
-      <a href="#">
+      <p>
         <span className={styles['mouse']}>
           <span />
         </span>
-      </a>
+      </p>
       <p className={styles['action-btn']}>scroll me</p>
     </span>
   )

@@ -1,6 +1,8 @@
 'use client'
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import Image from 'next/image'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/dist/ScrollTrigger'
 
 import Island from '@/components/island'
 import ElementIObs from '@/components/IntersectionObserver'
@@ -24,27 +26,40 @@ function Partner({ logo, description }: PartnerProps) {
         <Image src={logo} height={40} alt="" />
       </Island>
       <p className="opacity-60 text-center md:text-sm">{description}</p>
-      <ElementIObs threshold={0.08} force querySelector={cardPartnerRef} />
+      <ElementIObs threshold={0.08} querySelector={cardPartnerRef} />
     </div>
   )
 }
 export default function ListPartner() {
   const listPartnerRef = useRef<HTMLDivElement | null>(null)
   const { theme } = useTheme()
+  gsap.registerPlugin(ScrollTrigger)
 
   const partners = LIST_PARTNER.map((partner) => ({
     logo: theme === 'light' ? partner.logoLight : partner.logoDark,
     description: partner.description,
   }))
 
+  useEffect(() => {
+    const animationApp = gsap.to(listPartnerRef.current, {
+      scrollTrigger: {
+        trigger: listPartnerRef.current,
+        scroller: '.welcome-container',
+        onEnter: () => listPartnerRef.current?.classList.add('active'),
+        onLeaveBack: () => listPartnerRef.current?.classList.remove('active'),
+      },
+    })
+    return () => {
+      animationApp.kill()
+    }
+  }, [])
+
   return (
     <div className="partners">
-      <div className="sticky pos-center gap-16 px-8 pt-32 top-0 left-0 w-full">
+      <div ref={listPartnerRef} className="pos-center gap-16 px-8 pt-32 w-full">
         <div className="pos-center gap-4">
-          <h3 className="title-partners text-center text-secondary-content">
-            Our Partner
-          </h3>
-          <p className="desc-partners text-center text-secondary-content text-2xl opacity-60">
+          <h3 className="title-partners text-center text-black">Our Partner</h3>
+          <p className="desc-partners text-center text-black text-2xl opacity-60">
             Join us on our journey to the moon!
           </p>
         </div>
@@ -54,11 +69,6 @@ export default function ListPartner() {
           ))}
         </div>
       </div>
-      <div
-        ref={listPartnerRef}
-        className="h-[100vh] w-full -translate-y-[150vh] md:translate-y-0 check-viewport"
-      />
-      <ElementIObs threshold={0.3} force querySelector={listPartnerRef} />
     </div>
   )
 }
