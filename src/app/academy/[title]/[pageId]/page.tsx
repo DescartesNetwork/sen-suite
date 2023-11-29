@@ -15,6 +15,8 @@ import PageFooter from './footer'
 import { usePushMessage } from '@/components/message/store'
 import { useTheme } from '@/providers/ui.provider'
 import { useAcademyPage } from '@/hooks/academy.hook'
+// core styles shared by all of react-notion-x (required)
+import 'react-notion-x/src/styles.css'
 
 export default function Page({
   params: { pageId },
