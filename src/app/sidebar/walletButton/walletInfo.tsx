@@ -4,6 +4,7 @@ import { Wallet } from '@solana/wallet-adapter-react'
 import copy from 'copy-to-clipboard'
 import { BN } from 'bn.js'
 import { useFloating, offset, flip, shift } from '@floating-ui/react'
+import classNames from 'classnames'
 
 import { ArrowUpRightSquare, Copy, LogOut } from 'lucide-react'
 import { WalletIcon } from '@solana/wallet-adapter-react-ui'
@@ -44,9 +45,6 @@ export default function WalletInfo({
     return setCopied(false)
   }, [address])
 
-  const tolltipClassName = copied ? 'tooltip tooltip-open' : 'tooltip'
-  const tolltipText = copied ? 'Copied' : 'Copy'
-
   return (
     <div className="dropdown p-0 flex">
       <label tabIndex={0} ref={setReference} className="menu-item gap-2 w-full">
@@ -80,7 +78,12 @@ export default function WalletInfo({
         <li>
           <a className="flex text-neutral-focus" onClick={onCopy} href="#">
             <span className="flex-auto">Copy Address</span>
-            <span className={tolltipClassName} data-tip={tolltipText}>
+            <span
+              className={classNames('tooltip', {
+                'tooltip-open': copied,
+              })}
+              data-tip={copied ? 'Copied' : 'Copy'}
+            >
               <Copy className="h-4 w-4" />
             </span>
           </a>

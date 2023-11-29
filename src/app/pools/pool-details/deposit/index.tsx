@@ -161,7 +161,7 @@ export default function Deposit({ poolAddress }: { poolAddress: string }) {
 
   useEffect(() => {
     if (pool.mints.length) setAmounts(new Array(pool.mints.length).fill('0'))
-  }, [pool.mints])
+  }, [pool.mints.length])
 
   return (
     <Fragment>

@@ -9,7 +9,7 @@ import { solscan } from '@/helpers/explorers'
 import { usePoolByAddress } from '@/providers/pools.provider'
 import { shortenAddress } from '@/helpers/utils'
 
-type PoolInfoProps = {
+export type PoolInfoProps = {
   poolAddress: string
 }
 

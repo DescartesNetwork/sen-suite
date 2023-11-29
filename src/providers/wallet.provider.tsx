@@ -1,7 +1,11 @@
 'use client'
 import { Fragment, ReactNode, useCallback, useEffect, useMemo } from 'react'
 import {
+  BackpackWalletAdapter,
+  Coin98WalletAdapter,
+  LedgerWalletAdapter,
   PhantomWalletAdapter,
+  SolflareWalletAdapter,
   TorusWalletAdapter,
 } from '@solana/wallet-adapter-wallets'
 import { create } from 'zustand'
@@ -22,7 +26,14 @@ import { WalletModalProvider } from '@solana/wallet-adapter-react-ui'
 import { env } from '@/configs/env'
 import solConfig from '@/configs/sol.config'
 
-const SUPPORTED_WALLETS = [new PhantomWalletAdapter(), new TorusWalletAdapter()]
+const SUPPORTED_WALLETS = [
+  new PhantomWalletAdapter(),
+  new TorusWalletAdapter(),
+  new Coin98WalletAdapter(),
+  new BackpackWalletAdapter(),
+  new LedgerWalletAdapter(),
+  new SolflareWalletAdapter(),
+]
 
 /**
  * Store
