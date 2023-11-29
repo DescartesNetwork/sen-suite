@@ -5,8 +5,6 @@
     @apply sticky top-0 bg-base-100 transition-all;
 
     .menu {
-      @apply px-2 py-1;
-      
       .menu-option {
         @apply text-sm hidden;
       }

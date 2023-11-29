@@ -54,6 +54,7 @@ export default function Sidebar({ children }: SidebarProps) {
           <Brand size={32} style={{ marginLeft: 2 }} named={open} />
         </Link>
         <NavigateMenu open={open} />
+        <div className="flex-auto" />
         <ul className="menu menu-vertical menu-md">
           <li>
             <Island Loading={MenuLoading}>
