@@ -1,8 +1,10 @@
 'use client'
-import { ReactNode, useCallback, useMemo, useRef } from 'react'
+import { ReactNode, useCallback, useEffect, useMemo, useRef } from 'react'
 import Image from 'next/image'
 import useSWR from 'swr'
 import axios from 'axios'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/dist/ScrollTrigger'
 
 import { ArrowUpRightFromCircle } from 'lucide-react'
 import Island from '@/components/island'
@@ -121,15 +123,28 @@ function Social({ icon, name, url, community }: SocialProps) {
 
 export default function ListSocial() {
   const listSocialRef = useRef<HTMLDivElement | null>(null)
+  gsap.registerPlugin(ScrollTrigger)
+
+  useEffect(() => {
+    const animationSocial = gsap.to(listSocialRef.current, {
+      scrollTrigger: {
+        trigger: listSocialRef.current,
+        scroller: '.welcome-container',
+        onEnter: () => listSocialRef.current?.classList.add('active'),
+        onLeaveBack: () => listSocialRef.current?.classList.remove('active'),
+      },
+    })
+    return () => {
+      animationSocial.kill()
+    }
+  }, [])
 
   return (
     <div
       ref={listSocialRef}
       className="socials pos-center h-full w-full gap-16 px-8 py-32"
     >
-      <h3 className="title-socials text-center text-secondary-content">
-        Get in touch
-      </h3>
+      <h3 className="title-socials text-center text-black">Get in touch</h3>
       <div className="list-social text-center text-secondary-content w-full grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-6">
         {SOCIALS.map((social) => (
           <Island key={social.name}>
@@ -137,7 +152,6 @@ export default function ListSocial() {
           </Island>
         ))}
       </div>
-      <ElementIObs threshold={0.1} force querySelector={listSocialRef} />
     </div>
   )
 }

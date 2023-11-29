@@ -46,16 +46,14 @@ export default function Sidebar({ children }: SidebarProps) {
       />
       {/* Sidebar */}
       <aside
-        className={classNames(
-          'flex flex-col gap-3 sidebar vertical max-md:mobile',
-          { open },
-        )}
+        className={classNames('flex flex-col sidebar vertical max-md:mobile', {
+          open,
+        })}
       >
         <Link className="p-4" href="/">
           <Brand size={32} style={{ marginLeft: 2 }} named={open} />
         </Link>
         <NavigateMenu open={open} />
-        <div className="flex-auto" />
         <ul className="menu menu-vertical menu-md">
           <li>
             <Island Loading={MenuLoading}>

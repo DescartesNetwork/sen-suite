@@ -1,10 +1,10 @@
 'use client'
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import classNames from 'classnames'
-
-import ElementIObs from '@/components/IntersectionObserver'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/dist/ScrollTrigger'
 
 import {
   booster,
@@ -60,10 +60,28 @@ const App = ({ route, name, icon, disabled }: AppProps) => {
 
 export default function ListApp() {
   const listAppRef = useRef<HTMLDivElement | null>(null)
+  gsap.registerPlugin(ScrollTrigger)
+
+  useEffect(() => {
+    const animationApp = gsap.to(listAppRef.current, {
+      scrollTrigger: {
+        trigger: listAppRef.current,
+        scroller: '.welcome-container',
+        onEnter: () => listAppRef.current?.classList.add('active'),
+        onLeaveBack: () => listAppRef.current?.classList.remove('active'),
+      },
+    })
+    return () => {
+      animationApp.kill()
+    }
+  }, [])
 
   return (
-    <div className="list-app relative">
-      <div className="sticky pos-center top-0 left-0 h-[100vh] md:h-[120vh] w-full gap-10 bg-center bg-no-repeat bg-cover bg-[url('/apps-bg-light.png')] dark:bg-[url('/apps-bg-dark.png')]">
+    <div className="list-app">
+      <div
+        ref={listAppRef}
+        className="pos-center h-[80vh] md:h-[100vh] w-full gap-10 "
+      >
         <div className="top-apps flex flex-row justify-center gap-5 md:gap-16 ">
           {TOP_APPS.map((app) => (
             <App key={app.route} {...app} />
@@ -83,8 +101,6 @@ export default function ListApp() {
           ))}
         </div>
       </div>
-      <div ref={listAppRef} className="h-[100vh] w-full" />
-      <ElementIObs threshold={0.2} force querySelector={listAppRef} />
     </div>
   )
 }
