@@ -7,8 +7,8 @@
 }
 
 .home-page {
-  &:has(.banner>.btn-hidden){
-    #isHidden{
+  &:has(.banner>.hidden-scroll){
+    #btn-scroll{
       @apply hidden
     }
   }
