@@ -80,7 +80,7 @@ export default function ListApp() {
     <div className="list-app">
       <div
         ref={listAppRef}
-        className="pos-center h-[100vh] md:h-[120vh] w-full gap-10 "
+        className="pos-center h-[80vh] md:h-[100vh] w-full gap-10 "
       >
         <div className="top-apps flex flex-row justify-center gap-5 md:gap-16 ">
           {TOP_APPS.map((app) => (

@@ -43,9 +43,9 @@ export default function Description() {
   }, [descriptionRef])
 
   return (
-    <div className="description relative">
-      <div className="sticky pos-center top-0 left-0 h-[100dvh] w-full gap-10 p-4">
-        <h3 className="w-full max-w-[1024px] paragraph">
+    <div ref={descRef} className="description relative">
+      <div className="sticky pos-center top-0 left-0 h-[calc(100dvh-77px)] md:h-[calc(100dvh-1rem)] w-full gap-10 p-4">
+        <p className="w-full max-w-[1024px] font-bold text-2xl md:text-5xl">
           <span className="text-[#212433]">Unlock your project&apos;s </span>
           {PARAGRAPH.split('').map((character, index) => (
             <span
@@ -56,12 +56,12 @@ export default function Description() {
               {character}
             </span>
           ))}
-        </h3>
+        </p>
       </div>
-      <div className="h-[30vh] w-full" ref={descRef} />
+      <div className="h-[30vh] w-full" />
       <div className="h-[100vh] w-full" ref={triggerRef} />
       <div className="h-[30vh] w-full" />
-      <ElementIObs threshold={1} force querySelector={descRef} />
+      <ElementIObs threshold={0.1} querySelector={descRef} />
     </div>
   )
 }

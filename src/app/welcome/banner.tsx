@@ -1,9 +1,10 @@
 'use client'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger'
 
 export default function Banner() {
+  const scrollBtnActiveRef = useRef<HTMLDivElement | null>(null)
   gsap.registerPlugin(ScrollTrigger)
 
   useEffect(() => {
@@ -12,9 +13,13 @@ export default function Banner() {
       .timeline({
         scrollTrigger: {
           start: 'top top',
-          scroller: '.banner',
-          end: 'bottom 50%',
+          end: 'bottom 80%',
+          scroller: '.welcome-container',
           scrub: 0.2,
+          onLeave: () =>
+            scrollBtnActiveRef.current?.classList.add('btn-hidden'),
+          onEnterBack: () =>
+            scrollBtnActiveRef.current?.classList.remove('btn-hidden'),
         },
         defaults: { duration: 1 },
       })
@@ -26,12 +31,12 @@ export default function Banner() {
   }, [])
 
   return (
-    <div className="banner no-scrollbar">
+    <div className="banner">
       <div className="zoom-image">
         <div className="wrap-image">
           <div
             id="banner-image"
-            className="dark:bg-[url('/mobile-dark.png')] bg-[url('/mobile-light.png')] dark:md:bg-[url('/laptop-dark.png')] md:bg-[url('/laptop-light.png')] bg-contain bg-no-repeat bg-center pos-center gap-2 w-full aspect-[2/4] md:aspect-[5/5]"
+            className="dark:bg-[url('/mobile-dark.png')] bg-[url('/mobile-light.png')] dark:md:bg-[url('/laptop-dark.png')] md:bg-[url('/laptop-light.png')] bg-contain bg-no-repeat bg-center pos-center gap-2 w-full aspect-[1/4] md:aspect-[5/5]"
           >
             <h2 className="text-black text-4xl sm:text-5xl md:text-4xl lg:text-6xl">
               Sentre Protocol
@@ -42,7 +47,7 @@ export default function Banner() {
           </div>
         </div>
       </div>
-      <div className="h-[140dvh] md:h-[50dvh]" />
+      <div className="h-[140dvh] md:h-[50dvh]" ref={scrollBtnActiveRef} />
     </div>
   )
 }

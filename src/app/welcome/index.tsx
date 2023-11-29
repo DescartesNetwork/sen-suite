@@ -4,7 +4,6 @@ import ListApp from './listApp'
 import ListPartner from './listPartner'
 import ListSocial from './listSocial'
 import Banner from './banner'
-import ScrollButton from './scrollButton'
 
 import './index.scss'
 
@@ -13,9 +12,6 @@ export default function Welcome() {
     <div className="welcome-container no-scrollbar">
       <section className="w-full">
         <Banner />
-      </section>
-      <section className="pos-center">
-        <ScrollButton />
       </section>
       <section className="w-full">
         <Description />
