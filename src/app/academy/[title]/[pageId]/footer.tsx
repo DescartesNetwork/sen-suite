@@ -1,28 +1,29 @@
 'use client'
+import Link from 'next/link'
 import dayjs from 'dayjs'
 
 import { useAcademyPage } from '@/hooks/academy.hook'
-import Link from 'next/link'
+import { normalizePageTitle } from '@/app/api/blogs/[pageId]/utils'
 
 function Recommend({ pageId }: { pageId: string }) {
   const {
-    data: { metadata },
+    data: { metadata: { thumbnail, publishedAt, title, description } = {} },
   } = useAcademyPage(pageId)
 
-  if (!metadata)
+  if (!title)
     return <div className="w-full h-64 bg-base-300 rounded-xl animate-pulse" />
   return (
     <Link
       className="card h-full image-full rounded-xl"
-      href={`/academy/${pageId}`}
+      href={`/academy/${normalizePageTitle(title)}/${pageId}`}
     >
       <figure>
-        <img src={metadata.thumbnail} alt={pageId} className="blur-sm" />
+        <img src={thumbnail} alt={pageId} className="blur-sm" />
       </figure>
       <div className="card-body">
-        <p>{dayjs(metadata.publishedAt).format('MMM DD, YYYY')}</p>
-        <h2 className="card-title">{metadata.title}</h2>
-        <p>{metadata.description}</p>
+        <p>{dayjs(publishedAt).format('MMM DD, YYYY')}</p>
+        <h2 className="card-title">{title}</h2>
+        <p>{description}</p>
       </div>
     </Link>
   )
