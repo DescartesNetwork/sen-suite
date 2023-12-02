@@ -1502,10 +1502,10 @@
     bs58 "^5.0.0"
     web3.storage "^4.2.0"
 
-"@senswap/balancer@^3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@senswap/balancer/-/balancer-3.0.1.tgz#8bb23897ec092204851a64381d89ce5e7acec1e3"
-  integrity sha512-rYdsEiNQXaSOB0ckzl1zsFgd4tchQdazQd3HEXUAtTwtOo1FdKkc3p6WlFi6uGnVU+o2RsuY+Sw/OP2bQadItw==
+"@senswap/balancer@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@senswap/balancer/-/balancer-4.0.0.tgz#1ec6a1ee1ae0e61d011ddb83ded59e0588fb006f"
+  integrity sha512-kyv3lAE5tjQUu0HdumoIynYyHoXnzVUQVoCR3fRDQAn4bJzkMdQnwpGs838Z5hG/8gAGwiUoqpAR5BxAL7dtcg==
   dependencies:
     "@project-serum/anchor" "^0.24.2"
 
