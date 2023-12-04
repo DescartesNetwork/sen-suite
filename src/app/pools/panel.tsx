@@ -51,7 +51,7 @@ export default function LiquidityPoolPanel() {
       for (const poolAddress of poolAddresses) {
         const { treasuries } = pools[poolAddress]
         const tokenAccounts = treasuries.map((treasury) => treasury.toBase58())
-        const { data } = await axios.get(solConfig.statRpc + 'volume', {
+        const { data } = await axios.get(solConfig.statRpc + 'stat/volume', {
           params: {
             ymdTo: today.ymd(),
             ymdFrom: today.subtractDay(dateRange).ymd(),
