@@ -8,6 +8,7 @@ import { produce } from 'immer'
 import axios from 'axios'
 
 import { env } from '@/configs/env'
+import mintConfig from '@/configs/mint.config'
 import { getAllTokens, getPrice } from '@/helpers/stat'
 
 export type MintStore = {
@@ -117,7 +118,7 @@ export const useMintByAddress = (mintAddress: string) => {
       const mint = metadata.find(({ address }) => address === mintAddress)
       if (mint) return mint
       const { data } = await axios.get(
-        `https://sage.sentre.io/metadata/${mintAddress}`,
+        `${mintConfig.host}/metadata/${mintAddress}`,
       )
       if (data) upsertMetadata([data])
       return data

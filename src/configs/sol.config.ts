@@ -34,10 +34,10 @@ const conf: Record<Env, Conf> = {
     balancerAddress: 'D3BBjqUdCYuP18fNvvMbPAZ8DpcRi4io2EsYHQawJDag',
     senFarmingProgram: 'E6Vc9wipgm8fMXHEYwgN7gYdDbyvpPBUiTNy67zPKuF4',
     utilityProgram: DEFAULT_SEN_UTILITY_PROGRAM_ID,
-    bundlStorage: 'https://node1.bundlr.network',
     taxman: '9doo2HZQEmh2NgfT3Yx12M89aoBheycYqH1eaR5gKb3e',
     fee: 10 ** 6, // lamports
     statRpc: 'https://stat.sentre.io/',
+    bundlStorage: 'https://node1.bundlr.network',
   },
 
   /**
