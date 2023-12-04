@@ -645,7 +645,7 @@ export const useVol24h = (poolAddress: string) => {
     const ymdFrom = new DateHelper().subtractDay(dateRange).ymd()
     const tokenAccounts = treasuries.map((treasury) => treasury.toBase58())
     const programId = solConfig.balancerAddress
-    const { data } = await axios.get(solConfig.statRpc + 'volume', {
+    const { data } = await axios.get(solConfig.statRpc + 'stat/volume', {
       params: { ymdTo, ymdFrom, tokenAccounts, programId },
     })
     return data || { totalVol: 0, volumes: {} }
@@ -663,6 +663,21 @@ export const useVol24h = (poolAddress: string) => {
   }, [vols])
 
   return { vols, isLoading, vol24h }
+}
+
+export const useTotalTvl = () => {
+  const fetcher = useCallback(async ([programId]: [string]) => {
+    const { data } = await axios.get(
+      solConfig.statRpc + `stat/total-tvl/${programId}`,
+    )
+    return data.totalTvl || 0
+  }, [])
+
+  const { data: totalTvl, isLoading } = useSWR(
+    [solConfig.balancerAddress, 'total-tvl'],
+    fetcher,
+  )
+  return { totalTvl, isLoading }
 }
 
 /**
