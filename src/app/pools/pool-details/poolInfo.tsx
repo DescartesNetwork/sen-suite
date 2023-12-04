@@ -48,7 +48,7 @@ export default function PoolInfo({ poolAddress }: PoolInfoProps) {
         </div>
         {/* Mint LPT Info */}
         <div className="flex gap-2 items-center">
-          <span className="tooltip" data-tip="Mint LPT Address">
+          <span className="tooltip" data-tip="LP Token Address">
             <p className="text-sm font-bold opacity-60 cursor-pointer">
               {shortenAddress(mintLpt.toBase58() || '')}
             </p>

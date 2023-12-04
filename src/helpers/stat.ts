@@ -1,9 +1,11 @@
 import axios from 'axios'
 
+import mintConfig from '@/configs/mint.config'
+
 export const getPrice = async (mintAddress: string) => {
   try {
     const { data: price } = await axios.get<number>(
-      `https://sage.sentre.io/price/${mintAddress}`,
+      `${mintConfig.host}/price/${mintAddress}`,
     )
     return price
   } catch (er) {
