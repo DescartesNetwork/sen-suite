@@ -12,7 +12,7 @@ const conf: Record<Env, Conf> = {
    * Development configurations
    */
   development: {
-    host: 'http://localhost:10000',
+    host: 'https://sage.sentre.io',
   },
 
   /**

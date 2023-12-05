@@ -6,7 +6,12 @@ import Balancer, {
 } from '@senswap/balancer'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { utils } from '@coral-xyz/anchor'
-import { PublicKey, SystemProgram, Transaction } from '@solana/web3.js'
+import {
+  ComputeBudgetProgram,
+  PublicKey,
+  SystemProgram,
+  Transaction,
+} from '@solana/web3.js'
 import { WRAPPED_SOL_MINT } from '@metaplex-foundation/js'
 import { initTxCreateMultiTokenAccount } from '@sen-use/web3'
 import BN from 'bn.js'
@@ -279,7 +284,10 @@ export const useDeposit = (poolAddress: string, amountIns: string[]) => {
       dAmountIns,
       false,
     )
-    transaction.add(txDeposit)
+    transaction.add(
+      ComputeBudgetProgram.setComputeUnitLimit({ units: 1400000 }),
+      txDeposit,
+    )
     const txId = await provider.sendAndConfirm(transaction)
     return txId
   }, [
