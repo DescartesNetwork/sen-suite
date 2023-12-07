@@ -45,12 +45,12 @@ export default function Description() {
   return (
     <div ref={descRef} className="description relative">
       <div className="sticky pos-center top-0 left-0 h-[calc(100dvh-77px)] md:h-[calc(100dvh-1rem)] w-full gap-10 p-4">
-        <p className="w-full max-w-[1024px] font-bold text-2xl md:text-5xl">
+        <p className="w-full max-w-[1024px] font-bold text-2xl md:text-5xl !leading-tight">
           <span className="text-[#212433]">Unlock your project&apos;s </span>
           {PARAGRAPH.split('').map((character, index) => (
             <span
-              className="text-[#D3D3D6]"
               key={index}
+              className="text-[#D3D3D6]"
               ref={(ref: HTMLSpanElement) => setDescriptionRef(ref)}
             >
               {character}
