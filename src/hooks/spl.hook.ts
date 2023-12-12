@@ -52,12 +52,17 @@ export const useMints = (mintAddresses: string[]) => {
     async ([mintAddresses]: [string[]]) => {
       for (const mintAddress of mintAddresses)
         if (!isAddress(mintAddress)) return undefined
-      const data = await spl.account.mint.fetchMultiple(mintAddresses)
+      const data = await Promise.all(
+        mintAddresses.map(
+          async (mintAddress) => await spl.account.mint.fetch(mintAddress),
+        ),
+      )
       return data
     },
     [spl],
   )
   const { data } = useSWR([mintAddresses, 'spl'], fetcher)
+
   return data || []
 }
 
