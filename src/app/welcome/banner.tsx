@@ -17,9 +17,9 @@ export default function Banner() {
           scroller: '.welcome-container',
           scrub: 0.2,
           onLeave: () =>
-            scrollBtnActiveRef.current?.classList.add('btn-hidden'),
+            scrollBtnActiveRef.current?.classList.add('hidden-scroll'),
           onEnterBack: () =>
-            scrollBtnActiveRef.current?.classList.remove('btn-hidden'),
+            scrollBtnActiveRef.current?.classList.remove('hidden-scroll'),
         },
         defaults: { duration: 1 },
       })

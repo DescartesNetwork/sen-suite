@@ -16,16 +16,15 @@ export default function Description() {
 
   const useArrayRef = () => {
     const descriptionRef = useRef<HTMLSpanElement[]>([])
-    descriptionRef.current = []
     return [
-      descriptionRef,
+      descriptionRef.current,
       (ref: HTMLSpanElement) => ref && descriptionRef.current.push(ref),
     ] as const
   }
   const [descriptionRef, setDescriptionRef] = useArrayRef()
 
   useEffect(() => {
-    const effectDescription = gsap.to(descriptionRef.current, {
+    const effectDescription = gsap.to(descriptionRef, {
       scrollTrigger: {
         trigger: triggerRef.current,
         scroller: '.welcome-container',
