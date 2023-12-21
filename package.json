@@ -7,13 +7,13 @@
     "email": "tuphan@descartes.network"
   },
   "scripts": {
-    "dev": "concurrently --names DEV,LINT -c cyan,yellow 'yarn dev:watch' 'yarn lint:watch'",
+    "dev": "concurrently --names DEV,LINT -c cyan,yellow 'pnpm dev:watch' 'pnpm lint:watch'",
     "dev:watch": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "lint:watch": "nodemon --watch src --ext ts,tsx --exec 'next lint' --signal SIGTERM",
-    "preserve": "yarn build",
+    "preserve": "pnpm build",
     "serve": "serve out"
   },
   "resolutions": {

@@ -1,7 +1,6 @@
 'use client'
 import { Fragment, ReactNode, useCallback, useEffect, useMemo } from 'react'
 import {
-  BackpackWalletAdapter,
   Coin98WalletAdapter,
   LedgerWalletAdapter,
   PhantomWalletAdapter,
@@ -30,7 +29,6 @@ const SUPPORTED_WALLETS = [
   new PhantomWalletAdapter(),
   new TorusWalletAdapter(),
   new Coin98WalletAdapter(),
-  new BackpackWalletAdapter(),
   new LedgerWalletAdapter(),
   new SolflareWalletAdapter(),
 ]

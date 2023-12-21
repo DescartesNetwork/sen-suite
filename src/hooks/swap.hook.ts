@@ -24,25 +24,27 @@ export type JupiterFee = {
 }
 export type JupiterRouteInfo = {
   contextSlot: number
-  data: Array<{
-    amount: string
-    inAmount: string
-    marketInfos: Array<{
-      id: string
+  inAmount: string
+  inputMint: string
+  otherAmountThreshold: string
+  outAmount: string
+  outputMint: string
+  platformFee: unknown | null
+  priceImpactPct: string
+  slippageBps: number
+  swapMode: JupiterSwapMode
+  routePlan: Array<{
+    percent: number
+    swapInfo: {
+      ammKey: string
+      feeAmount: string
+      feeMint: string
       inAmount: string
       inputMint: string
       label: string
-      lpFee: JupiterFee
-      notEnoughLiquidity: boolean
       outAmount: string
       outputMint: string
-      platformFee: JupiterFee
-    }>
-    otherAmountThreshold: string
-    outAmount: string
-    priceImpactPct: number
-    slippageBps: number
-    swapMode: JupiterSwapMode
+    }
   }>
   timeTaken: number
 }
@@ -58,8 +60,8 @@ export type SwapStore = {
   setAskAmount: (askAmount: string) => void
   slippage: number
   setSlippage: (slippage: number) => void
-  routes: JupiterRouteInfo['data'] | undefined
-  setRoutes: (routes: JupiterRouteInfo['data'] | undefined) => void
+  bestRoute: JupiterRouteInfo | undefined
+  setBestRoute: (bestRoute: JupiterRouteInfo | undefined) => void
 }
 
 /**
@@ -84,9 +86,9 @@ export const useSwapStore = create<SwapStore>()(
       slippage: 0.01,
       setSlippage: (slippage: number) =>
         set({ slippage }, false, 'setSlippage'),
-      routes: undefined,
-      setRoutes: (routes: JupiterRouteInfo['data'] | undefined) =>
-        set({ routes }, false, 'setRoutes'),
+      bestRoute: undefined,
+      setBestRoute: (bestRoute: JupiterRouteInfo | undefined) =>
+        set({ bestRoute }, false, 'setRoutes'),
     }),
     {
       name: 'swap',
@@ -134,7 +136,7 @@ export const useUnsafeSwap = () => {
   const askMintAddress = useSwapStore(({ askMintAddress }) => askMintAddress)
   const setAskAmount = useSwapStore(({ setAskAmount }) => setAskAmount)
   const slippage = useSwapStore(({ slippage }) => slippage)
-  const setRoutes = useSwapStore(({ setRoutes }) => setRoutes)
+  const setBestRoute = useSwapStore(({ setBestRoute }) => setBestRoute)
 
   const { decimals: bidDecimals } = useMintByAddress(bidMintAddress) || {
     decimals: 0,
@@ -143,14 +145,12 @@ export const useUnsafeSwap = () => {
     decimals: 0,
   }
 
-  const { value, loading } = useAsync(async () => {
+  const { value: bestRoute, loading } = useAsync(async () => {
     if (!isAddress(bidMintAddress) || !isAddress(askMintAddress) || !bidAmount)
       return undefined
     const amount = decimalize(bidAmount, bidDecimals).toString()
-    const {
-      data: { data },
-    } = await axios.get<JupiterRouteInfo>(
-      `https://quote-api.jup.ag/v4/quote?inputMint=${bidMintAddress}&outputMint=${askMintAddress}&amount=${amount}&slippageBps=${
+    const { data } = await axios.get<JupiterRouteInfo>(
+      `https://quote-api.jup.ag/v6/quote?inputMint=${bidMintAddress}&outputMint=${askMintAddress}&amount=${amount}&slippageBps=${
         slippage * 10000
       }`,
     )
@@ -158,30 +158,28 @@ export const useUnsafeSwap = () => {
   }, [bidMintAddress, bidAmount, askMintAddress, slippage, bidDecimals])
 
   useEffect(() => {
-    const [bestRoute] = value || []
     const { outAmount } = bestRoute || {}
     if (!outAmount) setAskAmount('')
     else setAskAmount(undecimalize(new BN(outAmount), askDecimals))
-    setRoutes(value)
-  }, [value, setRoutes, setAskAmount, askDecimals])
+    setBestRoute(bestRoute)
+  }, [bestRoute, setBestRoute, setAskAmount, askDecimals])
 
-  return { routes: value || [], fetching: loading }
+  return { bestRoute, fetching: loading }
 }
 
 export const useSwap = () => {
   const { publicKey, signTransaction } = useWallet()
   const { connection } = useConnection()
-  const routes = useSwapStore(({ routes }) => routes)
+  const bestRoute = useSwapStore(({ bestRoute }) => bestRoute)
 
   const swap = useCallback(async () => {
     if (!publicKey || !signTransaction || !connection)
       throw new Error('Cannot connect wallet.')
-    if (!routes) throw new Error('Invalid input.')
-    const [bestRoute] = routes
+    if (!bestRoute) throw new Error('Invalid input.')
     const {
       data: { swapTransaction },
-    } = await axios.post('https://quote-api.jup.ag/v4/swap', {
-      route: bestRoute,
+    } = await axios.post('https://quote-api.jup.ag/v6/swap', {
+      quoteResponse: bestRoute,
       userPublicKey: publicKey.toBase58(),
       wrapUnwrapSOL: true,
     })
@@ -195,7 +193,7 @@ export const useSwap = () => {
       maxRetries: 2,
     })
     return txId
-  }, [routes, publicKey, signTransaction, connection])
+  }, [bestRoute, publicKey, signTransaction, connection])
 
-  return { routes: routes || [], swap }
+  return { bestRoute, swap }
 }

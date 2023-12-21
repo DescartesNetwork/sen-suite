@@ -12,9 +12,7 @@ import { useSwap, useSwapStore } from '@/hooks/swap.hook'
 import { useMintByAddress } from '@/providers/mint.provider'
 
 function PriceImpact() {
-  const {
-    routes: [bestRoute],
-  } = useSwap()
+  const { bestRoute } = useSwap()
 
   return (
     <div className="flex flex-row gap-2 items-baseline">
@@ -28,9 +26,7 @@ function PriceImpact() {
 
 function Price() {
   const { bidMintAddress, askMintAddress } = useSwapStore()
-  const {
-    routes: [bestRoute],
-  } = useSwap()
+  const { bestRoute } = useSwap()
 
   const { decimals: bidDecimals } = useMintByAddress(bidMintAddress) || {
     decimals: 0,
@@ -104,20 +100,18 @@ function Hop({ mintAddress }: { mintAddress: string }) {
 }
 
 function Routes() {
-  const {
-    routes: [bestRoute],
-  } = useSwap()
+  const { bestRoute } = useSwap()
 
   const hops = useMemo(() => {
-    if (!bestRoute?.marketInfos) return []
+    if (!bestRoute?.routePlan) return []
     const hops: string[] = []
-    bestRoute?.marketInfos.forEach(({ inputMint, outputMint }) => {
+    bestRoute?.routePlan.forEach(({ swapInfo: { inputMint, outputMint } }) => {
       hops.pop()
       hops.push(inputMint)
       hops.push(outputMint)
     })
     return hops
-  }, [bestRoute?.marketInfos])
+  }, [bestRoute?.routePlan])
 
   return (
     <div className="flex flex-row gap-1 items-center">

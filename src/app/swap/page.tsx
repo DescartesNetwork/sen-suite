@@ -19,7 +19,7 @@ import { solscan } from '@/helpers/explorers'
 export default function Swap() {
   const [loading, setLoading] = useState(false)
   const onSwitch = useSwitch()
-  const { routes, fetching } = useUnsafeSwap()
+  const { bestRoute, fetching } = useUnsafeSwap()
   const { swap } = useSwap()
   const pushMessage = usePushMessage()
   const setBidAmount = useSwapStore(({ setBidAmount }) => setBidAmount)
@@ -69,7 +69,7 @@ export default function Swap() {
       <div className="col-span-12">
         <button
           className="btn btn-primary w-full rounded-full"
-          disabled={loading || fetching || !routes.length}
+          disabled={loading || fetching || !bestRoute}
           onClick={onSwap}
         >
           Swap
