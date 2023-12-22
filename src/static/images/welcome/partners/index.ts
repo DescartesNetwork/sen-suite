@@ -14,6 +14,8 @@ import wormholeDarkSvg from './wormhole-dark.svg'
 import wormholeLightSvg from './wormhole-light.svg'
 import solendLight from './solend.svg'
 import solendDark from './solend-dark.svg'
+import superteamDark from './superteam-dark.png'
+import superteamLight from './superteam-light.png'
 
 export {
   clvDarkSvg,
@@ -32,4 +34,6 @@ export {
   wormholeLightSvg,
   solendDark,
   solendLight,
+  superteamDark,
+  superteamLight,
 }

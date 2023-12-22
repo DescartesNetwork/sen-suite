@@ -23,7 +23,7 @@ function Partner({ logo, description }: PartnerProps) {
       className="card-partner flex flex-col items-center gap-6 p-6 h-full w-full bg-base-100 rounded-3xl"
     >
       <Island>
-        <Image src={logo} height={40} alt="" />
+        <Image src={logo} height={36} alt="" />
       </Island>
       <p className="opacity-60 text-center md:text-sm">{description}</p>
       <ElementIObs threshold={0.08} querySelector={cardPartnerRef} />

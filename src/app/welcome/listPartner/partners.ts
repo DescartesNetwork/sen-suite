@@ -7,14 +7,14 @@ import {
   gateSvg,
   jupiterDarkSvg,
   jupiterLightSvg,
-  serumDarkSvg,
-  serumLightSvg,
   sypoolSvg,
   logoCoin98Png,
   logoSolSvg,
   logoSolDarkSvg,
   solendLight,
   solendDark,
+  superteamDark,
+  superteamLight,
 } from '@/static/images/welcome/partners'
 
 type ListPartnerProps = {
@@ -32,27 +32,15 @@ export const LIST_PARTNER: ListPartnerProps = [
   },
   {
     description:
+      'Superteam Vietnam is a community of founders, builders and creative artists in Vietnam. Our goal is to raise the quality of Vietnamese builders, specifically on Solana blockchain.',
+    logoLight: superteamLight,
+    logoDark: superteamDark,
+  },
+  {
+    description:
       'An All in one DeFi platform to swap, stake, borrow, lend, invest and earn with crypto at ease.',
     logoLight: logoCoin98Png,
     logoDark: logoCoin98Png,
-  },
-  {
-    description:
-      'Serum brings the speed and convenience of centralized exchanges to DeFi while remaining fully trustless and transparent.',
-    logoLight: serumLightSvg,
-    logoDark: serumDarkSvg,
-  },
-  {
-    description:
-      'Solend is the autonomous interest rate machine for lending on Solana.',
-    logoLight: solendLight,
-    logoDark: solendDark,
-  },
-  {
-    description:
-      'Sypool is a synthetic asset management protocol. Pool managers manage tokens like mutual fund managers manage assets.',
-    logoLight: sypoolSvg,
-    logoDark: sypoolSvg,
   },
   {
     description:
@@ -65,6 +53,18 @@ export const LIST_PARTNER: ListPartnerProps = [
       'Your Gateway to Crypto. Trade over 1,400 cryptocurrencies safely, quickly, and easily.',
     logoLight: gateSvg,
     logoDark: gateSvg,
+  },
+  {
+    description:
+      'Solend is the autonomous interest rate machine for lending on Solana.',
+    logoLight: solendLight,
+    logoDark: solendDark,
+  },
+  {
+    description:
+      'Sypool is a synthetic asset management protocol. Pool managers manage tokens like mutual fund managers manage assets.',
+    logoLight: sypoolSvg,
+    logoDark: sypoolSvg,
   },
   {
     description:
