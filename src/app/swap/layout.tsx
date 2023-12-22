@@ -3,9 +3,9 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'SenSwap | Sentre',
+  title: 'Sentre Swap | Sentre',
   description:
-    'SenSwap: The asymmetric pools (Balancer model) on Solana. Powered by Sentre.',
+    'The asymmetric pools (Balancer model) on Solana. Powered by Sentre.',
 }
 
 export default function SwapLayout({ children }: { children: ReactNode }) {

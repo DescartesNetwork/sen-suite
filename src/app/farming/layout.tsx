@@ -5,7 +5,7 @@ import FarmingProvider from '@/providers/farming.provider'
 import FarmingWatcher from '@/watchers/farming.watcher'
 
 export const metadata: Metadata = {
-  title: 'SenFarming',
+  title: 'Sentre Farming | Sentre',
   description: 'Boost your TVL and NFT utility along each other.',
 }
 
