@@ -15,12 +15,8 @@ export const TAGS = [
     tag: 'Ecosystem',
   },
   {
-    title: '🎉 Events',
-    tag: 'Events',
-  },
-  {
-    title: 'SenSwap',
-    tag: 'SenSwap',
+    title: '💎 DeFi Series',
+    tag: 'DeFi Series',
   },
   {
     title: '🧑‍💻 Coding Camp II',
