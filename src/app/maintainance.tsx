@@ -1,9 +1,10 @@
 'use client'
 import { Fragment } from 'react'
 
-import deplConfig from '@/configs/depl.config'
 import Brand from '@/components/brand'
 import { BadgeInfo } from 'lucide-react'
+
+import deplConfig from '@/configs/depl.config'
 
 export default function Maintainance() {
   if (!deplConfig.maintaining) return <Fragment />

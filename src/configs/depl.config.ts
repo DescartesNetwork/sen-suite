@@ -18,7 +18,7 @@ const conf: Record<Env, Conf> = {
    */
   development: {
     host: 'http://localhost:3000',
-    maintaining: false,
+    maintaining: process.env.NEXT_PUBLIC_MAINTAINING === 'true' || false,
     notionDatabaseId: process.env.NOTION_DATABASE_ID || '',
     youtubeTokenAPI: process.env.YOUTUBE_TOKEN_API || '',
     twitterTokenAPI: process.env.TWITTER_TOKEN_API || '',
@@ -30,7 +30,7 @@ const conf: Record<Env, Conf> = {
    */
   production: {
     host: process.env.DOMAIN || '',
-    maintaining: process.env.MAINTAINING === 'true' || false,
+    maintaining: process.env.NEXT_PUBLIC_MAINTAINING === 'true' || false,
     notionDatabaseId: process.env.NOTION_DATABASE_ID || '',
     youtubeTokenAPI: process.env.YOUTUBE_TOKEN_API || '',
     twitterTokenAPI: process.env.TWITTER_TOKEN_API || '',
