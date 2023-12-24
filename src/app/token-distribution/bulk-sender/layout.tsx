@@ -4,7 +4,8 @@ import type { Metadata } from 'next'
 import { BulkSenderProvider } from '@/providers/bulkSender.provider'
 
 export const metadata: Metadata = {
-  title: 'Bulk Sender | Bulk Sender for SPL Tokens on Solana',
+  title: 'Bulk Sender | Sentre',
+  description: 'Bulk Sender for SPL Tokens on Solana',
 }
 
 export default function BulkSenderLayout({

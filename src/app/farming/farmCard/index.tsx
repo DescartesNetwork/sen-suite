@@ -48,7 +48,7 @@ export default function FarmCard({ farmAddress }: FarmingCardProps) {
           >
             <li>
               <a className="flex flex-row items-center" href="/pools">
-                <span className="flex-auto">Deposit in SenSwap</span>
+                <span className="flex-auto">Deposit in Sentre Swap</span>
                 <Crown className="h-4 w-4 stroke-amber-500" />
               </a>
             </li>
