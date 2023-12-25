@@ -60,10 +60,10 @@ export default function Fee({ poolAddress }: { poolAddress: string }) {
   const poolData = usePoolByAddress(poolAddress)
 
   const currentFee = (poolData.fee.toNumber() * 100) / PRECISION
-  const currentTaxFee = (poolData.taxFee.toNumber() * 100) / PRECISION
+  const currentTax = (poolData.tax.toNumber() * 100) / PRECISION
 
   const [fee, setFee] = useState(currentFee.toString())
-  const [taxFee, setTaxFee] = useState(currentTaxFee.toString())
+  const [tax, setTax] = useState(currentTax.toString())
 
   const [loading, setLoading] = useState(false)
 
@@ -73,7 +73,7 @@ export default function Fee({ poolAddress }: { poolAddress: string }) {
   const onUpdateFee = async () => {
     setLoading(true)
     try {
-      const txId = await updateFee(fee, taxFee)
+      const txId = await updateFee(fee, tax)
       return pushMessage('alert-success', 'Successfully Update Fee', {
         onClick: () => window.open(solscan(txId || ''), '_blank'),
       })
@@ -98,9 +98,9 @@ export default function Fee({ poolAddress }: { poolAddress: string }) {
 
       <Content
         title="Platform Fee"
-        percent={taxFee}
-        currentPercent={currentTaxFee}
-        onChangeValue={setTaxFee}
+        percent={tax}
+        currentPercent={currentTax}
+        onChangeValue={setTax}
         tooltipContent={
           'The portion of fee your pool will pay to Sentre Swap for maintaining the system'
         }
@@ -109,7 +109,7 @@ export default function Fee({ poolAddress }: { poolAddress: string }) {
 
       <button
         disabled={
-          fee === currentFee.toString() && taxFee === currentTaxFee.toString()
+          fee === currentFee.toString() && tax === currentTax.toString()
         }
         onClick={onUpdateFee}
         className="btn btn-primary w-full rounded-full"

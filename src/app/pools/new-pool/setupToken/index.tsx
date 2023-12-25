@@ -33,11 +33,11 @@ export default function SetupToken({
   ])
   const pushMessage = usePushMessage()
 
-  const { initPool } = useInitAndDeletePool()
+  const { initializePool } = useInitAndDeletePool()
   const onInitPool = useCallback(async () => {
     try {
       setLoading(true)
-      const { txId, poolAddress } = await initPool(dataSetup)
+      const { txId, poolAddress } = await initializePool(dataSetup)
       pushMessage(
         'alert-success',
         'Successfully initialize pool. Click here to view on explorer.',
@@ -52,7 +52,7 @@ export default function SetupToken({
     } finally {
       setLoading(false)
     }
-  }, [initPool, pushMessage, setPoolAddress, onNext, dataSetup])
+  }, [initializePool, pushMessage, setPoolAddress, onNext, dataSetup])
 
   const onChangeMint = (
     name: keyof MintSetup,

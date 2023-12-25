@@ -12,16 +12,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "lint:watch": "nodemon --watch src --ext ts,tsx --exec 'next lint' --signal SIGTERM",
-    "preserve": "pnpm build",
-    "serve": "serve out"
+    "lint:watch": "nodemon --watch src --ext ts,tsx --exec 'next lint' --signal SIGTERM"
   },
   "resolutions": {
     "@solana/buffer-layout": "^4.0.1"
   },
   "dependencies": {
-    "@coral-xyz/anchor": "^0.28.1-beta.1",
-    "@coral-xyz/spl-token": "^0.28.1-beta.1",
+    "@coral-xyz/anchor": "0.28.1-beta.2",
+    "@coral-xyz/spl-token": "0.28.1-beta.2",
     "@floating-ui/react": "^0.25.0",
     "@headlessui/react": "^1.7.17",
     "@mdx-js/react": "^2.3.0",
@@ -31,23 +29,20 @@
     "@metaplex-foundation/umi-bundle-defaults": "^0.8.9",
     "@metaplex-foundation/umi-signer-wallet-adapters": "^0.8.9",
     "@noble/hashes": "^1.3.3",
-    "@sen-use/web3": "^3.3.1",
-    "@senswap/balancer": "^4.0.0",
     "@sentre/farming": "^2.0.2",
+    "@sentre/senswap": "^1.0.3",
     "@sentre/utility": "^1.0.3",
     "@solana/wallet-adapter-base": "^0.9.23",
     "@solana/wallet-adapter-react": "^0.15.35",
     "@solana/wallet-adapter-react-ui": "^0.9.34",
     "@solana/wallet-adapter-wallets": "^0.19.24",
     "@solana/web3.js": "^1.87.6",
-    "@tailwindcss/container-queries": "^0.1.1",
     "axios": "^1.4.0",
     "bn.js": "^5.2.1",
     "bs58": "^5.0.0",
     "classnames": "^2.3.2",
     "copy-to-clipboard": "^3.3.3",
     "dayjs": "^1.11.9",
-    "echarts": "^5.3.1",
     "fuse.js": "^6.6.2",
     "gsap": "^3.11.4",
     "immer": "^10.0.2",
@@ -69,6 +64,7 @@
     "react-syntax-highlighter": "^15.5.0",
     "react-tweet": "^3.0.3",
     "react-use": "^17.4.0",
+    "recharts": "^2.10.3",
     "swr": "2.2.2",
     "uuid": "^9.0.0",
     "zustand": "^4.3.9"
@@ -76,6 +72,7 @@
   "devDependencies": {
     "@mdx-js/loader": "^2.3.0",
     "@next/mdx": "^13.4.9",
+    "@tailwindcss/container-queries": "^0.1.1",
     "@types/bn.js": "^5.1.1",
     "@types/node": "20.4.2",
     "@types/papaparse": "^5.3.7",
@@ -88,7 +85,7 @@
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "autoprefixer": "10.4.14",
     "concurrently": "^8.2.0",
-    "daisyui": "^3.5.1",
+    "daisyui": "^4.4.24",
     "eslint": "8.44.0",
     "eslint-config-next": "13.4.9",
     "eslint-plugin-react": "^7.32.2",
@@ -97,7 +94,6 @@
     "rehype-slug": "^5.1.0",
     "remark-gfm": "^3.0.1",
     "sass": "^1.63.6",
-    "serve": "^14.2.0",
     "tailwindcss": "3.3.2",
     "typescript": "5.1.6"
   }

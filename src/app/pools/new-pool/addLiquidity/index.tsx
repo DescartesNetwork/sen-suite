@@ -15,7 +15,7 @@ import { useAllTokenAccounts } from '@/providers/tokenAccount.provider'
 import { useLamports } from '@/providers/wallet.provider'
 import { useMints } from '@/hooks/spl.hook'
 import {
-  useAddLiquidity,
+  useInitializeJoin,
   useInitAndDeletePool,
   useOracles,
 } from '@/hooks/pool.hook'
@@ -49,14 +49,14 @@ export default function AddLiquidity({
   const lamports = useLamports()
   const pushMessage = usePushMessage()
 
-  const { deletePool } = useInitAndDeletePool()
+  const { cancelPool } = useInitAndDeletePool()
   const onCancelPool = useCallback(async () => {
     try {
       setClosing(true)
-      const txId = await deletePool(poolAddress)
+      const txId = await cancelPool(poolAddress)
       pushMessage(
         'alert-success',
-        'Successfully deleted pool. Click here to view on explorer.',
+        'Successfully canceled the pool. Click here to view on explorer.',
         {
           onClick: () => window.open(solscan(txId || ''), '_blank'),
         },
@@ -67,13 +67,13 @@ export default function AddLiquidity({
     } finally {
       setClosing(false)
     }
-  }, [deletePool, poolAddress, pushMessage, setStep])
+  }, [cancelPool, poolAddress, pushMessage, setStep])
 
-  const addLiquidity = useAddLiquidity(poolAddress, amounts)
-  const onAddLiquidity = useCallback(async () => {
+  const initializeJoin = useInitializeJoin(poolAddress, amounts)
+  const onInitializeJoin = useCallback(async () => {
     try {
       setFunding(true)
-      const txId = await addLiquidity()
+      const txId = await initializeJoin()
       pushMessage(
         'alert-success',
         'Successfully fund pool. Click here to view on explorer.',
@@ -87,7 +87,7 @@ export default function AddLiquidity({
     } finally {
       setFunding(false)
     }
-  }, [addLiquidity, pushMessage, setStep])
+  }, [initializeJoin, pushMessage, setStep])
 
   const onAmounts = async (activeIndx: number, amount: string) => {
     const nextAmounts = [...amounts]
@@ -194,7 +194,7 @@ export default function AddLiquidity({
           Cancel Pool
         </button>
         <button
-          onClick={onAddLiquidity}
+          onClick={onInitializeJoin}
           disabled={!ok}
           className="col-span-6 btn btn-primary"
         >

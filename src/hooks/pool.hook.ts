@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import Balancer, {
+import { useWallet } from '@solana/wallet-adapter-react'
+import { utils, web3 } from '@coral-xyz/anchor'
+import Senswap, {
   MintActionState,
   MintActionStates,
   PoolData,
-} from '@senswap/balancer'
-import { useWallet } from '@solana/wallet-adapter-react'
-import { utils } from '@coral-xyz/anchor'
+} from '@sentre/senswap'
 import {
   ComputeBudgetProgram,
   PublicKey,
@@ -13,7 +13,6 @@ import {
   Transaction,
 } from '@solana/web3.js'
 import { WRAPPED_SOL_MINT } from '@metaplex-foundation/js'
-import { initTxCreateMultiTokenAccount } from '@sen-use/web3'
 import BN from 'bn.js'
 import axios from 'axios'
 import useSWR from 'swr'
@@ -28,12 +27,11 @@ import solConfig from '@/configs/sol.config'
 import { DateHelper } from '@/helpers/date'
 import { useTvl } from './tvl.hook'
 
-export const GENERAL_NORMALIZED_NUMBER = 10 ** 9
 export const LPT_DECIMALS = 9
 export const GENERAL_DECIMALS = 9
 export const PRECISION = 1_000_000_000
-const DEFAULT_SWAP_FEE = new BN(2_500_000) // 0.25%
-const DEFAULT_TAX_FEE = new BN(500_000) // 0.05%
+const DEFAULT_FEE = new BN(2_500_000) // 0.25%
+const DEFAULT_TAX = new BN(500_000) // 0.05%
 
 export enum FilterPools {
   AllPools = 'all-pools',
@@ -41,11 +39,6 @@ export enum FilterPools {
   YourPools = 'your-pools',
 }
 
-export enum StatePool {
-  Frozen = 'frozen',
-  Initialized = 'initialized',
-  Active = 'active',
-}
 export type VolumeData = { data: number; label: string }
 
 export type PoolPairLpData = {
@@ -66,13 +59,13 @@ export type MintSetup = {
  * Instantiate a balancer
  * @returns Balancer instance
  */
-export const useBalancer = () => {
+export const useSenswap = () => {
   const provider = useAnchorProvider()
-  const balancer = useMemo(
-    () => new Balancer(provider, solConfig.balancerAddress),
+  const senswap = useMemo(
+    () => new Senswap(provider, solConfig.senswapAddress),
     [provider],
   )
-  return balancer
+  return senswap
 }
 
 /**
@@ -244,25 +237,22 @@ export const useWrapSol = () => {
 /**
  * Deposit token into pool
  * @param poolAddress Pool address
- * @param amountIns list amount in
+ * @param amounts list amount in
  * @returns Deposit function
  */
-export const useDeposit = (poolAddress: string, amountIns: string[]) => {
-  const balancer = useBalancer()
+export const useDeposit = (poolAddress: string, amounts: string[]) => {
+  const senswap = useSenswap()
   const { publicKey } = useWallet()
   const accounts = useAllTokenAccounts()
   const pool = usePoolByAddress(poolAddress)
   const mints = useMints(pool.mints.map((mint) => mint.toBase58()))
   const decimals = mints.map((mint) => mint?.decimals || 0)
-  const provider = useAnchorProvider()
   const { createWrapSol } = useWrapSol()
 
   const onDeposit = useCallback(async () => {
-    if (!publicKey) return
+    if (!publicKey || !senswap.program.provider.sendAndConfirm) return
     const transaction = new Transaction()
-    const dAmountIns = amountIns.map((amount, i) =>
-      decimalize(amount, decimals[i]),
-    )
+    const dAmounts = amounts.map((amount, i) => decimalize(amount, decimals[i]))
 
     for (const i in pool.mints) {
       const mint = pool.mints[i]
@@ -274,31 +264,30 @@ export const useDeposit = (poolAddress: string, amountIns: string[]) => {
         amount: new BN(0),
       }
       // Wrap sol token if needed
-      if (mint.equals(WRAPPED_SOL_MINT) && dAmountIns[i].gt(amount)) {
-        const txWrapSol = await createWrapSol(dAmountIns[i].sub(amount))
+      if (mint.equals(WRAPPED_SOL_MINT) && dAmounts[i].gt(amount)) {
+        const txWrapSol = await createWrapSol(dAmounts[i].sub(amount))
         if (txWrapSol) transaction.add(txWrapSol)
       }
     }
-    const { tx: txDeposit } = await balancer.addLiquidity(
+    const { tx: txDeposit } = await senswap.addLiquidity({
       poolAddress,
-      dAmountIns,
-      false,
-    )
+      amounts: dAmounts,
+      sendAndConfirm: false,
+    })
     transaction.add(
       ComputeBudgetProgram.setComputeUnitLimit({ units: 1400000 }),
       txDeposit,
     )
-    const txId = await provider.sendAndConfirm(transaction)
+    const txId = await senswap.program.provider.sendAndConfirm(transaction)
     return txId
   }, [
     accounts,
-    amountIns,
-    balancer,
+    amounts,
+    senswap,
     createWrapSol,
     decimals,
     pool.mints,
     poolAddress,
-    provider,
     publicKey,
   ])
 
@@ -312,82 +301,32 @@ export const useDeposit = (poolAddress: string, amountIns: string[]) => {
  * @param mintAddress (Optional) mint address for withdraw one side
  * @returns Deposit function
  */
-export const useWithdraw = (
-  poolAddress: string,
-  amount: string,
-  mintAddress = '',
-) => {
-  const provider = useAnchorProvider()
-  const balancer = useBalancer()
+export const useWithdraw = (poolAddress: string, amount: string) => {
+  const senswap = useSenswap()
   const { publicKey } = useWallet()
   const { mints } = usePoolByAddress(poolAddress)
   const { createTxUnwrapSol } = useWrapSol()
 
-  const onWithdrawSide = useCallback(async () => {
-    if (!publicKey || !mintAddress) return ''
-    const dAmount = decimalize(amount, LPT_DECIMALS)
-    const transaction = new Transaction()
-
-    const { tx: txWithdraw } = await balancer.removeSidedLiquidity(
-      poolAddress,
-      mintAddress,
-      dAmount,
-      false,
-    )
-    transaction.add(txWithdraw)
-    if (mintAddress === WRAPPED_SOL_MINT.toBase58()) {
-      const txUnwrapSol = await createTxUnwrapSol(publicKey)
-      transaction.add(txUnwrapSol)
-    }
-    return await provider.sendAndConfirm(transaction)
-  }, [
-    amount,
-    balancer,
-    createTxUnwrapSol,
-    mintAddress,
-    poolAddress,
-    provider,
-    publicKey,
-  ])
-
   const onWithdraw = useCallback(async () => {
-    if (!publicKey) return ''
-    if (mintAddress) return await onWithdrawSide()
+    if (!publicKey || !senswap.program.provider.sendAndConfirm) return ''
     const dAmount = decimalize(amount, LPT_DECIMALS)
 
-    const transactions = await initTxCreateMultiTokenAccount(provider, {
-      mints,
-    })
-
-    const { transaction } = await balancer.createRemoveLiquidityTransaction(
+    const transaction = new web3.Transaction()
+    const { tx } = await senswap.removeLiquidity({
       poolAddress,
-      dAmount,
-    )
-    transactions.push(transaction)
+      amount: dAmount,
+      sendAndConfirm: false,
+    })
+    transaction.add(tx)
 
     for (const mint of mints) {
-      if (WRAPPED_SOL_MINT.equals(mint)) {
-        const unwrapSolTx = await createTxUnwrapSol(publicKey)
-        transactions.push(unwrapSolTx)
-      }
+      if (!WRAPPED_SOL_MINT.equals(mint)) continue
+      const unwrapSolTx = await createTxUnwrapSol(publicKey)
+      transaction.add(unwrapSolTx)
     }
-    const txIds = await provider.sendAll(
-      transactions.map((tx) => {
-        return { tx, signers: [] }
-      }),
-    )
-    return txIds.pop() || ''
-  }, [
-    amount,
-    balancer,
-    createTxUnwrapSol,
-    mintAddress,
-    mints,
-    onWithdrawSide,
-    poolAddress,
-    provider,
-    publicKey,
-  ])
+    const txId = await senswap.program.provider.sendAndConfirm(transaction)
+    return txId
+  }, [amount, senswap, createTxUnwrapSol, mints, poolAddress, publicKey])
 
   return onWithdraw
 }
@@ -397,9 +336,9 @@ export const useWithdraw = (
  * @returns Init and delete pool functions
  */
 export const useInitAndDeletePool = () => {
-  const balancer = useBalancer()
+  const senswap = useSenswap()
 
-  const initPool = useCallback(
+  const initializePool = useCallback(
     async (mints: MintSetup[]) => {
       const mintsConfigs = mints.map(({ mintAddress, weight }) => {
         const dWeight = decimalize(weight, GENERAL_DECIMALS)
@@ -410,47 +349,46 @@ export const useInitAndDeletePool = () => {
           weight: dWeight,
         }
       })
-      const { txId, poolAddress } = await balancer.initializePool({
-        fee: DEFAULT_SWAP_FEE,
-        taxFee: DEFAULT_TAX_FEE,
+      const { txId, poolAddress } = await senswap.initializePool({
+        fee: DEFAULT_FEE,
+        tax: DEFAULT_TAX,
         mintsConfigs,
-        taxMan: solConfig.taxman,
+        taxman: solConfig.taxman,
         sendAndConfirm: true,
       })
       return { txId, poolAddress }
     },
-    [balancer],
+    [senswap],
   )
 
-  const deletePool = useCallback(
+  const cancelPool = useCallback(
     async (poolAddress: string) => {
-      const { txId } = await balancer.closePool(poolAddress)
+      const { txId } = await senswap.closePool({ poolAddress })
       return txId
     },
-    [balancer],
+    [senswap],
   )
 
-  return { initPool, deletePool }
+  return { initializePool, cancelPool }
 }
 
 /**
- * Add liquidity when create new pool
+ * Initialize joins when create new pool
  * @param poolAddress Pool address
  * @param amountIns List amount in
  * @returns Add liquidity function
  */
-export const useAddLiquidity = (poolAddress: string, amountIns: string[]) => {
-  const balancer = useBalancer()
+export const useInitializeJoin = (poolAddress: string, amountIns: string[]) => {
+  const senswap = useSenswap()
   const { publicKey } = useWallet()
   const accounts = useAllTokenAccounts()
   const pool = usePoolByAddress(poolAddress)
   const mints = useMints(pool.mints.map((mint) => mint.toBase58()))
   const decimals = mints.map((mint) => mint?.decimals || 0)
-  const provider = useAnchorProvider()
   const { createWrapSol } = useWrapSol()
 
-  const onAddLiquidity = useCallback(async () => {
-    if (!publicKey) return
+  const onInitializeJoin = useCallback(async () => {
+    if (!publicKey || !senswap.program.provider.sendAndConfirm) return
     const transaction = new Transaction()
     const dAmountIns = amountIns.map((amount, i) =>
       decimalize(amount, decimals[i]),
@@ -471,31 +409,29 @@ export const useAddLiquidity = (poolAddress: string, amountIns: string[]) => {
         const txWrapSol = await createWrapSol(dAmountIns[i].sub(amount))
         if (txWrapSol) transaction.add(txWrapSol)
       }
-      const { transaction: txAddLiquidity } = await balancer.initializeJoin({
-        amountIn: dAmountIns[i],
-        mint,
+      const { tx } = await senswap.initializeJoin({
         poolAddress,
+        mint,
+        amount: dAmountIns[i],
         sendAndConfirm: false,
-        addCompute: i === 0 ? 1400000 : 0,
       })
-      transaction.add(txAddLiquidity)
+      transaction.add(tx)
     }
 
-    const txId = await provider.sendAndConfirm(transaction)
+    const txId = await senswap.program.provider.sendAndConfirm(transaction)
     return txId
   }, [
     accounts,
     amountIns,
-    balancer,
+    senswap,
     createWrapSol,
     decimals,
     pool,
     poolAddress,
-    provider,
     publicKey,
   ])
 
-  return onAddLiquidity
+  return onInitializeJoin
 }
 
 /**
@@ -652,7 +588,7 @@ export const useVol24h = (poolAddress: string) => {
     const ymdTo = new DateHelper().ymd()
     const ymdFrom = new DateHelper().subtractDay(dateRange).ymd()
     const tokenAccounts = treasuries.map((treasury) => treasury.toBase58())
-    const programId = solConfig.balancerAddress
+    const programId = solConfig.senswapAddress
     const { data } = await axios.get(solConfig.statRpc + 'stat/volume', {
       params: { ymdTo, ymdFrom, tokenAccounts, programId },
     })
@@ -682,7 +618,7 @@ export const useTotalTvl = () => {
   }, [])
 
   const { data: totalTvl, isLoading } = useSWR(
-    [solConfig.balancerAddress, 'total-tvl'],
+    [solConfig.senswapAddress, 'total-tvl'],
     fetcher,
   )
   return { totalTvl, isLoading }
@@ -694,7 +630,7 @@ export const useTotalTvl = () => {
  * @returns apy
  */
 export const useApy = (poolAddress: string) => {
-  const { reserves, mints, taxFee, fee } = usePoolByAddress(poolAddress)
+  const { reserves, mints, tax, fee } = usePoolByAddress(poolAddress)
   const { vols } = useVol24h(poolAddress)
   const poolReserves = useMemo(
     () =>
@@ -712,13 +648,13 @@ export const useApy = (poolAddress: string) => {
 
     const { totalVol } = vols
     const totalFee =
-      Number(undecimalize(fee.add(taxFee), GENERAL_DECIMALS)) * totalVol
+      Number(undecimalize(fee.add(tax), GENERAL_DECIMALS)) * totalVol
     const feePerDay = totalFee / dateRange
     const roi = feePerDay / tvl
     const apy = Math.pow(1 + roi, 365) - 1
 
     return Number.isFinite(apy) ? apy : 0
-  }, [fee, taxFee, tvl, vols])
+  }, [fee, tax, tvl, vols])
 
   return apy
 }
@@ -729,7 +665,7 @@ export const useApy = (poolAddress: string) => {
  * @returns Actions pool management function
  */
 export const usePoolManagement = (poolAddress: string) => {
-  const balancer = useBalancer()
+  const senswap = useSenswap()
 
   const updateWeights = useCallback(
     async (tokensInfo: Record<string, MintSetup>) => {
@@ -737,54 +673,54 @@ export const usePoolManagement = (poolAddress: string) => {
         const newWeight = decimalize(weight, GENERAL_DECIMALS)
         return newWeight
       })
-      const { txId } = await balancer.updateWeights({ poolAddress, weights })
+      const { txId } = await senswap.updateWeights({ poolAddress, weights })
       return txId
     },
-    [balancer, poolAddress],
+    [senswap, poolAddress],
   )
 
   const freezePool = useCallback(async () => {
-    const { txId } = await balancer.freezePool({ poolAddress })
+    const { txId } = await senswap.freezePool({ poolAddress })
     return txId
-  }, [balancer, poolAddress])
+  }, [senswap, poolAddress])
 
   const thawPool = useCallback(async () => {
-    const { txId } = await balancer.thawPool({ poolAddress })
+    const { txId } = await senswap.thawPool({ poolAddress })
     return txId
-  }, [balancer, poolAddress])
+  }, [senswap, poolAddress])
 
   const updateFreezeAndThawToken = useCallback(
     async (mintActions: MintActionState[]) => {
-      const { txId } = await balancer.updateActions({
+      const { txId } = await senswap.updateActions({
         poolAddress,
         actions: mintActions,
       })
       return txId
     },
-    [balancer, poolAddress],
+    [senswap, poolAddress],
   )
 
   const updateFee = useCallback(
-    async (fee: string, taxFee: string) => {
-      const { txId } = await balancer.updateFee(
+    async (fee: string, tax: string) => {
+      const { txId } = await senswap.updateFee({
         poolAddress,
-        new BN((Number(fee) * PRECISION) / 100),
-        new BN((Number(taxFee) * PRECISION) / 100),
-      )
+        fee: new BN((Number(fee) * PRECISION) / 100),
+        tax: new BN((Number(tax) * PRECISION) / 100),
+      })
       return txId
     },
-    [balancer, poolAddress],
+    [senswap, poolAddress],
   )
 
   const transferOwnership = useCallback(
     async (newOwner: string) => {
-      const { txId } = await balancer.transferOwnership({
+      const { txId } = await senswap.transferOwnership({
         poolAddress,
         newOwner,
       })
       return txId
     },
-    [balancer, poolAddress],
+    [senswap, poolAddress],
   )
 
   return {

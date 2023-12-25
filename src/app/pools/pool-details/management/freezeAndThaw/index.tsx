@@ -1,13 +1,14 @@
 'use client'
 import { useMemo, useState } from 'react'
 import classNames from 'classnames'
+import isEqual from 'react-fast-compare'
+import { PoolStates } from '@sentre/senswap'
 
 import FreezePool from './pool/freezePool'
 import ThawPool from './pool/thawPool'
 import FreezeAndThawToken from './token'
 
 import { usePoolByAddress } from '@/providers/pools.provider'
-import { StatePool } from '@/hooks/pool.hook'
 
 export default function FreezeAndThaw({
   poolAddress,
@@ -15,16 +16,15 @@ export default function FreezeAndThaw({
   poolAddress: string
 }) {
   const [activeTab, setActiveTab] = useState('pool')
-  const pool = usePoolByAddress(poolAddress)
+  const { state } = usePoolByAddress(poolAddress)
 
   const renderedBodyComponent = useMemo(() => {
-    if (activeTab === 'pool' && pool.state[StatePool.Initialized])
+    if (activeTab === 'pool' && isEqual(state, PoolStates.Initialized))
       return <FreezePool poolAddress={poolAddress} />
-    if (activeTab === 'pool' && pool.state[StatePool.Frozen])
+    if (activeTab === 'pool' && isEqual(state, PoolStates.Frozen))
       return <ThawPool poolAddress={poolAddress} />
-
     return <FreezeAndThawToken poolAddress={poolAddress} />
-  }, [activeTab, pool.state, poolAddress])
+  }, [activeTab, state, poolAddress])
 
   return (
     <div className="flex flex-col gap-4">

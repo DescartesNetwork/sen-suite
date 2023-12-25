@@ -1,14 +1,26 @@
 'use client'
 import { Fragment, ReactNode, useCallback, useEffect } from 'react'
-import { PoolData, PoolState } from '@senswap/balancer'
 import { produce } from 'immer'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { BN } from 'bn.js'
 import { SystemProgram } from '@solana/web3.js'
-import { useBalancer } from '@/hooks/pool.hook'
+import { PoolData, PoolStates } from '@sentre/senswap'
+import isEqual from 'react-fast-compare'
 
 import { env } from '@/configs/env'
+import { useSenswap } from '@/hooks/pool.hook'
+
+const DUMMY_POOL = {
+  authority: SystemProgram.programId,
+  mintLpt: SystemProgram.programId,
+  reserves: [new BN(0)],
+  mints: [SystemProgram.programId],
+  weights: [new BN(0)],
+  treasuries: [new BN(0)],
+  fee: new BN(0),
+  tax: new BN(0),
+}
 
 export type PoolStore = {
   pools: Record<string, PoolData>
@@ -42,18 +54,17 @@ export const usePoolStore = create<PoolStore>()(
  * Provider
  */
 export function PoolProvider({ children }: { children: ReactNode }) {
-  const balancer = useBalancer()
+  const senswap = useSenswap()
   const upsertPool = usePoolStore(({ upsertPool }) => upsertPool)
 
   const fetchPools = useCallback(async () => {
-    const pools = await balancer.getAllPoolData()
-    for (const pool of pools) {
-      const poolData = pool.account as PoolData
-      const poolState = poolData.state as PoolState
-      if (poolState['deleted']) continue
-      upsertPool(pool.publicKey.toBase58(), poolData)
+    const pools = await senswap.getAllPoolData()
+    for (const { account, publicKey } of pools) {
+      const poolState = account.state
+      if (isEqual(poolState, PoolStates.Deleted)) continue
+      upsertPool(publicKey.toBase58(), account)
     }
-  }, [balancer, upsertPool])
+  }, [senswap, upsertPool])
 
   useEffect(() => {
     fetchPools()
@@ -80,15 +91,6 @@ export const usePools = () => {
  * @returns PoolData
  */
 export const usePoolByAddress = (poolAddress: string) => {
-  const pool = usePoolStore(({ pools }) => pools[poolAddress]) || {
-    authority: SystemProgram.programId,
-    mintLpt: SystemProgram.programId,
-    reserves: [new BN(0)],
-    mints: [SystemProgram.programId],
-    weights: [new BN(0)],
-    treasuries: [new BN(0)],
-    fee: new BN(0),
-    taxFee: new BN(0),
-  }
+  const pool = usePoolStore(({ pools }) => pools[poolAddress]) || DUMMY_POOL
   return pool
 }

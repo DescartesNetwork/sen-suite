@@ -94,7 +94,7 @@ export default function Deposit({ poolAddress }: { poolAddress: string }) {
   }, [activeIndx, amounts, decimals, pool.reserves])
 
   const { lptOut, priceImpact } = useMemo(() => {
-    const { reserves, weights, fee, taxFee } = pool
+    const { reserves, weights, fee, tax } = pool
     const amountIns = amounts.map((amount, index) =>
       decimalize(amount, decimals[index]),
     )
@@ -104,7 +104,7 @@ export default function Deposit({ poolAddress }: { poolAddress: string }) {
       weights,
       mintLpt?.supply || new BN(0),
       decimals,
-      fee.add(taxFee),
+      fee.add(tax),
     )
 
     const lpOutZeroPriceImpact = Number(

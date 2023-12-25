@@ -22,32 +22,29 @@ module.exports = {
     themes: [
       {
         light: {
-          ...daisyui['[data-theme=light]'],
+          ...daisyui['light'],
           primary: '#f9575e',
           'primary-content': '#ffffff',
           secondary: '#5d6ccf',
-          'secondary-content': '#000',
-          'neutral-focus': '#212433',
+          'secondary-content': '#000000',
 
-          '--accent': '#2B3440',
-          '--accent-text': '#ffffff',
-          '--opaline': '#ffffffb3',
-          '--opaline-content': "#000"
+          accent: '#63E0B3',
         },
       },
       {
         dark: {
-          ...daisyui['[data-theme=dark]'],
+          ...daisyui['dark'],
           primary: '#f9575e',
           'primary-content': '#ffffff',
           secondary: '#5d6ccf',
           'secondary-content': '#ffffff',
-          'neutral-focus': '#A6ACBA',
 
-          '--accent': '#F4F4F5',
-          '--accent-text': '#212433',
-          '--opaline': '#ffffffb3',
-          '--opaline-content': "#F4F4F5"
+          'base-100': '#212C4C',
+          'base-200': '#394360',
+          'base-300': '#42517a',
+          'base-content': '#eaeaea',
+
+          accent: '#63E0B3',
         },
       },
     ],
