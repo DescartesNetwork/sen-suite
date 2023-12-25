@@ -1,6 +1,6 @@
 'use client'
-import { useState } from 'react'
-import { MintActionState, MintActionStates } from '@senswap/balancer'
+import { useCallback, useState } from 'react'
+import { MintActionState, MintActionStates } from '@sentre/senswap'
 
 import { Info, Snowflake } from 'lucide-react'
 import { MintLogo, MintSymbol } from '@/components/mint'
@@ -9,6 +9,7 @@ import { solscan } from '@/helpers/explorers'
 import { usePoolManagement } from '@/hooks/pool.hook'
 import { usePoolByAddress } from '@/providers/pools.provider'
 import { usePushMessage } from '@/components/message/store'
+import isEqual from 'react-fast-compare'
 
 export default function FreezeAndThawToken({
   poolAddress,
@@ -17,9 +18,7 @@ export default function FreezeAndThawToken({
 }) {
   const { mints, actions } = usePoolByAddress(poolAddress)
 
-  const [mintActions, setMintActions] = useState<MintActionState[]>(
-    actions as MintActionState[],
-  )
+  const [mintActions, setMintActions] = useState<MintActionState[]>(actions)
   const [loading, setLoading] = useState(false)
 
   const pushMessage = usePushMessage()
@@ -39,22 +38,17 @@ export default function FreezeAndThawToken({
     }
   }
 
-  const onClickToken = (index: number) => {
-    const newMintActions = [...mintActions]
-    const mintState = Object.keys(newMintActions[index])[0]
-
-    switch (mintState) {
-      case 'paused':
-        newMintActions[index] = MintActionStates['Active']
-        break
-      case 'active':
-        newMintActions[index] = MintActionStates['Paused']
-        break
-      default:
-        break
-    }
-    setMintActions(newMintActions)
-  }
+  const onClickToken = useCallback(
+    (index: number) => {
+      const newMintActions = [...mintActions]
+      if (isEqual(newMintActions[index], MintActionStates.Paused))
+        newMintActions[index] = MintActionStates.Active
+      else if (isEqual(newMintActions[index], MintActionStates.Active))
+        newMintActions[index] = MintActionStates.Paused
+      setMintActions(newMintActions)
+    },
+    [mintActions],
+  )
 
   return (
     <div className="flex flex-col gap-4">

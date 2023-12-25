@@ -1,7 +1,7 @@
 'use client'
 import { useMemo } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import BN from 'bn.js'
 import classNames from 'classnames'
 
@@ -22,6 +22,7 @@ export type PoolCardProps = {
 }
 
 export default function PoolCard({ poolAddress }: PoolCardProps) {
+  const { push } = useRouter()
   const pool = usePoolByAddress(poolAddress)
   const { publicKey } = useWallet()
   const isFrozen = !!pool.state[StatePool.Frozen]
@@ -51,14 +52,13 @@ export default function PoolCard({ poolAddress }: PoolCardProps) {
   }, [calcNormalizedWeight, pool])
 
   return (
-    <Link
-      href={
-        isFrozen && !isPoolOwner
-          ? '#'
-          : `/pools/pool-details?poolAddress=${poolAddress}`
-      }
+    <div
+      onClick={() => {
+        if (isFrozen && !isPoolOwner) return
+        return push(`/pools/pool-details?poolAddress=${poolAddress}`)
+      }}
       className={classNames(
-        'card p-4 border  bg-[#F2F4FA] dark:bg-[#212C4C] dark:border-[#394360] flex flex-col rounded-3xl gap-3 cursor-pointer ',
+        'card p-4 border bg-[#F2F4FA] dark:bg-[#212C4C] dark:border-[#394360] flex flex-col rounded-3xl gap-3 cursor-pointer',
         {
           'hover:border-[#63E0B3] dark:hover:border-[#63E0B3]':
             !isFrozen || isPoolOwner,
@@ -134,6 +134,6 @@ export default function PoolCard({ poolAddress }: PoolCardProps) {
       {isFrozen && !isPoolOwner && (
         <div className="absolute w-full h-full rounded-3xl top-0 left-0 bg-[#F2F4FA] dark:bg-black dark:opacity-30 opacity-60 cursor-not-allowed z-10" />
       )}
-    </Link>
+    </div>
   )
 }

@@ -50,14 +50,14 @@ export default function TokenReceive({
 
   const singleAmount = useMemo(() => {
     if (!mintAddress || !mintLpt?.supply) return
-    const { weights, reserves, fee, taxFee } = pool
+    const { weights, reserves, fee, tax } = pool
     const index = pool.mints.findIndex(
       (mint) => mint.toBase58() === mintAddress,
     )
     if (index === -1) return
     const reserve = reserves[index]
     const numReserve = Number(undecimalize(reserve, decimals[index]))
-    const numFee = Number(undecimalize(fee.add(taxFee), GENERAL_DECIMALS))
+    const numFee = Number(undecimalize(fee.add(tax), GENERAL_DECIMALS))
     const numLpAmount = Number(lptAmount)
     const numSupply = Number(undecimalize(mintLpt.supply, LPT_DECIMALS))
     const normalizedWeight = calcNormalizedWeight(weights, weights[index])

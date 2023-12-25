@@ -42,7 +42,7 @@ export default function LiquidityPoolPanel() {
   const fetcher = useCallback(
     async ([poolAddresses]: [string[]]) => {
       const dateRange = 7
-      const programId = solConfig.balancerAddress
+      const programId = solConfig.senswapAddress
       const today = new DateHelper()
       const yesterday = today.subtractDay(1)
       const hour = new Date().getHours()

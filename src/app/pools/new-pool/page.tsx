@@ -1,9 +1,10 @@
 'use client'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
-import { PoolState } from '@senswap/balancer'
 import { useRouter } from 'next/navigation'
 import classNames from 'classnames'
+import isEqual from 'react-fast-compare'
+import { PoolStates } from '@sentre/senswap'
 
 import { ChevronLeft } from 'lucide-react'
 import SetupToken from './setupToken'
@@ -28,7 +29,7 @@ export default function NewPool() {
     for (const poolAddress in pools) {
       const { authority, state } = pools[poolAddress]
       if (!authority.equals(publicKey)) continue
-      if (!(state as PoolState)['uninitialized']) continue
+      if (!isEqual(state, PoolStates.Uninitialized)) continue
       setStep(ADD_LIQUIDITY)
       return setPoolAddress(poolAddress)
     }
