@@ -6,12 +6,7 @@ import Senswap, {
   MintActionStates,
   PoolData,
 } from '@sentre/senswap'
-import {
-  ComputeBudgetProgram,
-  PublicKey,
-  SystemProgram,
-  Transaction,
-} from '@solana/web3.js'
+import { PublicKey, SystemProgram, Transaction } from '@solana/web3.js'
 import { WRAPPED_SOL_MINT } from '@metaplex-foundation/js'
 import BN from 'bn.js'
 import axios from 'axios'
