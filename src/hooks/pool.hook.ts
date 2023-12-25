@@ -269,15 +269,12 @@ export const useDeposit = (poolAddress: string, amounts: string[]) => {
         if (txWrapSol) transaction.add(txWrapSol)
       }
     }
-    const { tx: txDeposit } = await senswap.addLiquidity({
+    const { tx } = await senswap.addLiquidity({
       poolAddress,
       amounts: dAmounts,
       sendAndConfirm: false,
     })
-    transaction.add(
-      ComputeBudgetProgram.setComputeUnitLimit({ units: 1400000 }),
-      txDeposit,
-    )
+    transaction.add(tx)
     const txId = await senswap.program.provider.sendAndConfirm(transaction)
     return txId
   }, [
