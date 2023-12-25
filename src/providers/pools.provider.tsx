@@ -66,9 +66,26 @@ export function PoolProvider({ children }: { children: ReactNode }) {
     }
   }, [senswap, upsertPool])
 
+  const watchPools = useCallback(() => {
+    const { connection } = senswap.program.provider
+    const id = connection.onProgramAccountChange(
+      senswap.program.account.pool.programId,
+      ({ accountId, accountInfo: { data } }) => {
+        const accountData = senswap.program.coder.accounts.decode('pool', data)
+        return upsertPool(accountId.toBase58(), accountData)
+      },
+      'confirmed',
+    )
+    return () => {
+      connection.removeProgramAccountChangeListener(id)
+    }
+  }, [senswap, upsertPool])
+
   useEffect(() => {
     fetchPools()
-  }, [fetchPools])
+    const unwatch = watchPools()
+    return unwatch
+  }, [fetchPools, watchPools])
 
   return <Fragment>{children}</Fragment>
 }

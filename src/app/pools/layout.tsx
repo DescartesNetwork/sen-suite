@@ -3,8 +3,6 @@ import type { Metadata } from 'next'
 
 import { PoolProvider } from '@/providers/pools.provider'
 
-import PoolWatcher from '@/watchers/pool.watcher'
-
 export const metadata: Metadata = {
   title: 'Sentre Pools | Sentre',
   description: 'Launch up to 8 types of tokens with limited funds.',
@@ -17,8 +15,6 @@ export default function PoolLayout({ children }: { children: ReactNode }) {
         <div className="max-w-[1024px] w-full flex flex-row justify-center">
           {children}
         </div>
-        {/* Background worker */}
-        <PoolWatcher />
       </PoolProvider>
     </div>
   )

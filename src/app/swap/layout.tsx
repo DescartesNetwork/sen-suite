@@ -12,11 +12,11 @@ export default function SwapLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex flex-col h-full rounded-3xl bg-swap-light dark:bg-swap-dark bg-center bg-cover transition-all p-4 justify-center gap-4">
       <div className="w-full flex flex-col gap-4 items-center">
-        <div role="tablist" className="tabs tabs-boxed">
-          <a role="tab" className="tab tab-active">
+        <div role="tablist" className="tabs tabs-boxed rounded-box">
+          <a role="tab" className="tab tab-active !rounded-box">
             Swap
           </a>
-          <Link role="tab" className="tab" href="/pools">
+          <Link role="tab" className="tab !rounded-box" href="/pools">
             Liquidity Pools
           </Link>
         </div>

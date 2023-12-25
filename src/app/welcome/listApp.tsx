@@ -89,7 +89,7 @@ export default function ListApp() {
         </div>
         <div className="pos-center gap-4">
           <h3 className="title-apps text-center text-black">
-            Let&apos;s explore Sen Suite
+            Let&apos;s explore Sentre
           </h3>
           <p className="desc-apps text-center opacity-60 text-black">
             The limit breaker for projects on Solana.
