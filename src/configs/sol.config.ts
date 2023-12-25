@@ -16,6 +16,7 @@ type Conf = {
   utilityProgram: string
   taxman: string
   fee: number
+  operatorAddresses: string[]
 }
 
 const conf: Record<Env, Conf> = {
@@ -38,6 +39,7 @@ const conf: Record<Env, Conf> = {
     fee: 10 ** 6, // lamports
     statRpc: 'https://stat.sentre.io/',
     bundlStorage: 'https://node1.bundlr.network',
+    operatorAddresses: ['8W6QginLcAydYyMYjxuyKQN56NzeakDE3aRFrAmocS6D'],
   },
 
   /**
@@ -53,6 +55,7 @@ const conf: Record<Env, Conf> = {
     fee: 10 ** 6, // lamports
     statRpc: 'https://stat.sentre.io/',
     bundlStorage: 'https://node1.bundlr.network',
+    operatorAddresses: ['8W6QginLcAydYyMYjxuyKQN56NzeakDE3aRFrAmocS6D'],
   },
 }
 

@@ -3,10 +3,9 @@ import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 import { Plus, Search, X } from 'lucide-react'
-import PoolCard from './poolCard'
 import LiquidityPoolPanel from './panel'
-import LazyLoad from 'react-lazy-load'
-import Empty from '@/components/empty'
+import OriginalPools from './originalPools'
+import CommunityPools from './communityPools'
 
 import { PoolFilter, useFilteredPools } from '@/hooks/pool.hook'
 import { useSearchMint } from '@/providers/mint.provider'
@@ -19,7 +18,9 @@ const PRIORITIZED_POOLS = [
   'C15v6TsCp9tHL7qLrjGJprkQoVKBFbvyitVN3PwK6Y7J',
   'kPbhNnVmuhqWApxhr156XQV8hhKsysrvwVFmDhCWFY5',
   'BxWqAYGh7HiexbLphdPsgMYc8ufeMe1ufwm14uu64LEb',
-]
+  '9Doqn5jUSW8suHDmUc4MxvHi3XkVWebdaGNmnfDTxGZp',
+  'DnoGmd6gr5a5W2Ziy9FXtFHz4LYZ6x7XXhT2WDF4dyQb',
+].reverse()
 
 export default function Pools() {
   const [loading, setLoading] = useState(false)
@@ -29,13 +30,12 @@ export default function Pools() {
   const { push } = useRouter()
   const search = useSearchMint()
 
-  const searchedPoolAddresses = useMemo(() => {
-    if (loading || text.length <= 2) return Object.keys(filteredPools)
+  const searchedPools = useMemo(() => {
+    if (loading || text.length <= 2) return filteredPools
     const mintAddresses = search(text).map(({ item }) => item.address)
-    return Object.keys(filteredPools).filter((poolAddress) => {
-      const { mintLpt, mints } = filteredPools[poolAddress]
+    return filteredPools.filter(({ address, mintLpt, mints }) => {
       // Search poolAddress & minLpt
-      if (poolAddress.includes(text) || mintLpt.toBase58().includes(text))
+      if (address.includes(text) || mintLpt.toBase58().includes(text))
         return true
       // Search Token
       for (const mint of mints) {
@@ -50,12 +50,14 @@ export default function Pools() {
   }, [filteredPools, search, loading, text])
 
   const sortedPool = useMemo(() => {
-    const filtered = new Set(
-      PRIORITIZED_POOLS.filter((addr) => searchedPoolAddresses.includes(addr)),
-    )
-    for (const elm of searchedPoolAddresses) filtered.add(elm)
-    return Array.from(filtered)
-  }, [searchedPoolAddresses])
+    return searchedPools.sort(({ address: a }, { address: b }) => {
+      const ia = PRIORITIZED_POOLS.findIndex((x) => a === x)
+      const ib = PRIORITIZED_POOLS.findIndex((x) => b === x)
+      if (ia < ib) return 1
+      if (ia > ib) return -1
+      return 0
+    })
+  }, [searchedPools])
 
   useEffect(() => {
     setLoading(true)
@@ -105,18 +107,12 @@ export default function Pools() {
           <span className="hidden md:block">New Pool</span>
         </button>
       </div>
-      <div className="col-span-full grid grid-cols-12 gap-4">
-        {sortedPool.map((poolAddress) => (
-          <LazyLoad key={poolAddress} className="col-span-full">
-            <PoolCard poolAddress={poolAddress} />
-          </LazyLoad>
-        ))}
+      <div className="col-span-full card bg-base-100 p-4 overflow-x-auto">
+        <table className="table table-pin-rows">
+          <OriginalPools pools={sortedPool} />
+          <CommunityPools pools={sortedPool} />
+        </table>
       </div>
-      {!sortedPool.length && (
-        <div className="col-span-full justify-center p-4">
-          <Empty />
-        </div>
-      )}
     </div>
   )
 }

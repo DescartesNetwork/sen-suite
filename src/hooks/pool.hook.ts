@@ -33,6 +33,7 @@ export enum PoolFilter {
 }
 
 export type VolumeData = { data: number; label: string }
+export type ExtendedPoolData = PoolData & { address: string }
 
 export type PoolPairLpData = {
   balanceIn: BN
@@ -74,25 +75,27 @@ export const useFilteredPools = (filter = PoolFilter.AllPools) => {
   const accountAddresses = useMemo(() => Object.keys(accounts), [accounts])
 
   const filteredPools = useMemo(() => {
-    const result: Record<string, PoolData> = {}
-    Object.keys(pools).forEach((poolAddress) => {
-      const pool = pools[poolAddress]
-      if (filter === PoolFilter.AllPools) return (result[poolAddress] = pool)
-      if (!publicKey) return
-      if (publicKey.equals(pool.authority)) return (result[poolAddress] = pool)
-      if (
-        accountAddresses.includes(
-          utils.token
-            .associatedAddress({
-              owner: publicKey,
-              mint: pool.mintLpt,
-            })
-            .toBase58(),
+    return Object.keys(pools)
+      .map((poolAddress) => {
+        const pool = pools[poolAddress]
+        const result = { ...pool, address: poolAddress }
+        if (filter === PoolFilter.AllPools) return result
+        if (!publicKey) return
+        if (publicKey.equals(pool.authority)) return result
+        if (
+          accountAddresses.includes(
+            utils.token
+              .associatedAddress({
+                owner: publicKey,
+                mint: pool.mintLpt,
+              })
+              .toBase58(),
+          )
         )
-      )
-        return (result[poolAddress] = pool)
-    })
-    return result
+          return result
+        return undefined
+      })
+      .filter((e) => !!e) as ExtendedPoolData[]
   }, [publicKey, pools, accountAddresses, filter])
 
   return filteredPools
