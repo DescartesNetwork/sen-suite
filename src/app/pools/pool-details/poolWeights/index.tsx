@@ -54,14 +54,14 @@ export default function PoolWeights({ poolAddress }: { poolAddress: string }) {
       <p>Pool Weights</p>
       <div className="flex items-center justify-center h-[306px]">
         <ResponsiveContainer className="w-full h-full">
-          <PieChart>
+          <PieChart margin={{ top: 20, left: 20, right: 20 }}>
             <Pie
               data={poolWeights}
               className="cursor-pointer"
               dataKey="weight"
               nameKey="symbol"
               fill="#8884d8"
-              label
+              label={({ name }) => name}
             >
               {poolWeights.map(({ symbol }, i) => (
                 <Cell key={symbol} fill={COLORS[i]} />
@@ -88,7 +88,6 @@ export default function PoolWeights({ poolAddress }: { poolAddress: string }) {
                 )
               }}
             />
-            <Legend />
           </PieChart>
         </ResponsiveContainer>
       </div>
