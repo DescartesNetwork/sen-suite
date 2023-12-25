@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { utils, web3 } from '@coral-xyz/anchor'
 import Senswap, {
@@ -14,7 +14,6 @@ import useSWR from 'swr'
 
 import { useAnchorProvider } from '@/providers/wallet.provider'
 import { decimalize, undecimalize } from '@/helpers/decimals'
-import { useSearchMint } from '@/providers/mint.provider'
 import { usePoolByAddress, usePools } from '@/providers/pools.provider'
 import { useAllTokenAccounts } from '@/providers/tokenAccount.provider'
 import { useInitPDAAccount, useMints, useSpl } from './spl.hook'
@@ -28,10 +27,9 @@ export const PRECISION = 1_000_000_000
 const DEFAULT_FEE = new BN(2_500_000) // 0.25%
 const DEFAULT_TAX = new BN(500_000) // 0.05%
 
-export enum FilterPools {
-  AllPools = 'all-pools',
-  DepositedPools = 'deposited-pools',
-  YourPools = 'your-pools',
+export enum PoolFilter {
+  AllPools = 'All Pools',
+  MyPoolsOnly = 'My Pools Only',
 }
 
 export type VolumeData = { data: number; label: string }
@@ -64,109 +62,40 @@ export const useSenswap = () => {
 }
 
 /**
- * Get searched Pools
- * @param pools List pools wanna search
- * @param text search text
- * @returns Searched Pools
- */
-export const useSearchPool = (
-  pools: Record<string, PoolData>,
-  text: string,
-) => {
-  const search = useSearchMint()
-
-  const poolSearched = useMemo((): Record<string, PoolData> => {
-    const newPoolsSearch: Record<string, PoolData> = {}
-    if (!text.length || text.length <= 2) return pools
-
-    const mintAddresses = search(text).map(({ item }) => item.address)
-    const filteredPool = Object.keys(pools)
-      .filter((poolAddress) => {
-        const poolData = pools[poolAddress]
-        const { mintLpt, mints } = poolData
-        // Search poolAddress
-        if (poolAddress.includes(text)) return true
-        // Search minLpt
-        if (mintLpt.toBase58().includes(text)) return true
-        // Search Token
-        for (const mint in mints) {
-          if (mintAddresses.includes(mints[mint].toBase58())) return true
-          if (text.includes(mints[mint].toBase58())) return true
-        }
-        return false
-      })
-      .sort()
-    filteredPool.forEach(
-      (address) => (newPoolsSearch[address] = pools[address]),
-    )
-
-    return newPoolsSearch
-  }, [pools, search, text])
-
-  return poolSearched
-}
-
-/**
  * Get filtered Pools
- * @param key filter key
+ * @param filter filter key
  * @returns Filtered Pools
  */
-export const useFilterPools = (key = FilterPools.AllPools) => {
+export const useFilteredPools = (filter = PoolFilter.AllPools) => {
   const pools = usePools()
-  const [poolsFilter, setPoolsFilter] = useState<typeof pools>({})
   const accounts = useAllTokenAccounts()
   const { publicKey } = useWallet()
 
-  const checkIsYourPool = useCallback(
-    (address: string) =>
-      !!publicKey && pools[address].authority.equals(publicKey),
-    [pools, publicKey],
-  )
+  const accountAddresses = useMemo(() => Object.keys(accounts), [accounts])
 
-  const checkIsDepositedPool = useCallback(
-    async (poolAddress: string) => {
-      if (!publicKey) return false
-      const tokenAccountLptAddr = await utils.token
-        .associatedAddress({
-          mint: pools[poolAddress].mintLpt,
-          owner: publicKey,
-        })
-        .toBase58()
-      return !!accounts[tokenAccountLptAddr]?.amount.toNumber()
-    },
-    [accounts, pools, publicKey],
-  )
+  const filteredPools = useMemo(() => {
+    const result: Record<string, PoolData> = {}
+    Object.keys(pools).forEach((poolAddress) => {
+      const pool = pools[poolAddress]
+      if (filter === PoolFilter.AllPools) return (result[poolAddress] = pool)
+      if (!publicKey) return
+      if (publicKey.equals(pool.authority)) return (result[poolAddress] = pool)
+      if (
+        accountAddresses.includes(
+          utils.token
+            .associatedAddress({
+              owner: publicKey,
+              mint: pool.mintLpt,
+            })
+            .toBase58(),
+        )
+      )
+        return (result[poolAddress] = pool)
+    })
+    return result
+  }, [publicKey, pools, accountAddresses, filter])
 
-  const filterListPools = useCallback(async () => {
-    const newPools: typeof pools = {}
-    for (const poolAddress in pools) {
-      let isValid = false
-      switch (key) {
-        case FilterPools.YourPools:
-          isValid = checkIsYourPool(poolAddress)
-          break
-        case FilterPools.DepositedPools:
-          isValid = await checkIsDepositedPool(poolAddress)
-          break
-        default:
-          isValid = true
-          break
-      }
-
-      for (const reserve of pools[poolAddress].reserves) {
-        if (reserve.isZero()) isValid = false
-      }
-
-      if (isValid) newPools[poolAddress] = pools[poolAddress]
-    }
-    setPoolsFilter(newPools)
-  }, [checkIsDepositedPool, checkIsYourPool, key, pools])
-
-  useEffect(() => {
-    filterListPools()
-  }, [filterListPools])
-
-  return poolsFilter
+  return filteredPools
 }
 
 /**
