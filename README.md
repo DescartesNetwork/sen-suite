@@ -29,4 +29,4 @@ Plus, the TailwindCSS just supports upto z-index of 50 at default, then we follo
 
 ## Manual Deploy
 
-[Deploy](https://api.render.com/deploy/srv-cinmuv59aq06u3ibuls0?key=tozv2150X_U)
+[Deploy](https://api.cloudflare.com/client/v4/pages/webhooks/deploy_hooks/f62833e5-bbba-4f3d-ae33-a4464dafee18)
