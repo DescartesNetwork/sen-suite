@@ -45,8 +45,8 @@ dependencies:
     specifier: ^2.0.2
     version: 2.0.2(node-fetch@3.3.2)
   '@sentre/senswap':
-    specifier: ^1.0.2
-    version: 1.0.2
+    specifier: ^1.0.3
+    version: 1.0.3
   '@sentre/utility':
     specifier: ^1.0.3
     version: 1.0.3
@@ -3882,8 +3882,8 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@sentre/senswap@1.0.2:
-    resolution: {integrity: sha512-Mf+gP4lRskQUslNnqYpphHdpGh3O7b1fK73BJ/rztkq5cMYM7EK8PNqBlKgAlNKQTaGpDh3U5zgqGVxvQVKAAA==}
+  /@sentre/senswap@1.0.3:
+    resolution: {integrity: sha512-651iSvnSH6qjmmvvK2aKaDtU5Nhww+854sAQTq/BsH9v4z3HzkU3QznIREWlOM5XVFMIjeMJxlKllM1duDbqQg==}
     engines: {node: 18.x}
     dependencies:
       '@coral-xyz/anchor': 0.29.0

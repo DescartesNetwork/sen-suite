@@ -13,12 +13,12 @@ import { FilterPools, useFilterPools, useSearchPool } from '@/hooks/pool.hook'
 
 const PRIORITIZE_POOLS = [
   'CT2QmamF6kBBDVbkg8WkvF5gnq6q8mDranPi21tdGeeL',
-  '4JFd9kHUC4FoKaTL38YMGoXP68MNBT9sC1FZCmfMn1FC',
   'AzPdQteHNWLvgRtFQX2N9K2U14M7rwub4VjEeKhaSbuh',
   '2gtDG2iYam6z4eCjx9yfBD7ayRXQGTDymjqQLiHqr7Z6',
-  'FhownP7d2EP7PCeoXVFk11WennsSaCoj4sZaQCEpvC89',
   '13Jn5xugRGjVorHWakzjvdZBMFwPLQniKHRoE6j4BMCC',
+  'C15v6TsCp9tHL7qLrjGJprkQoVKBFbvyitVN3PwK6Y7J',
   'kPbhNnVmuhqWApxhr156XQV8hhKsysrvwVFmDhCWFY5',
+  'BxWqAYGh7HiexbLphdPsgMYc8ufeMe1ufwm14uu64LEb',
 ]
 
 export default function Pools() {

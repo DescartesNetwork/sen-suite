@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { PoolStates } from '@sentre/senswap'
 
 import CardDescription from './cardDescription'
 
@@ -30,7 +31,7 @@ export default function ThawPool({ poolAddress }: { poolAddress: string }) {
   return (
     <div className="flex flex-col gap-4">
       <CardDescription
-        statusContent="frozen"
+        state={PoolStates.Frozen}
         description="Unfreeze a pool will active all actions"
       />
 

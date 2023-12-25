@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { PoolStates } from '@sentre/senswap'
 
 import { Snowflake } from 'lucide-react'
 import CardDescription from './cardDescription'
@@ -31,7 +32,7 @@ export default function FreezePool({ poolAddress }: { poolAddress: string }) {
   return (
     <div className="flex flex-col gap-4">
       <CardDescription
-        statusContent="active"
+        state={PoolStates.Initialized}
         description="Freezing a pool will prevent all actions until the pool has been unfreezed."
       />
 

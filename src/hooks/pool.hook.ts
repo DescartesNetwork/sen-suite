@@ -27,12 +27,11 @@ import solConfig from '@/configs/sol.config'
 import { DateHelper } from '@/helpers/date'
 import { useTvl } from './tvl.hook'
 
-export const GENERAL_NORMALIZED_NUMBER = 10 ** 9
 export const LPT_DECIMALS = 9
 export const GENERAL_DECIMALS = 9
 export const PRECISION = 1_000_000_000
-const DEFAULT_SWAP_FEE = new BN(2_500_000) // 0.25%
-const DEFAULT_TAX_FEE = new BN(500_000) // 0.05%
+const DEFAULT_FEE = new BN(2_500_000) // 0.25%
+const DEFAULT_TAX = new BN(500_000) // 0.05%
 
 export enum FilterPools {
   AllPools = 'all-pools',
@@ -40,11 +39,6 @@ export enum FilterPools {
   YourPools = 'your-pools',
 }
 
-export enum StatePool {
-  Frozen = 'frozen',
-  Initialized = 'initialized',
-  Active = 'active',
-}
 export type VolumeData = { data: number; label: string }
 
 export type PoolPairLpData = {
@@ -243,25 +237,22 @@ export const useWrapSol = () => {
 /**
  * Deposit token into pool
  * @param poolAddress Pool address
- * @param amountIns list amount in
+ * @param amounts list amount in
  * @returns Deposit function
  */
-export const useDeposit = (poolAddress: string, amountIns: string[]) => {
+export const useDeposit = (poolAddress: string, amounts: string[]) => {
   const senswap = useSenswap()
   const { publicKey } = useWallet()
   const accounts = useAllTokenAccounts()
   const pool = usePoolByAddress(poolAddress)
   const mints = useMints(pool.mints.map((mint) => mint.toBase58()))
   const decimals = mints.map((mint) => mint?.decimals || 0)
-  const provider = useAnchorProvider()
   const { createWrapSol } = useWrapSol()
 
   const onDeposit = useCallback(async () => {
-    if (!publicKey) return
+    if (!publicKey || !senswap.program.provider.sendAndConfirm) return
     const transaction = new Transaction()
-    const dAmountIns = amountIns.map((amount, i) =>
-      decimalize(amount, decimals[i]),
-    )
+    const dAmounts = amounts.map((amount, i) => decimalize(amount, decimals[i]))
 
     for (const i in pool.mints) {
       const mint = pool.mints[i]
@@ -273,31 +264,30 @@ export const useDeposit = (poolAddress: string, amountIns: string[]) => {
         amount: new BN(0),
       }
       // Wrap sol token if needed
-      if (mint.equals(WRAPPED_SOL_MINT) && dAmountIns[i].gt(amount)) {
-        const txWrapSol = await createWrapSol(dAmountIns[i].sub(amount))
+      if (mint.equals(WRAPPED_SOL_MINT) && dAmounts[i].gt(amount)) {
+        const txWrapSol = await createWrapSol(dAmounts[i].sub(amount))
         if (txWrapSol) transaction.add(txWrapSol)
       }
     }
     const { tx: txDeposit } = await senswap.addLiquidity({
       poolAddress,
-      amounts: dAmountIns,
+      amounts: dAmounts,
       sendAndConfirm: false,
     })
     transaction.add(
       ComputeBudgetProgram.setComputeUnitLimit({ units: 1400000 }),
       txDeposit,
     )
-    const txId = await provider.sendAndConfirm(transaction)
+    const txId = await senswap.program.provider.sendAndConfirm(transaction)
     return txId
   }, [
     accounts,
-    amountIns,
+    amounts,
     senswap,
     createWrapSol,
     decimals,
     pool.mints,
     poolAddress,
-    provider,
     publicKey,
   ])
 
@@ -312,14 +302,13 @@ export const useDeposit = (poolAddress: string, amountIns: string[]) => {
  * @returns Deposit function
  */
 export const useWithdraw = (poolAddress: string, amount: string) => {
-  const provider = useAnchorProvider()
   const senswap = useSenswap()
   const { publicKey } = useWallet()
   const { mints } = usePoolByAddress(poolAddress)
   const { createTxUnwrapSol } = useWrapSol()
 
   const onWithdraw = useCallback(async () => {
-    if (!publicKey) return ''
+    if (!publicKey || !senswap.program.provider.sendAndConfirm) return ''
     const dAmount = decimalize(amount, LPT_DECIMALS)
 
     const transaction = new web3.Transaction()
@@ -331,22 +320,13 @@ export const useWithdraw = (poolAddress: string, amount: string) => {
     transaction.add(tx)
 
     for (const mint of mints) {
-      if (WRAPPED_SOL_MINT.equals(mint)) {
-        const unwrapSolTx = await createTxUnwrapSol(publicKey)
-        transaction.add(unwrapSolTx)
-      }
+      if (!WRAPPED_SOL_MINT.equals(mint)) continue
+      const unwrapSolTx = await createTxUnwrapSol(publicKey)
+      transaction.add(unwrapSolTx)
     }
-    const txId = await provider.sendAndConfirm(transaction)
+    const txId = await senswap.program.provider.sendAndConfirm(transaction)
     return txId
-  }, [
-    amount,
-    senswap,
-    createTxUnwrapSol,
-    mints,
-    poolAddress,
-    provider,
-    publicKey,
-  ])
+  }, [amount, senswap, createTxUnwrapSol, mints, poolAddress, publicKey])
 
   return onWithdraw
 }
@@ -370,8 +350,8 @@ export const useInitAndDeletePool = () => {
         }
       })
       const { txId, poolAddress } = await senswap.initializePool({
-        fee: DEFAULT_SWAP_FEE,
-        tax: DEFAULT_TAX_FEE,
+        fee: DEFAULT_FEE,
+        tax: DEFAULT_TAX,
         mintsConfigs,
         taxman: solConfig.taxman,
         sendAndConfirm: true,
@@ -393,23 +373,22 @@ export const useInitAndDeletePool = () => {
 }
 
 /**
- * Add liquidity when create new pool
+ * Initialize joins when create new pool
  * @param poolAddress Pool address
  * @param amountIns List amount in
  * @returns Add liquidity function
  */
-export const useAddLiquidity = (poolAddress: string, amountIns: string[]) => {
+export const useInitializeJoin = (poolAddress: string, amountIns: string[]) => {
   const senswap = useSenswap()
   const { publicKey } = useWallet()
   const accounts = useAllTokenAccounts()
   const pool = usePoolByAddress(poolAddress)
   const mints = useMints(pool.mints.map((mint) => mint.toBase58()))
   const decimals = mints.map((mint) => mint?.decimals || 0)
-  const provider = useAnchorProvider()
   const { createWrapSol } = useWrapSol()
 
-  const onAddLiquidity = useCallback(async () => {
-    if (!publicKey) return
+  const onInitializeJoin = useCallback(async () => {
+    if (!publicKey || !senswap.program.provider.sendAndConfirm) return
     const transaction = new Transaction()
     const dAmountIns = amountIns.map((amount, i) =>
       decimalize(amount, decimals[i]),
@@ -439,7 +418,7 @@ export const useAddLiquidity = (poolAddress: string, amountIns: string[]) => {
       transaction.add(tx)
     }
 
-    const txId = await provider.sendAndConfirm(transaction)
+    const txId = await senswap.program.provider.sendAndConfirm(transaction)
     return txId
   }, [
     accounts,
@@ -449,11 +428,10 @@ export const useAddLiquidity = (poolAddress: string, amountIns: string[]) => {
     decimals,
     pool,
     poolAddress,
-    provider,
     publicKey,
   ])
 
-  return onAddLiquidity
+  return onInitializeJoin
 }
 
 /**

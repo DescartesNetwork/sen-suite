@@ -4,6 +4,8 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { useRouter } from 'next/navigation'
 import BN from 'bn.js'
 import classNames from 'classnames'
+import isEqual from 'react-fast-compare'
+import { PoolStates } from '@sentre/senswap'
 
 import { Snowflake, User } from 'lucide-react'
 import Clipboard from '@/components/clipboard'
@@ -14,7 +16,7 @@ import { solscan } from '@/helpers/explorers'
 import { numeric, shortenAddress } from '@/helpers/utils'
 import { usePoolByAddress } from '@/providers/pools.provider'
 import { useTokenAccountByMintAddress } from '@/providers/tokenAccount.provider'
-import { StatePool, useOracles, useVol24h } from '@/hooks/pool.hook'
+import { useOracles, useVol24h } from '@/hooks/pool.hook'
 import { useTvl } from '@/hooks/tvl.hook'
 
 export type PoolCardProps = {
@@ -23,45 +25,48 @@ export type PoolCardProps = {
 
 export default function PoolCard({ poolAddress }: PoolCardProps) {
   const { push } = useRouter()
-  const pool = usePoolByAddress(poolAddress)
+  const { state, mintLpt, authority, reserves, mints, weights } =
+    usePoolByAddress(poolAddress) || {}
   const { publicKey } = useWallet()
-  const isFrozen = !!pool.state[StatePool.Frozen]
-  const isPoolOwner = publicKey && pool.authority.equals(publicKey)
-  const { amount } = useTokenAccountByMintAddress(pool.mintLpt.toBase58()) || {
+  const { amount } = useTokenAccountByMintAddress(mintLpt.toBase58()) || {
     amount: new BN(0),
   }
   const { calcNormalizedWeight } = useOracles()
   const { vol24h, isLoading } = useVol24h(poolAddress)
 
-  const poolReserves = useMemo(
-    () =>
-      pool.reserves.map((reserve, i) => ({
-        mintAddress: pool.mints[i].toBase58(),
-        amount: reserve,
-      })),
-    [pool],
+  const isFrozen = useMemo(() => {
+    return isEqual(state, PoolStates.Frozen)
+  }, [state])
+  const isOwner = useMemo(() => {
+    if (!publicKey || !authority) return false
+    return authority.equals(publicKey)
+  }, [publicKey, authority])
+
+  const tvl = useTvl(
+    reserves.map((reserve, i) => ({
+      mintAddress: mints[i].toBase58(),
+      amount: reserve,
+    })),
   )
-  const tvl = useTvl(poolReserves)
 
   const poolWeights = useMemo(() => {
-    const { weights, mints } = pool
     return mints.map((mint, index) => {
       const normalizedWeight = calcNormalizedWeight(weights, weights[index])
       return { weight: normalizedWeight, mintAddress: mint.toBase58() }
     })
-  }, [calcNormalizedWeight, pool])
+  }, [calcNormalizedWeight, weights, mints])
 
   return (
     <div
       onClick={() => {
-        if (isFrozen && !isPoolOwner) return
+        if (isFrozen && !isOwner) return
         return push(`/pools/pool-details?poolAddress=${poolAddress}`)
       }}
       className={classNames(
         'card p-4 border bg-[#F2F4FA] dark:bg-[#212C4C] dark:border-[#394360] flex flex-col rounded-3xl gap-3 cursor-pointer',
         {
           'hover:border-[#63E0B3] dark:hover:border-[#63E0B3]':
-            !isFrozen || isPoolOwner,
+            !isFrozen || isOwner,
         },
       )}
     >
@@ -69,10 +74,10 @@ export default function PoolCard({ poolAddress }: PoolCardProps) {
         <div className="flex-auto flex gap-2 items-center">
           <MintLogo
             className="w-8 h-8 rounded-full"
-            mintAddress={pool.mintLpt.toBase58()}
+            mintAddress={mintLpt.toBase58()}
           />
           <p className="font-bold">
-            <MintSymbol mintAddress={pool.mintLpt.toBase58()} />
+            <MintSymbol mintAddress={mintLpt.toBase58()} />
           </p>
         </div>
         <div className="flex flex-row gap-2 items-center">
@@ -81,7 +86,7 @@ export default function PoolCard({ poolAddress }: PoolCardProps) {
               <Snowflake size={16} />
             </div>
           )}
-          {isPoolOwner && (
+          {isOwner && (
             <div className="tooltip" data-tip="Your Pool">
               <User size={16} name="person-outline" />
             </div>
@@ -125,13 +130,12 @@ export default function PoolCard({ poolAddress }: PoolCardProps) {
         <div className="flex gap-2 flex-col">
           <p className="text-xs opacity-60">My contribution:</p>
           <p>
-            <MintAmount amount={amount} mintAddress={pool.mintLpt.toBase58()} />{' '}
-            LP
+            <MintAmount amount={amount} mintAddress={mintLpt.toBase58()} /> LP
           </p>
         </div>
       </div>
       {/* frozen mask */}
-      {isFrozen && !isPoolOwner && (
+      {isFrozen && !isOwner && (
         <div className="absolute w-full h-full rounded-3xl top-0 left-0 bg-[#F2F4FA] dark:bg-black dark:opacity-30 opacity-60 cursor-not-allowed z-10" />
       )}
     </div>
