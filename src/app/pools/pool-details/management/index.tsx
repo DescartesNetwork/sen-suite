@@ -1,69 +1,90 @@
 'use client'
-import { useMemo, useState } from 'react'
-import classNames from 'classnames'
+import { useState } from 'react'
 
 import Weight from './weight'
 import FreezeAndThaw from './freezeAndThaw'
 import Fee from './fee'
-import TransferOwner from './transferOwner'
+import TransferOwnership from './transferOwnership'
 
-const TABS = [
-  { key: 'weights', title: 'Weights' },
-  { key: 'freezeAndThaw', title: 'Freeze/Unfreeze' },
-  { key: 'fee', title: 'Fee' },
-  { key: 'ownership', title: 'Ownership' },
-]
-
-const Tab = ({
-  activeTab,
-  setActiveTab,
-}: {
-  activeTab: string
-  setActiveTab: (activeTab: string) => void
-}) => {
-  return (
-    <div className="tabs flex-nowrap">
-      {TABS.map(({ key, title }) => (
-        <div
-          key={key}
-          onClick={() => setActiveTab(key)}
-          className={classNames('tab tab-bordered', {
-            'tab-active ease-in-out duration-300': activeTab === key,
-          })}
-        >
-          {title}
-        </div>
-      ))}
-      {/* Line border bottom tabs */}
-      <div className="h-[2px] w-full bg-[#C8CBD3]" />
-    </div>
-  )
+enum Tab {
+  Weights,
+  Pause,
+  Fee,
+  Ownership,
 }
 
-export default function PoolManagement({
-  poolAddress,
-}: {
+export type PoolManagementProps = {
   poolAddress: string
-}) {
-  const [activeTab, setActiveTab] = useState('weights')
+}
 
-  const renderedBodyComponent = useMemo(() => {
-    switch (activeTab) {
-      case 'weights':
-        return <Weight poolAddress={poolAddress} />
-      case 'freezeAndThaw':
-        return <FreezeAndThaw poolAddress={poolAddress} />
-      case 'fee':
-        return <Fee poolAddress={poolAddress} />
-      case 'ownership':
-        return <TransferOwner poolAddress={poolAddress} />
-    }
-  }, [activeTab, poolAddress])
+export default function PoolManagement({ poolAddress }: PoolManagementProps) {
+  const [tab, setTab] = useState<Tab>(Tab.Weights)
 
   return (
-    <div className="card rounded-3xl p-6 bg-[#F2F4FA] dark:bg-[#212C4C] flex flex-col gap-4 ">
-      <Tab activeTab={activeTab} setActiveTab={setActiveTab} />
-      <div>{renderedBodyComponent}</div>
+    <div role="tablist" className="tabs tabs-lifted">
+      <input
+        type="radio"
+        name="weights"
+        role="tab"
+        className="tab"
+        aria-label="Weights"
+        onChange={(e) => e.target.checked && setTab(Tab.Weights)}
+        checked={tab === Tab.Weights}
+      />
+      <div
+        role="tabpanel"
+        className="tab-content bg-base-100 border-base-300 rounded-box p-6"
+      >
+        <Weight poolAddress={poolAddress} />
+      </div>
+
+      <input
+        type="radio"
+        name="pause"
+        role="tab"
+        className="tab"
+        aria-label="Pause"
+        onChange={(e) => e.target.checked && setTab(Tab.Pause)}
+        checked={tab === Tab.Pause}
+      />
+      <div
+        role="tabpanel"
+        className="tab-content bg-base-100 border-base-300 rounded-box p-6"
+      >
+        <FreezeAndThaw poolAddress={poolAddress} />
+      </div>
+
+      <input
+        type="radio"
+        name="fee"
+        role="tab"
+        className="tab"
+        aria-label="Fee"
+        onChange={(e) => e.target.checked && setTab(Tab.Fee)}
+        checked={tab === Tab.Fee}
+      />
+      <div
+        role="tabpanel"
+        className="tab-content bg-base-100 border-base-300 rounded-box p-6"
+      >
+        <Fee poolAddress={poolAddress} />
+      </div>
+
+      <input
+        type="radio"
+        name="ownership"
+        role="tab"
+        className="tab"
+        aria-label="Ownership"
+        onChange={(e) => e.target.checked && setTab(Tab.Ownership)}
+        checked={tab === Tab.Ownership}
+      />
+      <div
+        role="tabpanel"
+        className="tab-content bg-base-100 border-base-300 rounded-box p-6"
+      >
+        <TransferOwnership poolAddress={poolAddress} />
+      </div>
     </div>
   )
 }

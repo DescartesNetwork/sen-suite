@@ -63,10 +63,9 @@ export default function PoolCard({ poolAddress }: PoolCardProps) {
         return push(`/pools/pool-details?poolAddress=${poolAddress}`)
       }}
       className={classNames(
-        'card p-4 border bg-[#F2F4FA] dark:bg-[#212C4C] dark:border-[#394360] flex flex-col rounded-3xl gap-3 cursor-pointer',
+        'card p-4 bg-base-100 border border-base-300 flex flex-col rounded-3xl gap-3 cursor-pointer',
         {
-          'hover:border-[#63E0B3] dark:hover:border-[#63E0B3]':
-            !isFrozen || isOwner,
+          'hover:!border-accent': !isFrozen || isOwner,
         },
       )}
     >
@@ -136,7 +135,7 @@ export default function PoolCard({ poolAddress }: PoolCardProps) {
       </div>
       {/* frozen mask */}
       {isFrozen && !isOwner && (
-        <div className="absolute w-full h-full rounded-3xl top-0 left-0 bg-[#F2F4FA] dark:bg-black dark:opacity-30 opacity-60 cursor-not-allowed z-10" />
+        <div className="absolute w-full h-full rounded-3xl top-0 left-0 bg-base-200 opacity-60 cursor-not-allowed z-10" />
       )}
     </div>
   )

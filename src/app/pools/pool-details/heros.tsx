@@ -24,7 +24,7 @@ const HeroCard = ({
 }) => {
   return (
     <div
-      className="card px-6 py-4 rounded-3xl flex flex-col gap-2 border border-[#fffc] dark:border-[#394360]"
+      className="card px-6 py-4 rounded-box flex flex-col gap-2 border border-base-300 !bg-base-100"
       style={{ background: `url(${bg})`, backgroundSize: 'cover' }}
     >
       <p className="opacity-60 text-sm">{label}</p>

@@ -8,11 +8,13 @@ import { solscan } from '@/helpers/explorers'
 import { usePoolManagement } from '@/hooks/pool.hook'
 import { usePushMessage } from '@/components/message/store'
 
-export default function TransferOwner({
-  poolAddress,
-}: {
+export type TransferOwnershipProps = {
   poolAddress: string
-}) {
+}
+
+export default function TransferOwnership({
+  poolAddress,
+}: TransferOwnershipProps) {
   const [newOwner, setNewOwner] = useState('')
   const [loading, setLoading] = useState(false)
 

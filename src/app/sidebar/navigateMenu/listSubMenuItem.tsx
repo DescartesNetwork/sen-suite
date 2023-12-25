@@ -59,12 +59,9 @@ const DropdownSubMenuItem = ({ menuItemData }: SubMenuItemProps) => {
             <li key={route}>
               <Link
                 href={disabled ? '#' : route}
-                className={classNames(
-                  'pl-8 text-neutral-focus opacity-60 hover:opacity-100',
-                  {
-                    '!opacity-100': pathname.includes(route),
-                  },
-                )}
+                className={classNames('pl-8 opacity-60 hover:opacity-100', {
+                  '!opacity-100': pathname.includes(route),
+                })}
               >
                 {subName}
               </Link>

@@ -1,12 +1,10 @@
 'use client'
 import { Fragment, MouseEvent, useCallback, useMemo, useState } from 'react'
-import classNames from 'classnames'
 import { BN } from 'bn.js'
 
 import MintInput from './mintInput'
 import TokenReceive from './tokenReceive'
 import Modal from '@/components/modal'
-import { MintSymbol } from '@/components/mint'
 
 import { usePoolByAddress } from '@/providers/pools.provider'
 import { useTokenAccountByMintAddress } from '@/providers/tokenAccount.provider'
@@ -19,7 +17,6 @@ export default function Withdraw({ poolAddress }: { poolAddress: string }) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [lpAmount, setLpAmount] = useState('')
-  const [mintSelected, setMintSelected] = useState('')
 
   const pool = usePoolByAddress(poolAddress)
   const mintAddress = pool.mintLpt.toBase58()
@@ -28,7 +25,7 @@ export default function Withdraw({ poolAddress }: { poolAddress: string }) {
   }
   const pushMessage = usePushMessage()
 
-  const withdraw = useWithdraw(poolAddress, lpAmount, mintSelected)
+  const withdraw = useWithdraw(poolAddress, lpAmount)
   const onWithdraw = useCallback(
     async (e: MouseEvent<HTMLButtonElement>) => {
       e.preventDefault()
@@ -67,51 +64,15 @@ export default function Withdraw({ poolAddress }: { poolAddress: string }) {
       <Modal open={open} onCancel={() => setOpen(false)}>
         <div className="grid grid-cols-12 gap-6">
           <h5 className="col-span-full">Withdraw</h5>
-          <div className=" col-span-full flex flex-col gap-2">
-            <p className="text-sm opacity-60">You want to receive</p>
-            <div className="flex gap-2 items-center">
-              <p
-                onClick={() => setMintSelected('')}
-                className={classNames(
-                  'cursor-pointer px-3 py-1 rounded-lg bg-base-200',
-                  {
-                    '!bg-[#f9575e1a] text-primary': !mintSelected,
-                  },
-                )}
-              >
-                All
-              </p>
-              {pool.mints.map((mint) => (
-                <p
-                  onClick={() => setMintSelected(mint.toBase58())}
-                  key={mint.toBase58()}
-                  className={classNames(
-                    'cursor-pointer px-3 py-1 rounded-lg bg-base-200',
-                    {
-                      '!bg-[#f9575e1a] text-primary':
-                        mint.toBase58() === mintSelected || !mintSelected,
-                    },
-                  )}
-                >
-                  <MintSymbol mintAddress={mint.toBase58()} />
-                </p>
-              ))}
-            </div>
-          </div>
           <div className="col-span-full">
             <MintInput
               amountLp={lpAmount}
               onLpChange={setLpAmount}
               poolAddress={poolAddress}
-              isSingle={!!mintSelected}
             />
           </div>
           <div className="col-span-full">
-            <TokenReceive
-              poolAddress={poolAddress}
-              mintAddress={mintSelected}
-              lptAmount={lpAmount}
-            />
+            <TokenReceive poolAddress={poolAddress} lptAmount={lpAmount} />
           </div>
           <button
             onClick={onWithdraw}

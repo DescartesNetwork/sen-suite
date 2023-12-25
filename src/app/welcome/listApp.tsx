@@ -43,7 +43,7 @@ const App = ({ route, name, icon, disabled }: AppProps) => {
       <Link
         href={disabled ? '#' : route}
         className={classNames(
-          'pos-center rounded-full p-4 md:p-6 bg-[--opaline] hover:border-primary border-2',
+          'pos-center rounded-full p-4 md:p-6 bg-base-100 hover:border-primary border-2 transition-all',
           {
             'opacity-60 hover:!border-inherit cursor-not-allowed': disabled,
           },

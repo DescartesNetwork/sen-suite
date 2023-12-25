@@ -23,7 +23,7 @@ export default function Volume24h({ poolAddress }: { poolAddress: string }) {
   }, [vols])
 
   return (
-    <div className="card rounded-3xl p-6 bg-[#F2F4FA] dark:bg-[#212C4C] flex flex-col gap-6">
+    <div className="card rounded-3xl p-6 bg-base-100 border border-base-300 flex flex-col gap-6">
       <div className="flex items-center">
         <p className="flex-auto">Volume 24h</p>
         <h5>{numeric(vol24h).format('0,0.[0]a$')}</h5>

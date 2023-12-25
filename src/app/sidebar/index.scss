@@ -12,7 +12,7 @@
         @apply h-5 w-5;
       }
       .menu-title {
-        @apply font-semibold hover:bg-inherit text-neutral-focus #{!important};
+        @apply font-semibold hover:bg-inherit #{!important};
       }
       .menu-text {
         @apply font-semibold;
@@ -22,27 +22,6 @@
       }
       li.disabled > a {
         @apply cursor-not-allowed;
-      }
-      li:not(.menu-title) {
-        template {
-          @apply p-0;
-        }
-        &:not(.disabled) {
-          > *:not(ul):not(details):not(.menu-title):not(summary):not(
-              .active
-            ):focus {
-            @apply bg-inherit;
-          }
-          > *:not(ul):not(details):not(.menu-title):not(.active):hover,
-          > details > summary:not(.menu-title):not(.active):hover,
-          .focus {
-            @apply bg-[--accent] text-[--accent-text] #{!important};
-            > .menu-option,
-            .menu-logo {
-              @apply opacity-100;
-            }
-          }
-        }
       }
     }
     .sidebar-menu {

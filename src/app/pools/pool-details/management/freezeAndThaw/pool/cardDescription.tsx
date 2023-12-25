@@ -30,7 +30,7 @@ export default function CardDescription({
         <div
           className={classNames('badge badge-xs', {
             'badge-primary': isEqual(state, PoolStates.Frozen),
-            'bg-[#30A24C]': isEqual(state, PoolStates.Initialized),
+            'bg-accent': isEqual(state, PoolStates.Initialized),
           })}
         />
         <p className="text-sm">Current status: {status}</p>

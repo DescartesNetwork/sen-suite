@@ -76,7 +76,7 @@ export default function WalletInfo({
           </div>
         </li>
         <li>
-          <a className="flex text-neutral-focus" onClick={onCopy} href="#">
+          <a className="flex" onClick={onCopy} href="#">
             <span className="flex-auto">Copy Address</span>
             <span
               className={classNames('tooltip', {
@@ -90,7 +90,7 @@ export default function WalletInfo({
         </li>
         <li>
           <a
-            className="flex text-neutral-focus"
+            className="flex"
             href={solscan(address)}
             target="_blank"
             rel="noreferrer"
