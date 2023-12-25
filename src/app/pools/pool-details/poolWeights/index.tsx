@@ -1,14 +1,7 @@
 'use client'
 import { Fragment, useMemo } from 'react'
 
-import {
-  Cell,
-  Legend,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-} from 'recharts'
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
 
 import { usePoolByAddress } from '@/providers/pools.provider'
 import { undecimalize } from '@/helpers/decimals'
