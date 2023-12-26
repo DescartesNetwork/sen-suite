@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import classNames from 'classnames'
 
 import { Plus, Search, X } from 'lucide-react'
 import LiquidityPoolPanel from './panel'
@@ -9,18 +10,7 @@ import CommunityPools from './communityPools'
 
 import { PoolFilter, useFilteredPools } from '@/hooks/pool.hook'
 import { useSearchMint } from '@/providers/mint.provider'
-
-const PRIORITIZED_POOLS = [
-  'CT2QmamF6kBBDVbkg8WkvF5gnq6q8mDranPi21tdGeeL',
-  'AzPdQteHNWLvgRtFQX2N9K2U14M7rwub4VjEeKhaSbuh',
-  '2gtDG2iYam6z4eCjx9yfBD7ayRXQGTDymjqQLiHqr7Z6',
-  '13Jn5xugRGjVorHWakzjvdZBMFwPLQniKHRoE6j4BMCC',
-  'C15v6TsCp9tHL7qLrjGJprkQoVKBFbvyitVN3PwK6Y7J',
-  'kPbhNnVmuhqWApxhr156XQV8hhKsysrvwVFmDhCWFY5',
-  'BxWqAYGh7HiexbLphdPsgMYc8ufeMe1ufwm14uu64LEb',
-  '9Doqn5jUSW8suHDmUc4MxvHi3XkVWebdaGNmnfDTxGZp',
-  'DnoGmd6gr5a5W2Ziy9FXtFHz4LYZ6x7XXhT2WDF4dyQb',
-].reverse()
+import { usePoolStatLoading, usePoolsTvl } from '@/providers/pools.provider'
 
 export default function Pools() {
   const [loading, setLoading] = useState(false)
@@ -29,6 +19,8 @@ export default function Pools() {
   const filteredPools = useFilteredPools(filter)
   const { push } = useRouter()
   const search = useSearchMint()
+  const poolsTvl = usePoolsTvl()
+  const statLoading = usePoolStatLoading()
 
   const searchedPools = useMemo(() => {
     if (loading || text.length <= 2) return filteredPools
@@ -51,13 +43,12 @@ export default function Pools() {
 
   const sortedPool = useMemo(() => {
     return searchedPools.sort(({ address: a }, { address: b }) => {
-      const ia = PRIORITIZED_POOLS.findIndex((x) => a === x)
-      const ib = PRIORITIZED_POOLS.findIndex((x) => b === x)
-      if (ia < ib) return 1
-      if (ia > ib) return -1
-      return 0
+      const tvl_a = poolsTvl[a]
+      const tvl_b = poolsTvl[b]
+
+      return tvl_b - tvl_a
     })
-  }, [searchedPools])
+  }, [poolsTvl, searchedPools])
 
   useEffect(() => {
     setLoading(true)
@@ -112,6 +103,17 @@ export default function Pools() {
           <OriginalPools pools={sortedPool} />
           <CommunityPools pools={sortedPool} />
         </table>
+      </div>
+      <div
+        className={classNames(
+          'w-full h-full flex flex-row justify-center items-center absolute top-0 left-0 backdrop-blur rounded-box z-10',
+          {
+            visible: statLoading,
+            invisible: !statLoading,
+          },
+        )}
+      >
+        <span className="loading loading-spinner loading-lg" />
       </div>
     </div>
   )

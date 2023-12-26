@@ -9,12 +9,15 @@ import Senswap, {
 import { PublicKey, SystemProgram, Transaction } from '@solana/web3.js'
 import { WRAPPED_SOL_MINT } from '@metaplex-foundation/js'
 import BN from 'bn.js'
-import axios from 'axios'
-import useSWR from 'swr'
 
 import { useAnchorProvider } from '@/providers/wallet.provider'
 import { decimalize, undecimalize } from '@/helpers/decimals'
-import { usePoolByAddress, usePools } from '@/providers/pools.provider'
+import {
+  usePoolByAddress,
+  usePoolStore,
+  usePoolVolumesIn7Days,
+  usePools,
+} from '@/providers/pools.provider'
 import { useAllTokenAccounts } from '@/providers/tokenAccount.provider'
 import { useInitPDAAccount, useMints, useSpl } from './spl.hook'
 import solConfig from '@/configs/sol.config'
@@ -505,21 +508,7 @@ export const useOracles = () => {
  * @returns Total vol in 7 days, vol24h
  */
 export const useVol24h = (poolAddress: string) => {
-  const { treasuries } = usePoolByAddress(poolAddress)
-
-  const fetcher = useCallback(async () => {
-    const dateRange = 7
-    const ymdTo = new DateHelper().ymd()
-    const ymdFrom = new DateHelper().subtractDay(dateRange).ymd()
-    const tokenAccounts = treasuries.map((treasury) => treasury.toBase58())
-    const programId = solConfig.senswapAddress
-    const { data } = await axios.get(solConfig.statRpc + 'stat/volume', {
-      params: { ymdTo, ymdFrom, tokenAccounts, programId },
-    })
-    return data || { totalVol: 0, volumes: {} }
-  }, [treasuries])
-
-  const { data: vols, isLoading } = useSWR([poolAddress, 'vol24h'], fetcher)
+  const vols = usePoolVolumesIn7Days(poolAddress)
 
   const vol24h = useMemo(() => {
     if (!vols) return 0
@@ -530,22 +519,27 @@ export const useVol24h = (poolAddress: string) => {
     return today + (hour * yesterday) / 24
   }, [vols])
 
-  return { vols, isLoading, vol24h }
+  return { vols, vol24h }
 }
 
-export const useTotalTvl = () => {
-  const fetcher = useCallback(async ([programId]: [string]) => {
-    const { data } = await axios.get(
-      solConfig.statRpc + `stat/total-tvl/${programId}`,
-    )
-    return data.totalTvl || 0
-  }, [])
+export const useSenSwapVol24h = () => {
+  const volumes = usePoolStore(({ volumes }) => volumes)
 
-  const { data: totalTvl, isLoading } = useSWR(
-    [solConfig.senswapAddress, 'total-tvl'],
-    fetcher,
-  )
-  return { totalTvl, isLoading }
+  const vol24h = useMemo(() => {
+    const today = new DateHelper()
+    const yesterday = today.subtractDay(1)
+    const hour = new Date().getHours()
+    let total = 0
+
+    for (const poolAddr in volumes) {
+      const { volumes: volIn7Days } = volumes[poolAddr]
+      total +=
+        volIn7Days[today.ymd()] + (hour * volIn7Days[yesterday.ymd()]) / 24
+    }
+    return total
+  }, [volumes])
+
+  return vol24h
 }
 
 /**
