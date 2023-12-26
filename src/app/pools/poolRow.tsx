@@ -9,9 +9,9 @@ import { Eye } from 'lucide-react'
 import { MintAmount, MintLogo, MintSymbol } from '@/components/mint'
 
 import { numeric } from '@/helpers/utils'
-import { useTvl } from '@/hooks/tvl.hook'
 import { useOracles, useVol24h } from '@/hooks/pool.hook'
 import { useTokenAccountByMintAddress } from '@/providers/tokenAccount.provider'
+import { usePoolTvl } from '@/providers/pools.provider'
 
 export type PoolRowProps = {
   index: number
@@ -20,7 +20,7 @@ export type PoolRowProps = {
 
 export default function PoolRow({
   index,
-  pool: { address, mintLpt, fee, reserves, mints, weights, authority },
+  pool: { address, mintLpt, fee, mints, weights, authority },
 }: PoolRowProps) {
   const { push } = useRouter()
   const { publicKey } = useWallet()
@@ -28,19 +28,14 @@ export default function PoolRow({
   const { amount } = useTokenAccountByMintAddress(mintLpt.toBase58()) || {
     amount: new BN(0),
   }
+  const tvl = usePoolTvl(address)
+  const { vol24h } = useVol24h(address)
 
   const isOwner = useMemo(() => {
     if (!publicKey || !authority) return false
     return authority.equals(publicKey)
   }, [publicKey, authority])
 
-  const tvl = useTvl(
-    reserves.map((reserve, i) => ({
-      mintAddress: mints[i].toBase58(),
-      amount: reserve,
-    })),
-  )
-  const { vol24h } = useVol24h(address)
   const ws = useMemo(() => {
     return weights.map((weight) => calcNormalizedWeight(weights, weight))
   }, [calcNormalizedWeight, weights])
