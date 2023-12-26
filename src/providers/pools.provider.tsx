@@ -30,13 +30,11 @@ type VolumeData = {
 }
 
 export type PoolStore = {
-  loading: boolean
   volumes: Record<string, VolumeData>
   pools: Record<string, PoolData>
   poolsTvl: Record<string, number>
   totalTvl: number
   setTotalTvl: (tvl: number) => void
-  setLoading: (loading: boolean) => void
   upsertPool: (pool: string, newPool: PoolData) => void
   upsertPoolTvl: (newPoolsTvl: Record<string, number>) => void
   upsertVolumes: (volumes: Record<string, VolumeData>) => void
@@ -52,7 +50,6 @@ export const usePoolStore = create<PoolStore>()(
       poolsTvl: {},
       volumes: {},
       totalTvl: 0,
-      loading: true,
       upsertPool: (address: string, poolData: PoolData) =>
         set(
           produce<PoolStore>(({ pools }) => {
@@ -64,7 +61,6 @@ export const usePoolStore = create<PoolStore>()(
       upsertPoolTvl: (poolsTvl) => set({ poolsTvl }, false, 'upsertPoolTvl'),
       upsertVolumes: (volumes) => set({ volumes }, false, 'upsertVolumes'),
       setTotalTvl: (totalTvl) => set({ totalTvl }, false, 'setTotalTvl'),
-      setLoading: (loading) => set({ loading }, false, 'setLoading'),
     }),
     {
       name: 'pools',
@@ -82,7 +78,6 @@ export function PoolProvider({ children }: { children: ReactNode }) {
   const upsertPoolTvl = usePoolStore(({ upsertPoolTvl }) => upsertPoolTvl)
   const setTotalTvl = usePoolStore(({ setTotalTvl }) => setTotalTvl)
   const upsertVolumes = usePoolStore(({ upsertVolumes }) => upsertVolumes)
-  const setLoading = usePoolStore(({ setLoading }) => setLoading)
 
   const fetchPools = useCallback(async () => {
     const pools = await senswap.getAllPoolData()
@@ -110,7 +105,6 @@ export function PoolProvider({ children }: { children: ReactNode }) {
 
   const fetchPoolsTvl = useCallback(async () => {
     try {
-      setLoading(true)
       // Fetch all pool tvl
       const { data: poolsTvl } = await axios.get(
         solConfig.statRpc + `stat/balansol/all-tvl`,
@@ -130,10 +124,8 @@ export function PoolProvider({ children }: { children: ReactNode }) {
       upsertVolumes(volumes)
     } catch (error) {
       console.log('Fetching stat error: ', error)
-    } finally {
-      setLoading(false)
     }
-  }, [setLoading, setTotalTvl, upsertPoolTvl, upsertVolumes])
+  }, [setTotalTvl, upsertPoolTvl, upsertVolumes])
 
   useEffect(() => {
     fetchPools()
@@ -177,15 +169,6 @@ export const usePoolsTvl = () => {
 export const usePoolTvl = (poolAddress: string) => {
   const tvl = usePoolStore(({ poolsTvl }) => poolsTvl[poolAddress]) || 0
   return tvl
-}
-
-/**
- * Get loading pool stat
- * @returns true/false
- */
-export const usePoolStatLoading = () => {
-  const loading = usePoolStore(({ loading }) => loading)
-  return loading
 }
 
 /**
