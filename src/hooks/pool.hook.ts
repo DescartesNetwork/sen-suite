@@ -315,37 +315,55 @@ export const useInitializeJoin = (poolAddress: string, amountIns: string[]) => {
   const { createWrapSol } = useWrapSol()
 
   const onInitializeJoin = useCallback(async () => {
-    if (!publicKey || !senswap.program.provider.sendAndConfirm) return
-    const transaction = new Transaction()
+    if (!publicKey || !senswap.program.provider.sendAll) return
     const dAmountIns = amountIns.map((amount, i) =>
       decimalize(amount, decimals[i]),
     )
+    const transactions: Transaction[] = []
+    const splitArray: { mints: PublicKey[]; amounts: BN[]; reserves: BN[] }[] =
+      []
+    const size = 3
 
-    for (let i = 0; i < pool.mints.length; i++) {
-      const mint = pool.mints[i]
-      if (!pool.reserves[i].isZero()) continue
-      const ataAddress = utils.token.associatedAddress({
-        mint,
-        owner: publicKey,
-      })
-      const { amount } = accounts[ataAddress.toBase58()] || {
-        amount: new BN(0),
-      }
-      // Wrap sol token if needed
-      if (mint.equals(WRAPPED_SOL_MINT) && dAmountIns[i].gt(amount)) {
-        const txWrapSol = await createWrapSol(dAmountIns[i].sub(amount))
-        if (txWrapSol) transaction.add(txWrapSol)
-      }
-      const { tx } = await senswap.initializeJoin({
-        poolAddress,
-        mint,
-        amount: dAmountIns[i],
-        sendAndConfirm: false,
-      })
-      transaction.add(tx)
+    for (let i = 0; i < pool.mints.length; i += size) {
+      const mints = pool.mints.slice(i, i + size)
+      const amounts = dAmountIns.slice(i, i + size)
+      const reserves = pool.reserves.slice(i, i + size)
+      splitArray.push({ mints, amounts, reserves })
     }
 
-    const txId = await senswap.program.provider.sendAndConfirm(transaction)
+    for (const { amounts, mints, reserves } of splitArray) {
+      const transaction = new Transaction()
+
+      for (let i = 0; i < mints.length; i++) {
+        const mint = mints[i]
+        if (!reserves[i].isZero()) continue
+        const ataAddress = utils.token.associatedAddress({
+          mint,
+          owner: publicKey,
+        })
+        const { amount } = accounts[ataAddress.toBase58()] || {
+          amount: new BN(0),
+        }
+        // Wrap sol token if needed
+        if (mint.equals(WRAPPED_SOL_MINT) && amounts[i].gt(amount)) {
+          const txWrapSol = await createWrapSol(amounts[i].sub(amount))
+          if (txWrapSol) transaction.add(txWrapSol)
+        }
+        const { tx } = await senswap.initializeJoin({
+          poolAddress,
+          mint,
+          amount: amounts[i],
+          sendAndConfirm: false,
+        })
+        transaction.add(tx)
+      }
+
+      transactions.push(transaction)
+    }
+
+    const [txId] = await senswap.program.provider.sendAll(
+      transactions.map((tx) => ({ tx })),
+    )
     return txId
   }, [
     accounts,
