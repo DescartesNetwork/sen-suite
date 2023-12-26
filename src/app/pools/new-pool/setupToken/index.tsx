@@ -80,10 +80,15 @@ export default function SetupToken({
 
   const error = useMemo(() => {
     let totalWeight = 0
+    const mintAddresses: string[] = []
     for (const { mintAddress, weight } of dataSetup) {
       if (!isAddress(mintAddress)) return 'Please select token!'
       if (!Number(weight)) return 'Please input weight!'
+      if (mintAddresses.includes(mintAddress))
+        return 'Several token addresses are repeated!'
+
       totalWeight += Number(weight)
+      mintAddresses.push(mintAddress)
     }
     const currAmount = dataSetup.length
     if (totalWeight !== 100) return 'Total weight must equal 100%'
