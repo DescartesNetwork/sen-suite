@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import classNames from 'classnames'
 
-import { Info } from 'lucide-react'
+import { Info, Percent } from 'lucide-react'
 
 import solConfig from '@/configs/sol.config'
 import { solscan } from '@/helpers/explorers'
@@ -29,30 +29,33 @@ const Content = ({
 }) => (
   <div className="flex flex-col gap-4 ">
     <div className="flex flex-row justify-between items-center">
-      <div className="flex flex-row gap-2">
-        <p className="text-sm">{title} (%)</p>
-        <div className="tooltip" data-tip={tooltipContent}>
-          <Info className="w-3 h-3" />
-        </div>
+      <div className="flex flex-row gap-2 items-center">
+        <p className="text-sm">{title}</p>
+        <span className="tooltip" data-tip={tooltipContent}>
+          <Info className="w-4 h-4 cursor-pointer" />
+        </span>
       </div>
       <div className="flex flex-row gap-1">
         <p className="text-sm opacity-60 ">Current {title}:</p>
         <p className="text-sm">{currentPercent}%</p>
       </div>
     </div>
-    <input
-      type="number"
-      placeholder="0"
-      disabled={disabled}
-      value={percent}
-      onChange={(e) => onChangeValue(e.target.value)}
-      className={classNames(
-        'input p-4 text-sm bg-base-200 w-full rounded-full focus:outline-none',
-        {
-          'cursor-not-allowed opacity-60': disabled,
-        },
-      )}
-    />
+    <div className="flex flex-row items-center relative">
+      <Percent className="w-4 h-4 absolute left-3" />
+      <input
+        type="number"
+        placeholder="0"
+        disabled={disabled}
+        value={percent}
+        onChange={(e) => onChangeValue(e.target.value)}
+        className={classNames(
+          'input p-4 text-sm bg-base-200 w-full rounded-full focus:outline-none pl-9',
+          {
+            'cursor-not-allowed opacity-60': disabled,
+          },
+        )}
+      />
+    </div>
   </div>
 )
 
@@ -87,12 +90,12 @@ export default function Fee({ poolAddress }: { poolAddress: string }) {
   return (
     <div className="flex flex-col gap-4">
       <Content
-        title="LP Reward Rate"
+        title="LP Incentive"
         percent={fee}
         currentPercent={currentFee}
         onChangeValue={setFee}
         tooltipContent={
-          'The portion of trading fee a liquidity provider earns upon depositing into the pool'
+          'The portion of trading fee will incentivize to the liquidity providers upon their deposites in the pool.'
         }
       />
 
@@ -102,7 +105,7 @@ export default function Fee({ poolAddress }: { poolAddress: string }) {
         currentPercent={currentTax}
         onChangeValue={setTax}
         tooltipContent={
-          'The portion of fee your pool will pay to Sentre Swap for maintaining the system'
+          'The portion of fee will be paid to Sentre for maintaining the system.'
         }
         disabled={poolData.authority.toBase58() !== taxmanAddress}
       />
