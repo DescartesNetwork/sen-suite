@@ -70,9 +70,8 @@ export default function PoolWeights({ poolAddress }: { poolAddress: string }) {
                 ] = payload
                 return (
                   <div className="card rounded-box p-4 bg-base-100 border-2 border-base-300 flex flex-col">
-                    <p>{symbol}</p>
                     <p className="font-bold">
-                      {numeric(tokenAmount).format('$0,0.[0000]')}
+                      {numeric(tokenAmount).format('0,0.[0000]')} {symbol}
                     </p>
                     <p className="font-bold">
                       {numeric(weight).format('%0.[0000]')}
