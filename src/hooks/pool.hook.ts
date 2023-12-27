@@ -12,13 +12,12 @@ import BN from 'bn.js'
 
 import { useAnchorProvider } from '@/providers/wallet.provider'
 import { decimalize, undecimalize } from '@/helpers/decimals'
-import {
-  usePoolByAddress,
-  usePoolStore,
-  usePoolVolumesIn7Days,
-  usePools,
-} from '@/providers/pools.provider'
+import { usePoolByAddress, usePools } from '@/providers/pools.provider'
 import { useAllTokenAccounts } from '@/providers/tokenAccount.provider'
+import {
+  usePoolStatStore,
+  usePoolVolumesIn7Days,
+} from '@/providers/stat.provider'
 import { useInitPDAAccount, useMints, useSpl } from './spl.hook'
 import solConfig from '@/configs/sol.config'
 import { DateHelper } from '@/helpers/date'
@@ -541,7 +540,7 @@ export const useVol24h = (poolAddress: string) => {
 }
 
 export const useSenSwapVol24h = () => {
-  const volumes = usePoolStore(({ volumes }) => volumes)
+  const volumes = usePoolStatStore(({ volumes }) => volumes)
 
   const vol24h = useMemo(() => {
     const today = new DateHelper()

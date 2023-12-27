@@ -9,7 +9,7 @@ import CommunityPools from './communityPools'
 
 import { PoolFilter, useFilteredPools } from '@/hooks/pool.hook'
 import { useSearchMint } from '@/providers/mint.provider'
-import { usePoolsTvl } from '@/providers/pools.provider'
+import { usePoolsTvl } from '@/providers/stat.provider'
 
 export default function Pools() {
   const [loading, setLoading] = useState(false)

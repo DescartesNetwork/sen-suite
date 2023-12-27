@@ -4,7 +4,7 @@ import { FarmData, DebtData, RewardData, BoostingData } from '@sentre/farming'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { produce } from 'immer'
-import { PublicKey, SystemProgram } from '@solana/web3.js'
+import { MemcmpFilter, PublicKey, SystemProgram } from '@solana/web3.js'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useUnmount } from 'react-use'
 import BN from 'bn.js'
@@ -130,6 +130,28 @@ export default function FarmingProvider({ children }: { children: ReactNode }) {
     ({ upsertBoostings }) => upsertBoostings,
   )
   const unmount = useFarmingStore(({ unmount }) => unmount)
+  const watchFarming = useCallback(
+    (
+      key: 'farm' | 'debt' | 'farmRewardMint' | 'farmBoostingCollection',
+      upsertCallback: (data: Record<string, any>) => void,
+      filter?: MemcmpFilter[],
+    ) => {
+      const { connection } = farming.program.provider
+      const id = connection.onProgramAccountChange(
+        farming.program.account.farm.programId,
+        ({ accountId, accountInfo: { data } }) => {
+          const accountData = farming.program.coder.accounts.decode(key, data)
+          upsertCallback({ [accountId.toBase58()]: accountData })
+        },
+        'confirmed',
+        filter,
+      )
+      return () => {
+        connection.removeProgramAccountChangeListener(id)
+      }
+    },
+    [farming],
+  )
 
   const filter = useMemo(() => {
     if (!publicKey) return undefined
@@ -148,7 +170,9 @@ export default function FarmingProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     fetchFarms()
-  }, [fetchFarms])
+    const unwatch = watchFarming('farm', upsertFarms)
+    return unwatch
+  }, [fetchFarms, upsertFarms, watchFarming])
 
   const fetchDebts = useCallback(async () => {
     if (!filter) return upsertDebts({})
@@ -163,7 +187,9 @@ export default function FarmingProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     fetchDebts()
-  }, [fetchDebts])
+    const unwatch = watchFarming('debt', upsertDebts, filter)
+    return unwatch
+  }, [fetchDebts, filter, upsertDebts, watchFarming])
 
   const fetchRewards = useCallback(async () => {
     const data: Array<{ publicKey: PublicKey; account: RewardData }> =
@@ -177,7 +203,9 @@ export default function FarmingProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     fetchRewards()
-  }, [fetchRewards])
+    const unwatch = watchFarming('farmRewardMint', upsertRewards)
+    return unwatch
+  }, [fetchRewards, upsertRewards, watchFarming])
 
   const fetchBoostings = useCallback(async () => {
     const data: Array<{ publicKey: PublicKey; account: BoostingData }> =
@@ -191,7 +219,9 @@ export default function FarmingProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     fetchBoostings()
-  }, [fetchBoostings])
+    const unwatch = watchFarming('farmBoostingCollection', upsertBoostings)
+    return unwatch
+  }, [fetchBoostings, upsertBoostings, watchFarming])
 
   useUnmount(unmount)
 

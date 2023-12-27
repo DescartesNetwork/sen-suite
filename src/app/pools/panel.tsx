@@ -2,7 +2,7 @@
 
 import classNames from 'classnames'
 
-import { useTotalPoolTvl } from '@/providers/pools.provider'
+import { useTotalPoolTvl } from '@/providers/stat.provider'
 import { numeric } from '@/helpers/utils'
 import { useSenSwapVol24h } from '@/hooks/pool.hook'
 
