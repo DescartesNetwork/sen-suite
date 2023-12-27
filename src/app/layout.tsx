@@ -11,7 +11,6 @@ import Message from '@/components/message'
 import Sidebar from '@/app/sidebar'
 
 import '@/static/styles/global.scss'
-import 'react-datepicker/dist/react-datepicker.css'
 
 export const metadata: Metadata = {
   title: 'Sentre: The suite for startups on Solana',
