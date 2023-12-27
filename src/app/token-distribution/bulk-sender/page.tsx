@@ -3,11 +3,10 @@ import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { parse } from 'papaparse'
 
-import { ChevronDown } from 'lucide-react'
+import { ChevronDown, Info } from 'lucide-react'
 import { MintLogo, MintSymbol } from '@/components/mint'
 import TokenSelection from '@/components/tokenSelection'
 import Dropzone from '@/components/dropzone'
-import Island from '@/components/island'
 
 import {
   useBulkSenderData,
@@ -48,23 +47,23 @@ export default function BulkSender() {
       <h5 className="col-span-full">Bulk Sender</h5>
       <div className="col-span-full grid grid-cols-12 gap-6">
         <div
-          className="rounded-3xl border-2 px-4 py-2 col-span-12 flex flex-row justify-between items-center cursor-pointer"
+          className="rounded-3xl border-2 p-2 col-span-12 flex flex-row justify-between items-center cursor-pointer"
           onClick={() => setOpen(true)}
         >
-          {mintAddress ? (
-            <div className="flex items-center gap-2 flex-auto">
+          {isAddress(mintAddress) ? (
+            <div className="flex flex-row items-center gap-2 flex-auto">
               <MintLogo
                 mintAddress={mintAddress}
                 className="w-8 h-8 rounded-full"
               />
-              <Island>
+              <p className="font-bold">
                 <MintSymbol mintAddress={mintAddress} />
-              </Island>
+              </p>
             </div>
           ) : (
             <p className="font-bold flex-auto"> Select a token</p>
           )}
-          <ChevronDown />
+          <ChevronDown className="h-6 w-6 mr-1" />
         </div>
         {/* Modal Token Selection */}
         <TokenSelection
@@ -81,13 +80,19 @@ export default function BulkSender() {
           />
         </div>
       </div>
-      <button
-        className="btn btn-primary col-span-full rounded-3xl"
-        onClick={() => push('/token-distribution/bulk-sender/summary')}
-        disabled={!isAddress(mintAddress)}
-      >
-        Skip
-      </button>
+      <div className="col-span-full grid grid-cols-12 gap-2">
+        <button
+          className="col-span-full btn btn-primary rounded-3xl"
+          onClick={() => push('/token-distribution/bulk-sender/summary')}
+          disabled={!isAddress(mintAddress)}
+        >
+          Skip
+        </button>
+        <div className="col-span-full flex flex-row justify-center items-center gap-2">
+          <Info className="w-3 h-3" />
+          <p className="text-sm">Skip this step to manually input.</p>
+        </div>
+      </div>
     </div>
   )
 }

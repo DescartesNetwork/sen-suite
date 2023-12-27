@@ -3,7 +3,7 @@ import { useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
 import classNames from 'classnames'
 
-import { Download, FileUp, Info, X } from 'lucide-react'
+import { Download, FileUp, X } from 'lucide-react'
 
 export type DropzoneProps = {
   file?: File
@@ -17,11 +17,7 @@ export default function Dropzone({
   templateFile = '',
 }: DropzoneProps) {
   const onDrop = useCallback(
-    (files: File[]) => {
-      if (!files || !files.length) return onChange(undefined)
-      const [file] = files
-      return onChange(file)
-    },
+    ([file]: File[] = []) => onChange(file),
     [onChange],
   )
   const { getRootProps, getInputProps, isDragActive, inputRef } = useDropzone({
@@ -35,7 +31,6 @@ export default function Dropzone({
 
   const downloadFile = (templateFile: string) => {
     if (!templateFile) return
-
     const event = document.createElement('a')
     event.href = templateFile
     document.body.appendChild(event)
@@ -48,9 +43,9 @@ export default function Dropzone({
   }, [inputRef, onChange])
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-2">
       <div
-        className=" h-full rounded-3xl card bg-base-200 p-8 cursor-pointer border-dashed border-2 flex flex-col gap-4 items-center"
+        className="h-full rounded-3xl card bg-base-200 hover:bg-base-300 p-8 cursor-pointer border-dashed border-2 flex flex-col gap-4 items-center transition-all"
         {...getRootProps()}
       >
         <div className="bg-[#f9575e1a] p-3 rounded-xl">
@@ -85,19 +80,15 @@ export default function Dropzone({
           </div>
         )}
       </div>
-      <div className=" flex flex-col gap-6">
+      <div className="flex flex-row justify-end">
         <button
           onClick={() => downloadFile(templateFile)}
           disabled={!templateFile}
-          className="flex flex-row gap-2 items-center mx-2 cursor-pointer"
+          className="btn btn-sm btn-ghost rounded-full"
         >
           <Download className="w-3 h-3 font-semibold" />
           <p className="text-sm font-semibold">Download templates</p>
         </button>
-        <div className="flex flex-row items-center gap-2">
-          <Info className="w-3 h-3" />
-          <p className="text-sm">Skip this step to manually input.</p>
-        </div>
       </div>
     </div>
   )
