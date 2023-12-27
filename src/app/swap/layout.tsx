@@ -17,7 +17,7 @@ export default function SwapLayout({ children }: { children: ReactNode }) {
             Swap
           </a>
           <Link role="tab" className="tab !rounded-box" href="/pools">
-            Liquidity Pools
+            Pools
           </Link>
         </div>
         <div className="max-w-[360px]">{children}</div>

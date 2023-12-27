@@ -33,12 +33,12 @@ export default function LiquidityPoolPanel() {
       <div className="flex-auto flex flex-col gap-8 text-slate-800">
         <h4>Liquidity Pools</h4>
         <div className="flex flex-row gap-2">
-          <div className="">
+          <div>
             <p className="text-sm">TVL</p>
             <h5>{numeric(tvl).format('$0,0.[00]')}</h5>
           </div>
           <span className="divider divider-horizontal m-0" />
-          <div className="">
+          <div>
             <p className="text-sm">Total volume 24h</p>
             <h5
               className={classNames({

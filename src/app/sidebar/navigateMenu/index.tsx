@@ -32,7 +32,7 @@ const ROUTES: MenuItemData[] = [
   { route: '/swap', name: 'Swap', Logo: Repeat },
   {
     route: '/pools',
-    name: 'Liquidity Pools',
+    name: 'Pools',
     Logo: BarChartBig,
   },
   { route: '/farming', name: 'Farming', Logo: Leaf },
