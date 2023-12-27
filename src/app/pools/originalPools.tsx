@@ -43,7 +43,7 @@ export default function OriginalPools({ pools }: OriginalPoolsProps) {
           <PoolRow key={pool.address} index={i + 1} pool={pool} />
         ))}
         <tr className={classNames({ hidden: !!originalPools.length })}>
-          <td colSpan={7}>
+          <td colSpan={8}>
             <Empty />
           </td>
         </tr>

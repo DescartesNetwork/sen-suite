@@ -41,7 +41,7 @@ export default function CommunityPools({ pools }: CommunityPoolsProps) {
           <PoolRow key={pool.address} index={i + 1} pool={pool} />
         ))}
         <tr className={classNames({ hidden: !!communityPools.length })}>
-          <td colSpan={7}>
+          <td colSpan={8}>
             <Empty />
           </td>
         </tr>
