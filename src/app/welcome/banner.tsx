@@ -42,7 +42,8 @@ export default function Banner() {
               Sentre Protocol
             </h2>
             <p className="text-black text-xl sm:text-3xl md:text-2xl lg:text-4xl mb-16 md:mb-20">
-              The Suite for Startups on Solana
+              The Suite for Startups on{' '}
+              <span className="font-bold">S◎lana</span>
             </p>
           </div>
         </div>

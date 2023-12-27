@@ -5,6 +5,8 @@ import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer } from 'recharts'
 
 import { numeric } from '@/helpers/utils'
 import { VolumeData, useVol24h } from '@/hooks/pool.hook'
+import classNames from 'classnames'
+import Empty from '@/components/empty'
 
 export default function Volume24h({ poolAddress }: { poolAddress: string }) {
   const { vols, vol24h } = useVol24h(poolAddress)
@@ -53,6 +55,17 @@ export default function Volume24h({ poolAddress }: { poolAddress: string }) {
             <Bar dataKey="data" fill="#63E0B3" />
           </BarChart>
         </ResponsiveContainer>
+        <div
+          className={classNames(
+            'h-full w-full flex flex-row justify-center items-center absolute top-0 left-0 backdrop-blur rounded-box',
+            {
+              visible: !vol24hIn7Date.length,
+              invisible: !!vol24hIn7Date.length,
+            },
+          )}
+        >
+          <Empty />
+        </div>
       </div>
     </div>
   )

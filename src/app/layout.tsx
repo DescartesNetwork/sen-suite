@@ -10,9 +10,7 @@ import TokenAccountProvider from '@/providers/tokenAccount.provider'
 import Message from '@/components/message'
 import Sidebar from '@/app/sidebar'
 
-import { DMSans } from '@/static/fonts'
 import '@/static/styles/global.scss'
-import 'react-datepicker/dist/react-datepicker.css'
 
 export const metadata: Metadata = {
   title: 'Sentre: The suite for startups on Solana',
@@ -33,7 +31,7 @@ export const viewport = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" data-theme="light" className={DMSans.className}>
+    <html lang="en" data-theme="light">
       <head>
         {/* Google Analytics */}
         <Script
@@ -46,6 +44,17 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             gtag('js', new Date());
             gtag('config', 'G-YZGWFX3N5E');`}
         </Script>
+        {/* Google Fonts */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,200;0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900;1,9..40,200;1,9..40,300;1,9..40,400;1,9..40,500;1,9..40,600;1,9..40,700;1,9..40,800;1,9..40,900&display=swap"
+          rel="stylesheet"
+        />
       </head>
       <body className="w-full flex flex-row">
         <UiProvider>
