@@ -80,6 +80,7 @@ export default function PoolRow({
           type="checkbox"
           className="checkbox checkbox-accent"
           checked={isOwner}
+          readOnly
         />
       </td>
     </tr>

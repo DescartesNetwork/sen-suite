@@ -7,10 +7,10 @@ import { BN } from 'bn.js'
 import { SystemProgram } from '@solana/web3.js'
 import { PoolData, PoolStates } from '@sentre/senswap'
 import isEqual from 'react-fast-compare'
+import axios from 'axios'
 
 import { env } from '@/configs/env'
 import { useSenswap } from '@/hooks/pool.hook'
-import axios from 'axios'
 import solConfig from '@/configs/sol.config'
 
 const DUMMY_POOL = {
