@@ -25,14 +25,15 @@ import { solscan } from '@/helpers/explorers'
 const SET_UP = 0
 const CONFIRM = 2
 
-type AddLiquidityProps = {
+export type SetLiquidityProps = {
   poolAddress: string
   setStep: (step: number) => void
 }
-export default function AddLiquidity({
+
+export default function SetLiquidity({
   poolAddress,
   setStep,
-}: AddLiquidityProps) {
+}: SetLiquidityProps) {
   const [amounts, setAmounts] = useState<string[]>([])
   const [activeIndx, setActiveIndx] = useState<number>()
   const [closing, setClosing] = useState(false)

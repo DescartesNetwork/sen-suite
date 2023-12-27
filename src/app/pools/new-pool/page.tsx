@@ -8,7 +8,7 @@ import { PoolStates } from '@sentre/senswap'
 
 import { ChevronLeft } from 'lucide-react'
 import SetupToken from './setupToken'
-import AddLiquidity from './addLiquidity'
+import SetLiquidity from './setLiquidity'
 import PoolOverview from './poolOverview'
 
 import { usePools } from '@/providers/pools.provider'
@@ -46,7 +46,7 @@ export default function NewPool() {
           />
         )
       case ADD_LIQUIDITY:
-        return <AddLiquidity setStep={setStep} poolAddress={poolAddress} />
+        return <SetLiquidity setStep={setStep} poolAddress={poolAddress} />
       case CONFIRM:
         return <PoolOverview poolAddress={poolAddress} />
     }
