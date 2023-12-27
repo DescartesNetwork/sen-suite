@@ -7,11 +7,12 @@ import { useWallet } from '@solana/wallet-adapter-react'
 
 import { Eye } from 'lucide-react'
 import { MintAmount, MintLogo, MintSymbol } from '@/components/mint'
+import LazyLoad from 'react-lazy-load'
 
 import { numeric } from '@/helpers/utils'
 import { useOracles, useVol24h } from '@/hooks/pool.hook'
 import { useTokenAccountByMintAddress } from '@/providers/tokenAccount.provider'
-import { usePoolTvl } from '@/providers/pools.provider'
+import { usePoolTvl } from '@/providers/stat.provider'
 
 export type PoolRowProps = {
   index: number
@@ -54,11 +55,12 @@ export default function PoolRow({
       </th>
       <td className="avatar-group -space-x-4 rtl:space-x-reverse">
         {mints.map((mint) => (
-          <MintLogo
-            className="w-8 h-8 rounded-full bg-base-300"
-            key={mint.toBase58()}
-            mintAddress={mint.toBase58()}
-          />
+          <LazyLoad key={mint.toBase58()} height={32}>
+            <MintLogo
+              className="w-8 h-8 rounded-full bg-base-300"
+              mintAddress={mint.toBase58()}
+            />
+          </LazyLoad>
         ))}
       </td>
       <td>

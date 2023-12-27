@@ -1,7 +1,6 @@
 'use client'
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import classNames from 'classnames'
 
 import { Plus, Search, X } from 'lucide-react'
 import LiquidityPoolPanel from './panel'
@@ -10,7 +9,7 @@ import CommunityPools from './communityPools'
 
 import { PoolFilter, useFilteredPools } from '@/hooks/pool.hook'
 import { useSearchMint } from '@/providers/mint.provider'
-import { usePoolStatLoading, usePoolsTvl } from '@/providers/pools.provider'
+import { usePoolsTvl } from '@/providers/stat.provider'
 
 export default function Pools() {
   const [loading, setLoading] = useState(false)
@@ -20,7 +19,6 @@ export default function Pools() {
   const { push } = useRouter()
   const search = useSearchMint()
   const poolsTvl = usePoolsTvl()
-  const statLoading = usePoolStatLoading()
 
   const searchedPools = useMemo(() => {
     if (loading || text.length <= 2) return filteredPools
@@ -103,17 +101,6 @@ export default function Pools() {
           <OriginalPools pools={sortedPool} />
           <CommunityPools pools={sortedPool} />
         </table>
-      </div>
-      <div
-        className={classNames(
-          'w-full h-full flex flex-row justify-center items-center absolute top-0 left-0 backdrop-blur rounded-box z-10',
-          {
-            visible: statLoading,
-            invisible: !statLoading,
-          },
-        )}
-      >
-        <span className="loading loading-spinner loading-lg" />
       </div>
     </div>
   )
