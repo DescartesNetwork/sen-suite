@@ -30,7 +30,7 @@ const conf: Record<Env, Conf> = {
     // senFarmingProgram: '6LaxnmWdYUAJvBJ4a1R8rrsvCRtaY7b43zKiNAU2k3Nx',
     // utilityProgram: 'AKTU61s8NJ8zJATQiceREdhXbedRnKrd1BVgnCuxmD2F',
     // bundlStorage: 'https://devnet.bundlr.network',
-    rpc: 'https://radial-billowing-gas.solana-mainnet.quiknode.pro/9d19e80c758eb5bd7b86d912e9345aa153db6a8f/',
+    rpc: 'https://quick-wiser-county.solana-mainnet.quiknode.pro/392525a370a3e0cea3d07c114fd711d792368b30/',
     network: WalletAdapterNetwork.Mainnet,
     senswapAddress: 'D3BBjqUdCYuP18fNvvMbPAZ8DpcRi4io2EsYHQawJDag',
     senFarmingProgram: 'E6Vc9wipgm8fMXHEYwgN7gYdDbyvpPBUiTNy67zPKuF4',
