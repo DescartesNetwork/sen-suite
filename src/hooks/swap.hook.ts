@@ -1,10 +1,11 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useAsync } from 'react-use'
 import axios from 'axios'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { VersionedTransaction } from '@solana/web3.js'
-import { BN } from 'bn.js'
-
+import { Address, BN } from '@coral-xyz/anchor'
+import isEqual from 'react-fast-compare'
+import { MintActionStates, PoolData } from '@sentre/senswap'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 
@@ -12,6 +13,8 @@ import { env } from '@/configs/env'
 import { isAddress } from '@/helpers/utils'
 import { useMintByAddress } from '@/providers/mint.provider'
 import { decimalize, undecimalize } from '@/helpers/decimals'
+import { usePools } from '@/providers/pools.provider'
+import { usePoolsTvl } from '@/providers/stat.provider'
 
 export enum JupiterSwapMode {
   ExactIn = 'ExactIn',
@@ -48,6 +51,17 @@ export type JupiterRouteInfo = {
   }>
   timeTaken: number
 }
+export type SenSwapRouteInfo = {
+  pool: string
+  bidMint: string
+  bidAmount: BN
+  askMint: string
+  askAmount: BN
+  priceImpact: number
+}
+export type MintRoutes = {
+  [mintAddress: string]: { [mintAddress: string]: Address[] }
+}
 
 export type SwapStore = {
   bidMintAddress: string
@@ -62,6 +76,8 @@ export type SwapStore = {
   setSlippage: (slippage: number) => void
   bestRoute: JupiterRouteInfo | undefined
   setBestRoute: (bestRoute: JupiterRouteInfo | undefined) => void
+  allSenSwapRoutes: MintRoutes
+  setAllSenSwapRoutes: (allRoutes: MintRoutes) => void
 }
 
 /**
@@ -89,6 +105,9 @@ export const useSwapStore = create<SwapStore>()(
       bestRoute: undefined,
       setBestRoute: (bestRoute: JupiterRouteInfo | undefined) =>
         set({ bestRoute }, false, 'setRoutes'),
+      allSenSwapRoutes: {},
+      setAllSenSwapRoutes: (allSenSwapRoutes: MintRoutes) =>
+        set({ allSenSwapRoutes }, false, 'setAllSenSwapRoutes'),
     }),
     {
       name: 'swap',
@@ -196,4 +215,118 @@ export const useSwap = () => {
   }, [bestRoute, publicKey, signTransaction, connection])
 
   return { bestRoute, swap }
+}
+
+export const useAllRoutes = () => {
+  const pools = usePools()
+  const poolsTvl = usePoolsTvl()
+
+  // Get pools tvl > 1000$
+  const validPools = useMemo(() => {
+    const minTvl = 1000
+    const result: Record<string, PoolData> = {}
+    for (const addr in pools) {
+      const poolData = pools[addr]
+
+      if (poolData.reserves.map((val) => val.toString()).includes('0')) continue
+      const tvl = poolsTvl[addr] || 0
+      if (tvl < minTvl) continue
+      result[addr] = poolData
+    }
+    return result
+  }, [pools, poolsTvl])
+
+  // Generate available routes in sen swap
+  const allRoutes = useMemo(() => {
+    const mintRoutes: MintRoutes = {}
+    for (const address in validPools) {
+      const { mints, actions } = validPools[address]
+      const mintAddresses = mints.map((mint) => mint.toBase58())
+
+      for (let i = 0; i < mintAddresses.length; i++) {
+        if (!isEqual(actions[i], MintActionStates.Active)) continue
+        for (let j = 0; j < mintAddresses.length; j++) {
+          if (!isEqual(actions[j], MintActionStates.Active)) continue
+
+          const bidMint = mintAddresses[i]
+          const askMint = mintAddresses[j]
+
+          if (bidMint === askMint) continue
+
+          if (!mintRoutes[bidMint]) mintRoutes[bidMint] = {}
+          if (!mintRoutes[bidMint][askMint]) mintRoutes[bidMint][askMint] = []
+          mintRoutes[bidMint][askMint].push(address)
+        }
+      }
+    }
+    return mintRoutes
+  }, [validPools])
+
+  return allRoutes
+}
+
+type RouteInfo = {
+  pool: Address
+  bidMint: string
+  askMint: string
+}
+export const useRoutes = () => {
+  const allRoutes = useAllRoutes()
+  const bidMintAddress = useSwapStore(({ bidMintAddress }) => bidMintAddress)
+  const askMintAddress = useSwapStore(({ askMintAddress }) => askMintAddress)
+
+  const isValidRoute = (route: RouteInfo[]) => {
+    const pools = new Set()
+    const mintPairs = new Set()
+
+    for (const { pool, askMint, bidMint } of route) {
+      // Check duplicate pools
+      if (pools.has(pool)) return false
+      pools.add(pool)
+
+      const mintPair = bidMint + '-' + askMint
+      const reverseMintPair = askMint + '-' + bidMint
+      // Check duplicate bidMint && askMint
+      if (mintPairs.has(reverseMintPair)) return false
+      mintPairs.add(mintPair)
+    }
+    return true
+  }
+
+  const getAvailRoutes = useCallback(
+    (bidMint: string, askMint: string, deep = 1) => {
+      if (deep > 3) return []
+
+      const routesFromBid = allRoutes[bidMint]
+      if (!routesFromBid) return []
+
+      const pools = routesFromBid[askMint] || []
+      const routes: Array<RouteInfo[]> = pools.map((pool) => {
+        return [{ pool, bidMint, askMint }]
+      })
+
+      for (const nextMint in routesFromBid) {
+        const nextPools = routesFromBid[nextMint]
+        const nextDeep = deep + 1
+        const nextRoutes = getAvailRoutes(nextMint, askMint, nextDeep)
+
+        nextRoutes.forEach((route) => {
+          nextPools.forEach((pool) => {
+            const newRoute = [{ pool, bidMint, askMint: nextMint }, ...route]
+            if (isValidRoute(newRoute)) routes.push(newRoute)
+          })
+        })
+      }
+      return routes
+    },
+
+    [allRoutes],
+  )
+
+  const { value: availRoutes, loading } = useAsync(
+    async () => await getAvailRoutes(bidMintAddress, askMintAddress),
+    [bidMintAddress, askMintAddress, getAvailRoutes],
+  )
+
+  return { availRoutes: availRoutes || [], loading }
 }
