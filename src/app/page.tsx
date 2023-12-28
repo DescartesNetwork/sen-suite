@@ -1,7 +1,6 @@
 'use client'
 import Welcome from './welcome'
 import ScrollButton from '@/components/scrollButton'
-import Maintainance from './maintainance'
 
 export default function Home() {
   return (
@@ -10,7 +9,6 @@ export default function Home() {
       <div id="btn-scroll" className="pos-center">
         <ScrollButton />
       </div>
-      <Maintainance />
     </div>
   )
 }

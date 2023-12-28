@@ -9,6 +9,7 @@ import TokenAccountProvider from '@/providers/tokenAccount.provider'
 
 import Message from '@/components/message'
 import Sidebar from '@/app/sidebar'
+import Maintainance from './maintainance'
 
 import '@/static/styles/global.scss'
 
@@ -64,6 +65,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 <Sidebar>
                   {children}
                   <Message />
+                  <Maintainance />
                 </Sidebar>
               </TokenAccountProvider>
             </MintProvider>
