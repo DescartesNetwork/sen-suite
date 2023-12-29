@@ -12,8 +12,8 @@ export default function Welcome() {
     <div className="welcome-container no-scrollbar overflow-x-hidden">
       <section className="absolute top-0 left-0 w-full z-10 p-2">
         <p className="bg-teal-300 rounded-box px-4 py-2 w-full text-center">
-          Sentre's new version is geared up to offer you more featured, and a
-          better experience. Happy new year 2024, and stay tuned for more!
+          Sentre&apos;s new version is geared up to offer you more featured, and
+          a better experience. Happy new year 2024, and stay tuned for more!
         </p>
       </section>
       <section className="w-full">
