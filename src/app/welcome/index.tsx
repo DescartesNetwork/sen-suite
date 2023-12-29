@@ -9,7 +9,12 @@ import './index.scss'
 
 export default function Welcome() {
   return (
-    <div className="welcome-container no-scrollbar">
+    <div className="welcome-container no-scrollbar overflow-x-hidden">
+      <section className="absolute top-0 left-0 w-full z-10 p-2">
+        <p className="bg-teal-300 rounded-box px-4 py-2 w-full text-center">
+          Sentre Protocol The Suite for Startups on S◎lana.
+        </p>
+      </section>
       <section className="w-full">
         <Banner />
       </section>

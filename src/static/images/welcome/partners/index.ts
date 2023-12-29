@@ -7,8 +7,6 @@ import jupiterLightSvg from './jupiter-light.svg'
 import logoCoin98Png from './logo-coin98.png'
 import logoSolDarkSvg from './logo-sol-dark.svg'
 import logoSolSvg from './logo-sol.svg'
-import serumDarkSvg from './serum-dark.svg'
-import serumLightSvg from './serum-light.svg'
 import sypoolSvg from './sypool.svg'
 import wormholeDarkSvg from './wormhole-dark.svg'
 import wormholeLightSvg from './wormhole-light.svg'
@@ -27,8 +25,6 @@ export {
   logoCoin98Png,
   logoSolDarkSvg,
   logoSolSvg,
-  serumDarkSvg,
-  serumLightSvg,
   sypoolSvg,
   wormholeDarkSvg,
   wormholeLightSvg,

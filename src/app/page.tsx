@@ -4,7 +4,7 @@ import ScrollButton from '@/components/scrollButton'
 
 export default function Home() {
   return (
-    <div className="home-page w-full h-full rounded-3xl bg-cover bg-swap-light dark:bg-swap-dark">
+    <div className="w-full h-full home-page rounded-3xl bg-cover bg-swap-light dark:bg-swap-dark">
       <Welcome />
       <div id="btn-scroll" className="pos-center">
         <ScrollButton />
