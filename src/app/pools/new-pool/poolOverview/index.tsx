@@ -79,7 +79,7 @@ export default function PoolOverview({ poolAddress }: { poolAddress: string }) {
       </div>
       <Link
         className="col-span-full btn btn-primary"
-        href={`/pool-details?poolAddress=${poolAddress}`}
+        href={`/pools/pool-details?poolAddress=${poolAddress}`}
       >
         To the pool
       </Link>
