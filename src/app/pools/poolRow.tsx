@@ -1,7 +1,7 @@
 'use client'
 import { useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { PRECISION, PoolData } from '@sentre/senswap/dist/lib'
+import { PRECISION, PoolData } from '@sentre/senswap'
 import BN from 'bn.js'
 import { useWallet } from '@solana/wallet-adapter-react'
 

@@ -5,7 +5,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { PublicKey, VersionedTransaction } from '@solana/web3.js'
 import { Address, BN } from '@coral-xyz/anchor'
 import isEqual from 'react-fast-compare'
-import { MintActionStates, PoolData } from '@sentre/senswap/dist/lib'
+import { MintActionStates, PoolData } from '@sentre/senswap/'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 

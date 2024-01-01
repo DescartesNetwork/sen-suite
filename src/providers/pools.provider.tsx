@@ -5,7 +5,7 @@ import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { BN } from 'bn.js'
 import { PublicKey, SystemProgram } from '@solana/web3.js'
-import { PoolData, PoolStates } from '@sentre/senswap/dist/lib/constant'
+import { PoolData, PoolStates } from '@sentre/senswap'
 import isEqual from 'react-fast-compare'
 
 import { env } from '@/configs/env'

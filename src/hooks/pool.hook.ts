@@ -5,7 +5,7 @@ import Senswap, {
   MintActionState,
   MintActionStates,
   PoolData,
-} from '@sentre/senswap/dist/lib'
+} from '@sentre/senswap'
 import { PublicKey, SystemProgram, Transaction } from '@solana/web3.js'
 import { WRAPPED_SOL_MINT } from '@metaplex-foundation/js'
 import BN from 'bn.js'
