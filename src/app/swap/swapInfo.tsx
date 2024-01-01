@@ -3,13 +3,21 @@ import { Fragment, useMemo } from 'react'
 import { BN } from 'bn.js'
 import classNames from 'classnames'
 
-import { MintSymbol } from '@/components/mint'
+import Image from 'next/image'
 import { ChevronRight, Diamond } from 'lucide-react'
+import { MintSymbol } from '@/components/mint'
+import Island from '@/components/island'
 
 import { undecimalize } from '@/helpers/decimals'
 import { numeric } from '@/helpers/utils'
 import { useSwap, useSwapStore } from '@/hooks/swap.hook'
 import { useMintByAddress } from '@/providers/mint.provider'
+
+import {
+  jupiterLightSvg,
+  jupiterDarkSvg,
+} from '@/static/images/welcome/partners'
+import { useTheme } from '@/providers/ui.provider'
 
 function PriceImpact() {
   const { bestRoute } = useSwap()
@@ -99,6 +107,22 @@ function Hop({ mintAddress }: { mintAddress: string }) {
   )
 }
 
+function PoweredByJupAf() {
+  const { theme } = useTheme()
+
+  const jup = useMemo(() => {
+    if (theme === 'light') return jupiterLightSvg
+    return jupiterDarkSvg
+  }, [theme])
+
+  return (
+    <span className="flex flex-row gap-2 justify-end items-center">
+      <p className="text-[9px] opacity-60">Powered by</p>
+      <Image className="w-12" src={jup} alt="jupiter" />
+    </span>
+  )
+}
+
 function Routes() {
   const { bestRoute } = useSwap()
 
@@ -114,14 +138,27 @@ function Routes() {
   }, [bestRoute?.routePlan])
 
   return (
-    <div className="flex flex-row gap-1 items-center">
-      <p className="flex-auto text-sm opacity-60">Routes</p>
-      {hops.map((mintAddress, i) => (
-        <Fragment key={i}>
-          {i !== 0 && <ChevronRight className="w-4 h-4" />}
-          <Hop mintAddress={mintAddress} />
-        </Fragment>
-      ))}
+    <div className="flex flex-row gap-1">
+      <p className="text-sm opacity-60">Routes</p>
+      <div className="flex-auto flex flex-col gap-2">
+        <span className="flex flex-row gap-1 justify-end items-center">
+          {hops.map((mintAddress, i) => (
+            <Fragment key={i}>
+              {i !== 0 && <ChevronRight className="w-4 h-4" />}
+              <Hop mintAddress={mintAddress} />
+            </Fragment>
+          ))}
+        </span>
+        <span
+          className={classNames('flex flex-row gap-2 justify-end', {
+            hidden: !hops.length,
+          })}
+        >
+          <Island>
+            <PoweredByJupAf />
+          </Island>
+        </span>
+      </div>
     </div>
   )
 }
