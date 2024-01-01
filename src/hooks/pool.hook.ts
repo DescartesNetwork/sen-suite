@@ -5,7 +5,7 @@ import Senswap, {
   MintActionState,
   MintActionStates,
   PoolData,
-} from '@sentre/senswap'
+} from '@sentre/senswap/dist/lib'
 import { PublicKey, SystemProgram, Transaction } from '@solana/web3.js'
 import { WRAPPED_SOL_MINT } from '@metaplex-foundation/js'
 import BN from 'bn.js'
@@ -170,7 +170,7 @@ export const useWrapSol = () => {
 
   const createWrapSolTxIfNeed = useCallback(
     async (mint: PublicKey, amount: BN) => {
-      if (mint.equals(WRAPPED_SOL_MINT) && amount.gt(wrapSolAmount)) {
+      if (mint.equals(WRAPPED_SOL_MINT)) {
         const txWrapSol = await createWrapSol(amount.sub(wrapSolAmount))
         return txWrapSol
       }
