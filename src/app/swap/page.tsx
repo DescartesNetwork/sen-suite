@@ -23,11 +23,12 @@ export default function Swap() {
   const { swap } = useSwap()
   const pushMessage = usePushMessage()
   const setBidAmount = useSwapStore(({ setBidAmount }) => setBidAmount)
+  const { swap: senSwap } = useSwap()
 
   const onSwap = useCallback(async () => {
     try {
       setLoading(true)
-      const txId = await swap()
+      const txId = await senSwap()
       pushMessage(
         'alert-success',
         'Swap successfully. Click here to view on explorer.',
@@ -41,7 +42,7 @@ export default function Swap() {
     } finally {
       setLoading(false)
     }
-  }, [swap, setBidAmount, pushMessage])
+  }, [senSwap, setBidAmount, pushMessage])
 
   return (
     <div className="grid grid-cols-12 gap-2 card rounded-3xl bg-base-100 shadow-xl p-4">

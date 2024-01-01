@@ -13,7 +13,10 @@ import BN from 'bn.js'
 import { useAnchorProvider } from '@/providers/wallet.provider'
 import { decimalize, undecimalize } from '@/helpers/decimals'
 import { usePoolByAddress, usePools } from '@/providers/pools.provider'
-import { useAllTokenAccounts } from '@/providers/tokenAccount.provider'
+import {
+  useAllTokenAccounts,
+  useTokenAccountByMintAddress,
+} from '@/providers/tokenAccount.provider'
 import {
   usePoolStatStore,
   usePoolVolumesIn7Days,
@@ -26,6 +29,7 @@ import { useTvl } from './tvl.hook'
 export const LPT_DECIMALS = 9
 export const GENERAL_DECIMALS = 9
 export const PRECISION = 1_000_000_000
+export const GENERAL_NORMALIZED_NUMBER = 10 ** 9
 const DEFAULT_FEE = new BN(2_500_000) // 0.25%
 const DEFAULT_TAX = new BN(500_000) // 0.05%
 
@@ -113,6 +117,10 @@ export const useWrapSol = () => {
   const onInitAccount = useInitPDAAccount()
   const { publicKey } = useWallet()
 
+  const { amount: wrapSolAmount } = useTokenAccountByMintAddress(
+    WRAPPED_SOL_MINT.toBase58(),
+  ) || { amount: new BN(0) }
+
   const createTxUnwrapSol = useCallback(
     async (owner: PublicKey) => {
       const ata = utils.token.associatedAddress({
@@ -160,7 +168,17 @@ export const useWrapSol = () => {
     [accounts, onInitAccount, publicKey, spl.methods],
   )
 
-  return { createTxUnwrapSol, createWrapSol }
+  const createWrapSolTxIfNeed = useCallback(
+    async (mint: PublicKey, amount: BN) => {
+      if (mint.equals(WRAPPED_SOL_MINT) && amount.gt(wrapSolAmount)) {
+        const txWrapSol = await createWrapSol(amount.sub(wrapSolAmount))
+        return txWrapSol
+      }
+    },
+    [createWrapSol, wrapSolAmount],
+  )
+
+  return { createTxUnwrapSol, createWrapSol, createWrapSolTxIfNeed }
 }
 
 /**
@@ -174,7 +192,7 @@ export const useDeposit = (poolAddress: string, amounts: string[]) => {
   const { publicKey } = useWallet()
   const accounts = useAllTokenAccounts()
   const pool = usePoolByAddress(poolAddress)
-  const mints = useMints(pool.mints.map((mint) => mint.toBase58()))
+  const mints = useMints(pool.mints.map((mint: PublicKey) => mint.toBase58()))
   const decimals = mints.map((mint) => mint?.decimals || 0)
   const { createWrapSol } = useWrapSol()
 
@@ -193,8 +211,8 @@ export const useDeposit = (poolAddress: string, amounts: string[]) => {
         amount: new BN(0),
       }
       // Wrap sol token if needed
-      if (mint.equals(WRAPPED_SOL_MINT) && dAmounts[i].gt(amount)) {
-        const txWrapSol = await createWrapSol(dAmounts[i].sub(amount))
+      if (mint.equals(WRAPPED_SOL_MINT) && dAmounts[Number(i)].gt(amount)) {
+        const txWrapSol = await createWrapSol(dAmounts[Number(i)].sub(amount))
         if (txWrapSol) transaction.add(txWrapSol)
       }
     }
@@ -309,7 +327,7 @@ export const useInitializeJoin = (poolAddress: string, amountIns: string[]) => {
   const { publicKey } = useWallet()
   const accounts = useAllTokenAccounts()
   const pool = usePoolByAddress(poolAddress)
-  const mints = useMints(pool.mints.map((mint) => mint.toBase58()))
+  const mints = useMints(pool.mints.map((mint: PublicKey) => mint.toBase58()))
   const decimals = mints.map((mint) => mint?.decimals || 0)
   const { createWrapSol } = useWrapSol()
 
@@ -394,7 +412,9 @@ export const useOracles = () => {
 
   const getMintInfo = useCallback(
     (poolData: PoolData, inputMint: PublicKey) => {
-      const mintIdx = poolData.mints.findIndex((mint) => mint.equals(inputMint))
+      const mintIdx = poolData.mints.findIndex((mint: PublicKey) =>
+        mint.equals(inputMint),
+      )
 
       if (mintIdx === -1) throw new Error('Can not find mint in pool')
 
@@ -511,11 +531,99 @@ export const useOracles = () => {
     [calcNormalizedWeight, spotPriceAfterSwapTokenInForExactLPTOut],
   )
 
+  const calcOutGivenInSwap = useCallback(
+    (
+      amountIn: BN,
+      balanceOut: BN,
+      balanceIn: BN,
+      weightOut: number,
+      weightIn: number,
+      swapFee: BN,
+    ): BN => {
+      const numBalanceOut = Number(balanceOut)
+      const numBalanceIn = Number(balanceIn)
+      const numAmountIn = Number(amountIn)
+      const numSwapFee = Number(swapFee) / GENERAL_NORMALIZED_NUMBER
+      const ratioBeforeAfterBalance =
+        numBalanceIn / (numBalanceIn + numAmountIn)
+
+      const ratioInOutWeight = weightIn / weightOut
+      return new BN(
+        numBalanceOut *
+          (1 - ratioBeforeAfterBalance ** ratioInOutWeight) *
+          (1 - numSwapFee),
+      )
+    },
+    [],
+  )
+
+  function calcSpotPriceExactInSwap(params: {
+    amount: BN
+    balanceIn: BN
+    balanceOut: BN
+    weightIn: number
+    weightOut: number
+    decimalIn: number
+    decimalOut: number
+    swapFee: BN
+  }) {
+    const {
+      balanceIn,
+      decimalIn,
+      balanceOut,
+      decimalOut,
+      weightIn,
+      weightOut,
+      swapFee,
+      amount,
+    } = params
+    const Bi = Number(undecimalize(balanceIn, decimalIn))
+    const Bo = Number(undecimalize(balanceOut, decimalOut))
+    const wi = weightIn
+    const wo = weightOut
+    const Ai = Number(undecimalize(amount, decimalIn))
+    const f = Number(undecimalize(swapFee, GENERAL_DECIMALS))
+    return -(
+      (Bi * wo) /
+      (Bo * (-1 + f) * (Bi / (Ai + Bi - Ai * f)) ** ((wi + wo) / wo) * wi)
+    )
+  }
+
+  const calcPriceImpactSwap = useCallback(
+    (
+      bidAmount: BN,
+      params: {
+        balanceIn: BN
+        balanceOut: BN
+        weightIn: number
+        weightOut: number
+        decimalIn: number
+        decimalOut: number
+        swapFee: BN
+      },
+    ) => {
+      const currentSpotPrice = calcSpotPriceExactInSwap({
+        ...params,
+        amount: new BN(0),
+      })
+      const spotPriceAfterSwap = calcSpotPriceExactInSwap({
+        ...params,
+        amount: bidAmount,
+      })
+
+      if (spotPriceAfterSwap < currentSpotPrice) return 0
+      const impactPrice = 1 - currentSpotPrice / spotPriceAfterSwap
+      return impactPrice
+    },
+    [],
+  )
   return {
     calcNormalizedWeight,
     getMintInfo,
     calcLptOut,
     calcLpForTokensZeroPriceImpact,
+    calcOutGivenInSwap,
+    calcPriceImpactSwap,
   }
 }
 
