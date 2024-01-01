@@ -1,4 +1,3 @@
-'use client'
 import { useCallback, useMemo } from 'react'
 import useSWR from 'swr'
 import { splTokenProgram } from '@coral-xyz/spl-token'
