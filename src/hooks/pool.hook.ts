@@ -534,25 +534,20 @@ export const useOracles = () => {
   const calcOutGivenInSwap = useCallback(
     (
       amountIn: BN,
-      balanceOut: BN,
-      balanceIn: BN,
-      weightOut: number,
-      weightIn: number,
+      askReserve: BN,
+      bidReserve: BN,
+      askWeight: number,
+      bidWeight: number,
       swapFee: BN,
     ): BN => {
-      const numBalanceOut = Number(balanceOut)
-      const numBalanceIn = Number(balanceIn)
-      const numAmountIn = Number(amountIn)
       const numSwapFee = Number(swapFee) / GENERAL_NORMALIZED_NUMBER
-      const ratioBeforeAfterBalance =
-        numBalanceIn / (numBalanceIn + numAmountIn)
-
-      const ratioInOutWeight = weightIn / weightOut
-      return new BN(
-        numBalanceOut *
-          (1 - ratioBeforeAfterBalance ** ratioInOutWeight) *
-          (1 - numSwapFee),
-      )
+      const numAmountIn = (1 - numSwapFee) * Number(amountIn)
+      const numBalanceOut = Number(askReserve)
+      const numBalanceIn = Number(bidReserve)
+      const balanceRatio = numBalanceIn / (numAmountIn + numBalanceIn)
+      const weightRatio = bidWeight / askWeight
+      const askAmount = (1 - balanceRatio ** weightRatio) * numBalanceOut
+      return new BN(askAmount)
     },
     [],
   )

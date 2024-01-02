@@ -10,7 +10,7 @@ import Island from '@/components/island'
 
 import { undecimalize } from '@/helpers/decimals'
 import { numeric } from '@/helpers/utils'
-import { useSwap, useSwapStore } from '@/hooks/swap.hook'
+import { Platform, useJupSwap, useSwap, useSwapStore } from '@/hooks/swap.hook'
 import { useMintByAddress } from '@/providers/mint.provider'
 
 import {
@@ -20,13 +20,13 @@ import {
 import { useTheme } from '@/providers/ui.provider'
 
 function PriceImpact() {
-  const { bestRoute } = useSwap()
+  const { routes } = useSwap()
 
   return (
     <div className="flex flex-row gap-2 items-baseline">
       <p className="flex-auto text-sm opacity-60">Price Impact</p>
       <p className="text-sm font-bold">
-        {numeric(bestRoute?.priceImpactPct || 0).format('0.[000000]')}%
+        {numeric(routes?.priceImpactPct || 0).format('0.[000000]')}%
       </p>
     </div>
   )
@@ -34,7 +34,7 @@ function PriceImpact() {
 
 function Price() {
   const { bidMintAddress, askMintAddress } = useSwapStore()
-  const { bestRoute } = useSwap()
+  const { bestRoute } = useJupSwap()
 
   const { decimals: bidDecimals } = useMintByAddress(bidMintAddress) || {
     decimals: 0,
@@ -124,18 +124,7 @@ function PoweredByJupAf() {
 }
 
 function Routes() {
-  const { bestRoute } = useSwap()
-
-  const hops = useMemo(() => {
-    if (!bestRoute?.routePlan) return []
-    const hops: string[] = []
-    bestRoute?.routePlan.forEach(({ swapInfo: { inputMint, outputMint } }) => {
-      hops.pop()
-      hops.push(inputMint)
-      hops.push(outputMint)
-    })
-    return hops
-  }, [bestRoute?.routePlan])
+  const { hops, platform, fetching } = useSwap()
 
   return (
     <div className="flex flex-row gap-1">
@@ -149,15 +138,17 @@ function Routes() {
             </Fragment>
           ))}
         </span>
-        <span
-          className={classNames('flex flex-row gap-2 justify-end', {
-            hidden: !hops.length,
-          })}
-        >
-          <Island>
-            <PoweredByJupAf />
-          </Island>
-        </span>
+        {platform === Platform.Jup && !fetching && (
+          <span
+            className={classNames('flex flex-row gap-2 justify-end', {
+              hidden: !hops.length,
+            })}
+          >
+            <Island>
+              <PoweredByJupAf />
+            </Island>
+          </span>
+        )}
       </div>
     </div>
   )

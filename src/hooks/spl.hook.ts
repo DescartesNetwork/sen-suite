@@ -8,13 +8,12 @@ import {
   Transaction,
   TransactionInstruction,
 } from '@solana/web3.js'
-import { Address, AnchorProvider, utils, web3 } from '@coral-xyz/anchor'
-import { useWallet } from '@solana/wallet-adapter-react'
+import { Address, utils, web3 } from '@coral-xyz/anchor'
+import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 
 import { isAddress } from '@/helpers/utils'
 import { useAnchorProvider } from '@/providers/wallet.provider'
 import { toPublicKey } from '@metaplex-foundation/js'
-import { getMultipleAccounts } from '@coral-xyz/anchor/dist/cjs/utils/rpc'
 
 export const TOKEN_20202_PROGRAM_ID = new web3.PublicKey(
   'TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb',
@@ -135,33 +134,31 @@ export const useInitPDAAccount = () => {
 
 export const useInitMultiTokenAccount = () => {
   const initPDAAccount = useInitPDAAccount()
+  const { connection } = useConnection()
   const initTxCreateMultiTokenAccount = useCallback(
-    async (
-      provider: AnchorProvider,
-      mints: Address[],
-      owner = provider.publicKey,
-    ) => {
-      const ownerPublicKey = toPublicKey(owner)
+    async (mints: Address[], owner: PublicKey) => {
       const transactions: web3.Transaction[] = []
       const tokenAccounts = []
       for (const mint of mints) {
         const mintPublicKey = toPublicKey(mint)
         const associatedTokenAccount = await utils.token.associatedAddress({
           mint: mintPublicKey,
-          owner: ownerPublicKey,
+          owner,
         })
         tokenAccounts.push(associatedTokenAccount)
       }
-      const data = await getMultipleAccounts(provider.connection, tokenAccounts)
-      data.forEach(async (value, index) => {
-        if (value !== null) return
-        const tx = await initPDAAccount(toPublicKey(mints[index]), owner)
-        if (tx) transactions.push(tx)
-      })
+      const accounts = await connection.getMultipleAccountsInfo(tokenAccounts)
+      await Promise.all(
+        accounts.map(async (value, index) => {
+          if (value !== null) return
+          const tx = await initPDAAccount(toPublicKey(mints[index]), owner)
+          if (tx) transactions.push(tx)
+        }),
+      )
 
       return transactions
     },
-    [initPDAAccount],
+    [connection, initPDAAccount],
   )
 
   return initTxCreateMultiTokenAccount
