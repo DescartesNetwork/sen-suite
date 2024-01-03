@@ -1,6 +1,5 @@
 'use client'
 import { Fragment, useMemo } from 'react'
-import { BN } from 'bn.js'
 import classNames from 'classnames'
 
 import Image from 'next/image'
@@ -8,9 +7,8 @@ import { ChevronRight, Diamond } from 'lucide-react'
 import { MintSymbol } from '@/components/mint'
 import Island from '@/components/island'
 
-import { undecimalize } from '@/helpers/decimals'
 import { numeric } from '@/helpers/utils'
-import { useSwap, useSwapStore } from '@/hooks/swap.hook'
+import { Platform, useSwap, useSwapStore } from '@/hooks/swap.hook'
 import { useMintByAddress } from '@/providers/mint.provider'
 
 import {
@@ -20,43 +18,28 @@ import {
 import { useTheme } from '@/providers/ui.provider'
 
 function PriceImpact() {
-  const { bestRoute } = useSwap()
+  const { routes } = useSwap()
 
   return (
     <div className="flex flex-row gap-2 items-baseline">
       <p className="flex-auto text-sm opacity-60">Price Impact</p>
       <p className="text-sm font-bold">
-        {numeric(bestRoute?.priceImpactPct || 0).format('0.[000000]')}%
+        {numeric(routes?.priceImpactPct || 0).format('0.[000000]')}%
       </p>
     </div>
   )
 }
 
 function Price() {
-  const { bidMintAddress, askMintAddress } = useSwapStore()
-  const { bestRoute } = useSwap()
-
-  const { decimals: bidDecimals } = useMintByAddress(bidMintAddress) || {
-    decimals: 0,
-  }
-  const bidAmount = useMemo(
-    () => Number(undecimalize(new BN(bestRoute?.inAmount || '0'), bidDecimals)),
-    [bestRoute?.inAmount, bidDecimals],
-  )
-  const { decimals: askDecimals } = useMintByAddress(askMintAddress) || {
-    decimals: 0,
-  }
-  const askAmount = useMemo(
-    () =>
-      Number(undecimalize(new BN(bestRoute?.outAmount || '0'), askDecimals)),
-    [bestRoute?.outAmount, askDecimals],
-  )
-
+  const { bidMintAddress, askMintAddress, bidAmount, askAmount } =
+    useSwapStore()
   return (
     <div className="flex flex-row gap-2 items-baseline">
       <p className="flex-auto text-sm opacity-60">Price</p>
       <p className="text-sm font-bold">
-        {numeric(bidAmount / askAmount).format('0,0.[000000]')}
+        {numeric(Number(bidAmount || 0) / Number(askAmount || 1)).format(
+          '0,0.[000000]',
+        )}
       </p>
       <p className="text-sm font-bold opacity-60">
         <MintSymbol mintAddress={bidMintAddress} />
@@ -124,18 +107,7 @@ function PoweredByJupAf() {
 }
 
 function Routes() {
-  const { bestRoute } = useSwap()
-
-  const hops = useMemo(() => {
-    if (!bestRoute?.routePlan) return []
-    const hops: string[] = []
-    bestRoute?.routePlan.forEach(({ swapInfo: { inputMint, outputMint } }) => {
-      hops.pop()
-      hops.push(inputMint)
-      hops.push(outputMint)
-    })
-    return hops
-  }, [bestRoute?.routePlan])
+  const { hops, platform, fetching } = useSwap()
 
   return (
     <div className="flex flex-row gap-1">
@@ -149,15 +121,17 @@ function Routes() {
             </Fragment>
           ))}
         </span>
-        <span
-          className={classNames('flex flex-row gap-2 justify-end', {
-            hidden: !hops.length,
-          })}
-        >
-          <Island>
-            <PoweredByJupAf />
-          </Island>
-        </span>
+        {platform === Platform.Jup && !fetching && (
+          <span
+            className={classNames('flex flex-row gap-2 justify-end', {
+              hidden: !hops.length,
+            })}
+          >
+            <Island>
+              <PoweredByJupAf />
+            </Island>
+          </span>
+        )}
       </div>
     </div>
   )

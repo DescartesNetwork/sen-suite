@@ -4,7 +4,7 @@ import { produce } from 'immer'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { BN } from 'bn.js'
-import { SystemProgram } from '@solana/web3.js'
+import { PublicKey, SystemProgram } from '@solana/web3.js'
 import { PoolData, PoolStates } from '@sentre/senswap'
 import isEqual from 'react-fast-compare'
 
@@ -70,7 +70,13 @@ export function PoolProvider({ children }: { children: ReactNode }) {
     const { connection } = senswap.program.provider
     const id = connection.onProgramAccountChange(
       senswap.program.account.pool.programId,
-      ({ accountId, accountInfo: { data } }) => {
+      ({
+        accountId,
+        accountInfo: { data },
+      }: {
+        accountId: PublicKey
+        accountInfo: { data: Buffer }
+      }) => {
         const accountData = senswap.program.coder.accounts.decode('pool', data)
         return upsertPool(accountId.toBase58(), accountData)
       },

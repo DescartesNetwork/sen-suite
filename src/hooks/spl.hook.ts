@@ -8,8 +8,9 @@ import {
   Transaction,
   TransactionInstruction,
 } from '@solana/web3.js'
-import { utils, web3 } from '@coral-xyz/anchor'
-import { useWallet } from '@solana/wallet-adapter-react'
+import { Address, utils, web3 } from '@coral-xyz/anchor'
+import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { toPublicKey } from '@metaplex-foundation/js'
 
 import { isAddress } from '@/helpers/utils'
 import { useAnchorProvider } from '@/providers/wallet.provider'
@@ -129,4 +130,36 @@ export const useInitPDAAccount = () => {
   )
 
   return initPDAAccount
+}
+
+export const useInitMultiTokenAccount = () => {
+  const initPDAAccount = useInitPDAAccount()
+  const { connection } = useConnection()
+  const initTxCreateMultiTokenAccount = useCallback(
+    async (mints: Address[], owner: PublicKey) => {
+      const transactions: web3.Transaction[] = []
+      const tokenAccounts = []
+      for (const mint of mints) {
+        const mintPublicKey = toPublicKey(mint)
+        const associatedTokenAccount = await utils.token.associatedAddress({
+          mint: mintPublicKey,
+          owner,
+        })
+        tokenAccounts.push(associatedTokenAccount)
+      }
+      const accounts = await connection.getMultipleAccountsInfo(tokenAccounts)
+      await Promise.all(
+        accounts.map(async (value, index) => {
+          if (value !== null) return
+          const tx = await initPDAAccount(toPublicKey(mints[index]), owner)
+          if (tx) transactions.push(tx)
+        }),
+      )
+
+      return transactions
+    },
+    [connection, initPDAAccount],
+  )
+
+  return initTxCreateMultiTokenAccount
 }

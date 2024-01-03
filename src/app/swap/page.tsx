@@ -7,20 +7,15 @@ import Bid from './bid'
 import SwapSettings from './swapSettings'
 import SwapInfo from './swapInfo'
 
-import {
-  useSwap,
-  useSwapStore,
-  useSwitch,
-  useUnsafeSwap,
-} from '@/hooks/swap.hook'
+import { useSwap, useSwapStore, useSwitch } from '@/hooks/swap.hook'
 import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
 
 export default function Swap() {
   const [loading, setLoading] = useState(false)
   const onSwitch = useSwitch()
-  const { bestRoute, fetching } = useUnsafeSwap()
-  const { swap } = useSwap()
+  const { routes, fetching, swap } = useSwap()
+
   const pushMessage = usePushMessage()
   const setBidAmount = useSwapStore(({ setBidAmount }) => setBidAmount)
 
@@ -41,7 +36,7 @@ export default function Swap() {
     } finally {
       setLoading(false)
     }
-  }, [swap, setBidAmount, pushMessage])
+  }, [swap, pushMessage, setBidAmount])
 
   return (
     <div className="grid grid-cols-12 gap-2 card rounded-3xl bg-base-100 shadow-xl p-4">
@@ -69,12 +64,13 @@ export default function Swap() {
       <div className="col-span-12">
         <button
           className="btn btn-primary w-full rounded-full"
-          disabled={loading || fetching || !bestRoute}
+          disabled={loading || fetching || !routes}
           onClick={onSwap}
         >
           Swap
-          {loading ||
-            (fetching && <span className="loading loading-spinner" />)}
+          {(loading || fetching) && (
+            <span className="loading loading-spinner" />
+          )}
         </button>
       </div>
     </div>
