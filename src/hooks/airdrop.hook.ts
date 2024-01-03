@@ -39,11 +39,7 @@ export const useUtility = () => {
   const utility = useMemo(
     () =>
       wallet
-        ? new Utility(
-            wallet,
-            `https://rpc.ankr.com/solana/${solConfig.ankr}`,
-            solConfig.utilityProgram,
-          )
+        ? new Utility(wallet, solConfig.rpc, solConfig.utilityProgram)
         : undefined,
     [wallet],
   )

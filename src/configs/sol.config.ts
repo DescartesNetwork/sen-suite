@@ -7,9 +7,9 @@ import { Env, env } from './env'
  * Contructor
  */
 type Conf = {
+  rpc: string
   statRpc: string
   bundlStorage: string
-  ankr: string
   network: WalletAdapterNetwork
   senswapAddress: string
   senFarmingProgram: string
@@ -30,7 +30,7 @@ const conf: Record<Env, Conf> = {
     // senFarmingProgram: '6LaxnmWdYUAJvBJ4a1R8rrsvCRtaY7b43zKiNAU2k3Nx',
     // utilityProgram: 'AKTU61s8NJ8zJATQiceREdhXbedRnKrd1BVgnCuxmD2F',
     // bundlStorage: 'https://devnet.bundlr.network',
-    ankr: '6fd209c7de745965c5b2092cb14245501fb6d4bd12a11db785dda62ab94cb2a4',
+    rpc: 'https://quick-wiser-county.solana-mainnet.quiknode.pro/392525a370a3e0cea3d07c114fd711d792368b30/',
     network: WalletAdapterNetwork.Mainnet,
     senswapAddress: 'D3BBjqUdCYuP18fNvvMbPAZ8DpcRi4io2EsYHQawJDag',
     senFarmingProgram: 'E6Vc9wipgm8fMXHEYwgN7gYdDbyvpPBUiTNy67zPKuF4',
@@ -46,7 +46,7 @@ const conf: Record<Env, Conf> = {
    * Production configurations
    */
   production: {
-    ankr: '6fd209c7de745965c5b2092cb14245501fb6d4bd12a11db785dda62ab94cb2a4',
+    rpc: 'https://solitary-autumn-water.solana-mainnet.quiknode.pro/05b03a0cfeb8a5ec38f4c55950eb9b9bad7c8b58/',
     network: WalletAdapterNetwork.Mainnet,
     senswapAddress: 'D3BBjqUdCYuP18fNvvMbPAZ8DpcRi4io2EsYHQawJDag',
     senFarmingProgram: 'E6Vc9wipgm8fMXHEYwgN7gYdDbyvpPBUiTNy67zPKuF4',
