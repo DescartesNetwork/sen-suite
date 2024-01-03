@@ -9,8 +9,7 @@ import { Env, env } from './env'
 type Conf = {
   statRpc: string
   bundlStorage: string
-  rpc: string
-  ws: string
+  ankr: string
   network: WalletAdapterNetwork
   senswapAddress: string
   senFarmingProgram: string
@@ -31,8 +30,7 @@ const conf: Record<Env, Conf> = {
     // senFarmingProgram: '6LaxnmWdYUAJvBJ4a1R8rrsvCRtaY7b43zKiNAU2k3Nx',
     // utilityProgram: 'AKTU61s8NJ8zJATQiceREdhXbedRnKrd1BVgnCuxmD2F',
     // bundlStorage: 'https://devnet.bundlr.network',
-    rpc: 'https://rpc.ankr.com/solana/6fd209c7de745965c5b2092cb14245501fb6d4bd12a11db785dda62ab94cb2a4',
-    ws: 'wss://rpc.ankr.com/solana/ws/6fd209c7de745965c5b2092cb14245501fb6d4bd12a11db785dda62ab94cb2a4',
+    ankr: '6fd209c7de745965c5b2092cb14245501fb6d4bd12a11db785dda62ab94cb2a4',
     network: WalletAdapterNetwork.Mainnet,
     senswapAddress: 'D3BBjqUdCYuP18fNvvMbPAZ8DpcRi4io2EsYHQawJDag',
     senFarmingProgram: 'E6Vc9wipgm8fMXHEYwgN7gYdDbyvpPBUiTNy67zPKuF4',
@@ -48,8 +46,7 @@ const conf: Record<Env, Conf> = {
    * Production configurations
    */
   production: {
-    rpc: 'https://rpc.ankr.com/solana/6fd209c7de745965c5b2092cb14245501fb6d4bd12a11db785dda62ab94cb2a4',
-    ws: 'wss://rpc.ankr.com/solana/ws/6fd209c7de745965c5b2092cb14245501fb6d4bd12a11db785dda62ab94cb2a4',
+    ankr: '6fd209c7de745965c5b2092cb14245501fb6d4bd12a11db785dda62ab94cb2a4',
     network: WalletAdapterNetwork.Mainnet,
     senswapAddress: 'D3BBjqUdCYuP18fNvvMbPAZ8DpcRi4io2EsYHQawJDag',
     senFarmingProgram: 'E6Vc9wipgm8fMXHEYwgN7gYdDbyvpPBUiTNy67zPKuF4',
