@@ -211,8 +211,8 @@ export const useDeposit = (poolAddress: string, amounts: string[]) => {
         amount: new BN(0),
       }
       // Wrap sol token if needed
-      if (mint.equals(WRAPPED_SOL_MINT) && dAmounts[Number(i)].gt(amount)) {
-        const txWrapSol = await createWrapSol(dAmounts[Number(i)].sub(amount))
+      if (mint.equals(WRAPPED_SOL_MINT) && dAmounts[i].gt(amount)) {
+        const txWrapSol = await createWrapSol(dAmounts[i].sub(amount))
         if (txWrapSol) transaction.add(txWrapSol)
       }
     }

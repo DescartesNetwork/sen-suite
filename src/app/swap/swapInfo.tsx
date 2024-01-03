@@ -1,6 +1,5 @@
 'use client'
 import { Fragment, useMemo } from 'react'
-import { BN } from 'bn.js'
 import classNames from 'classnames'
 
 import Image from 'next/image'
@@ -8,9 +7,8 @@ import { ChevronRight, Diamond } from 'lucide-react'
 import { MintSymbol } from '@/components/mint'
 import Island from '@/components/island'
 
-import { undecimalize } from '@/helpers/decimals'
 import { numeric } from '@/helpers/utils'
-import { Platform, useJupSwap, useSwap, useSwapStore } from '@/hooks/swap.hook'
+import { Platform, useSwap, useSwapStore } from '@/hooks/swap.hook'
 import { useMintByAddress } from '@/providers/mint.provider'
 
 import {
@@ -33,30 +31,15 @@ function PriceImpact() {
 }
 
 function Price() {
-  const { bidMintAddress, askMintAddress } = useSwapStore()
-  const { bestRoute } = useJupSwap()
-
-  const { decimals: bidDecimals } = useMintByAddress(bidMintAddress) || {
-    decimals: 0,
-  }
-  const bidAmount = useMemo(
-    () => Number(undecimalize(new BN(bestRoute?.inAmount || '0'), bidDecimals)),
-    [bestRoute?.inAmount, bidDecimals],
-  )
-  const { decimals: askDecimals } = useMintByAddress(askMintAddress) || {
-    decimals: 0,
-  }
-  const askAmount = useMemo(
-    () =>
-      Number(undecimalize(new BN(bestRoute?.outAmount || '0'), askDecimals)),
-    [bestRoute?.outAmount, askDecimals],
-  )
-
+  const { bidMintAddress, askMintAddress, bidAmount, askAmount } =
+    useSwapStore()
   return (
     <div className="flex flex-row gap-2 items-baseline">
       <p className="flex-auto text-sm opacity-60">Price</p>
       <p className="text-sm font-bold">
-        {numeric(bidAmount / askAmount).format('0,0.[000000]')}
+        {numeric(Number(bidAmount || 0) / Number(askAmount || 1)).format(
+          '0,0.[000000]',
+        )}
       </p>
       <p className="text-sm font-bold opacity-60">
         <MintSymbol mintAddress={bidMintAddress} />

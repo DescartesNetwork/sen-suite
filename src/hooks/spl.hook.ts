@@ -10,10 +10,10 @@ import {
 } from '@solana/web3.js'
 import { Address, utils, web3 } from '@coral-xyz/anchor'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { toPublicKey } from '@metaplex-foundation/js'
 
 import { isAddress } from '@/helpers/utils'
 import { useAnchorProvider } from '@/providers/wallet.provider'
-import { toPublicKey } from '@metaplex-foundation/js'
 
 export const TOKEN_20202_PROGRAM_ID = new web3.PublicKey(
   'TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb',

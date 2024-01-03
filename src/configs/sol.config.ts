@@ -46,7 +46,7 @@ const conf: Record<Env, Conf> = {
    * Production configurations
    */
   production: {
-    rpc: 'https://solitary-autumn-water.solana-mainnet.quiknode.pro/05b03a0cfeb8a5ec38f4c55950eb9b9bad7c8b58/',
+    rpc: 'https://rpc.ankr.com/solana/6fd209c7de745965c5b2092cb14245501fb6d4bd12a11db785dda62ab94cb2a4',
     network: WalletAdapterNetwork.Mainnet,
     senswapAddress: 'D3BBjqUdCYuP18fNvvMbPAZ8DpcRi4io2EsYHQawJDag',
     senFarmingProgram: 'E6Vc9wipgm8fMXHEYwgN7gYdDbyvpPBUiTNy67zPKuF4',
