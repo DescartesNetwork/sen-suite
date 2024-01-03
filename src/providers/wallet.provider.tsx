@@ -90,8 +90,8 @@ function LamportsProvider({ children }: { children: ReactNode }) {
 export default function WalletProvider({ children }: { children: ReactNode }) {
   return (
     <ConnectionProvider
-      endpoint={solConfig.rpc}
-      config={{ wsEndpoint: solConfig.ws }}
+      endpoint={`https://rpc.ankr.com/solana/${solConfig.ankr}`}
+      config={{ wsEndpoint: `wss://rpc.ankr.com/solana/ws/${solConfig.ankr}` }}
     >
       <SolanaWalletProvider wallets={SUPPORTED_WALLETS} autoConnect>
         <WalletModalProvider>

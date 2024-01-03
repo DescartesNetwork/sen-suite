@@ -14,6 +14,8 @@ import { walletAdapterIdentity as umiWalletAdapter } from '@metaplex-foundation/
 import { isAddress } from '@/helpers/utils'
 import solConfig from '@/configs/sol.config'
 
+const RPC = `https://rpc.ankr.com/solana/${solConfig.ankr}`
+
 /**
  * Create an MPL instance
  * @returns MPL instance
@@ -28,7 +30,7 @@ export const useMpl = () => {
       .use(
         bundlrStorage({
           address: solConfig.bundlStorage,
-          providerUrl: solConfig.rpc,
+          providerUrl: RPC,
           timeout: 6000,
         }),
       )
@@ -43,8 +45,8 @@ export const useMpl = () => {
 export const useUmi = () => {
   const { wallet } = useWallet()
   const umi = useMemo(() => {
-    if (!wallet) return createUmi(solConfig.rpc).use(mplTokenMetadata())
-    return createUmi(solConfig.rpc)
+    if (!wallet) return createUmi(RPC).use(mplTokenMetadata())
+    return createUmi(RPC)
       .use(mplTokenMetadata())
       .use(umiWalletAdapter(wallet.adapter))
   }, [wallet])

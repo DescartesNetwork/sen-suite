@@ -1,7 +1,9 @@
 'use client'
 import { useCallback, useMemo, useState } from 'react'
 import { useAsync } from 'react-use'
-
+import { useConnection } from '@solana/wallet-adapter-react'
+import { utils } from '@coral-xyz/anchor'
+import { PublicKey } from '@solana/web3.js'
 import { BN } from 'bn.js'
 import { MerkleDistributor } from '@sentre/utility'
 import dayjs from 'dayjs'
@@ -21,9 +23,6 @@ import {
 } from '@/hooks/airdrop.hook'
 import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
-import { utils } from '@coral-xyz/anchor'
-import { Connection, PublicKey } from '@solana/web3.js'
-import solConfig from '@/configs/sol.config'
 
 const DEFAULT_AMOUNT = 4
 
@@ -88,6 +87,7 @@ const CreatedDate = ({ address }: { address: string }) => {
   const distributors = useDistributors()
   const metadata = useMerkleMetadata(address)
   const { mint } = distributors[address]
+  const { connection } = useConnection()
 
   const fetchFromSolscan = useCallback(async () => {
     if (!utility) return 0
@@ -107,10 +107,12 @@ const CreatedDate = ({ address }: { address: string }) => {
     let createdAt = metadata.createAt
     if (createdAt) return createdAt
 
-    const conn = new Connection(solConfig.rpc)
-    const trans = await conn.getSignaturesForAddress(new PublicKey(address), {
-      limit: 1000,
-    })
+    const trans = await connection.getSignaturesForAddress(
+      new PublicKey(address),
+      {
+        limit: 1000,
+      },
+    )
     if (trans.length) createdAt = trans.pop()?.blockTime || 0
     else {
       const backupTrans = await fetchFromSolscan()
@@ -118,7 +120,7 @@ const CreatedDate = ({ address }: { address: string }) => {
     }
 
     return createdAt
-  }, [metadata])
+  }, [metadata, connection])
 
   return (
     <span>
