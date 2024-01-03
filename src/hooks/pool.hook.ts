@@ -547,7 +547,7 @@ export const useOracles = () => {
       const balanceRatio = numBalanceIn / (numAmountIn + numBalanceIn)
       const weightRatio = bidWeight / askWeight
       const askAmount = (1 - balanceRatio ** weightRatio) * numBalanceOut
-      return new BN(askAmount)
+      return decimalize(askAmount.toString(), 0)
     },
     [],
   )

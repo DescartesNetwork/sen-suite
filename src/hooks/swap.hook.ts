@@ -23,12 +23,10 @@ export enum Platform {
   SenSwap = 'SenSwap',
   Jup = 'Jupiter',
 }
-
 export enum JupiterSwapMode {
   ExactIn = 'ExactIn',
   ExactOut = 'ExactOut',
 }
-
 export type JupiterFee = {
   amount: string
   mint: string
@@ -60,7 +58,7 @@ export type JupiterRouteInfo = {
   }>
   timeTaken: number
 }
-export type SwapInfo = {
+export type RouteInfo = {
   pool: string
   bidMint: string
   bidAmount: BN
@@ -68,14 +66,20 @@ export type SwapInfo = {
   askAmount: BN
   priceImpactPct: number
 }
-type RouteInfo = {
+export type Route = {
   pool: Address
   bidMint: string
   askMint: string
 }
-
-export type MintRoutes = {
+export type SenMintRoutes = {
   [mintAddress: string]: { [mintAddress: string]: Address[] }
+}
+
+export type SenSwapRoute = {
+  route: RouteInfo[]
+  bidAmount: string
+  askAmount: string
+  priceImpactPct: number
 }
 
 export type SwapStore = {
@@ -89,8 +93,10 @@ export type SwapStore = {
   setAskAmount: (askAmount: string) => void
   slippage: number
   setSlippage: (slippage: number) => void
-  bestRoute: JupiterRouteInfo | undefined
-  setBestRoute: (bestRoute: JupiterRouteInfo | undefined) => void
+  bestJupRoute: JupiterRouteInfo | undefined
+  setBestJubRoute: (bestRoute: JupiterRouteInfo | undefined) => void
+  bestSenRoute: SenSwapRoute | undefined
+  setBestSenRoute: (bestSenRoute: SenSwapRoute | undefined) => void
 }
 
 /**
@@ -115,9 +121,12 @@ export const useSwapStore = create<SwapStore>()(
       slippage: 0.01,
       setSlippage: (slippage: number) =>
         set({ slippage }, false, 'setSlippage'),
-      bestRoute: undefined,
-      setBestRoute: (bestRoute: JupiterRouteInfo | undefined) =>
-        set({ bestRoute }, false, 'setRoutes'),
+      bestJupRoute: undefined,
+      setBestJubRoute: (bestJupRoute: JupiterRouteInfo | undefined) =>
+        set({ bestJupRoute }, false, 'setRoutes'),
+      bestSenRoute: undefined,
+      setBestSenRoute: (bestSenRoute: SenSwapRoute | undefined) =>
+        set({ bestSenRoute }, false, 'setBestSenRoute'),
     }),
     {
       name: 'swap',
@@ -169,7 +178,7 @@ export const useUnsafeSwap = () => {
     decimals: 0,
   }
 
-  const { value: bestRoute, loading } = useAsync(async () => {
+  const { value: bestJupRoute, loading } = useAsync(async () => {
     if (!isAddress(bidMintAddress) || !isAddress(askMintAddress) || !bidAmount)
       return undefined
     const amount = decimalize(bidAmount, bidDecimals).toString()
@@ -181,13 +190,13 @@ export const useUnsafeSwap = () => {
     return data
   }, [bidMintAddress, bidAmount, askMintAddress, slippage, bidDecimals])
 
-  return { bestRoute, fetching: loading }
+  return { bestJupRoute, fetching: loading }
 }
 
 export const useJupSwap = () => {
   const { publicKey, signTransaction } = useWallet()
   const { connection } = useConnection()
-  const bestRoute = useSwapStore(({ bestRoute }) => bestRoute)
+  const bestRoute = useSwapStore(({ bestJupRoute: bestRoute }) => bestRoute)
 
   const swap = useCallback(async () => {
     if (!publicKey || !signTransaction || !connection)
@@ -241,7 +250,7 @@ export const useAllRoutes = () => {
   }, [pools, poolsTvl])
 
   const allRoutes = useMemo(() => {
-    const mintRoutes: MintRoutes = {}
+    const mintRoutes: SenMintRoutes = {}
     for (const address in validPools) {
       const { mints, actions } = validPools[address]
       const mintAddresses = mints.map((mint) => mint.toBase58())
@@ -273,12 +282,12 @@ export const useAllRoutes = () => {
  */
 
 export const useRoutes = () => {
-  const [availRoutes, setAvailRoutes] = useState<RouteInfo[][]>([])
+  const [availRoutes, setAvailRoutes] = useState<Route[][]>([])
   const allRoutes = useAllRoutes()
   const bidMintAddress = useSwapStore(({ bidMintAddress }) => bidMintAddress)
   const askMintAddress = useSwapStore(({ askMintAddress }) => askMintAddress)
 
-  const isValidRoute = (route: RouteInfo[]) => {
+  const isValidRoute = (route: Route[]) => {
     const pools = new Set()
     const mintPairs = new Set()
 
@@ -304,7 +313,7 @@ export const useRoutes = () => {
       if (!routesFromBid) return []
 
       const pools = routesFromBid[askMint] || []
-      const routes: Array<RouteInfo[]> = pools.map((pool) => {
+      const routes: Array<Route[]> = pools.map((pool) => {
         return [{ pool, bidMint, askMint }]
       })
 
@@ -340,8 +349,8 @@ export const useRoutes = () => {
 /** Get best route with bidAddress and askAddress
  *  @returns best route
  */
-export const useBestRoutes = () => {
-  const [routesInfo, setRoutesInfo] = useState<SwapInfo[][]>([])
+export const useBestSenRoutes = () => {
+  const [routesInfo, setRoutesInfo] = useState<RouteInfo[][]>([])
   const { getMintInfo, calcOutGivenInSwap, calcPriceImpactSwap } = useOracles()
   const { availRoutes } = useRoutes()
   const pools = usePools()
@@ -374,10 +383,10 @@ export const useBestRoutes = () => {
   // Calculate token out per route
   const fetchRoutesInfo = useCallback(async () => {
     if (!Number(bidAmount)) return []
-    const senSwapInfoRoutes: Array<SwapInfo>[] = []
+    const senSwapInfoRoutes: Array<RouteInfo>[] = []
 
     for (const routes of availRoutes) {
-      const route: SwapInfo[] = []
+      const route: RouteInfo[] = []
       const bidAmountBN = await decimalize(bidAmount, bidDecimals)
 
       for (const { askMint, bidMint, pool } of routes) {
@@ -441,7 +450,7 @@ export const useBestRoutes = () => {
         route: [],
         bidAmount,
         askAmount: '0',
-        priceImpact: 0,
+        priceImpactPct: 0,
       }
 
     const askAmount = bestRoute[bestRoute.length - 1].askAmount.toString()
@@ -480,6 +489,7 @@ export const useBestRoutes = () => {
 export const useSenSwap = () => {
   const bidAmount = useSwapStore(({ bidAmount }) => bidAmount)
   const slippage = useSwapStore(({ slippage }) => slippage)
+  const bestSenRoute = useSwapStore(({ bestSenRoute }) => bestSenRoute)
   const bidMintAddress = useSwapStore(({ bidMintAddress }) => bidMintAddress)
   const askMintAddress = useSwapStore(({ askMintAddress }) => askMintAddress)
   const { decimals: askDecimals } = useMintByAddress(askMintAddress) || {
@@ -488,24 +498,23 @@ export const useSenSwap = () => {
   const { decimals: bidDecimals } = useMintByAddress(bidMintAddress) || {
     decimals: 0,
   }
-  const { bestSenSwapRoute } = useBestRoutes()
   const { createWrapSolTxIfNeed, createTxUnwrapSol } = useWrapSol()
   const senswap = useSenswap()
   const { publicKey } = useWallet()
 
   const initTxCreateMultiTokenAccount = useInitMultiTokenAccount()
   const initTokenAccountTxs = useCallback(async () => {
-    if (!bestSenSwapRoute || !publicKey) return []
+    if (!bestSenRoute || !publicKey) return []
     const transactions = await initTxCreateMultiTokenAccount(
-      bestSenSwapRoute.route.map((route) => route.askMint),
+      bestSenRoute.route.map((route) => route.askMint),
       publicKey,
     )
     return transactions
-  }, [bestSenSwapRoute, initTxCreateMultiTokenAccount, publicKey])
+  }, [bestSenRoute, initTxCreateMultiTokenAccount, publicKey])
 
   const swap = useCallback(async () => {
-    if (!bestSenSwapRoute || !senswap.program.provider.sendAll) return ''
-    const { askAmount, route } = bestSenSwapRoute
+    if (!bestSenRoute || !senswap.program.provider.sendAll) return ''
+    const { askAmount, route } = bestSenRoute
 
     const bidAmountBN = decimalize(bidAmount, bidDecimals)
     const rawAskAmount = undecimalize(new BN(askAmount), askDecimals)
@@ -540,7 +549,7 @@ export const useSenSwap = () => {
   }, [
     askDecimals,
     askMintAddress,
-    bestSenSwapRoute,
+    bestSenRoute,
     bidAmount,
     bidDecimals,
     bidMintAddress,
@@ -551,47 +560,51 @@ export const useSenSwap = () => {
     slippage,
   ])
 
-  return { swap, bestSenSwapRoute }
+  return { swap }
 }
 
 export const useSwap = () => {
   const { swap: jubSwap } = useJupSwap()
-  const { bestRoute, fetching } = useUnsafeSwap()
-  const { bestSenSwapRoute, swap: senSwap } = useSenSwap()
+  const { bestSenSwapRoute } = useBestSenRoutes()
+  const { bestJupRoute, fetching } = useUnsafeSwap()
+  const { swap: senSwap } = useSenSwap()
   const setAskAmount = useSwapStore(({ setAskAmount }) => setAskAmount)
-  const setBestRoute = useSwapStore(({ setBestRoute }) => setBestRoute)
+  const setBestJubRoute = useSwapStore(({ setBestJubRoute }) => setBestJubRoute)
+  const setBestSenRoute = useSwapStore(({ setBestSenRoute }) => setBestSenRoute)
   const askMintAddress = useSwapStore(({ askMintAddress }) => askMintAddress)
   const { decimals: askDecimals } = useMintByAddress(askMintAddress) || {
     decimals: 0,
   }
   const platform = useMemo(() => {
-    if (!bestRoute || !bestSenSwapRoute) return
+    if (!bestJupRoute || !bestSenSwapRoute) return
 
-    const { outAmount: jupAmount } = bestRoute
-    const { askAmount: senswapAmount } = bestSenSwapRoute
+    const { outAmount: jupOut } = bestJupRoute
+    const { askAmount: senswapOut } = bestSenSwapRoute
     const maxDiff = 0.05
-    const difference = Math.abs(Number(jupAmount) - Number(senswapAmount))
-    const isJup = difference > maxDiff * Number(jupAmount)
+    const difference = Math.abs(Number(jupOut) - Number(senswapOut))
+    const isJup = difference > maxDiff * Number(jupOut)
 
     if (isJup) return Platform.Jup
     return Platform.SenSwap
-  }, [bestRoute, bestSenSwapRoute])
+  }, [bestJupRoute, bestSenSwapRoute])
 
   const routes = useMemo(() => {
     if (!platform) return
-    if (platform === Platform.Jup) return bestRoute
+    if (platform === Platform.Jup) return bestJupRoute
     return bestSenSwapRoute
-  }, [bestRoute, bestSenSwapRoute, platform])
+  }, [bestJupRoute, bestSenSwapRoute, platform])
 
   const hops = useMemo(() => {
-    if (!platform || !bestRoute || !bestSenSwapRoute) return []
+    if (!platform || !bestJupRoute || !bestSenSwapRoute) return []
     const hops: string[] = []
     if (platform === Platform.Jup) {
-      bestRoute.routePlan.forEach(({ swapInfo: { inputMint, outputMint } }) => {
-        hops.pop()
-        hops.push(inputMint)
-        hops.push(outputMint)
-      })
+      bestJupRoute.routePlan.forEach(
+        ({ swapInfo: { inputMint, outputMint } }) => {
+          hops.pop()
+          hops.push(inputMint)
+          hops.push(outputMint)
+        },
+      )
     }
 
     if (platform === Platform.SenSwap) {
@@ -602,7 +615,7 @@ export const useSwap = () => {
       })
     }
     return hops
-  }, [bestRoute, bestSenSwapRoute, platform])
+  }, [bestJupRoute, bestSenSwapRoute, platform])
 
   const swap = useCallback(async () => {
     if (!platform) return ''
@@ -611,7 +624,7 @@ export const useSwap = () => {
   }, [jubSwap, platform, senSwap])
 
   useEffect(() => {
-    const { outAmount } = bestRoute || {}
+    const { outAmount } = bestJupRoute || {}
     const { askAmount } = bestSenSwapRoute || {}
 
     if (!outAmount || !askAmount || !platform) setAskAmount('')
@@ -619,11 +632,13 @@ export const useSwap = () => {
       const amount = platform === Platform.Jup ? outAmount : askAmount
       setAskAmount(undecimalize(new BN(amount), askDecimals))
     }
-    setBestRoute(bestRoute)
+    setBestJubRoute(bestJupRoute)
+    setBestSenRoute(bestSenSwapRoute)
   }, [
-    bestRoute,
-    setBestRoute,
+    setBestJubRoute,
     setAskAmount,
+    setBestSenRoute,
+    bestJupRoute,
     askDecimals,
     bestSenSwapRoute,
     platform,
