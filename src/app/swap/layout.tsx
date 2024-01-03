@@ -3,7 +3,6 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 import { PoolProvider } from '@/providers/pools.provider'
-import { PoolStatProvider } from '@/providers/stat.provider'
 
 export const metadata: Metadata = {
   title: 'Sentre Swap | Sentre',
@@ -24,9 +23,7 @@ export default function SwapLayout({ children }: { children: ReactNode }) {
           </Link>
         </div>
         <div className="max-w-[360px]">
-          <PoolProvider>
-            <PoolStatProvider>{children}</PoolStatProvider>
-          </PoolProvider>
+          <PoolProvider>{children}</PoolProvider>
         </div>
       </div>
     </div>

@@ -15,7 +15,6 @@ import { isAddress } from '@/helpers/utils'
 import { useMintByAddress } from '@/providers/mint.provider'
 import { decimalize, undecimalize } from '@/helpers/decimals'
 import { usePools } from '@/providers/pools.provider'
-import { usePoolsTvl } from '@/providers/stat.provider'
 import { useOracles, useSenswap, useWrapSol } from './pool.hook'
 import { useInitMultiTokenAccount, useMints } from './spl.hook'
 
@@ -232,22 +231,17 @@ export const useJupSwap = () => {
  */
 export const useAllRoutes = () => {
   const pools = usePools()
-  const poolsTvl = usePoolsTvl()
-
   // Get pools tvl > 1000$
   const validPools = useMemo(() => {
-    const minTvl = 0
     const result: Record<string, PoolData> = {}
     for (const addr in pools) {
       const poolData = pools[addr]
 
       if (poolData.reserves.map((val) => val.toString()).includes('0')) continue
-      const tvl = poolsTvl[addr] || 0
-      if (tvl < minTvl) continue
       result[addr] = poolData
     }
     return result
-  }, [pools, poolsTvl])
+  }, [pools])
 
   const allRoutes = useMemo(() => {
     const mintRoutes: SenMintRoutes = {}
