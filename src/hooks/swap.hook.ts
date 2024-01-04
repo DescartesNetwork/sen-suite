@@ -331,7 +331,7 @@ export const useRoutes = () => {
 
   useDebounce(
     async () => {
-      const availRoutes = await getAvailRoutes(bidMintAddress, askMintAddress)
+      const availRoutes = getAvailRoutes(bidMintAddress, askMintAddress)
       setAvailRoutes(availRoutes)
     },
     300,
@@ -340,8 +340,10 @@ export const useRoutes = () => {
 
   return { availRoutes: availRoutes || [] }
 }
-/** Get best route with bidAddress and askAddress
- *  @returns best route
+
+/**
+ * Get the best route with bidAddress and askAddress
+ * @returns The best route
  */
 export const useBestSenRoutes = () => {
   const [routesInfo, setRoutesInfo] = useState<RouteInfo[][]>([])
