@@ -18,7 +18,6 @@ export type MintStore = {
   upsertPrices: (newPrices: Record<string, number>) => void
   engine?: Fuse<MintMetadata>
   setEngine: (engine?: Fuse<MintMetadata>) => void
-  unmount: () => void
 }
 
 /**
@@ -40,17 +39,13 @@ export const useMintStore = create<MintStore>()(
             })
           }),
           false,
-          'setMints',
+          'upsertMetadata',
         ),
       prices: {},
       upsertPrices: (newPrices) =>
         set(
           produce<MintStore>(({ prices }) => {
-            Object.keys(newPrices).forEach((mintAddress) => {
-              if (!prices[mintAddress])
-                prices[mintAddress] = newPrices[mintAddress]
-              else Object.assign(prices[mintAddress], newPrices[mintAddress])
-            })
+            Object.assign(prices, newPrices)
           }),
           false,
           'upsertPrices',
@@ -58,8 +53,6 @@ export const useMintStore = create<MintStore>()(
       engine: undefined,
       setEngine: (engine?: Fuse<MintMetadata>) =>
         set({ engine }, false, 'setEngine'),
-      unmount: () =>
-        set({ metadata: [], prices: {}, engine: undefined }, false, 'unmount'),
     }),
     {
       name: 'mint',
@@ -75,7 +68,6 @@ export const useMintStore = create<MintStore>()(
 export default function MintProvider({ children }: { children: ReactNode }) {
   const upsertMetadata = useMintStore(({ upsertMetadata }) => upsertMetadata)
   const setEngine = useMintStore(({ setEngine }) => setEngine)
-  const unmount = useMintStore(({ unmount }) => unmount)
 
   const fetch = useCallback(async () => {
     const data = await getAllTokens()
@@ -89,8 +81,7 @@ export default function MintProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     fetch()
-    return unmount
-  }, [fetch, unmount])
+  }, [fetch])
 
   return <Fragment>{children}</Fragment>
 }

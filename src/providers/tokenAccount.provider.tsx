@@ -4,12 +4,12 @@ import { splTokenProgram } from '@coral-xyz/spl-token'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { useWallet } from '@solana/wallet-adapter-react'
+import { KeyedAccountInfo } from '@solana/web3.js'
+import { produce } from 'immer'
 
 import { env } from '@/configs/env'
 import { isAddress } from '@/helpers/utils'
 import { useSpl } from '@/hooks/spl.hook'
-import { produce } from 'immer'
-import { KeyedAccountInfo } from '@solana/web3.js'
 
 export type TokenAccount = Awaited<
   ReturnType<ReturnType<typeof splTokenProgram>['account']['account']['fetch']>
@@ -22,7 +22,7 @@ export type TokenAccount = Awaited<
 export type TokenAccountStore = {
   tokenAccounts: Record<string, TokenAccount>
   setTokenAccounts: (tokenAccounts: Record<string, TokenAccount>) => void
-  upsertTokenAccount: (address: string, tokenAccountData: TokenAccount) => void
+  upsertTokenAccount: (payload: Record<string, TokenAccount>) => void
 }
 
 export const useTokenAccountStore = create<TokenAccountStore>()(
@@ -31,10 +31,10 @@ export const useTokenAccountStore = create<TokenAccountStore>()(
       tokenAccounts: {},
       setTokenAccounts: (tokenAccounts: Record<string, TokenAccount>) =>
         set({ tokenAccounts }, false, 'setTokenAccounts'),
-      upsertTokenAccount: (address: string, tokenAccountData: TokenAccount) =>
+      upsertTokenAccount: (payload: Record<string, TokenAccount>) =>
         set(
           produce<TokenAccountStore>(({ tokenAccounts }) => {
-            tokenAccounts[address] = tokenAccountData
+            Object.assign(tokenAccounts, payload)
           }),
           false,
           'upsertTokenAccount',
@@ -86,7 +86,7 @@ export default function TokenAccountProvider({
       spl.programId,
       ({ accountId, accountInfo }: KeyedAccountInfo) => {
         const data = spl.coder.accounts.decode('account', accountInfo.data)
-        return upsertTokenAccount(accountId.toBase58(), data)
+        return upsertTokenAccount({ [accountId.toBase58()]: data })
       },
       'confirmed',
       [{ memcmp: { bytes: publicKey.toBase58(), offset: 32 } }],

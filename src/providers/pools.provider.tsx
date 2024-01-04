@@ -24,7 +24,7 @@ const DUMMY_POOL = {
 
 export type PoolStore = {
   pools: Record<string, PoolData>
-  upsertPool: (pool: string, newPool: PoolData) => void
+  upsertPool: (payload: Record<string, PoolData>) => void
 }
 
 /**
@@ -34,10 +34,10 @@ export const usePoolStore = create<PoolStore>()(
   devtools(
     (set) => ({
       pools: {},
-      upsertPool: (address: string, poolData: PoolData) =>
+      upsertPool: (payload: Record<string, PoolData>) =>
         set(
           produce<PoolStore>(({ pools }) => {
-            pools[address] = poolData
+            Object.assign(pools, payload)
           }),
           false,
           'upsertPool',
@@ -57,16 +57,17 @@ export function PoolProvider({ children }: { children: ReactNode }) {
   const senswap = useSenswap()
   const upsertPool = usePoolStore(({ upsertPool }) => upsertPool)
 
-  const fetchPools = useCallback(async () => {
+  const fetch = useCallback(async () => {
     const pools = await senswap.getAllPoolData()
-    for (const { account, publicKey } of pools) {
-      const poolState = account.state
-      if (isEqual(poolState, PoolStates.Deleted)) continue
-      upsertPool(publicKey.toBase58(), account)
-    }
+    const payload: Record<string, PoolData> = {}
+    pools.forEach(({ account, publicKey }) => {
+      if (!isEqual(account.state, PoolStates.Deleted))
+        payload[publicKey.toBase58()] = account
+    })
+    return upsertPool(payload)
   }, [senswap, upsertPool])
 
-  const watchPools = useCallback(() => {
+  const watch = useCallback(() => {
     const { connection } = senswap.program.provider
     const id = connection.onProgramAccountChange(
       senswap.program.account.pool.programId,
@@ -78,7 +79,7 @@ export function PoolProvider({ children }: { children: ReactNode }) {
         accountInfo: { data: Buffer }
       }) => {
         const accountData = senswap.program.coder.accounts.decode('pool', data)
-        return upsertPool(accountId.toBase58(), accountData)
+        return upsertPool({ [accountId.toBase58()]: accountData })
       },
       'confirmed',
     )
@@ -88,10 +89,9 @@ export function PoolProvider({ children }: { children: ReactNode }) {
   }, [senswap, upsertPool])
 
   useEffect(() => {
-    fetchPools()
-    const unwatch = watchPools()
-    return unwatch
-  }, [fetchPools, watchPools])
+    fetch()
+    return watch()
+  }, [fetch, watch])
 
   return <Fragment>{children}</Fragment>
 }
