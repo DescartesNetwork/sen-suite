@@ -514,8 +514,8 @@ export const useSenSwap = () => {
 
     const bidAmountBN = decimalize(bidAmount, bidDecimals)
     const rawAskAmount = undecimalize(new BN(askAmount), askDecimals)
-    const limit = Number(rawAskAmount) * (1 - slippage / 100)
-    const limitBN = await decimalize(limit.toString(), askDecimals)
+    const limit = Number(rawAskAmount) * (1 - slippage)
+    const limitBN = decimalize(limit.toString(), askDecimals)
     const transactions = await initTokenAccountTxs()
     const wrapSolTx = await createWrapSolTxIfNeed(
       new PublicKey(bidMintAddress),
@@ -560,7 +560,7 @@ export const useSenSwap = () => {
 }
 
 export const useSwap = () => {
-  const { swap: jubSwap } = useJupSwap()
+  const { swap: jupSwap } = useJupSwap()
   const { bestSenSwapRoute } = useBestSenRoutes()
   const { bestJupRoute, fetching } = useUnsafeSwap()
   const { swap: senSwap } = useSenSwap()
@@ -615,9 +615,9 @@ export const useSwap = () => {
 
   const swap = useCallback(async () => {
     if (!platform) return ''
-    if (platform === Platform.Jup) return jubSwap()
+    if (platform === Platform.Jup) return jupSwap()
     return senSwap()
-  }, [jubSwap, platform, senSwap])
+  }, [jupSwap, platform, senSwap])
 
   useEffect(() => {
     const { outAmount } = bestJupRoute || {}
