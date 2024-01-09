@@ -396,7 +396,7 @@ export const useBestSenRoutes = () => {
           bidMintInfo.reserve,
           askMintInfo.normalizedWeight,
           bidMintInfo.normalizedWeight,
-          poolData.fee,
+          poolData.fee.add(poolData.tax),
         )
 
         const dataForSlippage = {
