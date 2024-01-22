@@ -70,10 +70,8 @@ function SlippageTolerance() {
 }
 
 function Hop({ mintAddress }: { mintAddress: string }) {
-  const { logoURI, symbol } = useMintByAddress(mintAddress) || {
-    logoURI: '',
-    symbol: mintAddress.substring(0, 6),
-  }
+  const { logoURI = '', symbol = mintAddress.substring(0, 6) } =
+    useMintByAddress(mintAddress) || {}
 
   return (
     <span className="tooltip flex" data-tip={symbol}>

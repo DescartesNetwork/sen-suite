@@ -41,7 +41,7 @@ export default function InputRecipient({ setStep }: InputRecipientProps) {
   const { amount: myAmount } = useTokenAccountByMintAddress(mintAddress) || {
     amount: new BN(0),
   }
-  const { decimals } = useMintByAddress(mintAddress)
+  const { decimals = 0 } = useMintByAddress(mintAddress) || {}
   const pushMessage = usePushMessage()
 
   const statuses = useMemo(

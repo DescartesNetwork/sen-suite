@@ -265,7 +265,7 @@ export const useTotalDistribute = () => {
   const { recipients } = useRecipients()
   const { mintAddress } = useAirdropMintAddress()
 
-  const { decimals } = useMintByAddress(mintAddress) || { decimals: 0 }
+  const { decimals = 0 } = useMintByAddress(mintAddress) || {}
 
   const total = useMemo(
     () =>
@@ -329,7 +329,7 @@ export const useInitMerkleTree = (type: Distribute) => {
     configs: { expiration },
   } = useDistributeConfigs()
   const { mintAddress } = useAirdropMintAddress()
-  const { decimals } = useMintByAddress(mintAddress) || { decimals: 0 }
+  const { decimals = 0 } = useMintByAddress(mintAddress) || {}
   const utility = useUtility()
 
   const toUnitTime = useCallback((time: number) => {

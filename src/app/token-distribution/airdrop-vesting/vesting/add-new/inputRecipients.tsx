@@ -118,7 +118,7 @@ export default function InputRecipients({ setStep }: InputRecipientProps) {
 
   const { configs } = useDistributeConfigs()
   const { mintAddress } = useAirdropMintAddress()
-  const { decimals } = useMintByAddress(mintAddress)
+  const { decimals = 0 } = useMintByAddress(mintAddress) || {}
   const { upsertRecipient, setRecipients, recipients } = useRecipients()
   const { total, quantity } = useTotalDistribute()
   const { amount: myAmount } = useTokenAccountByMintAddress(mintAddress) || {

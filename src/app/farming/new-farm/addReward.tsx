@@ -27,7 +27,7 @@ const RewardCard = ({ reward, index, onChange, onDelete }: RewardCardProps) => {
   const { amount } = useTokenAccountByMintAddress(reward.mintAddress) || {
     amount: new BN(0),
   }
-  const { decimals } = useMintByAddress(reward.mintAddress) || { decimals: 0 }
+  const { decimals = 0 } = useMintByAddress(reward.mintAddress) || {}
 
   const onMintChange = (mintAddress: string) => {
     onChange(index, 'mintAddress', mintAddress)

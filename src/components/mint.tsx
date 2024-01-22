@@ -13,7 +13,7 @@ import { useTvl } from '@/hooks/tvl.hook'
  * Mint Logo
  */
 export const useMintLogo = (mintAddress: string) => {
-  const { logoURI } = useMintByAddress(mintAddress) || { logoURI: '' }
+  const { logoURI = '' } = useMintByAddress(mintAddress) || {}
   return logoURI
 }
 export type MintLogoProps = {
@@ -46,9 +46,8 @@ export function MintLogo({
  * Mint Name
  */
 export const useMintName = (mintAddress: string) => {
-  const { name } = useMintByAddress(mintAddress) || {
-    name: shortenAddress(mintAddress, 6),
-  }
+  const { name = shortenAddress(mintAddress, 6) } =
+    useMintByAddress(mintAddress) || {}
   return name
 }
 export type MintNameProps = {
@@ -63,9 +62,8 @@ export function MintName({ mintAddress }: MintNameProps) {
  * Mint Symbol
  */
 export const useMintSymbol = (mintAddress: string) => {
-  const { symbol } = useMintByAddress(mintAddress) || {
-    symbol: mintAddress.substring(0, 6),
-  }
+  const { symbol = mintAddress.substring(0, 6) } =
+    useMintByAddress(mintAddress) || {}
   return symbol
 }
 export type MintSymbolProps = {

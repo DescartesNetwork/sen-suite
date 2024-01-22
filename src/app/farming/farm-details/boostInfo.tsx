@@ -29,7 +29,7 @@ export default function BoostInfo({
   const { inputMint } = useFarmByAddress(farmAddress)
   const debt = useDebtByFarmAddress(farmAddress)
   const boosting = useBoostingByFarmAddress(farmAddress)
-  const { decimals } = useMintByAddress(inputMint.toBase58()) || { decimals: 0 }
+  const { decimals = 0 } = useMintByAddress(inputMint.toBase58()) || {}
   const nftsMetadata = useNfts(nfts)
   const collections = nftsMetadata.map((metadata) =>
     metadata?.collection?.address.toBase58(),

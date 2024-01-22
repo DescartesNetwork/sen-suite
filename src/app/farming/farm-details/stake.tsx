@@ -27,7 +27,7 @@ export default function Stake({ farmAddress }: StakeProps) {
   const [nfts, setNfts] = useState<string[]>([])
   const pushMessage = usePushMessage()
   const { inputMint } = useFarmByAddress(farmAddress)
-  const { decimals } = useMintByAddress(inputMint.toBase58()) || { decimals: 0 }
+  const { decimals = 0 } = useMintByAddress(inputMint.toBase58()) || {}
   const { amount: balance } =
     useTokenAccountByMintAddress(inputMint.toBase58()) || {}
   const boosting = useBoostingByFarmAddress(farmAddress)

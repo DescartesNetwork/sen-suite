@@ -173,9 +173,7 @@ export const useUnsafeSwap = () => {
   const askMintAddress = useSwapStore(({ askMintAddress }) => askMintAddress)
   const slippage = useSwapStore(({ slippage }) => slippage)
 
-  const { decimals: bidDecimals } = useMintByAddress(bidMintAddress) || {
-    decimals: 0,
-  }
+  const { decimals: bidDecimals = 0 } = useMintByAddress(bidMintAddress) || {}
 
   const { value: bestJupRoute, loading } = useAsync(async () => {
     if (!isAddress(bidMintAddress) || !isAddress(askMintAddress) || !bidAmount)
@@ -353,9 +351,7 @@ export const useBestSenRoutes = () => {
   const bidMintAddress = useSwapStore(({ bidMintAddress }) => bidMintAddress)
   const bidAmount = useSwapStore(({ bidAmount }) => bidAmount)
 
-  const { decimals: bidDecimals } = useMintByAddress(bidMintAddress) || {
-    decimals: 0,
-  }
+  const { decimals: bidDecimals = 0 } = useMintByAddress(bidMintAddress) || {}
 
   const allMintAddress = useMemo(() => {
     const mints: string[] = []
@@ -488,12 +484,8 @@ export const useSenSwap = () => {
   const bestSenRoute = useSwapStore(({ bestSenRoute }) => bestSenRoute)
   const bidMintAddress = useSwapStore(({ bidMintAddress }) => bidMintAddress)
   const askMintAddress = useSwapStore(({ askMintAddress }) => askMintAddress)
-  const { decimals: askDecimals } = useMintByAddress(askMintAddress) || {
-    decimals: 0,
-  }
-  const { decimals: bidDecimals } = useMintByAddress(bidMintAddress) || {
-    decimals: 0,
-  }
+  const { decimals: askDecimals = 0 } = useMintByAddress(askMintAddress) || {}
+  const { decimals: bidDecimals = 0 } = useMintByAddress(bidMintAddress) || {}
   const { createWrapSolTxIfNeed, createTxUnwrapSol } = useWrapSol()
   const senswap = useSenswap()
   const { publicKey } = useWallet()
@@ -568,9 +560,7 @@ export const useSwap = () => {
   const setBestJubRoute = useSwapStore(({ setBestJubRoute }) => setBestJubRoute)
   const setBestSenRoute = useSwapStore(({ setBestSenRoute }) => setBestSenRoute)
   const askMintAddress = useSwapStore(({ askMintAddress }) => askMintAddress)
-  const { decimals: askDecimals } = useMintByAddress(askMintAddress) || {
-    decimals: 0,
-  }
+  const { decimals: askDecimals = 0 } = useMintByAddress(askMintAddress) || {}
   const platform = useMemo(() => {
     if (!bestJupRoute || !bestSenSwapRoute) return
 
