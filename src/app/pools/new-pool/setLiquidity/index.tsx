@@ -21,9 +21,7 @@ import {
 } from '@/hooks/pool.hook'
 import { decimalize } from '@/helpers/decimals'
 import { solscan } from '@/helpers/explorers'
-
-const SET_UP = 0
-const CONFIRM = 2
+import { Step } from '../step'
 
 export type SetLiquidityProps = {
   poolAddress: string
@@ -62,7 +60,7 @@ export default function SetLiquidity({
           onClick: () => window.open(solscan(txId || ''), '_blank'),
         },
       )
-      return setStep(SET_UP)
+      return setStep(Step.Setup)
     } catch (er: any) {
       pushMessage('alert-error', er.message)
     } finally {
@@ -77,12 +75,12 @@ export default function SetLiquidity({
       const txId = await initializeJoin()
       pushMessage(
         'alert-success',
-        'Successfully fund pool. Click here to view on explorer.',
+        'Successfully fund the pool. Click here to view details.',
         {
           onClick: () => window.open(solscan(txId || ''), '_blank'),
         },
       )
-      return setStep(CONFIRM)
+      return setStep(Step.Confirm)
     } catch (er: any) {
       pushMessage('alert-error', er.message)
     } finally {

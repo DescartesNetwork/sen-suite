@@ -1,13 +1,11 @@
 'use client'
 import { useState } from 'react'
 
-import Weight from './weight'
 import FreezeAndThaw from './freezeAndThaw'
 import Fee from './fee'
 import TransferOwnership from './transferOwnership'
 
 enum Tab {
-  Weights,
   Pause,
   Fee,
   Ownership,
@@ -18,26 +16,10 @@ export type PoolManagementProps = {
 }
 
 export default function PoolManagement({ poolAddress }: PoolManagementProps) {
-  const [tab, setTab] = useState<Tab>(Tab.Weights)
+  const [tab, setTab] = useState<Tab>(Tab.Pause)
 
   return (
     <div role="tablist" className="tabs tabs-lifted">
-      <input
-        type="radio"
-        name="weights"
-        role="tab"
-        className="tab"
-        aria-label="Weights"
-        onChange={(e) => e.target.checked && setTab(Tab.Weights)}
-        checked={tab === Tab.Weights}
-      />
-      <div
-        role="tabpanel"
-        className="tab-content bg-base-100 border-base-300 rounded-box p-6"
-      >
-        <Weight poolAddress={poolAddress} />
-      </div>
-
       <input
         type="radio"
         name="pause"

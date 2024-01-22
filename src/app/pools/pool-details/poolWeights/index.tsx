@@ -23,7 +23,7 @@ const COLORS = [
 export default function PoolWeights({ poolAddress }: { poolAddress: string }) {
   const poolData = usePoolByAddress(poolAddress)
   const { getMintInfo } = useOracles()
-  const metadata = useMintStore(({ metadata }) => metadata)
+  const metadata = useMintStore(({ metadata }) => Object.values(metadata))
 
   const poolWeights = useMemo(() => {
     if (!poolData) return []

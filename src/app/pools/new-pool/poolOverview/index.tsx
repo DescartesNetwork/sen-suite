@@ -1,6 +1,8 @@
 'use client'
-import { useMemo } from 'react'
-import Link from 'next/link'
+import { useCallback, useMemo, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { isAddress } from '@sentre/senswap'
+import classNames from 'classnames'
 
 import { MintAmount, MintLogo, MintSymbol } from '@/components/mint'
 
@@ -10,14 +12,23 @@ import { useOracles } from '@/hooks/pool.hook'
 import { useMints } from '@/hooks/spl.hook'
 import { usePrices } from '@/providers/mint.provider'
 import { usePoolByAddress } from '@/providers/pools.provider'
+import { useSenswap } from '@/hooks/pool.hook'
+import { usePushMessage } from '@/components/message/store'
+import { solscan } from '@/helpers/explorers'
 
-export default function PoolOverview({ poolAddress }: { poolAddress: string }) {
+export type PoolOverviewProps = { poolAddress: string }
+
+export default function PoolOverview({ poolAddress }: PoolOverviewProps) {
+  const [loading, setLoading] = useState(false)
   const pool = usePoolByAddress(poolAddress)
   const mintAddresses = pool.mints.map((mint) => mint.toBase58())
   const prices = usePrices(mintAddresses)
   const mints = useMints(mintAddresses)
   const decimals = mints.map((mint) => mint?.decimals || 0)
   const { getMintInfo } = useOracles()
+  const senswap = useSenswap()
+  const { push } = useRouter()
+  const pushMessage = usePushMessage()
 
   const { poolMintInfos, totalValue } = useMemo(() => {
     if (!prices) return { poolMintInfos: [], totalValue: 0 }
@@ -37,6 +48,25 @@ export default function PoolOverview({ poolAddress }: { poolAddress: string }) {
     })
     return { poolMintInfos, totalValue }
   }, [decimals, getMintInfo, pool, prices])
+
+  const onFinalize = useCallback(async () => {
+    try {
+      setLoading(true)
+    } catch (er: any) {
+      if (!isAddress(poolAddress)) throw new Error('Invalid pool address.')
+      const { txId } = await senswap.finalizePool({ poolAddress })
+      pushMessage(
+        'alert-success',
+        'Successfully finalize the pool. Click here to view details.',
+        {
+          onClick: () => window.open(solscan(txId), '_blank'),
+        },
+      )
+      push(`/pools/pool-details?poolAddress=${poolAddress}`)
+    } finally {
+      setLoading(false)
+    }
+  }, [senswap, poolAddress, push, pushMessage])
 
   return (
     <div className="grid grid-cols-12 gap-6">
@@ -77,12 +107,14 @@ export default function PoolOverview({ poolAddress }: { poolAddress: string }) {
         <p className="text-sm opacity-60">Total value</p>
         <h5>{numeric(totalValue).format('$0,0.[0000]')}</h5>
       </div>
-      <Link
-        className="col-span-full btn btn-primary"
-        href={`/pools/pool-details?poolAddress=${poolAddress}`}
-      >
-        To the pool
-      </Link>
+      <button className="col-span-full btn btn-primary" onClick={onFinalize}>
+        <span
+          className={classNames('loading loading-sm loading-spinner', {
+            hidden: !loading,
+          })}
+        />
+        Confirm
+      </button>
     </div>
   )
 }

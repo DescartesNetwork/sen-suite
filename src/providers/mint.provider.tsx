@@ -12,8 +12,8 @@ import mintConfig from '@/configs/mint.config'
 import { getAllTokens, getPrice } from '@/helpers/stat'
 
 export type MintStore = {
-  metadata: MintMetadata[]
-  upsertMetadata: (newMints: MintMetadata[]) => void
+  metadata: Record<string, MintMetadata>
+  upsertMetadata: (newMints: Record<string, MintMetadata>) => void
   prices: Record<string, number>
   upsertPrices: (newPrices: Record<string, number>) => void
   engine?: Fuse<MintMetadata>
@@ -26,17 +26,11 @@ export type MintStore = {
 export const useMintStore = create<MintStore>()(
   devtools(
     (set) => ({
-      metadata: [],
-      upsertMetadata: (newMints: MintMetadata[]) =>
+      metadata: {},
+      upsertMetadata: (newMints: Record<string, MintMetadata>) =>
         set(
           produce<MintStore>(({ metadata }) => {
-            newMints.forEach((newMint) => {
-              const index = metadata.findIndex(
-                ({ address }) => address === newMint.address,
-              )
-              if (index >= 0) Object.assign(metadata[index], newMint)
-              else metadata.push(newMint)
-            })
+            Object.assign(newMints, metadata)
           }),
           false,
           'upsertMetadata',
@@ -75,7 +69,11 @@ export default function MintProvider({ children }: { children: ReactNode }) {
       includeScore: true,
       keys: ['name', 'symbol'],
     })
-    upsertMetadata(data)
+    const payload: Record<string, MintMetadata> = {}
+    data.forEach(
+      ({ address, ...rest }) => (payload[address] = { address, ...rest }),
+    )
+    upsertMetadata(payload)
     setEngine(fuse)
   }, [upsertMetadata, setEngine])
 
@@ -91,7 +89,7 @@ export default function MintProvider({ children }: { children: ReactNode }) {
  * @returns Mint list
  */
 export const useAllMintMetadata = () => {
-  const metadata = useMintStore(({ metadata }) => metadata)
+  const metadata = useMintStore(({ metadata }) => Object.values(metadata))
   return metadata
 }
 
@@ -106,12 +104,12 @@ export const useMintByAddress = (mintAddress: string) => {
 
   const fetch = useCallback(
     async (mintAddress: string) => {
-      const mint = metadata.find(({ address }) => address === mintAddress)
+      const mint = metadata[mintAddress]
       if (mint) return mint
-      const { data } = await axios.get(
+      const { data } = await axios.get<MintMetadata>(
         `${mintConfig.host}/metadata/${mintAddress}`,
       )
-      if (data) upsertMetadata([data])
+      if (data) upsertMetadata({ [mintAddress]: data })
       return data
     },
     [metadata, upsertMetadata],

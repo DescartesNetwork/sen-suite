@@ -319,12 +319,12 @@ export const useStake = (
  * @returns Unstake function
  */
 export const useUnstake = (farmAddress: string, shares: BN) => {
-  const { publicKey, sendTransaction, signTransaction } = useWallet()
+  const { publicKey, sendTransaction } = useWallet()
   const { connection } = useConnection()
   const farming = useFarming()
 
   const unstake = useCallback(async () => {
-    if (!publicKey || !signTransaction || !sendTransaction)
+    if (!publicKey || !sendTransaction)
       throw new Error('Wallet is not connected yet.')
     if (!isAddress(farmAddress)) throw new Error('Invalid farm address.')
     if (shares.isZero()) throw new Error('Invalid amount.')
@@ -355,15 +355,7 @@ export const useUnstake = (farmAddress: string, shares: BN) => {
       signature,
     })
     return signature
-  }, [
-    farmAddress,
-    shares,
-    publicKey,
-    signTransaction,
-    sendTransaction,
-    connection,
-    farming,
-  ])
+  }, [farmAddress, shares, publicKey, sendTransaction, connection, farming])
 
   return unstake
 }

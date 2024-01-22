@@ -30,7 +30,7 @@ const conf: Record<Env, Conf> = {
     // senFarmingProgram: '6LaxnmWdYUAJvBJ4a1R8rrsvCRtaY7b43zKiNAU2k3Nx',
     // utilityProgram: 'AKTU61s8NJ8zJATQiceREdhXbedRnKrd1BVgnCuxmD2F',
     // bundlStorage: 'https://devnet.bundlr.network',
-    rpc: 'https://mainnet.helius-rpc.com/?api-key=00e15989-d222-4709-a2dd-2ebed21ecb90',
+    rpc: 'https://mainnet.helius-rpc.com/?api-key=7a412895-88e4-4dac-9ff2-16360c45b078',
     network: WalletAdapterNetwork.Mainnet,
     senswapAddress: 'D3BBjqUdCYuP18fNvvMbPAZ8DpcRi4io2EsYHQawJDag',
     senFarmingProgram: 'E6Vc9wipgm8fMXHEYwgN7gYdDbyvpPBUiTNy67zPKuF4',

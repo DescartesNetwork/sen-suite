@@ -12,13 +12,10 @@ import SetLiquidity from './setLiquidity'
 import PoolOverview from './poolOverview'
 
 import { usePools } from '@/providers/pools.provider'
-
-const SET_UP = 0
-const ADD_LIQUIDITY = 1
-const CONFIRM = 2
+import { Step } from './step'
 
 export default function NewPool() {
-  const [step, setStep] = useState(SET_UP)
+  const [step, setStep] = useState(Step.Setup)
   const [poolAddress, setPoolAddress] = useState('')
   const pools = usePools()
   const { publicKey } = useWallet()
@@ -28,9 +25,12 @@ export default function NewPool() {
     if (poolAddress || !publicKey) return
     for (const poolAddress in pools) {
       const { authority, state } = pools[poolAddress]
-      if (!authority.equals(publicKey)) continue
-      if (!isEqual(state, PoolStates.Uninitialized)) continue
-      setStep(ADD_LIQUIDITY)
+      let step: Step = Step.Setup
+      if (!authority.equals(publicKey)) {
+        if (isEqual(state, PoolStates.Uninitialized)) step = Step.AddLiquidity
+        if (isEqual(state, PoolStates.Initalizing)) step = Step.Confirm
+      }
+      setStep(step)
       return setPoolAddress(poolAddress)
     }
     return setPoolAddress('')
@@ -38,16 +38,16 @@ export default function NewPool() {
 
   const renderContent = useMemo(() => {
     switch (step) {
-      case SET_UP:
+      case Step.Setup:
         return (
           <SetupToken
-            onNext={() => setStep(ADD_LIQUIDITY)}
+            onNext={() => setStep(Step.AddLiquidity)}
             setPoolAddress={setPoolAddress}
           />
         )
-      case ADD_LIQUIDITY:
+      case Step.AddLiquidity:
         return <SetLiquidity setStep={setStep} poolAddress={poolAddress} />
-      case CONFIRM:
+      case Step.Confirm:
         return <PoolOverview poolAddress={poolAddress} />
     }
   }, [poolAddress, step])
@@ -70,19 +70,23 @@ export default function NewPool() {
       <div className="col-span-full">
         <ul className="steps w-full">
           <li
-            className={classNames('step', { 'step-primary': step >= SET_UP })}
+            className={classNames('step', {
+              'step-primary': step >= Step.Setup,
+            })}
           >
             Select token & weights
           </li>
           <li
             className={classNames('step', {
-              'step-primary': step >= ADD_LIQUIDITY,
+              'step-primary': step >= Step.AddLiquidity,
             })}
           >
             Set liquidity
           </li>
           <li
-            className={classNames('step', { 'step-primary': step >= CONFIRM })}
+            className={classNames('step', {
+              'step-primary': step >= Step.Confirm,
+            })}
           >
             Confirm
           </li>
