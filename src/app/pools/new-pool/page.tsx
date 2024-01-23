@@ -26,7 +26,7 @@ export default function NewPool() {
     for (const poolAddress in pools) {
       const { authority, state } = pools[poolAddress]
       let step: Step = Step.Setup
-      if (!authority.equals(publicKey)) {
+      if (authority.equals(publicKey)) {
         if (isEqual(state, PoolStates.Uninitialized)) step = Step.AddLiquidity
         if (isEqual(state, PoolStates.Initalizing)) step = Step.Confirm
       }

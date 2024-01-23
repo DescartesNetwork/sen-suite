@@ -475,8 +475,9 @@ export const useBestSenRoutes = () => {
   return { bestSenSwapRoute }
 }
 
-/** Swap on senswap
- *  @returns swap function
+/**
+ * Swap on senswap
+ * @returns swap function
  */
 export const useSenSwap = () => {
   const bidAmount = useSwapStore(({ bidAmount }) => bidAmount)
