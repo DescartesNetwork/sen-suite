@@ -50,9 +50,9 @@ export default function PoolOverview({ poolAddress }: PoolOverviewProps) {
   }, [decimals, getMintInfo, pool, prices])
 
   const onFinalize = useCallback(async () => {
+    console.log('ma no')
     try {
       setLoading(true)
-    } catch (er: any) {
       if (!isAddress(poolAddress)) throw new Error('Invalid pool address.')
       const { txId } = await senswap.finalizePool({ poolAddress })
       pushMessage(
@@ -63,6 +63,8 @@ export default function PoolOverview({ poolAddress }: PoolOverviewProps) {
         },
       )
       push(`/pools/pool-details?poolAddress=${poolAddress}`)
+    } catch (er: any) {
+      pushMessage('alert-error', er.message)
     } finally {
       setLoading(false)
     }
