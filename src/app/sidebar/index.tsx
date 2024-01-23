@@ -5,6 +5,7 @@ import { useEffectOnce, useKey } from 'react-use'
 import classNames from 'classnames'
 
 import {
+  BookOpen,
   ChevronLeftSquare,
   ChevronRightSquare,
   Menu,
@@ -82,6 +83,17 @@ export default function Sidebar({ children }: SidebarProps) {
             >
               <Send className="menu-logo" />
               <p className="menu-option">Telegram</p>
+            </Link>
+          </li>
+          <li>
+            <Link
+              className="menu-item gap-2"
+              href="https://docs.senswap.sentre.io/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <BookOpen className="menu-logo" />
+              <p className="menu-option">Documents</p>
             </Link>
           </li>
           <li>
