@@ -4,7 +4,7 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { useRouter } from 'next/navigation'
 import classNames from 'classnames'
 import isEqual from 'react-fast-compare'
-import { PoolStates } from '@sentre/senswap'
+import { PoolStates, isAddress } from '@sentre/senswap'
 
 import { ChevronLeft } from 'lucide-react'
 import SetupToken from './setupToken'
@@ -21,20 +21,26 @@ export default function NewPool() {
   const { publicKey } = useWallet()
   const { push } = useRouter()
 
-  const fetchProcessStep = useCallback(() => {
-    if (poolAddress || !publicKey) return
-    for (const poolAddress in pools) {
-      const { authority, state } = pools[poolAddress]
-      let step: Step = Step.Setup
+  const resumeStep = useCallback(() => {
+    if (!publicKey) return
+    let step = Step.Setup
+    let address = ''
+    for (const pool in pools) {
+      const { authority, state } = pools[pool]
       if (authority.equals(publicKey)) {
-        if (isEqual(state, PoolStates.Uninitialized)) step = Step.AddLiquidity
-        if (isEqual(state, PoolStates.Initalizing)) step = Step.Confirm
+        if (isEqual(state, PoolStates.Uninitialized)) {
+          step = Step.AddLiquidity
+          address = pool
+        }
+        if (isEqual(state, PoolStates.Initializing)) {
+          step = Step.Confirm
+          address = pool
+        }
       }
-      setStep(step)
-      return setPoolAddress(poolAddress)
     }
-    return setPoolAddress('')
-  }, [poolAddress, pools, publicKey])
+    setStep(step)
+    setPoolAddress(address)
+  }, [pools, publicKey])
 
   const renderContent = useMemo(() => {
     switch (step) {
@@ -53,8 +59,8 @@ export default function NewPool() {
   }, [poolAddress, step])
 
   useEffect(() => {
-    fetchProcessStep()
-  }, [fetchProcessStep])
+    if (!isAddress(poolAddress)) resumeStep()
+  }, [poolAddress, resumeStep])
 
   return (
     <div className="w-full max-w-[660px] card bg-base-100 rounded-3xl p-6 grid grid-cols-12 gap-6">
