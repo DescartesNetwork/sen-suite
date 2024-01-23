@@ -50,7 +50,6 @@ export default function PoolOverview({ poolAddress }: PoolOverviewProps) {
   }, [decimals, getMintInfo, pool, prices])
 
   const onFinalize = useCallback(async () => {
-    console.log('ma no')
     try {
       setLoading(true)
       if (!isAddress(poolAddress)) throw new Error('Invalid pool address.')
