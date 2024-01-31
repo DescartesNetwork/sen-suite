@@ -1,6 +1,6 @@
 'use client'
 import { ReactNode } from 'react'
-import classNames from 'classnames'
+import clsx from 'clsx'
 
 import { X } from 'lucide-react'
 import { Dialog } from '@headlessui/react'
@@ -18,7 +18,7 @@ export default function Modal({
 }: ModalProps) {
   return (
     <Dialog
-      className={classNames('modal', { 'modal-open': open })}
+      className={clsx('modal', { 'modal-open': open })}
       open={open}
       onClose={onCancel}
     >

@@ -1,6 +1,6 @@
 'use client'
 import { ChevronDown, ChevronUp } from 'lucide-react'
-import classNames from 'classnames'
+import clsx from 'clsx'
 
 import { SortState } from '@/providers/farming.provider'
 
@@ -24,12 +24,12 @@ export default function Sort({
       <span className="text-sm font-bold select-none">{title}</span>
       <span className="flex flex-col items-center">
         <ChevronUp
-          className={classNames('w-3 h-3 opacity-40 stroke-[4px]', {
+          className={clsx('w-3 h-3 opacity-40 stroke-[4px]', {
             '!opacity-100': value === 1,
           })}
         />
         <ChevronDown
-          className={classNames('w-3 h-3 opacity-40 stroke-[4px]', {
+          className={clsx('w-3 h-3 opacity-40 stroke-[4px]', {
             '!opacity-100': value === -1,
           })}
         />

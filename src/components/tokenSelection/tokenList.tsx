@@ -11,6 +11,7 @@ import TokenCard from './tokenCard'
 
 import { useAllMintMetadata } from '@/providers/mint.provider'
 import { useAllTokenAccounts } from '@/providers/tokenAccount.provider'
+import { WRAPPED_SOL } from '@/hooks/wsol.hook'
 
 /**
  * Get random mints' metadata
@@ -65,8 +66,15 @@ export default function TokenList({
         const y = mintAddresses.includes(b) ? 1 : 0
         return y - x
       })
-    if (!hidden) return recentAddresses
-    return recentAddresses.filter((address) => mintAddresses.includes(address))
+    // SOL account
+    if (!recentAddresses.includes(WRAPPED_SOL))
+      recentAddresses.unshift(WRAPPED_SOL)
+    // Hide uknown accounts
+    if (hidden)
+      return recentAddresses.filter((address) =>
+        mintAddresses.includes(address),
+      )
+    return recentAddresses
   }, [mintAddresses, hidden, myAccounts])
 
   return (

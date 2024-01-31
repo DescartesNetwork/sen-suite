@@ -4,7 +4,7 @@ import { Wallet } from '@solana/wallet-adapter-react'
 import copy from 'copy-to-clipboard'
 import { BN } from 'bn.js'
 import { useFloating, offset, flip, shift } from '@floating-ui/react'
-import classNames from 'classnames'
+import clsx from 'clsx'
 
 import { ArrowUpRightSquare, Copy, LogOut } from 'lucide-react'
 import { WalletIcon } from '@solana/wallet-adapter-react-ui'
@@ -79,7 +79,7 @@ export default function WalletInfo({
           <a className="flex" onClick={onCopy} href="#">
             <span className="flex-auto">Copy Address</span>
             <span
-              className={classNames('tooltip', {
+              className={clsx('tooltip', {
                 'tooltip-open': copied,
               })}
               data-tip={copied ? 'Copied' : 'Copy'}

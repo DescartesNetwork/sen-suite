@@ -1,7 +1,7 @@
 'use client'
 import { CSSProperties, useState } from 'react'
 import { useInterval } from 'react-use'
-import classNames from 'classnames'
+import clsx from 'clsx'
 
 import {
   AlertTriangle,
@@ -43,7 +43,7 @@ export default function Alert({
 
   return (
     <div
-      className={classNames('cursor-pointer alert max-w-sm shadow-xl', type)}
+      className={clsx('cursor-pointer alert max-w-sm shadow-xl', type)}
       onClick={() => onClick()}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}

@@ -3,7 +3,7 @@ import { Fragment } from 'react'
 import { CodeBlock } from 'notion-types'
 import { Text, useNotionContext } from 'react-notion-x'
 import { getBlockTitle } from 'notion-utils'
-import classNames from 'classnames'
+import clsx from 'clsx'
 import { ocean } from 'react-syntax-highlighter/dist/esm/styles/hljs'
 
 import SyntaxHighlighter from 'react-syntax-highlighter'
@@ -28,7 +28,7 @@ export function Code({
   return (
     <Fragment>
       <pre
-        className={classNames('notion-code', 'group', className)}
+        className={clsx('notion-code', 'group', className)}
         style={{ padding: 0 }}
       >
         <SyntaxHighlighter language={language} style={ocean}>

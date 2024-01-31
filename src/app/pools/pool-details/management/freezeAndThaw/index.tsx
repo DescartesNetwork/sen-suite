@@ -1,6 +1,6 @@
 'use client'
 import { useMemo, useState } from 'react'
-import classNames from 'classnames'
+import clsx from 'clsx'
 import isEqual from 'react-fast-compare'
 import { PoolStates } from '@sentre/senswap'
 
@@ -31,7 +31,7 @@ export default function FreezeAndThaw({ poolAddress }: FreezeAndThawProps) {
       <div className="tabs tabs-boxed bg-inherit gap-4">
         <div
           onClick={() => setActiveTab('pool')}
-          className={classNames('tab bg-base-200', {
+          className={clsx('tab bg-base-200', {
             'tab-active': activeTab === 'pool',
           })}
         >
@@ -39,7 +39,7 @@ export default function FreezeAndThaw({ poolAddress }: FreezeAndThawProps) {
         </div>
         <div
           onClick={() => setActiveTab('individual_token')}
-          className={classNames('tab bg-base-200', {
+          className={clsx('tab bg-base-200', {
             'tab-active': activeTab === 'individual_token',
           })}
         >

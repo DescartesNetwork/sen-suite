@@ -2,7 +2,7 @@
 import { ChangeEvent, useCallback, useMemo } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import classNames from 'classnames'
+import clsx from 'clsx'
 
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 
@@ -40,7 +40,7 @@ export default function Pagination({ pageIds, metadata }: PaginationProps) {
   return (
     <div className="join">
       <Link
-        className={classNames('join-item btn btn-square', {
+        className={clsx('join-item btn btn-square', {
           'btn-disabled cursor-not-allowed': page === min,
         })}
         href={{
@@ -60,7 +60,7 @@ export default function Pagination({ pageIds, metadata }: PaginationProps) {
         ))}
       </select>
       <Link
-        className={classNames('join-item btn btn-square', {
+        className={clsx('join-item btn btn-square', {
           'btn-disabled cursor-not-allowed': page === max,
         })}
         href={{

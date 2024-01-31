@@ -2,7 +2,7 @@
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { useWallet } from '@solana/wallet-adapter-react'
-import classNames from 'classnames'
+import clsx from 'clsx'
 
 import { Plus } from 'lucide-react'
 
@@ -19,7 +19,7 @@ function Tab({
 }) {
   return (
     <Link
-      className={classNames('btn btn-ghost btn-sm', {
+      className={clsx('btn btn-ghost btn-sm', {
         'btn-active': active,
         'btn-disabled': disabled,
       })}

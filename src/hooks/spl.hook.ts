@@ -1,9 +1,9 @@
 import { useCallback, useMemo } from 'react'
 import useSWR from 'swr'
 import { splTokenProgram } from '@coral-xyz/spl-token'
-import { utils, web3 } from '@coral-xyz/anchor'
+import { Address, utils, web3 } from '@coral-xyz/anchor'
+import { isAddress } from '@sentre/senswap'
 
-import { isAddress } from '@/helpers/utils'
 import { useAnchorProvider } from '@/providers/wallet.provider'
 
 export const TOKEN_20202_PROGRAM_ID = new web3.PublicKey(
@@ -52,6 +52,35 @@ export const useMints = (mintAddresses: string[]) => {
   const { data = [] } = useSWR(
     [mintAddresses, 'spl::mints'],
     ([mintAddresses]) => fetcher(mintAddresses),
+  )
+
+  return data
+}
+
+/**
+ * Get token account data
+ * @param tokenAccountAddresses Token account addresses
+ * @returns Token account data
+ */
+export const useTokenAccounts = (tokenAccountAddresses: Address[]) => {
+  const spl = useSpl()
+  const fetcher = useCallback(
+    async ([tokenAccountAddresses]: [Address[]]) => {
+      for (const tokenAccountAddress of tokenAccountAddresses)
+        if (!isAddress(tokenAccountAddress)) return undefined
+      const data = await Promise.all(
+        tokenAccountAddresses.map(
+          async (tokenAccountAddress) =>
+            await spl.account.account.fetch(tokenAccountAddress),
+        ),
+      )
+      return data
+    },
+    [spl],
+  )
+  const { data = [] } = useSWR(
+    [tokenAccountAddresses, 'spl::accounts'],
+    fetcher,
   )
 
   return data

@@ -2,7 +2,7 @@
 import { useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import classNames from 'classnames'
+import clsx from 'clsx'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/dist/ScrollTrigger'
 
@@ -42,7 +42,7 @@ const App = ({ route, name, icon, disabled }: AppProps) => {
     <div className="flex flex-col items-center gap-2">
       <Link
         href={disabled ? '#' : route}
-        className={classNames(
+        className={clsx(
           'pos-center rounded-full p-4 md:p-6 bg-base-100 hover:border-primary border-2 transition-all',
           {
             'opacity-60 hover:!border-inherit cursor-not-allowed': disabled,

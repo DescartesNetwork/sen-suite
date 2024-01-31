@@ -2,7 +2,8 @@ import { ReactNode } from 'react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
-import { PoolProvider } from '@/providers/pools.provider'
+import PoolProvider from '@/providers/pools.provider'
+import SwapProvider from '@/providers/swap.provider'
 
 export const metadata: Metadata = {
   title: 'Sentre Swap | Sentre',
@@ -15,15 +16,17 @@ export default function SwapLayout({ children }: { children: ReactNode }) {
     <div className="flex flex-col h-full rounded-3xl bg-swap-light dark:bg-swap-dark bg-center bg-cover transition-all p-4 justify-center gap-4">
       <div className="w-full flex flex-col gap-4 items-center">
         <div role="tablist" className="tabs tabs-boxed rounded-box">
-          <a role="tab" className="tab tab-active !rounded-box">
+          <p role="tab" className="tab tab-active !rounded-box">
             Swap
-          </a>
+          </p>
           <Link role="tab" className="tab !rounded-box" href="/pools">
             Pools
           </Link>
         </div>
         <div className="max-w-[360px]">
-          <PoolProvider>{children}</PoolProvider>
+          <PoolProvider>
+            <SwapProvider>{children}</SwapProvider>
+          </PoolProvider>
         </div>
       </div>
     </div>

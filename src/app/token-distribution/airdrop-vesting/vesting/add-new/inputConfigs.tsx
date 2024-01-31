@@ -13,7 +13,7 @@ import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { useFloating, offset, flip, shift } from '@floating-ui/react'
-import classNames from 'classnames'
+import clsx from 'clsx'
 
 import { ChevronDown } from 'lucide-react'
 import { MintLogo, MintSymbol } from '@/components/mint'
@@ -369,7 +369,7 @@ const Expiration = ({
         showIcon
         selected={expiration ? new Date(expiration) : null}
         onChange={(date) => upsertConfigs({ expiration: date?.getTime() })}
-        className={classNames('bg-base-200 !p-3 rounded-lg w-full', {
+        className={clsx('bg-base-200 !p-3 rounded-lg w-full', {
           'opacity-60 cursor-not-allowed': unlimited,
         })}
         placeholderText="Select time"

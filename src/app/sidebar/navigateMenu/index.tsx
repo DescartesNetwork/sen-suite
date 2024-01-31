@@ -1,5 +1,5 @@
 'use client'
-import classNames from 'classnames'
+import clsx from 'clsx'
 
 import {
   BookPlus,
@@ -59,10 +59,7 @@ export default function NavigateMenu({ open }: NavigateMenuProps) {
   return (
     <ul className="flex flex-nowrap overflow-y-auto menu menu-vertical menu-md sidebar-menu">
       {ROUTES.map((route) => (
-        <li
-          key={route.name}
-          className={classNames({ disabled: route.disabled })}
-        >
+        <li key={route.name} className={clsx({ disabled: route.disabled })}>
           <MenuItem menuItemData={route} open={open} />
         </li>
       ))}

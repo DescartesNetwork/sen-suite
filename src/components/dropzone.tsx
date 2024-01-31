@@ -1,7 +1,7 @@
 'use client'
 import { useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
-import classNames from 'classnames'
+import clsx from 'clsx'
 
 import { Download, FileUp, X } from 'lucide-react'
 
@@ -51,7 +51,7 @@ export default function Dropzone({
         <div className="bg-[#f9575e1a] p-3 rounded-xl">
           <FileUp
             size={24}
-            className={classNames('text-primary', {
+            className={clsx('text-primary', {
               'animate-bounce': isDragActive,
               'stroke-lime-500': !!file,
             })}

@@ -1,11 +1,11 @@
 import axios from 'axios'
 
-import mintConfig from '@/configs/mint.config'
+import sageConfig from '@/configs/sage.config'
 
 export const getPrice = async (mintAddress: string) => {
   try {
     const { data: price } = await axios.get<number>(
-      `${mintConfig.host}/price/${mintAddress}`,
+      `${sageConfig.host}/price/${mintAddress}`,
     )
     return price
   } catch (er) {

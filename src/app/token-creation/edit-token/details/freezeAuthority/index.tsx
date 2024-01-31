@@ -2,7 +2,7 @@
 import { Fragment, useState } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { PublicKey } from '@solana/web3.js'
-import classNames from 'classnames'
+import clsx from 'clsx'
 
 import Modal from '@/components/modal'
 import UpdateAuthority from './update'
@@ -66,7 +66,7 @@ export default function FreezeAuthority({ mintAddress }: FreezeAuthorityProps) {
             {Object.values(FreezeAction).map((value) => (
               <a
                 key={value}
-                className={classNames('tab ', {
+                className={clsx('tab ', {
                   'tab-active': tab === value,
                 })}
                 onClick={() => setTab(value)}

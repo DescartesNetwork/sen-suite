@@ -1,6 +1,5 @@
 'use client'
-import BN from 'bn.js'
-import classNames from 'classnames'
+import clsx from 'clsx'
 
 import {
   MintAmount,
@@ -13,7 +12,7 @@ import Clipboard from '@/components/clipboard'
 import NewWindow from '@/components/newWindow'
 
 import { solscan } from '@/helpers/explorers'
-import { useTokenAccountByMintAddress } from '@/providers/tokenAccount.provider'
+import { useTokenAccountAmount } from '@/providers/tokenAccount.provider'
 
 export type TokenCardProps = {
   mintAddress: string
@@ -28,15 +27,12 @@ export default function TokenCard({
   active = false,
   showBalance = false,
 }: TokenCardProps) {
-  const { amount } = useTokenAccountByMintAddress(mintAddress) || {
-    amount: new BN(0),
-  }
-
+  const amount = useTokenAccountAmount(mintAddress)
   return (
     <div
-      className={classNames(
+      className={clsx(
         'group card w-full p-2 hover:bg-base-200 cursor-pointer',
-        { 'bg-accent': active },
+        { 'bg-base-300': active },
       )}
       onClick={onClick}
     >

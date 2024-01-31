@@ -8,7 +8,7 @@ import {
   MouseEvent,
 } from 'react'
 import BN from 'bn.js'
-import classNames from 'classnames'
+import clsx from 'clsx'
 import { WRAPPED_SOL_MINT } from '@metaplex-foundation/js'
 import { utils } from '@coral-xyz/anchor'
 import { useWallet } from '@solana/wallet-adapter-react'
@@ -194,7 +194,7 @@ export default function Deposit({ poolAddress }: { poolAddress: string }) {
             <div className="flex flex-row items-center">
               <p className="flex-auto text-sm opacity-60">Price Impact</p>
               <p
-                className={classNames('text-[#FA8C16]', {
+                className={clsx('text-[#FA8C16]', {
                   '!text-[#14E041]': !priceImpact || priceImpact < 0.01,
                   '!text-[#D72311]': priceImpact > 0.05,
                 })}

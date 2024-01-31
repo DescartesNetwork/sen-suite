@@ -1,6 +1,6 @@
 'use client'
 import { Fragment, useMemo } from 'react'
-import classNames from 'classnames'
+import clsx from 'clsx'
 
 import PoolRow from './poolRow'
 import Empty from '@/components/empty'
@@ -40,7 +40,7 @@ export default function CommunityPools({ pools }: CommunityPoolsProps) {
         {communityPools.map((pool, i) => (
           <PoolRow key={pool.address} index={i + 1} pool={pool} />
         ))}
-        <tr className={classNames({ hidden: !!communityPools.length })}>
+        <tr className={clsx({ hidden: !!communityPools.length })}>
           <td colSpan={8}>
             <Empty />
           </td>

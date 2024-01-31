@@ -1,5 +1,5 @@
 'use client'
-import classNames from 'classnames'
+import clsx from 'clsx'
 
 import { solscan } from '@/helpers/explorers'
 import { shortenAddress } from '@/helpers/utils'
@@ -18,7 +18,7 @@ const NftCard = ({ nftAddress, active, onChange = () => {} }: NftCardProps) => {
   }
   return (
     <div
-      className={classNames(
+      className={clsx(
         'flex flex-col gap-2 bg-base-200 p-2 rounded-lg cursor-pointer',
         {
           '!bg-accent': active,

@@ -1,6 +1,6 @@
 'use client'
 import { PoolState, PoolStates } from '@sentre/senswap'
-import classNames from 'classnames'
+import clsx from 'clsx'
 import isEqual from 'react-fast-compare'
 
 import { Info } from 'lucide-react'
@@ -28,7 +28,7 @@ export default function CardDescription({
 
       <div className="flex flex-row items-center gap-2">
         <div
-          className={classNames('badge badge-xs', {
+          className={clsx('badge badge-xs', {
             'badge-primary': isEqual(state, PoolStates.Frozen),
             'bg-accent': isEqual(state, PoolStates.Initialized),
           })}

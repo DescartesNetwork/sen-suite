@@ -1,5 +1,8 @@
 import numbro from 'numbro'
 import { PublicKey } from '@solana/web3.js'
+import BN from 'bn.js'
+
+export const ZERO = new BN(0)
 
 /**
  * Delay by async/await

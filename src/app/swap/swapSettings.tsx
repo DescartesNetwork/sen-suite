@@ -1,5 +1,5 @@
 'use client'
-import classNames from 'classnames'
+import clsx from 'clsx'
 
 import { Settings } from 'lucide-react'
 
@@ -16,7 +16,7 @@ function SlippageOptions({
 }) {
   return (
     <button
-      className={classNames('btn join-item', { 'btn-primary': active })}
+      className={clsx('btn join-item', { 'btn-primary': active })}
       onClick={onClick}
     >
       {title}

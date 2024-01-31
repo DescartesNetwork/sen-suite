@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 import type { Metadata } from 'next'
 
-import { PoolProvider } from '@/providers/pools.provider'
+import PoolProvider from '@/providers/pools.provider'
 import { PoolStatProvider } from '@/providers/stat.provider'
 
 export const metadata: Metadata = {

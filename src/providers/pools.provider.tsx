@@ -53,7 +53,7 @@ export const usePoolStore = create<PoolStore>()(
 /**
  * Provider
  */
-export function PoolProvider({ children }: { children: ReactNode }) {
+export default function PoolProvider({ children }: { children: ReactNode }) {
   const senswap = useSenswap()
   const upsertPool = usePoolStore(({ upsertPool }) => upsertPool)
 

@@ -1,6 +1,6 @@
 'use client'
 import { Fragment, useMemo } from 'react'
-import classNames from 'classnames'
+import clsx from 'clsx'
 
 import { BadgeCheck } from 'lucide-react'
 import PoolRow from './poolRow'
@@ -42,7 +42,7 @@ export default function OriginalPools({ pools }: OriginalPoolsProps) {
         {originalPools.map((pool, i) => (
           <PoolRow key={pool.address} index={i + 1} pool={pool} />
         ))}
-        <tr className={classNames({ hidden: !!originalPools.length })}>
+        <tr className={clsx({ hidden: !!originalPools.length })}>
           <td colSpan={8}>
             <Empty />
           </td>

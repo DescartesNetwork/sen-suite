@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import classNames from 'classnames'
+import clsx from 'clsx'
 import { usePathname } from 'next/navigation'
 import {
   useFloating,
@@ -39,7 +39,7 @@ const DropdownSubMenuItem = ({ menuItemData }: SubMenuItemProps) => {
       <label
         tabIndex={0}
         ref={setReference}
-        className={classNames('menu-item gap-2', {
+        className={clsx('menu-item gap-2', {
           focus: pathname.includes(route),
         })}
       >
@@ -59,7 +59,7 @@ const DropdownSubMenuItem = ({ menuItemData }: SubMenuItemProps) => {
             <li key={route}>
               <Link
                 href={disabled ? '#' : route}
-                className={classNames('pl-8 opacity-60 hover:opacity-100', {
+                className={clsx('pl-8 opacity-60 hover:opacity-100', {
                   '!opacity-100': pathname.includes(route),
                 })}
               >
@@ -84,10 +84,10 @@ const SubMenuItem = ({ menuItemData }: SubMenuItemProps) => {
       <ul className="ml-0 pl-0 before:w-0">
         {children &&
           children.map(({ route, disabled, name: subName }) => (
-            <li key={route} className={classNames({ disabled })}>
+            <li key={route} className={clsx({ disabled })}>
               <Link
                 href={disabled ? '#' : route}
-                className={classNames('py-3 pl-11', {
+                className={clsx('py-3 pl-11', {
                   focus: pathname.includes(route),
                 })}
               >

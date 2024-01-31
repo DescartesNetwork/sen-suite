@@ -1,7 +1,7 @@
 'use client'
 import { useCallback, useState } from 'react'
 import copy from 'copy-to-clipboard'
-import classNames from 'classnames'
+import clsx from 'clsx'
 
 import { Copy } from 'lucide-react'
 import { asyncWait } from '@/helpers/utils'
@@ -32,7 +32,7 @@ export default function Clipboard({
 
   return (
     <span
-      className={classNames(tooltipClassName, { 'tooltip-open': copied })}
+      className={clsx(tooltipClassName, { 'tooltip-open': copied })}
       data-tip={copied ? 'Copied' : idleText}
     >
       <button className={className} onClick={onCopy}>

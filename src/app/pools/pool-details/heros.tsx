@@ -1,7 +1,7 @@
 'use client'
 import { ReactNode, useMemo } from 'react'
 import { BN } from 'bn.js'
-import classNames from 'classnames'
+import clsx from 'clsx'
 
 import { MintAmount } from '@/components/mint'
 
@@ -29,7 +29,7 @@ const HeroCard = ({
     >
       <p className="opacity-60 text-sm">{label}</p>
       <h5
-        className={classNames({
+        className={clsx({
           'loading loading-bars loading-xs': loading,
         })}
       >

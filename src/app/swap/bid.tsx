@@ -1,6 +1,5 @@
 'use client'
 import { ChangeEvent, useCallback, useState } from 'react'
-import BN from 'bn.js'
 
 import TokenSelection from '@/components/tokenSelection'
 import {
@@ -11,8 +10,8 @@ import {
 } from '@/components/mint'
 import { ChevronDown } from 'lucide-react'
 
-import { useSwapStore } from '@/hooks/swap.hook'
-import { useTokenAccountByMintAddress } from '@/providers/tokenAccount.provider'
+import { useTokenAccountAmount } from '@/providers/tokenAccount.provider'
+import { useSwapStore } from '@/providers/swap.provider'
 
 export default function Bid() {
   const [open, setOpen] = useState(false)
@@ -23,9 +22,7 @@ export default function Bid() {
   )
   const bidAmount = useSwapStore(({ bidAmount }) => bidAmount)
   const setBidAmount = useSwapStore(({ setBidAmount }) => setBidAmount)
-  const { amount } = useTokenAccountByMintAddress(bidMintAddress) || {
-    amount: new BN(0),
-  }
+  const amount = useTokenAccountAmount(bidMintAddress)
   const balance = useMintAmount(bidMintAddress, amount)
 
   const onBidMintAddress = useCallback(

@@ -1,6 +1,6 @@
 'use client'
 import { Fragment, useMemo } from 'react'
-import classNames from 'classnames'
+import clsx from 'clsx'
 
 import Image from 'next/image'
 import { ChevronRight, Diamond } from 'lucide-react'
@@ -57,7 +57,7 @@ function SlippageTolerance() {
     <div className="flex flex-row gap-2 items-baseline">
       <p className="flex-auto text-sm opacity-60">Slippage Tolerance</p>
       <div
-        className={classNames('badge', {
+        className={clsx('badge', {
           'badge-error': slippage >= 1,
           'badge-warning': slippage >= 0.05 && slippage < 1,
           'badge-success': slippage < 0.05,
@@ -121,7 +121,7 @@ function Routes() {
         </span>
         {platform === Platform.Jup && !fetching && (
           <span
-            className={classNames('flex flex-row gap-2 justify-end', {
+            className={clsx('flex flex-row gap-2 justify-end', {
               hidden: !hops.length,
             })}
           >

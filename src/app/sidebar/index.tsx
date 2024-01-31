@@ -2,7 +2,7 @@
 import { Fragment, ReactNode, useState } from 'react'
 import Link from 'next/link'
 import { useEffectOnce, useKey } from 'react-use'
-import classNames from 'classnames'
+import clsx from 'clsx'
 
 import {
   BookOpen,
@@ -42,12 +42,12 @@ export default function Sidebar({ children }: SidebarProps) {
     <Fragment>
       {/* Overlay */}
       <div
-        className={classNames('overlay max-md:mobile', { open })}
+        className={clsx('overlay max-md:mobile', { open })}
         onClick={() => setOpen(false)}
       />
       {/* Sidebar */}
       <aside
-        className={classNames('flex flex-col sidebar vertical max-md:mobile', {
+        className={clsx('flex flex-col sidebar vertical max-md:mobile', {
           open,
         })}
       >

@@ -1,5 +1,5 @@
 'use client'
-import classNames from 'classnames'
+import clsx from 'clsx'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -24,7 +24,7 @@ export default function Navigation() {
       {Tabs.map(({ title, route, key }) => (
         <Link
           key={route}
-          className={classNames('tab', {
+          className={clsx('tab', {
             'tab-active': pathname.split('/').includes(key),
           })}
           href={route}

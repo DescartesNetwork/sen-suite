@@ -1,6 +1,6 @@
 'use client'
 import { ChangeEvent, useCallback, useMemo, useRef } from 'react'
-import classNames from 'classnames'
+import clsx from 'clsx'
 
 import { MintLogo } from '@/components/mint'
 import { ImagePlus, X } from 'lucide-react'
@@ -60,7 +60,7 @@ export default function MintLogoUpload({
             <X className="w-4 h-4" />
           </button>
           <label
-            className={classNames(
+            className={clsx(
               'btn btn-circle btn-sm btn-secondary absolute -right-1 -bottom-1',
               {
                 ' grayscale cursor-not-allowed': !!urlImg,

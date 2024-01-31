@@ -1,7 +1,7 @@
 'use client'
 import { usePathname, useRouter } from 'next/navigation'
 import { useCallback, useMemo } from 'react'
-import classNames from 'classnames'
+import clsx from 'clsx'
 
 import Link from 'next/link'
 import {
@@ -68,7 +68,7 @@ export default function MerkleDistributionHeader() {
           <Link
             key={i}
             href={route}
-            className={classNames('tab', {
+            className={clsx('tab', {
               'tab-active': activeKey === key,
             })}
           >

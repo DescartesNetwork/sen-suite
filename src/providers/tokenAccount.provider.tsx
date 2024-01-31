@@ -1,5 +1,5 @@
 'use client'
-import { Fragment, ReactNode, useCallback, useEffect } from 'react'
+import { Fragment, ReactNode, useCallback, useEffect, useMemo } from 'react'
 import { splTokenProgram } from '@coral-xyz/spl-token'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
@@ -8,8 +8,11 @@ import { KeyedAccountInfo } from '@solana/web3.js'
 import { produce } from 'immer'
 
 import { env } from '@/configs/env'
-import { isAddress } from '@/helpers/utils'
+import { ZERO, isAddress } from '@/helpers/utils'
 import { useSpl } from '@/hooks/spl.hook'
+import { useLamports } from './wallet.provider'
+import BN from 'bn.js'
+import { WRAPPED_SOL } from '@/hooks/wsol.hook'
 
 export type TokenAccount = Awaited<
   ReturnType<ReturnType<typeof splTokenProgram>['account']['account']['fetch']>
@@ -130,4 +133,22 @@ export const useTokenAccountByMintAddress = (mintAddress: string) => {
     return tokenAccounts[tokenAccountAddress]
   })
   return tokenAccount
+}
+
+/**
+ * Token Account Amount
+ * @param mintAddress Mint address
+ * @returns Token account amount
+ */
+
+export function useTokenAccountAmount(mintAddress: string) {
+  const lamports = useLamports()
+  const { amount = ZERO } = useTokenAccountByMintAddress(mintAddress) || {}
+
+  const result = useMemo(() => {
+    if (mintAddress !== WRAPPED_SOL) return amount
+    return amount.add(new BN(lamports))
+  }, [lamports, amount, mintAddress])
+
+  return result
 }

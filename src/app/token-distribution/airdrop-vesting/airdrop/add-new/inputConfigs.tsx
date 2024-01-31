@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { parse } from 'papaparse'
-import classNames from 'classnames'
+import clsx from 'clsx'
 
 import { ChevronDown } from 'lucide-react'
 import Dropzone from '@/components/dropzone'
@@ -149,7 +149,7 @@ export default function InputConfigs({
                 showIcon
                 selected={expiration ? new Date(expiration) : null}
                 onChange={(date) => onTimeChange('expiration', date)}
-                className={classNames('bg-base-200 !p-3 rounded-lg w-full', {
+                className={clsx('bg-base-200 !p-3 rounded-lg w-full', {
                   'opacity-60 cursor-not-allowed': !timeError,
                 })}
                 placeholderText="Select time"

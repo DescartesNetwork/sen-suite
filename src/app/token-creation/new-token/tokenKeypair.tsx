@@ -4,7 +4,7 @@ import { KeypairSigner, generateSigner } from '@metaplex-foundation/umi'
 
 import { encode } from 'bs58'
 import copy from 'copy-to-clipboard'
-import classNames from 'classnames'
+import clsx from 'clsx'
 
 import { Copy, Info, Settings, Shuffle } from 'lucide-react'
 import { SmActionInput } from './actionInput'
@@ -53,7 +53,7 @@ export default function TokenKeypair({ keypair, onChange }: TokenKeypairProps) {
             <Shuffle className="w-4 h-4" />
           </button>
           <div
-            className={classNames('absolute right-2 dropdown dropdown-end', {
+            className={clsx('absolute right-2 dropdown dropdown-end', {
               'dropdown-open': loading,
             })}
           >

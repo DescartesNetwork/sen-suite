@@ -1,6 +1,6 @@
 'use client'
 
-import classNames from 'classnames'
+import clsx from 'clsx'
 
 import { useTotalPoolTvl } from '@/providers/stat.provider'
 import { numeric } from '@/helpers/utils'
@@ -41,7 +41,7 @@ export default function LiquidityPoolPanel() {
           <div>
             <p className="text-sm">Total volume 24h</p>
             <h5
-              className={classNames({
+              className={clsx({
                 'loading loading-spinner loading-xs': false,
               })}
             >

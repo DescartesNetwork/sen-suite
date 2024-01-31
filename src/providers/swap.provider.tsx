@@ -1,0 +1,62 @@
+'use client'
+import { Fragment, ReactNode } from 'react'
+import { create } from 'zustand'
+import { devtools } from 'zustand/middleware'
+
+import { env } from '@/configs/env'
+import swapConfig from '@/configs/swap.config'
+
+export type SwapStore = {
+  bidMintAddress: string
+  setBidMintAddress: (bidMintAddress: string) => void
+  bidAmount: string
+  setBidAmount: (bidAmount: string) => void
+  askMintAddress: string
+  setAskMintAddress: (askMintAddress: string) => void
+  askAmount: string
+  setAskAmount: (askAmount: string) => void
+  slippage: number
+  setSlippage: (slippage: number) => void
+  overBudget: boolean
+  setOverBudget: (slippage: boolean) => void
+}
+
+/**
+ * Store
+ */
+
+export const useSwapStore = create<SwapStore>()(
+  devtools(
+    (set) => ({
+      bidMintAddress: swapConfig.usdcAddress,
+      setBidMintAddress: (bidMintAddress: string) =>
+        set({ bidMintAddress }, false, 'setBidMintAddress'),
+      bidAmount: '',
+      setBidAmount: (bidAmount: string) =>
+        set({ bidAmount }, false, 'setBidAmount'),
+      askMintAddress: swapConfig.sntrAddress,
+      setAskMintAddress: (askMintAddress: string) =>
+        set({ askMintAddress }, false, 'setAskMintAddress'),
+      askAmount: '',
+      setAskAmount: (askAmount: string) =>
+        set({ askAmount }, false, 'setAskAmount'),
+      slippage: 0.01,
+      setSlippage: (slippage: number) =>
+        set({ slippage }, false, 'setSlippage'),
+      overBudget: false,
+      setOverBudget: (overBudget) =>
+        set({ overBudget }, false, 'setOverBudget'),
+    }),
+    {
+      name: 'swap',
+      enabled: env === 'development',
+    },
+  ),
+)
+
+/**
+ * Provider
+ */
+export default function SwapProvider({ children }: { children: ReactNode }) {
+  return <Fragment>{children}</Fragment>
+}

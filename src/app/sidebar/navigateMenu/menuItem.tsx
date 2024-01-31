@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import classNames from 'classnames'
+import clsx from 'clsx'
 import { usePathname } from 'next/navigation'
 
 import ListSubMenuItem from './listSubMenuItem'
@@ -25,7 +25,7 @@ export default function MenuItem({ menuItemData, open }: MenuItemProps) {
   return (
     <Link
       href={disabled ? '#' : route}
-      className={classNames('px-4 py-3', {
+      className={clsx('px-4 py-3', {
         focus: isFocus,
       })}
     >

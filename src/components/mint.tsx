@@ -96,8 +96,12 @@ export function MintPrice({
 /**
  * Mint Amount
  */
-export const useMintAmount = (mintAddress: string, amount: BN) => {
-  const { decimals } = useMintByAddress(mintAddress) || { decimals: 0 }
+export const useMintAmount = (
+  mintAddress: string,
+  amount: BN,
+  defaultDecimals: number = 0,
+) => {
+  const { decimals = defaultDecimals } = useMintByAddress(mintAddress) || {}
   const value = useMemo(
     () => undecimalize(amount, decimals),
     [amount, decimals],

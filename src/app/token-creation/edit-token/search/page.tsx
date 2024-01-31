@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
-import classNames from 'classnames'
+import clsx from 'clsx'
 
 import { isAddress } from '@/helpers/utils'
 
@@ -15,7 +15,7 @@ export default function SearchToken() {
           type="text"
           name="token-address"
           placeholder="Token Address"
-          className={classNames('input w-full bg-base-200', {
+          className={clsx('input w-full bg-base-200', {
             'ring-2 ring-error': !!mintAddress && !isAddress(mintAddress),
           })}
           value={mintAddress}
@@ -24,7 +24,7 @@ export default function SearchToken() {
       </div>
       <div className="col-span-full">
         <Link
-          className={classNames('btn btn-primary w-full', {
+          className={clsx('btn btn-primary w-full', {
             'btn-disabled': !isAddress(mintAddress),
           })}
           href={

@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useRouter } from 'next/navigation'
-import classNames from 'classnames'
+import clsx from 'clsx'
 import isEqual from 'react-fast-compare'
 import { PoolStates, isAddress } from '@sentre/senswap'
 
@@ -76,21 +76,21 @@ export default function NewPool() {
       <div className="col-span-full">
         <ul className="steps w-full">
           <li
-            className={classNames('step', {
+            className={clsx('step', {
               'step-primary': step >= Step.Setup,
             })}
           >
             Select token & weights
           </li>
           <li
-            className={classNames('step', {
+            className={clsx('step', {
               'step-primary': step >= Step.AddLiquidity,
             })}
           >
             Set liquidity
           </li>
           <li
-            className={classNames('step', {
+            className={clsx('step', {
               'step-primary': step >= Step.Confirm,
             })}
           >

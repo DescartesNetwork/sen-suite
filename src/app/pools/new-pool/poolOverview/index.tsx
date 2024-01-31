@@ -2,7 +2,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { isAddress } from '@sentre/senswap'
-import classNames from 'classnames'
+import clsx from 'clsx'
 
 import { MintAmount, MintLogo, MintSymbol } from '@/components/mint'
 
@@ -110,7 +110,7 @@ export default function PoolOverview({ poolAddress }: PoolOverviewProps) {
       </div>
       <button className="col-span-full btn btn-primary" onClick={onFinalize}>
         <span
-          className={classNames('loading loading-sm loading-spinner', {
+          className={clsx('loading loading-sm loading-spinner', {
             hidden: !loading,
           })}
         />

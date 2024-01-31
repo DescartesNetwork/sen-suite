@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import classNames from 'classnames'
+import clsx from 'clsx'
 
 import { Info, Percent } from 'lucide-react'
 
@@ -48,7 +48,7 @@ const Content = ({
         disabled={disabled}
         value={percent}
         onChange={(e) => onChangeValue(e.target.value)}
-        className={classNames(
+        className={clsx(
           'input p-4 text-sm bg-base-200 w-full rounded-full focus:outline-none pl-9',
           {
             'cursor-not-allowed opacity-60': disabled,
