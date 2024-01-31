@@ -3,6 +3,7 @@ import { useCallback, useMemo, useState } from 'react'
 import Link from 'next/link'
 import BN from 'bn.js'
 import { redirect } from 'next/navigation'
+import { isAddress } from '@sentre/senswap'
 
 import { MintLogo, MintSymbol } from '@/components/mint'
 import EditRowBulkSender from './row'
@@ -12,7 +13,7 @@ import {
   useBulkSenderDecimalized,
   useBulkSenderMint,
 } from '@/providers/bulkSender.provider'
-import { isAddress, numeric } from '@/helpers/utils'
+import { numeric } from '@/helpers/utils'
 import { usePushMessage } from '@/components/message/store'
 import { useTvl } from '@/hooks/tvl.hook'
 import { useMints } from '@/hooks/spl.hook'

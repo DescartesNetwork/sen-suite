@@ -1,10 +1,10 @@
 'use client'
 import { useCallback, useMemo, useState } from 'react'
+import { isAddress } from '@sentre/senswap'
 
 import MintInput from './mintInput'
 import { Plus } from 'lucide-react'
 
-import { isAddress } from '@/helpers/utils'
 import { MintSetup, useInitAndDeletePool } from '@/hooks/pool.hook'
 import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'

@@ -2,12 +2,12 @@ import { MouseEvent, useCallback, useState } from 'react'
 import { utils } from '@coral-xyz/anchor'
 import { PublicKey } from '@solana/web3.js'
 import { useWallet } from '@solana/wallet-adapter-react'
+import { isAddress } from '@sentre/senswap'
 
 import { ThermometerSun } from 'lucide-react'
 
 import { useSpl } from '@/hooks/spl.hook'
 import { usePushMessage } from '@/components/message/store'
-import { isAddress } from '@/helpers/utils'
 
 type ThawProps = {
   mintAddress: string

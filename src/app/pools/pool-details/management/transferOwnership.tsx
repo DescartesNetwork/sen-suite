@@ -1,9 +1,9 @@
 'use client'
 import { useState } from 'react'
+import { isAddress } from '@sentre/senswap'
 
 import { Info } from 'lucide-react'
 
-import { isAddress } from '@/helpers/utils'
 import { solscan } from '@/helpers/explorers'
 import { usePoolManagement } from '@/hooks/pool.hook'
 import { usePushMessage } from '@/components/message/store'

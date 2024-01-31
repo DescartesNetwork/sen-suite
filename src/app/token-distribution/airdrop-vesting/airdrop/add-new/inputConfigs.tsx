@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { parse } from 'papaparse'
 import clsx from 'clsx'
+import { isAddress } from '@sentre/senswap'
 
 import { ChevronDown } from 'lucide-react'
 import Dropzone from '@/components/dropzone'
@@ -11,7 +12,6 @@ import TokenSelection from '@/components/tokenSelection'
 import { MintLogo, MintSymbol } from '@/components/mint'
 
 import { CreateStep } from '@/app/token-distribution/airdrop-vesting/constants'
-import { isAddress } from '@/helpers/utils'
 import { usePushMessage } from '@/components/message/store'
 import {
   useDistributeConfigs,

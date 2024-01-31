@@ -1,8 +1,8 @@
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base'
 import { web3 } from '@coral-xyz/anchor'
+import { isAddress } from '@sentre/senswap'
 
 import solConfig from '@/configs/sol.config'
-import { isAddress } from './utils'
 
 /**
  * Get chain id

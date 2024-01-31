@@ -4,11 +4,12 @@ import { splTokenProgram } from '@coral-xyz/spl-token'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { useWallet } from '@solana/wallet-adapter-react'
-import { KeyedAccountInfo } from '@solana/web3.js'
 import { produce } from 'immer'
+import { isAddress } from '@sentre/senswap'
+import { web3 } from '@coral-xyz/anchor'
 
 import { env } from '@/configs/env'
-import { ZERO, isAddress } from '@/helpers/utils'
+import { ZERO } from '@/helpers/utils'
 import { useSpl } from '@/hooks/spl.hook'
 import { useLamports } from './wallet.provider'
 import BN from 'bn.js'
@@ -87,7 +88,7 @@ export default function TokenAccountProvider({
     if (!publicKey) return () => {}
     const id = spl.provider.connection.onProgramAccountChange(
       spl.programId,
-      ({ accountId, accountInfo }: KeyedAccountInfo) => {
+      ({ accountId, accountInfo }: web3.KeyedAccountInfo) => {
         const data = spl.coder.accounts.decode('account', accountInfo.data)
         return upsertTokenAccount({ [accountId.toBase58()]: data })
       },

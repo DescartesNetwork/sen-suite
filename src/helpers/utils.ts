@@ -1,5 +1,4 @@
 import numbro from 'numbro'
-import { PublicKey } from '@solana/web3.js'
 import BN from 'bn.js'
 
 export const ZERO = new BN(0)
@@ -11,23 +10,6 @@ export const ZERO = new BN(0)
  */
 export const asyncWait = (ms: number): Promise<void> => {
   return new Promise((resolve) => setTimeout(resolve, ms))
-}
-
-/**
- * Validate Desig address
- * @param address Desig address
- * @returns true/false
- */
-export const isAddress = (
-  address: string | undefined | null,
-): address is string => {
-  if (!address) return false
-  try {
-    new PublicKey(address)
-    return true
-  } catch (er) {
-    return false
-  }
 }
 
 /**

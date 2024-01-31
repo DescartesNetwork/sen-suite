@@ -12,11 +12,11 @@ import { decode, encode } from 'bs58'
 import { utils } from '@coral-xyz/anchor'
 import BN from 'bn.js'
 import axios from 'axios'
+import { isAddress } from '@sentre/senswap'
 
 import solConfig from '@/configs/sol.config'
 import { decimalize } from '@/helpers/decimals'
 import { useMints } from './spl.hook'
-import { isAddress } from '@/helpers/utils'
 import {
   RecipientData,
   useDistributeConfigs,

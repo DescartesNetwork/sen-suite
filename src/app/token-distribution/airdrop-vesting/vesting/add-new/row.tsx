@@ -1,10 +1,10 @@
 'use client'
 import { useMemo } from 'react'
+import { isAddress } from '@sentre/senswap'
 
 import { UserPlus } from 'lucide-react'
 import DatePicker from 'react-datepicker'
 
-import { isAddress } from '@/helpers/utils'
 import { useDistributeConfigs } from '@/providers/airdrop.provider'
 
 type EditRecipientProps = {

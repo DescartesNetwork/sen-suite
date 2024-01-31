@@ -1,9 +1,8 @@
 'use client'
 import { useMemo } from 'react'
+import { isAddress } from '@sentre/senswap'
 
 import { Trash, UserPlus } from 'lucide-react'
-
-import { isAddress } from '@/helpers/utils'
 
 type EditRecipientProps = {
   index?: string

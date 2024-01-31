@@ -1,6 +1,7 @@
 'use client'
 import { useCallback, useMemo, useState } from 'react'
 import { BN } from 'bn.js'
+import { isAddress } from '@sentre/senswap'
 
 import EditRecipient from './row'
 import CardOverview from '@/app/token-distribution/airdrop-vesting/cardOverview'
@@ -11,7 +12,6 @@ import {
   useAirdropMintAddress,
   useRecipients,
 } from '@/providers/airdrop.provider'
-import { isAddress } from '@/helpers/utils'
 import { CreateStep } from '@/app/token-distribution/airdrop-vesting/constants'
 import { useTokenAccountByMintAddress } from '@/providers/tokenAccount.provider'
 import { useTotalDistribute } from '@/hooks/airdrop.hook'

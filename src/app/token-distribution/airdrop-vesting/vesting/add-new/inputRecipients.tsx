@@ -1,6 +1,6 @@
 'use client'
 import { useCallback, useMemo, useState } from 'react'
-import { isAddress } from '@sentre/utility'
+import { isAddress } from '@sentre/senswap'
 import { BN } from 'bn.js'
 import dayjs from 'dayjs'
 

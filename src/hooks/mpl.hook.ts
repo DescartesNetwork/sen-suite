@@ -10,8 +10,8 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { createUmi } from '@metaplex-foundation/umi-bundle-defaults'
 import { mplTokenMetadata } from '@metaplex-foundation/mpl-token-metadata'
 import { walletAdapterIdentity as umiWalletAdapter } from '@metaplex-foundation/umi-signer-wallet-adapters'
+import { isAddress } from '@sentre/senswap'
 
-import { isAddress } from '@/helpers/utils'
 import solConfig from '@/configs/sol.config'
 
 /**

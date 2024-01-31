@@ -1,10 +1,10 @@
 'use client'
 import { useCallback, useEffect, useState } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
-import { PublicKey } from '@solana/web3.js'
+import { isAddress } from '@sentre/senswap'
+import { web3 } from '@coral-xyz/anchor'
 
 import { usePushMessage } from '@/components/message/store'
-import { isAddress } from '@/helpers/utils'
 import { useMints, useSpl } from '@/hooks/spl.hook'
 
 type UpdateAuthorityProps = {
@@ -26,9 +26,12 @@ export default function UpdateAuthority({ mintAddress }: UpdateAuthorityProps) {
         throw new Error('Invalid parameters.')
       setLoading(true)
       const txId = await spl.methods
-        .setAuthority({ freezeAccount: {} }, new PublicKey(freezeAuthority))
+        .setAuthority(
+          { freezeAccount: {} },
+          new web3.PublicKey(freezeAuthority),
+        )
         .accounts({
-          owned: new PublicKey(mintAddress),
+          owned: new web3.PublicKey(mintAddress),
           owner: publicKey,
           signer: publicKey,
         })
@@ -48,7 +51,7 @@ export default function UpdateAuthority({ mintAddress }: UpdateAuthorityProps) {
 
   useEffect(() => {
     if (mint?.freezeAuthority)
-      setFreezeAuthority((mint.freezeAuthority as PublicKey).toBase58())
+      setFreezeAuthority((mint.freezeAuthority as web3.PublicKey).toBase58())
   }, [mint?.freezeAuthority])
 
   return (
@@ -76,7 +79,8 @@ export default function UpdateAuthority({ mintAddress }: UpdateAuthorityProps) {
       <button
         disabled={
           !isAddress(freezeAuthority) ||
-          freezeAuthority === (mint?.freezeAuthority as PublicKey).toBase58() ||
+          freezeAuthority ===
+            (mint?.freezeAuthority as web3.PublicKey).toBase58() ||
           loading
         }
         onClick={onUpdate}

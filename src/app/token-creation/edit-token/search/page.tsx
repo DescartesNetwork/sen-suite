@@ -2,8 +2,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import clsx from 'clsx'
-
-import { isAddress } from '@/helpers/utils'
+import { isAddress } from '@sentre/senswap'
 
 export default function SearchToken() {
   const [mintAddress, setMintAddress] = useState('')

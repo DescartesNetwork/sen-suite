@@ -7,9 +7,9 @@ import {
   useMemo,
   useState,
 } from 'react'
-import { utils } from '@coral-xyz/anchor'
+import { utils, web3 } from '@coral-xyz/anchor'
 import { useWallet } from '@solana/wallet-adapter-react'
-import { PublicKey, Transaction } from '@solana/web3.js'
+import { isAddress } from '@sentre/senswap'
 
 import Modal from '@/components/modal'
 
@@ -17,7 +17,6 @@ import { usePushMessage } from '@/components/message/store'
 import { decimalize } from '@/helpers/decimals'
 import { initializeTokenAccount, useMints, useSpl } from '@/hooks/spl.hook'
 import { useAnchorProvider } from '@/providers/wallet.provider'
-import { isAddress } from '@/helpers/utils'
 
 type MintTokenProps = {
   mintAddress: string
@@ -37,7 +36,7 @@ export default function MintToken({ mintAddress }: MintTokenProps) {
 
   const ok = useMemo(() => {
     if (!mint?.mintAuthority || !publicKey) return false
-    const mintAuthority = mint?.mintAuthority as PublicKey
+    const mintAuthority = mint?.mintAuthority as web3.PublicKey
 
     return publicKey.equals(mintAuthority)
   }, [mint?.mintAuthority, publicKey])
@@ -49,17 +48,17 @@ export default function MintToken({ mintAddress }: MintTokenProps) {
       try {
         setLoading(true)
 
-        const tx = new Transaction()
+        const tx = new web3.Transaction()
         const ataAddress = utils.token.associatedAddress({
-          mint: new PublicKey(mintAddress),
-          owner: new PublicKey(receiver),
+          mint: new web3.PublicKey(mintAddress),
+          owner: new web3.PublicKey(receiver),
         })
 
         const accountInfo = await spl.account.mint.getAccountInfo(ataAddress)
         if (!accountInfo) {
           const txInitAccount = initializeTokenAccount({
-            mint: new PublicKey(mintAddress),
-            owner: new PublicKey(receiver),
+            mint: new web3.PublicKey(mintAddress),
+            owner: new web3.PublicKey(receiver),
           })
           if (txInitAccount) tx.add(txInitAccount)
         }
@@ -68,7 +67,7 @@ export default function MintToken({ mintAddress }: MintTokenProps) {
           .mintTo(decimalize(amount, mint?.decimals || 0))
           .accounts({
             account: ataAddress,
-            mint: new PublicKey(mintAddress),
+            mint: new web3.PublicKey(mintAddress),
             owner: publicKey,
           })
           .transaction()

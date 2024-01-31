@@ -2,6 +2,7 @@
 import { useMemo, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import clsx from 'clsx'
+import { isAddress } from '@sentre/senswap'
 
 import { MintLogo, MintName, MintSymbol } from '@/components/mint'
 import FarmTimeline from '../farmCard/farmTimeline'
@@ -17,7 +18,6 @@ import Unstake from './unstake'
 import Ownership from './ownership'
 import UnstakeNft from './unstakeNft'
 
-import { isAddress } from '@/helpers/utils'
 import {
   useBoostingByFarmAddress,
   useFarmByAddress,

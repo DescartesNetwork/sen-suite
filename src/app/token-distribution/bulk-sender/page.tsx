@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { parse } from 'papaparse'
+import { isAddress } from '@sentre/senswap'
 
 import { ChevronDown, Info } from 'lucide-react'
 import { MintLogo, MintSymbol } from '@/components/mint'
@@ -12,7 +13,6 @@ import {
   useBulkSenderData,
   useBulkSenderMint,
 } from '@/providers/bulkSender.provider'
-import { isAddress } from '@/helpers/utils'
 import { usePushMessage } from '@/components/message/store'
 
 export default function BulkSender() {

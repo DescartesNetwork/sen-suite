@@ -10,6 +10,7 @@ import {
   Signer,
   Transaction,
 } from '@solana/web3.js'
+import { isAddress } from '@sentre/senswap'
 
 import solConfig from '@/configs/sol.config'
 import { useAnchorProvider } from '@/providers/wallet.provider'
@@ -19,7 +20,6 @@ import {
   useDebtByFarmAddress,
   useFarmByAddress,
 } from '@/providers/farming.provider'
-import { isAddress } from '@/helpers/utils'
 import { useMpl } from './mpl.hook'
 import { useMints } from './spl.hook'
 import { decimalize } from '@/helpers/decimals'

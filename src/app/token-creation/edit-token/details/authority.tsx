@@ -2,12 +2,12 @@
 import { Fragment, useCallback, useEffect, useState } from 'react'
 import { PublicKey } from '@solana/web3.js'
 import { useWallet } from '@solana/wallet-adapter-react'
+import { isAddress } from '@sentre/senswap'
 
 import Modal from '@/components/modal'
 import { Settings2 } from 'lucide-react'
 
 import { useMints, useSpl } from '@/hooks/spl.hook'
-import { isAddress } from '@/helpers/utils'
 import { usePushMessage } from '@/components/message/store'
 
 type UpdateAuthorityProps = {

@@ -1,12 +1,11 @@
 'use client'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { isAddress } from '@sentre/senswap'
 
 import MintToken from './mintToken'
 import UpdateAuthority from './authority'
 import UploadMetadata from './metadata'
 import FreezeAuthority from './freezeAuthority'
-
-import { isAddress } from '@/helpers/utils'
 
 export default function TokenDetails() {
   const { push } = useRouter()

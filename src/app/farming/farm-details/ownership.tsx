@@ -1,8 +1,8 @@
 'use client'
 import { useCallback, useState } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
+import { isAddress } from '@sentre/senswap'
 
-import { isAddress } from '@/helpers/utils'
 import { useTransferOwnership } from '@/hooks/farming.hook'
 import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
