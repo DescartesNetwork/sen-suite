@@ -5,7 +5,7 @@ import axios from 'axios'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { VersionedTransaction, PublicKey } from '@solana/web3.js'
 import { WRAPPED_SOL_MINT } from '@metaplex-foundation/js'
-import { Address, BN } from '@coral-xyz/anchor'
+import { Address, BN, web3 } from '@coral-xyz/anchor'
 import { MintActionStates, PoolData } from '@sentre/senswap'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
@@ -16,7 +16,7 @@ import { useMintByAddress } from '@/providers/mint.provider'
 import { decimalize, undecimalize } from '@/helpers/decimals'
 import { usePools } from '@/providers/pools.provider'
 import { useOracles, useSenswap, useWrapSol } from './pool.hook'
-import { useInitMultiTokenAccount, useMints } from './spl.hook'
+import { useMints } from './spl.hook'
 
 export enum Platform {
   SenSwap = 'SenSwap',
@@ -489,52 +489,37 @@ export const useSenSwap = () => {
   const { decimals: bidDecimals = 0 } = useMintByAddress(bidMintAddress) || {}
   const { createWrapSolTxIfNeed, createTxUnwrapSol } = useWrapSol()
   const senswap = useSenswap()
-  const { publicKey } = useWallet()
-
-  const initTxCreateMultiTokenAccount = useInitMultiTokenAccount()
-  const initTokenAccountTxs = useCallback(async () => {
-    if (!bestSenRoute || !publicKey) return []
-    const transactions = await initTxCreateMultiTokenAccount(
-      bestSenRoute.route.map((route) => route.askMint),
-      publicKey,
-    )
-    return transactions
-  }, [bestSenRoute, initTxCreateMultiTokenAccount, publicKey])
 
   const swap = useCallback(async () => {
-    if (!bestSenRoute || !senswap.program.provider.sendAll) return ''
+    if (!bestSenRoute || !senswap.program.provider.sendAndConfirm) return ''
     const { askAmount, route } = bestSenRoute
 
     const bidAmountBN = decimalize(bidAmount, bidDecimals)
     const rawAskAmount = undecimalize(new BN(askAmount), askDecimals)
     const limit = Number(rawAskAmount) * (1 - slippage)
     const limitBN = decimalize(limit.toString(), askDecimals)
-    const transactions = await initTokenAccountTxs()
+    const transaction = new web3.Transaction()
     const wrapSolTx = await createWrapSolTxIfNeed(
       new PublicKey(bidMintAddress),
       bidAmountBN,
     )
-    if (wrapSolTx) transactions.push(wrapSolTx)
+    if (wrapSolTx) transaction.add(wrapSolTx)
     const { tx } = await senswap.route({
       bidAmount: bidAmountBN,
       limit: limitBN,
       routes: route,
       sendAndConfirm: false,
     })
-    transactions.push(tx)
+    transaction.add(tx)
 
     const askMint = new PublicKey(askMintAddress)
     if (askMint.equals(WRAPPED_SOL_MINT)) {
       const unwrapSolTx = await createTxUnwrapSol(askMint)
-      transactions.push(unwrapSolTx)
+      transaction.add(unwrapSolTx)
     }
 
-    const txIds = await senswap.program.provider.sendAll(
-      transactions.map((tx) => {
-        return { tx, signers: [] }
-      }),
-    )
-    return txIds[txIds.length - 1]
+    const txId = await senswap.program.provider.sendAndConfirm(transaction)
+    return txId
   }, [
     askDecimals,
     askMintAddress,
@@ -544,7 +529,6 @@ export const useSenSwap = () => {
     bidMintAddress,
     createTxUnwrapSol,
     createWrapSolTxIfNeed,
-    initTokenAccountTxs,
     senswap,
     slippage,
   ])

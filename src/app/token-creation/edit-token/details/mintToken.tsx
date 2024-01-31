@@ -15,7 +15,7 @@ import Modal from '@/components/modal'
 
 import { usePushMessage } from '@/components/message/store'
 import { decimalize } from '@/helpers/decimals'
-import { useInitPDAAccount, useMints, useSpl } from '@/hooks/spl.hook'
+import { initializeTokenAccount, useMints, useSpl } from '@/hooks/spl.hook'
 import { useAnchorProvider } from '@/providers/wallet.provider'
 import { isAddress } from '@/helpers/utils'
 
@@ -33,7 +33,6 @@ export default function MintToken({ mintAddress }: MintTokenProps) {
   const spl = useSpl()
   const pushMessage = usePushMessage()
   const [mint] = useMints([mintAddress])
-  const initPDAAccount = useInitPDAAccount()
   const provider = useAnchorProvider()
 
   const ok = useMemo(() => {
@@ -58,10 +57,10 @@ export default function MintToken({ mintAddress }: MintTokenProps) {
 
         const accountInfo = await spl.account.mint.getAccountInfo(ataAddress)
         if (!accountInfo) {
-          const txInitAccount = await initPDAAccount(
-            new PublicKey(mintAddress),
-            new PublicKey(receiver),
-          )
+          const txInitAccount = initializeTokenAccount({
+            mint: new PublicKey(mintAddress),
+            owner: new PublicKey(receiver),
+          })
           if (txInitAccount) tx.add(txInitAccount)
         }
 
@@ -99,7 +98,6 @@ export default function MintToken({ mintAddress }: MintTokenProps) {
       mint?.decimals,
       provider,
       pushMessage,
-      initPDAAccount,
     ],
   )
 

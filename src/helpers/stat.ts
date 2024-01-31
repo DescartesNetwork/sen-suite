@@ -15,7 +15,9 @@ export const getPrice = async (mintAddress: string) => {
 
 export const getAllTokens = async () => {
   try {
-    const { data } = await axios.get<MintMetadata[]>('https://token.jup.ag/all')
+    const { data } = await axios.get<MintMetadata[]>(
+      'https://token.jup.ag/strict',
+    )
     return data
   } catch (er) {
     return []

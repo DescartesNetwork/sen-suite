@@ -1,4 +1,5 @@
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base'
+import { web3 } from '@coral-xyz/anchor'
 
 import solConfig from '@/configs/sol.config'
 import { isAddress } from './utils'
@@ -25,4 +26,23 @@ export const solscan = (addressOrTxId: string): string => {
     return `https://solscan.io/account/${addressOrTxId}?cluster=${solConfig.network}`
   }
   return `https://solscan.io/tx/${addressOrTxId}?cluster=${solConfig.network}`
+}
+
+/**
+ * Waiting for the transaction confirmed
+ * @param txId Transaction ID
+ * @param connection Connection
+ */
+export const confirmTransaction = async (
+  txId: string,
+  connection: web3.Connection,
+) => {
+  const {
+    value: { blockhash, lastValidBlockHeight },
+  } = await connection.getLatestBlockhashAndContext()
+  await connection.confirmTransaction({
+    blockhash,
+    lastValidBlockHeight,
+    signature: txId,
+  })
 }

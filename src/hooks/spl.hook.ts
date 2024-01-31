@@ -1,16 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import useSWR from 'swr'
 import { splTokenProgram } from '@coral-xyz/spl-token'
-import {
-  PublicKey,
-  SYSVAR_RENT_PUBKEY,
-  SystemProgram,
-  Transaction,
-  TransactionInstruction,
-} from '@solana/web3.js'
-import { Address, utils, web3 } from '@coral-xyz/anchor'
-import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { toPublicKey } from '@metaplex-foundation/js'
+import { utils, web3 } from '@coral-xyz/anchor'
 
 import { isAddress } from '@/helpers/utils'
 import { useAnchorProvider } from '@/providers/wallet.provider'
@@ -50,116 +41,81 @@ export const useToken2022 = () => {
 export const useMints = (mintAddresses: string[]) => {
   const spl = useSpl()
   const fetcher = useCallback(
-    async ([mintAddresses]: [string[]]) => {
+    async (mintAddresses: string[]) => {
       for (const mintAddress of mintAddresses)
         if (!isAddress(mintAddress)) return undefined
-      const data = await Promise.all(
-        mintAddresses.map(
-          async (mintAddress) => await spl.account.mint.fetch(mintAddress),
-        ),
-      )
+      const data = await spl.account.mint.fetchMultiple(mintAddresses)
       return data
     },
     [spl],
   )
-  const { data } = useSWR([mintAddresses, 'spl'], fetcher)
+  const { data = [] } = useSWR(
+    [mintAddresses, 'spl::mints'],
+    ([mintAddresses]) => fetcher(mintAddresses),
+  )
 
-  return data || []
+  return data
 }
 
 /**
- * Create PDA account
- * @param mint mint account
- * @param owner your public key
- * @returns Init PDA account function
+ * Initialize token account
+ * @param mint Mint
+ * @param owner Owner
+ * @returns Invoker
  */
-export const useInitPDAAccount = () => {
-  const { publicKey } = useWallet()
-  const initPDAAccount = useCallback(
-    async (mint: PublicKey, owner: PublicKey) => {
-      if (!publicKey) return
-      const associatedTokenAccount = await utils.token.associatedAddress({
-        mint,
-        owner,
-      })
-      const ix = new TransactionInstruction({
-        keys: [
-          {
-            pubkey: publicKey,
-            isSigner: true,
-            isWritable: true,
-          },
-          {
-            pubkey: associatedTokenAccount,
-            isSigner: false,
-            isWritable: true,
-          },
-          {
-            pubkey: owner,
-            isSigner: false,
-            isWritable: false,
-          },
-          {
-            pubkey: mint,
-            isSigner: false,
-            isWritable: false,
-          },
-          {
-            pubkey: SystemProgram.programId,
-            isSigner: false,
-            isWritable: false,
-          },
-          {
-            pubkey: utils.token.TOKEN_PROGRAM_ID,
-            isSigner: false,
-            isWritable: false,
-          },
-          {
-            pubkey: SYSVAR_RENT_PUBKEY,
-            isSigner: false,
-            isWritable: false,
-          },
-        ],
-        programId: utils.token.ASSOCIATED_PROGRAM_ID,
-        data: Buffer.from([]),
-      })
-      const tx = new Transaction().add(ix)
-      return tx
-    },
-    [publicKey],
-  )
-
-  return initPDAAccount
-}
-
-export const useInitMultiTokenAccount = () => {
-  const initPDAAccount = useInitPDAAccount()
-  const { connection } = useConnection()
-  const initTxCreateMultiTokenAccount = useCallback(
-    async (mints: Address[], owner: PublicKey) => {
-      const transactions: web3.Transaction[] = []
-      const tokenAccounts = []
-      for (const mint of mints) {
-        const mintPublicKey = toPublicKey(mint)
-        const associatedTokenAccount = await utils.token.associatedAddress({
-          mint: mintPublicKey,
+export const initializeTokenAccount = ({
+  mint,
+  owner,
+}: {
+  mint: web3.PublicKey
+  owner: web3.PublicKey
+}) => {
+  if (!owner) throw new Error('Invalid owner address')
+  if (!mint) throw new Error('Invalid mint address')
+  const ix = new web3.TransactionInstruction({
+    keys: [
+      {
+        pubkey: owner,
+        isSigner: true,
+        isWritable: true,
+      },
+      {
+        pubkey: utils.token.associatedAddress({
+          mint,
           owner,
-        })
-        tokenAccounts.push(associatedTokenAccount)
-      }
-      const accounts = await connection.getMultipleAccountsInfo(tokenAccounts)
-      await Promise.all(
-        accounts.map(async (value, index) => {
-          if (value !== null) return
-          const tx = await initPDAAccount(toPublicKey(mints[index]), owner)
-          if (tx) transactions.push(tx)
         }),
-      )
-
-      return transactions
-    },
-    [connection, initPDAAccount],
-  )
-
-  return initTxCreateMultiTokenAccount
+        isSigner: false,
+        isWritable: true,
+      },
+      {
+        pubkey: owner,
+        isSigner: false,
+        isWritable: false,
+      },
+      {
+        pubkey: mint,
+        isSigner: false,
+        isWritable: false,
+      },
+      {
+        pubkey: web3.SystemProgram.programId,
+        isSigner: false,
+        isWritable: false,
+      },
+      {
+        pubkey: utils.token.TOKEN_PROGRAM_ID,
+        isSigner: false,
+        isWritable: false,
+      },
+      {
+        pubkey: web3.SYSVAR_RENT_PUBKEY,
+        isSigner: false,
+        isWritable: false,
+      },
+    ],
+    programId: utils.token.ASSOCIATED_PROGRAM_ID,
+    data: Buffer.from([]),
+  })
+  const tx = new web3.Transaction().add(ix)
+  return tx
 }

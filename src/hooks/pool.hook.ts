@@ -21,7 +21,7 @@ import {
   usePoolStatStore,
   usePoolVolumesIn7Days,
 } from '@/providers/stat.provider'
-import { useInitPDAAccount, useMints, useSpl } from './spl.hook'
+import { initializeTokenAccount, useMints, useSpl } from './spl.hook'
 import solConfig from '@/configs/sol.config'
 import { DateHelper } from '@/helpers/date'
 import { useTvl } from './tvl.hook'
@@ -114,7 +114,6 @@ export const useFilteredPools = (filter = PoolFilter.AllPools) => {
 export const useWrapSol = () => {
   const spl = useSpl()
   const accounts = useAllTokenAccounts()
-  const onInitAccount = useInitPDAAccount()
   const { publicKey } = useWallet()
 
   const { amount: wrapSolAmount } = useTokenAccountByMintAddress(
@@ -148,11 +147,14 @@ export const useWrapSol = () => {
         mint: WRAPPED_SOL_MINT,
         owner: publicKey,
       })
-      if (!accounts[ataSol.toBase58()]) {
-        const txInitAcc = await onInitAccount(WRAPPED_SOL_MINT, publicKey)
-        if (txInitAcc) tx.add(txInitAcc)
-      }
-      const txSolTransfer = await SystemProgram.transfer({
+      if (!accounts[ataSol.toBase58()])
+        tx.add(
+          initializeTokenAccount({
+            mint: WRAPPED_SOL_MINT,
+            owner: publicKey,
+          }),
+        )
+      const txSolTransfer = SystemProgram.transfer({
         fromPubkey: publicKey,
         toPubkey: ataSol,
         lamports: BigInt(amount.toString()),
@@ -165,7 +167,7 @@ export const useWrapSol = () => {
 
       return tx
     },
-    [accounts, onInitAccount, publicKey, spl.methods],
+    [accounts, publicKey, spl.methods],
   )
 
   const createWrapSolTxIfNeed = useCallback(

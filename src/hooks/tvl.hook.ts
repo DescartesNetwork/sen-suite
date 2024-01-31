@@ -5,6 +5,11 @@ import { usePrices } from '@/providers/mint.provider'
 import { undecimalize } from '@/helpers/decimals'
 import { useMints } from './spl.hook'
 
+/**
+ * Compute TVL for a list of mints
+ * @param mintAddressToAmount List of mints and thier corresponding amoubt
+ * @returns The TVL
+ */
 export const useTvl = (
   mintAddressToAmount: Array<{
     mintAddress: string

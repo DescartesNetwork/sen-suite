@@ -156,11 +156,11 @@ export const usePrices = (mintAddresses: string[]) => {
           return price
         }),
       )
-      const mapping: Record<string, number> = {}
+      const payload: Record<string, number> = {}
       mintAddresses.forEach(
-        (mintAddress, i) => (mapping[mintAddress] = data[i]),
+        (mintAddress, i) => (payload[mintAddress] = data[i]),
       )
-      upsertPrices(mapping)
+      upsertPrices(payload)
       return data
     },
     [prices, upsertPrices],
