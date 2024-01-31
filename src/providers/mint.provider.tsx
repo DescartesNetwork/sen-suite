@@ -30,7 +30,7 @@ export const useMintStore = create<MintStore>()(
       upsertMetadata: (newMints: Record<string, MintMetadata>) =>
         set(
           produce<MintStore>(({ metadata }) => {
-            Object.assign(newMints, metadata)
+            Object.assign(metadata, newMints)
           }),
           false,
           'upsertMetadata',
