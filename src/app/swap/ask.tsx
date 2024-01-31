@@ -5,7 +5,7 @@ import TokenSelection from '@/components/tokenSelection'
 import { MintLogo, MintSymbol } from '@/components/mint'
 import { ChevronDown } from 'lucide-react'
 
-import { useSwapStore } from '@/hooks/swap.hook'
+import { useSwapStore } from '@/providers/swap.provider'
 
 export default function Ask() {
   const [open, setOpen] = useState(false)

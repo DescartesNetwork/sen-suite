@@ -7,9 +7,10 @@ import Bid from './bid'
 import SwapSettings from './swapSettings'
 import SwapInfo from './swapInfo'
 
-import { useSwap, useSwapStore, useSwitch } from '@/hooks/swap.hook'
+import { useSwap, useSwitch } from '@/hooks/swap.hook'
 import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
+import { useSwapStore } from '@/providers/swap.provider'
 
 export default function Swap() {
   const [loading, setLoading] = useState(false)

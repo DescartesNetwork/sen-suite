@@ -1,5 +1,7 @@
 import BN from 'bn.js'
 
+export const ZERO = new BN(0)
+
 export const undecimalize = (n: BN, decimals: number): string => {
   try {
     const _ten = new BN(10)
@@ -24,7 +26,7 @@ export const decimalize = (n: string, decimals: number): BN => {
       .mul(_ten.pow(new BN(decimals)))
       .div(_ten.pow(new BN(correctness)))
   } catch (er) {
-    return new BN(0)
+    return ZERO
   }
 }
 

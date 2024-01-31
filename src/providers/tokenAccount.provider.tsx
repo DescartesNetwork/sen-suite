@@ -10,10 +10,10 @@ import { web3 } from '@coral-xyz/anchor'
 import BN from 'bn.js'
 
 import { env } from '@/configs/env'
-import { ZERO } from '@/helpers/utils'
 import { useSpl } from '@/hooks/spl.hook'
 import { useLamports } from './wallet.provider'
 import { WRAPPED_SOL } from '@/hooks/wsol.hook'
+import { ZERO } from '@/helpers/decimals'
 
 export type TokenAccount = Awaited<
   ReturnType<ReturnType<typeof splTokenProgram>['account']['account']['fetch']>

@@ -10,9 +10,10 @@ import { Settings2 } from 'lucide-react'
 import { useMints, useSpl } from '@/hooks/spl.hook'
 import { usePushMessage } from '@/components/message/store'
 
-type UpdateAuthorityProps = {
+export type UpdateAuthorityProps = {
   mintAddress: string
 }
+
 export default function UpdateAuthority({ mintAddress }: UpdateAuthorityProps) {
   const [mintAuthority, setMintAuthority] = useState<string>()
   const [loading, setLoading] = useState(false)

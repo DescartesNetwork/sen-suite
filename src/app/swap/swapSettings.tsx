@@ -3,7 +3,7 @@ import clsx from 'clsx'
 
 import { Settings } from 'lucide-react'
 
-import { useSwapStore } from '@/hooks/swap.hook'
+import { useSwapStore } from '@/providers/swap.provider'
 
 function SlippageOptions({
   active = false,

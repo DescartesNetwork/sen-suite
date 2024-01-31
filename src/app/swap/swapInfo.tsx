@@ -8,7 +8,7 @@ import { MintSymbol } from '@/components/mint'
 import Island from '@/components/island'
 
 import { numeric } from '@/helpers/utils'
-import { Platform, useSwap, useSwapStore } from '@/hooks/swap.hook'
+import { Platform, useSwap } from '@/hooks/swap.hook'
 import { useMintByAddress } from '@/providers/mint.provider'
 
 import {
@@ -16,6 +16,7 @@ import {
   jupiterDarkSvg,
 } from '@/static/images/welcome/partners'
 import { useTheme } from '@/providers/ui.provider'
+import { useSwapStore } from '@/providers/swap.provider'
 
 function PriceImpact() {
   const { routes } = useSwap()

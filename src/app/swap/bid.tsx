@@ -1,5 +1,6 @@
 'use client'
-import { ChangeEvent, useCallback, useState } from 'react'
+import { ChangeEvent, useCallback, useEffect, useState } from 'react'
+import clsx from 'clsx'
 
 import TokenSelection from '@/components/tokenSelection'
 import {
@@ -12,6 +13,8 @@ import { ChevronDown } from 'lucide-react'
 
 import { useTokenAccountAmount } from '@/providers/tokenAccount.provider'
 import { useSwapStore } from '@/providers/swap.provider'
+import { useMintByAddress } from '@/providers/mint.provider'
+import { decimalize } from '@/helpers/decimals'
 
 export default function Bid() {
   const [open, setOpen] = useState(false)
@@ -22,8 +25,11 @@ export default function Bid() {
   )
   const bidAmount = useSwapStore(({ bidAmount }) => bidAmount)
   const setBidAmount = useSwapStore(({ setBidAmount }) => setBidAmount)
+  const overBudget = useSwapStore(({ overBudget }) => overBudget)
+  const setOverBudget = useSwapStore(({ setOverBudget }) => setOverBudget)
   const amount = useTokenAccountAmount(bidMintAddress)
   const balance = useMintAmount(bidMintAddress, amount)
+  const { decimals = 0 } = useMintByAddress(bidMintAddress) || {}
 
   const onBidMintAddress = useCallback(
     (mintAddress: string) => {
@@ -46,10 +52,16 @@ export default function Bid() {
     (e: ChangeEvent<HTMLInputElement>) => {
       const percentage = Number(e.target.value) / 100
       if (percentage > 0) setBidAmount(String(percentage * Number(balance)))
+      else setBidAmount('')
       setRange(e.target.value)
     },
     [balance, setBidAmount],
   )
+
+  useEffect(() => {
+    const inAmount = decimalize(bidAmount, decimals)
+    setOverBudget(amount.lt(inAmount))
+  }, [setOverBudget, bidAmount, decimals, amount])
 
   return (
     <div className="card bg-base-200 p-4 rounded-3xl grid grid-cols-12 gap-x-2 gap-y-4">
@@ -70,7 +82,12 @@ export default function Bid() {
         <input
           type="number"
           placeholder="0"
-          className="input input-ghost w-full max-w-sm rounded-full focus:outline-none text-right text-xl"
+          className={clsx(
+            'input input-ghost w-full max-w-sm rounded-full focus:outline-none text-right text-xl',
+            {
+              'input-error': overBudget,
+            },
+          )}
           value={bidAmount}
           onChange={onBidAmount}
         />

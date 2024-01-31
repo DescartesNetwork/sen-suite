@@ -15,6 +15,7 @@ import { decimalize, undecimalize } from '@/helpers/decimals'
 import { usePools } from '@/providers/pools.provider'
 import { useOracles, useSenswap, useWrapSol } from './pool.hook'
 import { useMints } from './spl.hook'
+import { useSwapStore } from '@/providers/swap.provider'
 
 export enum Platform {
   SenSwap = 'SenSwap',
@@ -80,16 +81,6 @@ export type SenSwapRoute = {
 }
 
 export type SwapStore = {
-  bidMintAddress: string
-  setBidMintAddress: (bidMintAddress: string) => void
-  bidAmount: string
-  setBidAmount: (bidAmount: string) => void
-  askMintAddress: string
-  setAskMintAddress: (askMintAddress: string) => void
-  askAmount: string
-  setAskAmount: (askAmount: string) => void
-  slippage: number
-  setSlippage: (slippage: number) => void
   bestJupRoute: JupiterRouteInfo | undefined
   setBestJubRoute: (bestRoute: JupiterRouteInfo | undefined) => void
   bestSenRoute: SenSwapRoute | undefined
@@ -100,24 +91,9 @@ export type SwapStore = {
  * Store
  */
 
-export const useSwapStore = create<SwapStore>()(
+export const _useSwapStore = create<SwapStore>()(
   devtools(
     (set) => ({
-      bidMintAddress: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
-      setBidMintAddress: (bidMintAddress: string) =>
-        set({ bidMintAddress }, false, 'setBidMintAddress'),
-      bidAmount: '',
-      setBidAmount: (bidAmount: string) =>
-        set({ bidAmount }, false, 'setBidAmount'),
-      askMintAddress: 'SENBBKVCM7homnf5RX9zqpf1GFe935hnbU4uVzY1Y6M',
-      setAskMintAddress: (askMintAddress: string) =>
-        set({ askMintAddress }, false, 'setAskMintAddress'),
-      askAmount: '',
-      setAskAmount: (askAmount: string) =>
-        set({ askAmount }, false, 'setAskAmount'),
-      slippage: 0.01,
-      setSlippage: (slippage: number) =>
-        set({ slippage }, false, 'setSlippage'),
       bestJupRoute: undefined,
       setBestJubRoute: (bestJupRoute: JupiterRouteInfo | undefined) =>
         set({ bestJupRoute }, false, 'setRoutes'),
@@ -191,7 +167,7 @@ export const useUnsafeSwap = () => {
 export const useJupSwap = () => {
   const { publicKey, signTransaction } = useWallet()
   const { connection } = useConnection()
-  const bestRoute = useSwapStore(({ bestJupRoute: bestRoute }) => bestRoute)
+  const bestRoute = _useSwapStore(({ bestJupRoute: bestRoute }) => bestRoute)
 
   const swap = useCallback(async () => {
     if (!publicKey || !signTransaction || !connection)
@@ -480,7 +456,7 @@ export const useBestSenRoutes = () => {
 export const useSenSwap = () => {
   const bidAmount = useSwapStore(({ bidAmount }) => bidAmount)
   const slippage = useSwapStore(({ slippage }) => slippage)
-  const bestSenRoute = useSwapStore(({ bestSenRoute }) => bestSenRoute)
+  const bestSenRoute = _useSwapStore(({ bestSenRoute }) => bestSenRoute)
   const bidMintAddress = useSwapStore(({ bidMintAddress }) => bidMintAddress)
   const askMintAddress = useSwapStore(({ askMintAddress }) => askMintAddress)
   const { decimals: askDecimals = 0 } = useMintByAddress(askMintAddress) || {}
@@ -540,8 +516,12 @@ export const useSwap = () => {
   const { bestJupRoute, fetching } = useUnsafeSwap()
   const { swap: senSwap } = useSenSwap()
   const setAskAmount = useSwapStore(({ setAskAmount }) => setAskAmount)
-  const setBestJubRoute = useSwapStore(({ setBestJubRoute }) => setBestJubRoute)
-  const setBestSenRoute = useSwapStore(({ setBestSenRoute }) => setBestSenRoute)
+  const setBestJubRoute = _useSwapStore(
+    ({ setBestJubRoute }) => setBestJubRoute,
+  )
+  const setBestSenRoute = _useSwapStore(
+    ({ setBestSenRoute }) => setBestSenRoute,
+  )
   const askMintAddress = useSwapStore(({ askMintAddress }) => askMintAddress)
   const { decimals: askDecimals = 0 } = useMintByAddress(askMintAddress) || {}
   const platform = useMemo(() => {
