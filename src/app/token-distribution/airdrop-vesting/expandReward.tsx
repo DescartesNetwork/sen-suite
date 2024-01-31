@@ -6,7 +6,7 @@ import { PublicKey } from '@solana/web3.js'
 import dayjs from 'dayjs'
 
 import { MintAmount, MintLogo, MintSymbol } from '@/components/mint'
-import ExpandCard from '@/components/expandCard'
+import ExpandableCard from '@/components/expandableCard'
 import StatusTag, { ReceiptState } from './statusTag'
 
 import { ReceiveItem } from './page'
@@ -68,7 +68,7 @@ export default function ExpandReward(
   )
 
   return (
-    <ExpandCard
+    <ExpandableCard
       isExpand={props.forceExpand}
       header={
         <div className="flex flex-col gap-2">
@@ -125,6 +125,6 @@ export default function ExpandReward(
           </p>
         </div>
       </div>
-    </ExpandCard>
+    </ExpandableCard>
   )
 }

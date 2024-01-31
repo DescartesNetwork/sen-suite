@@ -3,17 +3,17 @@ import { ReactNode, useState } from 'react'
 
 import { ChevronDown, ChevronUp } from 'lucide-react'
 
-type ExpandCardProps = {
+export type ExpandCardProps = {
   header: ReactNode
   children: ReactNode
   isExpand?: boolean
 }
 
-const ExpandCard = ({
+export default function ExpandableCard({
   header,
   children,
   isExpand = false,
-}: ExpandCardProps) => {
+}: ExpandCardProps) {
   const [expand, setExpand] = useState(isExpand)
 
   const Arrow = !expand ? ChevronDown : ChevronUp
@@ -37,5 +37,3 @@ const ExpandCard = ({
     </div>
   )
 }
-
-export default ExpandCard

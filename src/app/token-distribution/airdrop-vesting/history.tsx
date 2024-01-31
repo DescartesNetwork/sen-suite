@@ -11,7 +11,7 @@ import dayjs from 'dayjs'
 import { ChevronDown } from 'lucide-react'
 import { MintAmount, MintLogo, MintSymbol } from '@/components/mint'
 import UnclaimList from './unclaimList'
-import ExpandCard from '@/components/expandCard'
+import ExpandableCard from '@/components/expandableCard'
 
 import { useDistributors, useMyDistributes } from '@/providers/airdrop.provider'
 import {
@@ -270,7 +270,7 @@ const HistoryExpand = ({
   }, [endedAt, remaining])
 
   return (
-    <ExpandCard
+    <ExpandableCard
       isExpand={expanded}
       header={
         <div className="flex gap-2 items-center justify-between">
@@ -315,6 +315,6 @@ const HistoryExpand = ({
           </p>
         </div>
       </div>
-    </ExpandCard>
+    </ExpandableCard>
   )
 }
