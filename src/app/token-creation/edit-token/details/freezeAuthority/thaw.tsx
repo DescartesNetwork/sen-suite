@@ -1,6 +1,5 @@
 import { MouseEvent, useCallback, useState } from 'react'
-import { utils } from '@coral-xyz/anchor'
-import { PublicKey } from '@solana/web3.js'
+import { utils, web3 } from '@coral-xyz/anchor'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { isAddress } from '@sentre/senswap'
 
@@ -27,8 +26,8 @@ export default function Thaw({ mintAddress }: ThawProps) {
       try {
         setLoading(true)
         const ataAddress = utils.token.associatedAddress({
-          mint: new PublicKey(mintAddress),
-          owner: new PublicKey(address),
+          mint: new web3.PublicKey(mintAddress),
+          owner: new web3.PublicKey(address),
         })
 
         const accountInfo = await spl.account.mint.getAccountInfo(ataAddress)

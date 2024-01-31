@@ -7,9 +7,8 @@ import {
   useConnection,
   useWallet,
 } from '@solana/wallet-adapter-react'
-import { ParsedAccountData, PublicKey, Transaction } from '@solana/web3.js'
 import { decode, encode } from 'bs58'
-import { utils } from '@coral-xyz/anchor'
+import { utils, web3 } from '@coral-xyz/anchor'
 import BN from 'bn.js'
 import axios from 'axios'
 import { isAddress } from '@sentre/senswap'
@@ -70,7 +69,7 @@ export const useSendBulk = (mintAddress: string) => {
       if (decimals === undefined) throw new Error('Cannot read onchain data.')
 
       const totalTx = Math.ceil(data.length / TX_SIZE)
-      const transactions: Transaction[] = []
+      const transactions: web3.Transaction[] = []
 
       // Instructions
       const ixs = await Promise.all(
@@ -99,7 +98,7 @@ export const useSendBulk = (mintAddress: string) => {
       } = await conn.getLatestBlockhashAndContext()
 
       for (let i = 0; i < totalTx; i++) {
-        const transaction = new Transaction({
+        const transaction = new web3.Transaction({
           blockhash,
           lastValidBlockHeight,
           feePayer: publicKey,
@@ -348,7 +347,7 @@ export const useInitMerkleTree = (type: Distribute) => {
         const unitTime = toUnitTime(unlockTime)
         return {
           amount: decimalize(amount, decimals),
-          authority: new PublicKey(address),
+          authority: new web3.PublicKey(address),
           startedAt: new BN(unitTime / 1000),
           salt: MerkleDistributor.salt(
             `lightning_tunnel/${type}/${i.toString()}`,
@@ -452,11 +451,11 @@ export const useRemainingBalance = (address: string) => {
     const treasurerAddress = await utility.deriveTreasurerAddress(address)
     const associated = await utils.token.associatedAddress({
       mint,
-      owner: new PublicKey(treasurerAddress),
+      owner: new web3.PublicKey(treasurerAddress),
     })
     const { value } = await connection.getParsedAccountInfo(associated)
     if (!value) return '0'
-    const data = value.data as ParsedAccountData
+    const data = value.data as web3.ParsedAccountData
     return data.parsed.info.tokenAmount.amount || '0'
   }, [address, utility])
 

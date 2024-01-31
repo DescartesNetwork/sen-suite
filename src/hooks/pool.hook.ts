@@ -6,7 +6,6 @@ import Senswap, {
   MintActionStates,
   PoolData,
 } from '@sentre/senswap'
-import { PublicKey, SystemProgram, Transaction } from '@solana/web3.js'
 import { WRAPPED_SOL_MINT } from '@metaplex-foundation/js'
 import BN from 'bn.js'
 
@@ -121,7 +120,7 @@ export const useWrapSol = () => {
   ) || { amount: new BN(0) }
 
   const createTxUnwrapSol = useCallback(
-    async (owner: PublicKey) => {
+    async (owner: web3.PublicKey) => {
       const ata = utils.token.associatedAddress({
         mint: WRAPPED_SOL_MINT,
         owner,
@@ -142,7 +141,7 @@ export const useWrapSol = () => {
   const createWrapSol = useCallback(
     async (amount: BN) => {
       if (!publicKey) return
-      const tx = new Transaction()
+      const tx = new web3.Transaction()
       const ataSol = utils.token.associatedAddress({
         mint: WRAPPED_SOL_MINT,
         owner: publicKey,
@@ -154,7 +153,7 @@ export const useWrapSol = () => {
             owner: publicKey,
           }),
         )
-      const txSolTransfer = SystemProgram.transfer({
+      const txSolTransfer = web3.SystemProgram.transfer({
         fromPubkey: publicKey,
         toPubkey: ataSol,
         lamports: BigInt(amount.toString()),
@@ -171,7 +170,7 @@ export const useWrapSol = () => {
   )
 
   const createWrapSolTxIfNeed = useCallback(
-    async (mint: PublicKey, amount: BN) => {
+    async (mint: web3.PublicKey, amount: BN) => {
       if (mint.equals(WRAPPED_SOL_MINT)) {
         const txWrapSol = await createWrapSol(amount.sub(wrapSolAmount))
         return txWrapSol
@@ -194,13 +193,15 @@ export const useDeposit = (poolAddress: string, amounts: string[]) => {
   const { publicKey } = useWallet()
   const accounts = useAllTokenAccounts()
   const pool = usePoolByAddress(poolAddress)
-  const mints = useMints(pool.mints.map((mint: PublicKey) => mint.toBase58()))
+  const mints = useMints(
+    pool.mints.map((mint: web3.PublicKey) => mint.toBase58()),
+  )
   const decimals = mints.map((mint) => mint?.decimals || 0)
   const { createWrapSol } = useWrapSol()
 
   const onDeposit = useCallback(async () => {
     if (!publicKey || !senswap.program.provider.sendAndConfirm) return
-    const transaction = new Transaction()
+    const transaction = new web3.Transaction()
     const dAmounts = amounts.map((amount, i) => decimalize(amount, decimals[i]))
 
     for (const i in pool.mints) {
@@ -289,7 +290,7 @@ export const useInitAndDeletePool = () => {
       const mintsConfigs = mints.map(({ mintAddress, weight }) => {
         const dWeight = decimalize(weight, GENERAL_DECIMALS)
         return {
-          publicKey: new PublicKey(mintAddress),
+          publicKey: new web3.PublicKey(mintAddress),
           action: MintActionStates.Active,
           amountIn: new BN(0),
           weight: dWeight,
@@ -329,7 +330,9 @@ export const useInitializeJoin = (poolAddress: string, amountIns: string[]) => {
   const { publicKey } = useWallet()
   const accounts = useAllTokenAccounts()
   const pool = usePoolByAddress(poolAddress)
-  const mints = useMints(pool.mints.map((mint: PublicKey) => mint.toBase58()))
+  const mints = useMints(
+    pool.mints.map((mint: web3.PublicKey) => mint.toBase58()),
+  )
   const decimals = mints.map((mint) => mint?.decimals || 0)
   const { createWrapSol } = useWrapSol()
 
@@ -338,9 +341,12 @@ export const useInitializeJoin = (poolAddress: string, amountIns: string[]) => {
     const dAmountIns = amountIns.map((amount, i) =>
       decimalize(amount, decimals[i]),
     )
-    const transactions: Transaction[] = []
-    const splitArray: { mints: PublicKey[]; amounts: BN[]; reserves: BN[] }[] =
-      []
+    const transactions: web3.Transaction[] = []
+    const splitArray: {
+      mints: web3.PublicKey[]
+      amounts: BN[]
+      reserves: BN[]
+    }[] = []
     const size = 3
 
     for (let i = 0; i < pool.mints.length; i += size) {
@@ -351,7 +357,7 @@ export const useInitializeJoin = (poolAddress: string, amountIns: string[]) => {
     }
 
     for (const { amounts, mints, reserves } of splitArray) {
-      const transaction = new Transaction()
+      const transaction = new web3.Transaction()
 
       for (let i = 0; i < mints.length; i++) {
         const mint = mints[i]
@@ -413,8 +419,8 @@ export const useOracles = () => {
   }, [])
 
   const getMintInfo = useCallback(
-    (poolData: PoolData, inputMint: PublicKey) => {
-      const mintIdx = poolData.mints.findIndex((mint: PublicKey) =>
+    (poolData: PoolData, inputMint: web3.PublicKey) => {
+      const mintIdx = poolData.mints.findIndex((mint: web3.PublicKey) =>
         mint.equals(inputMint),
       )
 

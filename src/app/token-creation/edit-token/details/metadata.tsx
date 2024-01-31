@@ -12,7 +12,7 @@ import {
 import { publicKey as umiPubKey } from '@metaplex-foundation/umi'
 import { encode } from 'bs58'
 import { useWallet } from '@solana/wallet-adapter-react'
-import { PublicKey } from '@solana/web3.js'
+import { web3 } from '@coral-xyz/anchor'
 
 import MintLogoUpload from '../imgUpload'
 
@@ -43,7 +43,7 @@ export default function UploadMetadata({ mintAddress }: UploadMetadataProp) {
   const isOwner =
     !!publicKey &&
     !!mint?.mintAuthority &&
-    publicKey.equals(mint.mintAuthority as PublicKey)
+    publicKey.equals(mint.mintAuthority as web3.PublicKey)
 
   const onUpdateMetadata = useCallback(async () => {
     if (!mintName || !mintSymbol) return

@@ -3,7 +3,6 @@ import { useAsync, useDebounce } from 'react-use'
 import isEqual from 'react-fast-compare'
 import axios from 'axios'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { VersionedTransaction, PublicKey } from '@solana/web3.js'
 import { WRAPPED_SOL_MINT } from '@metaplex-foundation/js'
 import { Address, BN, web3 } from '@coral-xyz/anchor'
 import { MintActionStates, PoolData, isAddress } from '@sentre/senswap'
@@ -207,7 +206,7 @@ export const useJupSwap = () => {
     })
     if (!swapTransaction) throw new Error('Cannot find routes.')
     const buf = Buffer.from(swapTransaction, 'base64')
-    const tx = VersionedTransaction.deserialize(buf)
+    const tx = web3.VersionedTransaction.deserialize(buf)
     const signedTx = await signTransaction(tx)
     const raw = signedTx.serialize()
     const txId = await connection.sendRawTransaction(raw, {
@@ -382,8 +381,8 @@ export const useBestSenRoutes = () => {
 
       for (const { askMint, bidMint, pool } of routes) {
         const poolData = pools[pool.toString()]
-        const bidMintInfo = getMintInfo(poolData, new PublicKey(bidMint))
-        const askMintInfo = getMintInfo(poolData, new PublicKey(askMint))
+        const bidMintInfo = getMintInfo(poolData, new web3.PublicKey(bidMint))
+        const askMintInfo = getMintInfo(poolData, new web3.PublicKey(askMint))
 
         const tokenOutAmount = calcOutGivenInSwap(
           bidAmountBN,
@@ -499,7 +498,7 @@ export const useSenSwap = () => {
     const limitBN = decimalize(limit.toString(), askDecimals)
     const transaction = new web3.Transaction()
     const wrapSolTx = await createWrapSolTxIfNeed(
-      new PublicKey(bidMintAddress),
+      new web3.PublicKey(bidMintAddress),
       bidAmountBN,
     )
     if (wrapSolTx) transaction.add(wrapSolTx)
@@ -511,7 +510,7 @@ export const useSenSwap = () => {
     })
     transaction.add(tx)
 
-    const askMint = new PublicKey(askMintAddress)
+    const askMint = new web3.PublicKey(askMintAddress)
     if (askMint.equals(WRAPPED_SOL_MINT)) {
       const unwrapSolTx = await createTxUnwrapSol(askMint)
       transaction.add(unwrapSolTx)

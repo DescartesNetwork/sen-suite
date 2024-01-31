@@ -3,14 +3,8 @@ import SenFarmingProgram from '@sentre/farming'
 import BN from 'bn.js'
 import { useAsync, useInterval } from 'react-use'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import {
-  ComputeBudgetProgram,
-  Keypair,
-  PublicKey,
-  Signer,
-  Transaction,
-} from '@solana/web3.js'
 import { isAddress } from '@sentre/senswap'
+import { web3 } from '@coral-xyz/anchor'
 
 import solConfig from '@/configs/sol.config'
 import { useAnchorProvider } from '@/providers/wallet.provider'
@@ -186,7 +180,7 @@ export const useHarvest = (farmAddress: string) => {
       context: { slot: minContextSlot },
       value: { blockhash, lastValidBlockHeight },
     } = await connection.getLatestBlockhashAndContext()
-    const tx = new Transaction({
+    const tx = new web3.Transaction({
       blockhash,
       lastValidBlockHeight,
       feePayer: publicKey,
@@ -198,7 +192,7 @@ export const useHarvest = (farmAddress: string) => {
       farming.convertRewards({ farm: farmAddress, sendAndConfirm: false }),
     ])
     tx.add(
-      ComputeBudgetProgram.setComputeUnitLimit({ units: 1400000 }),
+      web3.ComputeBudgetProgram.setComputeUnitLimit({ units: 1400000 }),
       ...txs.map(({ tx }) => tx),
     )
     const signature = await sendTransaction(tx, connection, {
@@ -248,7 +242,7 @@ export const useStake = (
       context: { slot: minContextSlot },
       value: { blockhash, lastValidBlockHeight },
     } = await connection.getLatestBlockhashAndContext()
-    const tx = new Transaction({
+    const tx = new web3.Transaction({
       blockhash,
       lastValidBlockHeight,
       feePayer: publicKey,
@@ -267,7 +261,7 @@ export const useStake = (
       ...nfts.map(async (nft) => {
         const { metadataAddress, collection } = await mpl
           .nfts()
-          .findByMint({ mintAddress: new PublicKey(nft) })
+          .findByMint({ mintAddress: new web3.PublicKey(nft) })
         return farming.lock({
           farm: farmAddress,
           nft,
@@ -284,7 +278,7 @@ export const useStake = (
       farming.stake({ farm: farmAddress, sendAndConfirm: false }),
     ])
     tx.add(
-      ComputeBudgetProgram.setComputeUnitLimit({ units: 1400000 }),
+      web3.ComputeBudgetProgram.setComputeUnitLimit({ units: 1400000 }),
       ...txs.map(({ tx }) => tx),
     )
     const signature = await sendTransaction(tx, connection, {
@@ -332,7 +326,7 @@ export const useUnstake = (farmAddress: string, shares: BN) => {
       context: { slot: minContextSlot },
       value: { blockhash, lastValidBlockHeight },
     } = await connection.getLatestBlockhashAndContext()
-    const tx = new Transaction({
+    const tx = new web3.Transaction({
       blockhash,
       lastValidBlockHeight,
       feePayer: publicKey,
@@ -343,7 +337,7 @@ export const useUnstake = (farmAddress: string, shares: BN) => {
       farming.stake({ farm: farmAddress, sendAndConfirm: false }),
     ])
     tx.add(
-      ComputeBudgetProgram.setComputeUnitLimit({ units: 1400000 }),
+      web3.ComputeBudgetProgram.setComputeUnitLimit({ units: 1400000 }),
       ...txs.map(({ tx }) => tx),
     )
     const signature = await sendTransaction(tx, connection, {
@@ -385,13 +379,13 @@ export const useUnstakeNft = (farmAddress: string, nft: string) => {
   const unstakeNft = useCallback(async () => {
     const metadata = await mpl
       .nfts()
-      .findByMint({ mintAddress: new PublicKey(nft) })
+      .findByMint({ mintAddress: new web3.PublicKey(nft) })
     if (!metadata.collection?.address) throw new Error('Not found collection!')
 
     const shareAmount = debtData?.shares || new BN(0)
     const depositAmount = withdraw(shareAmount)
     // Validate
-    const transaction = new Transaction()
+    const transaction = new web3.Transaction()
     // Initialize debt if needed
     if (!debtData) {
       const { tx } = await farming.initializeDebt({
@@ -492,8 +486,8 @@ export const useInitializeFarm = (
   const decimals = mints.map((mint) => mint?.decimals || 0)
 
   const onInitializeFarm = useCallback(async () => {
-    const mintPubKey = new PublicKey(inputMint)
-    const allTxs: { tx: Transaction; signers: Signer[] }[] = []
+    const mintPubKey = new web3.PublicKey(inputMint)
+    const allTxs: { tx: web3.Transaction; signers: web3.Signer[] }[] = []
     // Check time
     const currentTime = new Date().getTime()
     let startAfter = 0
@@ -502,7 +496,7 @@ export const useInitializeFarm = (
     const endAfter = Math.floor((endAt - currentTime) / 1000)
 
     // Initialize farm
-    const farmKeypair = Keypair.generate()
+    const farmKeypair = web3.Keypair.generate()
     const { tx: txInitializeFarm } = await farming.initializeFarm({
       inputMint: mintPubKey,
       startAfter: startAfter + 10,
@@ -514,7 +508,7 @@ export const useInitializeFarm = (
 
     // Add Boosting
     if (boostsData.length) {
-      const txBoosts = new Transaction()
+      const txBoosts = new web3.Transaction()
       await Promise.all(
         boostsData.map(async ({ collection, percentage }) => {
           const { tx: txPushFarmBoostingCollection } =
@@ -531,7 +525,7 @@ export const useInitializeFarm = (
     }
 
     // Add Reward
-    const txRewards = new Transaction()
+    const txRewards = new web3.Transaction()
     await Promise.all(
       tokenRewards.map(async ({ mintAddress, budget }, index) => {
         const rewardAmount = decimalize(budget, decimals[index])

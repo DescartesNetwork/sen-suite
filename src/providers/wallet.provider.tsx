@@ -17,8 +17,7 @@ import {
   useConnection,
   useWallet,
 } from '@solana/wallet-adapter-react'
-import { SystemProgram } from '@solana/web3.js'
-import { AnchorProvider } from '@coral-xyz/anchor'
+import { AnchorProvider, web3 } from '@coral-xyz/anchor'
 
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui'
 
@@ -108,7 +107,7 @@ export const useAnchorProvider = () => {
   const { connection } = useConnection()
   const provider = useMemo(() => {
     const _wallet: AnchorWallet = wallet || {
-      publicKey: SystemProgram.programId,
+      publicKey: web3.SystemProgram.programId,
       signTransaction: async (tx) => tx,
       signAllTransactions: async (txs) => txs,
     }

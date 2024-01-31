@@ -1,16 +1,16 @@
 'use client'
 import { Fragment, useState } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
-import { PublicKey } from '@solana/web3.js'
+import { web3 } from '@coral-xyz/anchor'
 import clsx from 'clsx'
 
+import { Settings2 } from 'lucide-react'
 import Modal from '@/components/modal'
 import UpdateAuthority from './update'
 import Freeze from './freeze'
 import Thaw from './thaw'
 
 import { useMints } from '@/hooks/spl.hook'
-import { Settings2 } from 'lucide-react'
 
 enum FreezeAction {
   UpdateAuthority = 'Update Authority',
@@ -31,7 +31,7 @@ export default function FreezeAuthority({ mintAddress }: FreezeAuthorityProps) {
   const isOwner =
     !!publicKey &&
     !!mint?.freezeAuthority &&
-    publicKey.equals(mint.freezeAuthority as PublicKey)
+    publicKey.equals(mint.freezeAuthority as web3.PublicKey)
 
   return (
     <Fragment>
@@ -54,7 +54,7 @@ export default function FreezeAuthority({ mintAddress }: FreezeAuthorityProps) {
           readOnly
           value={
             mint?.freezeAuthority
-              ? (mint?.freezeAuthority as PublicKey).toBase58()
+              ? (mint?.freezeAuthority as web3.PublicKey).toBase58()
               : undefined
           }
         />

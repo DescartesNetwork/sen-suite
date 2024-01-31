@@ -1,8 +1,8 @@
 'use client'
 import { Fragment, useCallback, useEffect, useState } from 'react'
-import { PublicKey } from '@solana/web3.js'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { isAddress } from '@sentre/senswap'
+import { web3 } from '@coral-xyz/anchor'
 
 import Modal from '@/components/modal'
 import { Settings2 } from 'lucide-react'
@@ -25,7 +25,7 @@ export default function UpdateAuthority({ mintAddress }: UpdateAuthorityProps) {
   const isOwner =
     !!publicKey &&
     !!mint?.mintAuthority &&
-    publicKey.equals(mint.mintAuthority as PublicKey)
+    publicKey.equals(mint.mintAuthority as web3.PublicKey)
 
   const onUpdate = useCallback(async () => {
     try {
@@ -35,7 +35,7 @@ export default function UpdateAuthority({ mintAddress }: UpdateAuthorityProps) {
       setLoading(true)
 
       const txId = await spl.methods
-        .setAuthority({ mintTokens: {} }, new PublicKey(mintAuthority))
+        .setAuthority({ mintTokens: {} }, new web3.PublicKey(mintAuthority))
         .accounts({
           owned: mintAddress,
           owner: publicKey,
@@ -58,7 +58,7 @@ export default function UpdateAuthority({ mintAddress }: UpdateAuthorityProps) {
 
   useEffect(() => {
     if (mint?.mintAuthority)
-      setMintAuthority((mint.mintAuthority as PublicKey).toBase58())
+      setMintAuthority((mint.mintAuthority as web3.PublicKey).toBase58())
   }, [mint?.mintAuthority])
 
   return (
@@ -81,7 +81,7 @@ export default function UpdateAuthority({ mintAddress }: UpdateAuthorityProps) {
         readOnly
         value={
           mint?.mintAuthority
-            ? (mint?.mintAuthority as PublicKey).toBase58()
+            ? (mint?.mintAuthority as web3.PublicKey).toBase58()
             : undefined
         }
       />
@@ -102,7 +102,8 @@ export default function UpdateAuthority({ mintAddress }: UpdateAuthorityProps) {
           <button
             disabled={
               !isAddress(mintAuthority) ||
-              mintAuthority === (mint?.mintAuthority as PublicKey).toBase58() ||
+              mintAuthority ===
+                (mint?.mintAuthority as web3.PublicKey).toBase58() ||
               loading
             }
             onClick={onUpdate}

@@ -4,9 +4,9 @@ import { FarmData, DebtData, RewardData, BoostingData } from '@sentre/farming'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { produce } from 'immer'
-import { MemcmpFilter, PublicKey, SystemProgram } from '@solana/web3.js'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useUnmount } from 'react-use'
+import { web3 } from '@coral-xyz/anchor'
 import BN from 'bn.js'
 
 import { env } from '@/configs/env'
@@ -134,7 +134,7 @@ export default function FarmingProvider({ children }: { children: ReactNode }) {
     (
       key: 'farm' | 'debt' | 'farmRewardMint' | 'farmBoostingCollection',
       upsertCallback: (data: Record<string, any>) => void,
-      filter?: MemcmpFilter[],
+      filter?: web3.MemcmpFilter[],
     ) => {
       const { connection } = farming.program.provider
       const id = connection.onProgramAccountChange(
@@ -159,7 +159,7 @@ export default function FarmingProvider({ children }: { children: ReactNode }) {
   }, [publicKey])
 
   const fetchFarms = useCallback(async () => {
-    const data: Array<{ publicKey: PublicKey; account: FarmData }> =
+    const data: Array<{ publicKey: web3.PublicKey; account: FarmData }> =
       (await farming.program.account.farm.all()) as any
     const farms: Record<string, FarmData> = {}
     data.forEach(
@@ -176,7 +176,7 @@ export default function FarmingProvider({ children }: { children: ReactNode }) {
 
   const fetchDebts = useCallback(async () => {
     if (!filter) return upsertDebts({})
-    const data: Array<{ publicKey: PublicKey; account: DebtData }> =
+    const data: Array<{ publicKey: web3.PublicKey; account: DebtData }> =
       await farming.program.account.debt.all(filter)
     const debts: Record<string, DebtData> = {}
     data.forEach(
@@ -192,7 +192,7 @@ export default function FarmingProvider({ children }: { children: ReactNode }) {
   }, [fetchDebts, filter, upsertDebts, watchFarming])
 
   const fetchRewards = useCallback(async () => {
-    const data: Array<{ publicKey: PublicKey; account: RewardData }> =
+    const data: Array<{ publicKey: web3.PublicKey; account: RewardData }> =
       await farming.program.account.farmRewardMint.all()
     const rewards: Record<string, RewardData> = {}
     data.forEach(
@@ -208,7 +208,7 @@ export default function FarmingProvider({ children }: { children: ReactNode }) {
   }, [fetchRewards, upsertRewards, watchFarming])
 
   const fetchBoostings = useCallback(async () => {
-    const data: Array<{ publicKey: PublicKey; account: BoostingData }> =
+    const data: Array<{ publicKey: web3.PublicKey; account: BoostingData }> =
       await farming.program.account.farmBoostingCollection.all()
     const boostings: Record<string, BoostingData> = {}
     data.forEach(
@@ -241,9 +241,9 @@ export const useFarmByAddress = (farmAddress: string) => {
   const farm = useFarmingStore(
     ({ farms }) =>
       farms[farmAddress] || {
-        authority: SystemProgram.programId,
-        inputMint: SystemProgram.programId,
-        moMint: SystemProgram.programId,
+        authority: web3.SystemProgram.programId,
+        inputMint: web3.SystemProgram.programId,
+        moMint: web3.SystemProgram.programId,
         totalShares: new BN(0),
         totalRewards: new BN(0),
         compensation: new BN(0),

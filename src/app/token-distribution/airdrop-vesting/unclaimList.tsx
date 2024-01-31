@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { Leaf, MerkleDistributor, findReceipt } from '@sentre/utility'
 import { useAsync } from 'react-use'
 import dayjs from 'dayjs'
-import { PublicKey } from '@solana/web3.js'
+import { web3 } from '@coral-xyz/anchor'
 
 import Modal from '@/components/modal'
 import { FileText } from 'lucide-react'
@@ -39,7 +39,7 @@ const UnclaimList = ({ distributeAddress }: UnclaimListProps) => {
       root.receipients.map(async (recipient) => {
         const receipt = await findReceipt(
           recipient.salt,
-          new PublicKey(distributeAddress),
+          new web3.PublicKey(distributeAddress),
           recipient.authority,
           utility.program.programId,
         )

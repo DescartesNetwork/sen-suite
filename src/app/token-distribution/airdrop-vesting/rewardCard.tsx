@@ -2,8 +2,8 @@
 import { useCallback, useState } from 'react'
 import { BN } from 'bn.js'
 import { ReceiptData } from '@sentre/utility'
-import { PublicKey } from '@solana/web3.js'
 import dayjs from 'dayjs'
+import { web3 } from '@coral-xyz/anchor'
 
 import { MintAmount, MintLogo, MintSymbol } from '@/components/mint'
 import StatusTag, { ReceiptState } from './statusTag'
@@ -35,7 +35,7 @@ export default function RewardCard(props: ReceiveItem) {
         salt: Array.from(leaf.salt),
         startedAt: leaf.startedAt,
         claimedAt: new BN(Date.now() / 1000),
-        distributor: new PublicKey(props.distributor),
+        distributor: new web3.PublicKey(props.distributor),
       }
       upsertReceipt(receiptAddress, receiptData)
 

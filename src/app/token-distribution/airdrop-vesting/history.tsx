@@ -2,8 +2,7 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useAsync } from 'react-use'
 import { useConnection } from '@solana/wallet-adapter-react'
-import { utils } from '@coral-xyz/anchor'
-import { PublicKey } from '@solana/web3.js'
+import { utils, web3 } from '@coral-xyz/anchor'
 import { BN } from 'bn.js'
 import { MerkleDistributor } from '@sentre/utility'
 import dayjs from 'dayjs'
@@ -93,7 +92,7 @@ const CreatedDate = ({ address }: { address: string }) => {
     if (!utility) return 0
     const treasurerAddress = await utility.deriveTreasurerAddress(address)
     const treasury = await utils.token.associatedAddress({
-      owner: new PublicKey(treasurerAddress),
+      owner: new web3.PublicKey(treasurerAddress),
       mint,
     })
     const api_transaction = `https://public-api.solscan.io/account/transactions?account=${treasury.toBase58()}&limit=100`
@@ -108,7 +107,7 @@ const CreatedDate = ({ address }: { address: string }) => {
     if (createdAt) return createdAt
 
     const trans = await connection.getSignaturesForAddress(
-      new PublicKey(address),
+      new web3.PublicKey(address),
       {
         limit: 1000,
       },

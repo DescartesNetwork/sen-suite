@@ -4,18 +4,18 @@ import { produce } from 'immer'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { BN } from 'bn.js'
-import { PublicKey, SystemProgram } from '@solana/web3.js'
 import { PoolData, PoolStates } from '@sentre/senswap'
 import isEqual from 'react-fast-compare'
+import { web3 } from '@coral-xyz/anchor'
 
 import { env } from '@/configs/env'
 import { useSenswap } from '@/hooks/pool.hook'
 
 const DUMMY_POOL = {
-  authority: SystemProgram.programId,
-  mintLpt: SystemProgram.programId,
+  authority: web3.SystemProgram.programId,
+  mintLpt: web3.SystemProgram.programId,
   reserves: [new BN(0)],
-  mints: [SystemProgram.programId],
+  mints: [web3.SystemProgram.programId],
   weights: [new BN(0)],
   treasuries: [new BN(0)],
   fee: new BN(0),
@@ -75,7 +75,7 @@ export default function PoolProvider({ children }: { children: ReactNode }) {
         accountId,
         accountInfo: { data },
       }: {
-        accountId: PublicKey
+        accountId: web3.PublicKey
         accountInfo: { data: Buffer }
       }) => {
         const accountData = senswap.program.coder.accounts.decode('pool', data)

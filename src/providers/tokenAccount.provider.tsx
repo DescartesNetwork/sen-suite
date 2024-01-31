@@ -7,12 +7,12 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { produce } from 'immer'
 import { isAddress } from '@sentre/senswap'
 import { web3 } from '@coral-xyz/anchor'
+import BN from 'bn.js'
 
 import { env } from '@/configs/env'
 import { ZERO } from '@/helpers/utils'
 import { useSpl } from '@/hooks/spl.hook'
 import { useLamports } from './wallet.provider'
-import BN from 'bn.js'
 import { WRAPPED_SOL } from '@/hooks/wsol.hook'
 
 export type TokenAccount = Awaited<
@@ -45,7 +45,7 @@ export const useTokenAccountStore = create<TokenAccountStore>()(
         ),
     }),
     {
-      name: 'toke-account',
+      name: 'token-account',
       enabled: env === 'development',
     },
   ),
@@ -141,15 +141,12 @@ export const useTokenAccountByMintAddress = (mintAddress: string) => {
  * @param mintAddress Mint address
  * @returns Token account amount
  */
-
 export function useTokenAccountAmount(mintAddress: string) {
   const lamports = useLamports()
   const { amount = ZERO } = useTokenAccountByMintAddress(mintAddress) || {}
-
   const result = useMemo(() => {
     if (mintAddress !== WRAPPED_SOL) return amount
     return amount.add(new BN(lamports))
   }, [lamports, amount, mintAddress])
-
   return result
 }

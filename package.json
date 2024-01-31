@@ -14,9 +14,6 @@
     "lint": "next lint",
     "lint:watch": "nodemon --watch src --ext ts,tsx --exec 'next lint' --signal SIGTERM"
   },
-  "resolutions": {
-    "@solana/buffer-layout": "^4.0.1"
-  },
   "dependencies": {
     "@coral-xyz/anchor": "0.28.1-beta.2",
     "@coral-xyz/spl-token": "0.28.1-beta.2",
@@ -36,7 +33,6 @@
     "@solana/wallet-adapter-react": "^0.15.35",
     "@solana/wallet-adapter-react-ui": "^0.9.34",
     "@solana/wallet-adapter-wallets": "^0.19.24",
-    "@solana/web3.js": "^1.87.6",
     "axios": "^1.4.0",
     "bn.js": "^5.2.1",
     "bs58": "^5.0.0",
