@@ -36,13 +36,13 @@ export default function TokenCard({
       )}
       onClick={onClick}
     >
-      <div className="flex gap-2">
+      <div className="flex flex-row gap-2 items-center">
         <MintLogo mintAddress={mintAddress} />
         <div className="flex-auto">
-          <p className="font-semibold">
+          <p className="text-sm font-semibold">
             <MintSymbol mintAddress={mintAddress} />
           </p>
-          <p className="text-sm opacity-60">
+          <p className="text-xs opacity-60">
             <MintName mintAddress={mintAddress} />
           </p>
         </div>

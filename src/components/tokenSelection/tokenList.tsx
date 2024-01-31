@@ -105,7 +105,7 @@ export default function TokenList({
           )}
           {recentMintAddresses.map((address) => (
             <div key={address} className="col-span-12">
-              <LazyLoad height={64}>
+              <LazyLoad height="4rem">
                 <TokenCard
                   mintAddress={address}
                   onClick={() => onChange(address)}
@@ -132,7 +132,7 @@ export default function TokenList({
       </div>
       {(mints || randMints).map(({ address }) => (
         <div key={address} className="col-span-12">
-          <LazyLoad height={64}>
+          <LazyLoad height="4rem">
             <TokenCard
               mintAddress={address}
               onClick={() => onChange(address)}
