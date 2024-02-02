@@ -15,6 +15,7 @@ import {
 } from '@/static/images/welcome/partners'
 import { useTheme } from '@/providers/ui.provider'
 import { useSwapStore } from '@/providers/swap.provider'
+import { useTvl } from '@/hooks/tvl.hook'
 
 export type SwapInfoProps = {
   route?: Partial<GeneralSwapInfo>
@@ -76,7 +77,7 @@ function PriceImpact({ route: { priceImpact = 0 } = {} }: SwapInfoProps) {
   )
 }
 
-function SlippageTolerance() {
+function Slippage() {
   const slippage = useSwapStore(({ slippage }) => slippage)
   return (
     <div className="flex flex-row gap-2 items-baseline">
@@ -92,6 +93,16 @@ function SlippageTolerance() {
           {slippage === 1 ? 'Free' : `${slippage * 100}%`}
         </p>
       </div>
+    </div>
+  )
+}
+
+function Fee({ route: { fees = [] } = {} }: SwapInfoProps) {
+  const total = useTvl(fees)
+  return (
+    <div className="flex flex-row gap-2 items-baseline">
+      <p className="flex-auto text-sm opacity-60">Fee</p>
+      <p className="text-sm font-bold">{numeric(total).format('$0.[00]')}</p>
     </div>
   )
 }
@@ -169,7 +180,10 @@ export default function SwapInfo({ route }: SwapInfoProps) {
         <PriceImpact route={route} />
       </div>
       <div className="col-span-12">
-        <SlippageTolerance />
+        <Slippage />
+      </div>
+      <div className="col-span-12">
+        <Fee route={route} />
       </div>
       <div className="col-span-12">
         <Routes route={route} />

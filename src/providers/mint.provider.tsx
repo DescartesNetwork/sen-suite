@@ -6,6 +6,7 @@ import Fuse from 'fuse.js'
 import useSWR from 'swr'
 import { produce } from 'immer'
 import axios from 'axios'
+import { isAddress } from '@sentre/senswap'
 
 import { env } from '@/configs/env'
 import sageConfig from '@/configs/sage.config'
@@ -104,6 +105,7 @@ export const useMintByAddress = (mintAddress: string) => {
 
   const fetch = useCallback(
     async (mintAddress: string) => {
+      if (!isAddress(mintAddress)) throw new Error('Invalid mint address.')
       const mint = metadata[mintAddress]
       if (mint) return mint
       const { data } = await axios.get<MintMetadata>(
