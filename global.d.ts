@@ -18,9 +18,8 @@ type PageMetadata = {
 type PageMap = Record<string, PageMetadata>
 
 /**
- * Swap
+ * Mint
  */
-
 type MintMetadata = {
   address: string
   chainId: ChainId
@@ -32,6 +31,24 @@ type MintMetadata = {
   extensions: {
     coingeckoId?: string
   }
+}
+
+/**
+ * Swap
+ */
+
+type SwapPlatform = 'Senswap' | 'Jupiter Aggregator'
+
+type GeneralSwapInfo = {
+  bidAmount: string
+  bidMintAddress: string
+  askAmount: string
+  askMintAddress: string
+  priceImpact: number
+  route: string[]
+  fees: Array<{ amount: BN; mintAddress: string }>
+  platform: SwapPlatform
+  swap: () => Promise<string>
 }
 
 type JupAgPriceMetadata = {

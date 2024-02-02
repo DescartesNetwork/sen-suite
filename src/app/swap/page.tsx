@@ -1,43 +1,70 @@
 'use client'
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import clsx from 'clsx'
 
-import { ArrowUpDown } from 'lucide-react'
 import Ask from './ask'
 import Bid from './bid'
 import SwapSettings from './swapSettings'
 import SwapInfo from './swapInfo'
+import Switch from './switch'
+import { MintSymbol } from '@/components/mint'
 
-import { useSwap, useSwitch } from '@/hooks/swap.hook'
+import { useJupAgSwap, useSenswapSwap } from '@/hooks/swap.hook'
 import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
 import { useSwapStore } from '@/providers/swap.provider'
 
 export default function Swap() {
-  const [loading, setLoading] = useState(false)
-  const onSwitch = useSwitch()
-  const { routes, fetching, swap } = useSwap()
-
+  const [swapping, setSwapping] = useState(false)
+  const overBudget = useSwapStore(({ overBudget }) => overBudget)
+  const bidMintAddress = useSwapStore(({ bidMintAddress }) => bidMintAddress)
+  const setAskAmount = useSwapStore(({ setAskAmount }) => setAskAmount)
   const pushMessage = usePushMessage()
-  const setBidAmount = useSwapStore(({ setBidAmount }) => setBidAmount)
+
+  // Get routes
+  const { value: senValue, loading: fconLoading } = useSenswapSwap()
+  const { value: jupValue, loading: jupLoading } = useJupAgSwap()
+
+  const route = useMemo(() => {
+    if (!jupValue) return senValue
+    if (!senValue) return jupValue
+    // If Senswap's price impact is not greater than JUP's price impact 5%, we prioritize Senswap
+    const delta = Math.abs(senValue.priceImpact - jupValue.priceImpact)
+    if (delta > 0.05) return jupValue
+    return senValue
+  }, [senValue, jupValue])
+
+  const loading = useMemo(() => {
+    return fconLoading || jupLoading
+  }, [fconLoading, jupLoading])
+
+  // Feedback
+  const ok = useMemo(() => {
+    if (overBudget) return false
+    if (!route) return false
+    return true
+  }, [overBudget, route])
 
   const onSwap = useCallback(async () => {
     try {
-      setLoading(true)
-      const txId = await swap()
+      setSwapping(true)
+      if (!route) throw new Error('Unexpected error.')
+      const txId = await route.swap()
       pushMessage(
         'alert-success',
-        'Swap successfully. Click here to view on explorer.',
-        {
-          onClick: () => window.open(solscan(txId), '_blank'),
-        },
+        'Successfully swap your tokens. Click here to view the transaction details.',
+        { onClick: () => window.open(solscan(txId), '_blank') },
       )
-      setBidAmount('')
     } catch (er: any) {
       pushMessage('alert-error', er.message)
     } finally {
-      setLoading(false)
+      setSwapping(false)
     }
-  }, [swap, pushMessage, setBidAmount])
+  }, [route, pushMessage])
+
+  useEffect(() => {
+    setAskAmount(route?.askAmount || '')
+  }, [route?.askAmount, setAskAmount])
 
   return (
     <div className="grid grid-cols-12 gap-2 card rounded-3xl bg-base-100 shadow-xl p-4">
@@ -49,29 +76,29 @@ export default function Swap() {
         <Bid />
       </div>
       <div className="col-span-12 flex flex-row justify-center -my-4 z-[1]">
-        <button
-          className="btn btn-sm btn-square bg-base-100 shadow-md"
-          onClick={onSwitch}
-        >
-          <ArrowUpDown className="h-4 w-4" />
-        </button>
+        <Switch />
       </div>
       <div className="col-span-12">
         <Ask />
       </div>
       <div className="col-span-12">
-        <SwapInfo />
+        <SwapInfo route={route} />
       </div>
       <div className="col-span-12">
         <button
           className="btn btn-primary w-full rounded-full"
-          disabled={loading || fetching || !routes}
+          disabled={!ok || loading || swapping}
           onClick={onSwap}
         >
-          Swap
-          {(loading || fetching) && (
-            <span className="loading loading-spinner" />
-          )}
+          <span className={clsx({ hidden: !overBudget })}>
+            Insufficient <MintSymbol mintAddress={bidMintAddress} />
+          </span>
+          <span className={clsx({ hidden: overBudget })}>Swap</span>
+          <span
+            className={clsx('loading loading-sm loading-spinner', {
+              hidden: !loading && !swapping,
+            })}
+          />
         </button>
       </div>
     </div>

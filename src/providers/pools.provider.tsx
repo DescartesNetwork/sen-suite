@@ -3,28 +3,32 @@ import { Fragment, ReactNode, useCallback, useEffect } from 'react'
 import { produce } from 'immer'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
-import { BN } from 'bn.js'
 import { PoolData, PoolStates } from '@sentre/senswap'
 import isEqual from 'react-fast-compare'
 import { web3 } from '@coral-xyz/anchor'
 
 import { env } from '@/configs/env'
 import { useSenswap } from '@/hooks/pool.hook'
+import { ZERO } from '@/helpers/decimals'
 
-const DUMMY_POOL = {
+export type ExtendedPoolData = { address: string } & PoolData
+
+const DUMMY_POOL: Partial<ExtendedPoolData> = {
+  address: web3.SystemProgram.programId.toBase58(),
   authority: web3.SystemProgram.programId,
   mintLpt: web3.SystemProgram.programId,
-  reserves: [new BN(0)],
+  reserves: [ZERO],
   mints: [web3.SystemProgram.programId],
-  weights: [new BN(0)],
-  treasuries: [new BN(0)],
-  fee: new BN(0),
-  tax: new BN(0),
+  weights: [ZERO],
+  treasuries: [web3.SystemProgram.programId],
+  fee: ZERO,
+  tax: ZERO,
+  state: PoolStates.Uninitialized,
 }
 
 export type PoolStore = {
-  pools: Record<string, PoolData>
-  upsertPool: (payload: Record<string, PoolData>) => void
+  pools: Record<string, ExtendedPoolData>
+  upsertPool: (payload: Record<string, ExtendedPoolData>) => void
 }
 
 /**
@@ -34,7 +38,7 @@ export const usePoolStore = create<PoolStore>()(
   devtools(
     (set) => ({
       pools: {},
-      upsertPool: (payload: Record<string, PoolData>) =>
+      upsertPool: (payload: Record<string, ExtendedPoolData>) =>
         set(
           produce<PoolStore>(({ pools }) => {
             Object.assign(pools, payload)
@@ -59,10 +63,13 @@ export default function PoolProvider({ children }: { children: ReactNode }) {
 
   const fetch = useCallback(async () => {
     const pools = await senswap.getAllPoolData()
-    const payload: Record<string, PoolData> = {}
+    const payload: Record<string, ExtendedPoolData> = {}
     pools.forEach(({ account, publicKey }) => {
       if (!isEqual(account.state, PoolStates.Deleted))
-        payload[publicKey.toBase58()] = account
+        payload[publicKey.toBase58()] = {
+          address: publicKey.toBase58(),
+          ...account,
+        }
     })
     return upsertPool(payload)
   }, [senswap, upsertPool])
@@ -101,11 +108,26 @@ export default function PoolProvider({ children }: { children: ReactNode }) {
  */
 
 /**
- * Get all Pools
+ * Get all pools
  * @returns Pool list
  */
 export const usePools = () => {
   const pools = usePoolStore(({ pools }) => pools)
+  return pools
+}
+
+/**
+ * Get all active pools
+ * @returns Active pool list
+ */
+export const useActivePools = () => {
+  const pools = usePoolStore(({ pools }) =>
+    Object.values(pools).filter(
+      ({ state }) =>
+        isEqual(state, PoolStates.Initialized) ||
+        isEqual(state, PoolStates.Initializing),
+    ),
+  )
   return pools
 }
 

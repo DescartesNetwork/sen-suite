@@ -11,7 +11,11 @@ import BN from 'bn.js'
 
 import { useAnchorProvider } from '@/providers/wallet.provider'
 import { decimalize, undecimalize } from '@/helpers/decimals'
-import { usePoolByAddress, usePools } from '@/providers/pools.provider'
+import {
+  ExtendedPoolData,
+  usePoolByAddress,
+  usePools,
+} from '@/providers/pools.provider'
 import {
   useAllTokenAccounts,
   useTokenAccountByMintAddress,
@@ -38,7 +42,6 @@ export enum PoolFilter {
 }
 
 export type VolumeData = { data: number; label: string }
-export type ExtendedPoolData = PoolData & { address: string }
 
 export type PoolPairLpData = {
   balanceIn: BN

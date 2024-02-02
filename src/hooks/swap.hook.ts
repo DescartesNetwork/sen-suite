@@ -1,597 +1,400 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useAsync, useDebounce } from 'react-use'
-import isEqual from 'react-fast-compare'
+import { useCallback, useMemo } from 'react'
 import axios from 'axios'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { WRAPPED_SOL_MINT } from '@metaplex-foundation/js'
-import { Address, BN, web3 } from '@coral-xyz/anchor'
-import { MintActionStates, PoolData, isAddress } from '@sentre/senswap'
-import { create } from 'zustand'
-import { devtools } from 'zustand/middleware'
+import { BN, web3 } from '@coral-xyz/anchor'
+import { isAddress } from '@sentre/senswap'
+import { useAsync } from 'react-use'
+import { type AsyncState } from 'react-use/lib/useAsyncFn'
 
-import { env } from '@/configs/env'
-import { useMintByAddress } from '@/providers/mint.provider'
-import { decimalize, undecimalize } from '@/helpers/decimals'
-import { usePools } from '@/providers/pools.provider'
-import { useOracles, useSenswap, useWrapSol } from './pool.hook'
-import { useMints } from './spl.hook'
+import { useAllMintMetadata, useMintByAddress } from '@/providers/mint.provider'
+import { ZERO, decimalize, undecimalize } from '@/helpers/decimals'
+import { ExtendedPoolData, useActivePools } from '@/providers/pools.provider'
+import { useSenswap } from './pool.hook'
 import { useSwapStore } from '@/providers/swap.provider'
+import {
+  Hop,
+  findAvailableRoutes,
+  findSideByMintAddress,
+  findTheBestRoute,
+} from '@/helpers/oracle'
+import { WRAPPED_SOL, useUnwrap, useWrap } from './wsol.hook'
+import { useTokenAccountByMintAddress } from '@/providers/tokenAccount.provider'
+import { useLamports } from '@/providers/wallet.provider'
+import { confirmTransaction } from '@/helpers/explorers'
 
-export enum Platform {
-  SenSwap = 'SenSwap',
-  Jup = 'Jupiter',
-}
-export enum JupiterSwapMode {
-  ExactIn = 'ExactIn',
-  ExactOut = 'ExactOut',
-}
-export type JupiterFee = {
-  amount: string
-  mint: string
-  pct: number
-}
-export type JupiterRouteInfo = {
-  contextSlot: number
-  inAmount: string
-  inputMint: string
-  otherAmountThreshold: string
-  outAmount: string
-  outputMint: string
-  platformFee: unknown | null
-  priceImpactPct: string
-  slippageBps: number
-  swapMode: JupiterSwapMode
-  routePlan: Array<{
-    percent: number
-    swapInfo: {
-      ammKey: string
-      feeAmount: string
-      feeMint: string
-      inAmount: string
-      inputMint: string
-      label: string
-      outAmount: string
-      outputMint: string
-    }
-  }>
-  timeTaken: number
-}
-export type RouteInfo = {
-  pool: string
-  bidMint: string
-  bidAmount: BN
-  askMint: string
-  askAmount: BN
-  priceImpactPct: number
-}
-export type Route = {
-  pool: Address
-  bidMint: string
-  askMint: string
-}
-export type SenMintRoutes = {
-  [mintAddress: string]: { [mintAddress: string]: Address[] }
-}
-
-export type SenSwapRoute = {
-  route: RouteInfo[]
-  bidAmount: string
-  askAmount: string
-  priceImpactPct: number
-}
-
-export type SwapStore = {
-  bestJupRoute: JupiterRouteInfo | undefined
-  setBestJubRoute: (bestRoute: JupiterRouteInfo | undefined) => void
-  bestSenRoute: SenSwapRoute | undefined
-  setBestSenRoute: (bestSenRoute: SenSwapRoute | undefined) => void
+/**
+ * Extract mint decimals
+ * @param mintAddress Mint address
+ * @param mints Mints
+ * @returns
+ */
+function getMintDecimals(mintAddress: string, mints: MintMetadata[]) {
+  if (!isAddress(mintAddress)) return 0
+  const { decimals = 0 } =
+    mints.find(({ address }) => address === mintAddress) || {}
+  return decimals
 }
 
 /**
- * Store
+ * Extract the quote info
+ * @param hop Hop data
+ * @param pools Pools
+ * @returns
  */
-
-export const _useSwapStore = create<SwapStore>()(
-  devtools(
-    (set) => ({
-      bestJupRoute: undefined,
-      setBestJubRoute: (bestJupRoute: JupiterRouteInfo | undefined) =>
-        set({ bestJupRoute }, false, 'setRoutes'),
-      bestSenRoute: undefined,
-      setBestSenRoute: (bestSenRoute: SenSwapRoute | undefined) =>
-        set({ bestSenRoute }, false, 'setBestSenRoute'),
-    }),
-    {
-      name: 'swap',
-      enabled: env === 'development',
-    },
-  ),
-)
-
-/**
- * Hooks
- */
-
-export const useSwitch = () => {
-  const bidMintAddress = useSwapStore(({ bidMintAddress }) => bidMintAddress)
-  const setBidMintAddress = useSwapStore(
-    ({ setBidMintAddress }) => setBidMintAddress,
-  )
-  const setBidAmount = useSwapStore(({ setBidAmount }) => setBidAmount)
-  const askMintAddress = useSwapStore(({ askMintAddress }) => askMintAddress)
-  const setAskMintAddress = useSwapStore(
-    ({ setAskMintAddress }) => setAskMintAddress,
-  )
-  const setAskAmount = useSwapStore(({ setAskAmount }) => setAskAmount)
-
-  const onSwitch = useCallback(() => {
-    setBidMintAddress(askMintAddress)
-    setAskMintAddress(bidMintAddress)
-    setBidAmount('')
-    setAskAmount('')
-  }, [
-    bidMintAddress,
-    setBidMintAddress,
-    setBidAmount,
-    askMintAddress,
-    setAskMintAddress,
-    setAskAmount,
-  ])
-
-  return onSwitch
-}
-
-export const useUnsafeSwap = () => {
-  const bidMintAddress = useSwapStore(({ bidMintAddress }) => bidMintAddress)
-  const bidAmount = useSwapStore(({ bidAmount }) => bidAmount)
-  const askMintAddress = useSwapStore(({ askMintAddress }) => askMintAddress)
-  const slippage = useSwapStore(({ slippage }) => slippage)
-
-  const { decimals: bidDecimals = 0 } = useMintByAddress(bidMintAddress) || {}
-
-  const { value: bestJupRoute, loading } = useAsync(async () => {
-    if (!isAddress(bidMintAddress) || !isAddress(askMintAddress) || !bidAmount)
-      return undefined
-    const amount = decimalize(bidAmount, bidDecimals).toString()
-    const { data } = await axios.get<JupiterRouteInfo>(
-      `https://quote-api.jup.ag/v6/quote?inputMint=${bidMintAddress}&outputMint=${askMintAddress}&amount=${amount}&slippageBps=${
-        slippage * 10000
-      }`,
-    )
-    return data
-  }, [bidMintAddress, bidAmount, askMintAddress, slippage, bidDecimals])
-
-  return { bestJupRoute, fetching: loading }
-}
-
-export const useJupSwap = () => {
-  const { publicKey, signTransaction } = useWallet()
-  const { connection } = useConnection()
-  const bestRoute = _useSwapStore(({ bestJupRoute: bestRoute }) => bestRoute)
-
-  const swap = useCallback(async () => {
-    if (!publicKey || !signTransaction || !connection)
-      throw new Error('Cannot connect wallet.')
-    if (!bestRoute) throw new Error('Invalid input.')
-    const {
-      data: { swapTransaction },
-    } = await axios.post('https://quote-api.jup.ag/v6/swap', {
-      quoteResponse: bestRoute,
-      userPublicKey: publicKey.toBase58(),
-      wrapUnwrapSOL: true,
-    })
-    if (!swapTransaction) throw new Error('Cannot find routes.')
-    const buf = Buffer.from(swapTransaction, 'base64')
-    const tx = web3.VersionedTransaction.deserialize(buf)
-    const signedTx = await signTransaction(tx)
-    const raw = signedTx.serialize()
-    const txId = await connection.sendRawTransaction(raw, {
-      skipPreflight: true,
-      maxRetries: 2,
-    })
-    return txId
-  }, [bestRoute, publicKey, signTransaction, connection])
-
-  return { bestRoute, swap }
-}
-/**
- * SenSwap section
- */
-
-/**  Generate available routes in sen swap
- *   @returns All routes
- */
-export const useAllRoutes = () => {
-  const pools = usePools()
-  // Get pools tvl > 1000$
-  const validPools = useMemo(() => {
-    const result: Record<string, PoolData> = {}
-    for (const addr in pools) {
-      const poolData = pools[addr]
-
-      if (poolData.reserves.map((val) => val.toString()).includes('0')) continue
-      result[addr] = poolData
-    }
-    return result
-  }, [pools])
-
-  const allRoutes = useMemo(() => {
-    const mintRoutes: SenMintRoutes = {}
-    for (const address in validPools) {
-      const { mints, actions } = validPools[address]
-      const mintAddresses = mints.map((mint) => mint.toBase58())
-
-      for (let i = 0; i < mintAddresses.length; i++) {
-        if (!isEqual(actions[i], MintActionStates.Active)) continue
-        for (let j = 0; j < mintAddresses.length; j++) {
-          if (!isEqual(actions[j], MintActionStates.Active)) continue
-
-          const bidMint = mintAddresses[i]
-          const askMint = mintAddresses[j]
-
-          if (bidMint === askMint) continue
-
-          if (!mintRoutes[bidMint]) mintRoutes[bidMint] = {}
-          if (!mintRoutes[bidMint][askMint]) mintRoutes[bidMint][askMint] = []
-          mintRoutes[bidMint][askMint].push(address)
-        }
-      }
-    }
-    return mintRoutes
-  }, [validPools])
-
-  return allRoutes
-}
-
-/** Get valid routes with bidAddress and askAddress
- *  @returns valid routes
- */
-
-export const useRoutes = () => {
-  const [availRoutes, setAvailRoutes] = useState<Route[][]>([])
-  const allRoutes = useAllRoutes()
-  const bidMintAddress = useSwapStore(({ bidMintAddress }) => bidMintAddress)
-  const askMintAddress = useSwapStore(({ askMintAddress }) => askMintAddress)
-
-  const isValidRoute = (route: Route[]) => {
-    const pools = new Set()
-    const mintPairs = new Set()
-
-    for (const { pool, askMint, bidMint } of route) {
-      // Check duplicate pools
-      if (pools.has(pool)) return false
-      pools.add(pool)
-
-      const mintPair = bidMint + '-' + askMint
-      const reverseMintPair = askMint + '-' + bidMint
-      // Check duplicate bidMint && askMint
-      if (mintPairs.has(reverseMintPair)) return false
-      mintPairs.add(mintPair)
-    }
-    return true
+function getQuote(hop: Hop, pools: ExtendedPoolData[]) {
+  const pool = pools.find(({ address }) => address === hop.poolAddress)
+  let bidWeight = 0
+  let bidReserve = ZERO
+  let askWeight = 0
+  let askReserve = ZERO
+  if (pool) {
+    const { reserve: _bidReserve, weight: _bidWeight } =
+      findSideByMintAddress(hop.bidMintAddress, pool) || {}
+    if (_bidReserve) bidReserve = _bidReserve
+    if (_bidWeight) bidWeight = _bidWeight
+    const { reserve: _askReserve, weight: _askWeight } =
+      findSideByMintAddress(hop.askMintAddress, pool) || {}
+    if (_askReserve) askReserve = _askReserve
+    if (_askWeight) askWeight = _askWeight
   }
-
-  const getAvailRoutes = useCallback(
-    (bidMint: string, askMint: string, hop = 1) => {
-      if (hop > 3) return []
-
-      const routesFromBid = allRoutes[bidMint]
-      if (!routesFromBid) return []
-
-      const pools = routesFromBid[askMint] || []
-      const routes: Array<Route[]> = pools.map((pool) => {
-        return [{ pool, bidMint, askMint }]
-      })
-
-      for (const nextMint in routesFromBid) {
-        const nextPools = routesFromBid[nextMint]
-        const nextHop = hop + 1
-        const nextRoutes = getAvailRoutes(nextMint, askMint, nextHop)
-
-        nextRoutes.forEach((route) => {
-          nextPools.forEach((pool) => {
-            const newRoute = [{ pool, bidMint, askMint: nextMint }, ...route]
-            if (isValidRoute(newRoute)) routes.push(newRoute)
-          })
-        })
-      }
-      return routes
-    },
-
-    [allRoutes],
-  )
-
-  useDebounce(
-    async () => {
-      const availRoutes = getAvailRoutes(bidMintAddress, askMintAddress)
-      setAvailRoutes(availRoutes)
-    },
-    300,
-    [getAvailRoutes, setAvailRoutes, askMintAddress, bidMintAddress],
-  )
-
-  return { availRoutes: availRoutes || [] }
+  return {
+    bidMintAddress: hop.bidMintAddress,
+    bidReserve,
+    bidWeight,
+    askMintAddress: hop.askMintAddress,
+    askReserve,
+    askWeight,
+  }
 }
 
 /**
- * Get the best route with bidAddress and askAddress
- * @returns The best route
+ * Compute swap price
+ * @returns The swap price
  */
-export const useBestSenRoutes = () => {
-  const [routesInfo, setRoutesInfo] = useState<RouteInfo[][]>([])
-  const { getMintInfo, calcOutGivenInSwap, calcPriceImpactSwap } = useOracles()
-  const { availRoutes } = useRoutes()
-  const pools = usePools()
-  const bidMintAddress = useSwapStore(({ bidMintAddress }) => bidMintAddress)
+export function useSwapPrice() {
   const bidAmount = useSwapStore(({ bidAmount }) => bidAmount)
+  const askAmount = useSwapStore(({ askAmount }) => askAmount)
 
-  const { decimals: bidDecimals = 0 } = useMintByAddress(bidMintAddress) || {}
+  const price = useMemo(() => {
+    if (!Number(bidAmount)) return 0
+    return Number(askAmount) / Number(bidAmount)
+  }, [bidAmount, askAmount])
 
-  const allMintAddress = useMemo(() => {
-    const mints: string[] = []
-    availRoutes.forEach((routes) =>
-      routes.forEach(({ askMint, bidMint }) => {
-        mints.push(bidMint)
-        mints.push(askMint)
-      }),
-    )
-    return mints
-  }, [availRoutes])
-  const mintInfo = useMints(allMintAddress)
-  const decimals = useMemo(() => {
-    const mintDecimals: { [mintAddress: string]: number } = {}
-    allMintAddress.forEach((mintAddress, i) => {
-      mintDecimals[mintAddress] = mintInfo[i]?.decimals || 0
-    })
-    return mintDecimals
-  }, [allMintAddress, mintInfo])
+  return price
+}
 
-  // Calculate token out per route
-  const fetchRoutesInfo = useCallback(async () => {
-    if (!Number(bidAmount)) return []
-    const senSwapInfoRoutes: Array<RouteInfo>[] = []
+/**
+ * Compute the price impact
+ * @param route The route
+ * @returns The price impact
+ */
+export function usePriceImpact(swapPrice: number, route: Hop[]) {
+  const pools = useActivePools()
+  const mints = useAllMintMetadata()
 
-    for (const routes of availRoutes) {
-      const route: RouteInfo[] = []
-      const bidAmountBN = await decimalize(bidAmount, bidDecimals)
-
-      for (const { askMint, bidMint, pool } of routes) {
-        const poolData = pools[pool.toString()]
-        const bidMintInfo = getMintInfo(poolData, new web3.PublicKey(bidMint))
-        const askMintInfo = getMintInfo(poolData, new web3.PublicKey(askMint))
-
-        const tokenOutAmount = calcOutGivenInSwap(
-          bidAmountBN,
-          askMintInfo.reserve,
-          bidMintInfo.reserve,
-          askMintInfo.normalizedWeight,
-          bidMintInfo.normalizedWeight,
-          poolData.fee.add(poolData.tax),
+  const originalPrice = useMemo(
+    () =>
+      route
+        .map((hop) => getQuote(hop, pools))
+        .map((quote) => ({
+          ...quote,
+          bidDecimals: getMintDecimals(quote.bidMintAddress, mints),
+          askDecimals: getMintDecimals(quote.askMintAddress, mints),
+        }))
+        .map(
+          ({
+            bidReserve,
+            bidDecimals,
+            bidWeight,
+            askReserve,
+            askDecimals,
+            askWeight,
+          }) => {
+            const _bidReserve = undecimalize(bidReserve, bidDecimals)
+            const _askReserve = undecimalize(askReserve, askDecimals)
+            if (
+              !Number(_askReserve) ||
+              !Number(_bidReserve) ||
+              !bidWeight ||
+              !askWeight
+            )
+              return 0
+            return (
+              (Number(_askReserve) * bidWeight) /
+              (Number(_bidReserve) * askWeight)
+            )
+          },
         )
-
-        const dataForSlippage = {
-          balanceIn: bidMintInfo.reserve,
-          balanceOut: askMintInfo.reserve,
-          weightIn: bidMintInfo.normalizedWeight,
-          weightOut: askMintInfo.normalizedWeight,
-          decimalIn: decimals[bidMint],
-          decimalOut: decimals[askMint],
-          swapFee: poolData.fee.add(poolData.tax),
-        }
-        let priceImpact = calcPriceImpactSwap(bidAmountBN, dataForSlippage)
-        if (priceImpact < 0) priceImpact = 0
-        route.push({
-          pool: pool.toString(),
-          bidMint,
-          askMint,
-          bidAmount: bidAmountBN,
-          askAmount: tokenOutAmount,
-          priceImpactPct: priceImpact,
-        })
-      }
-      senSwapInfoRoutes.push(route)
-    }
-    return senSwapInfoRoutes
-  }, [
-    bidAmount,
-    availRoutes,
-    bidDecimals,
-    pools,
-    getMintInfo,
-    calcOutGivenInSwap,
-    decimals,
-    calcPriceImpactSwap,
-  ])
-
-  const bestSenSwapRoute = useMemo(() => {
-    if (!routesInfo) return
-    const sortedRoute = routesInfo.sort((routeA, routeB) => {
-      const askAmountA = routeA[routeA.length - 1].askAmount
-      const askAmountB: BN = routeB[routeB.length - 1].askAmount
-      return askAmountB.gt(askAmountA) ? 1 : -1
-    })
-    const [bestRoute] = sortedRoute
-    if (!bestRoute?.length)
-      return {
-        route: [],
-        bidAmount,
-        askAmount: '0',
-        priceImpactPct: 0,
-      }
-
-    const askAmount = bestRoute[bestRoute.length - 1].askAmount.toString()
-    const bestRouteInfo = bestRoute.map((value, idx) => {
-      const poolData = pools[value.pool]
-      return { ...bestRoute[idx], poolData }
-    })
-    const p = bestRouteInfo.reduce(
-      (acc, elmInfo) => acc * (1 - elmInfo.priceImpactPct),
-      1,
-    )
-    const newPriceImpact = 1 - p
-    return {
-      route: bestRoute,
-      bidAmount,
-      askAmount,
-      priceImpactPct: newPriceImpact,
-    }
-  }, [bidAmount, pools, routesInfo])
-
-  useDebounce(
-    async () => {
-      const routesInfo = await fetchRoutesInfo()
-      setRoutesInfo(routesInfo)
-    },
-    300,
-    [fetchRoutesInfo, setRoutesInfo],
+        .reduce((a, b) => a * b, 1),
+    [route, pools, mints],
   )
 
-  return { bestSenSwapRoute }
+  const priceImpact = useMemo(() => {
+    if (!originalPrice || !swapPrice) return 0
+    return Math.abs(originalPrice - swapPrice) / originalPrice
+  }, [originalPrice, swapPrice])
+
+  return priceImpact
 }
 
 /**
- * Swap on senswap
- * @returns swap function
+ * Compute the minimum return
+ * @returns The minimum return
  */
-export const useSenSwap = () => {
-  const bidAmount = useSwapStore(({ bidAmount }) => bidAmount)
+export function useMinimumReturn() {
+  const askAmount = useSwapStore(({ askAmount }) => askAmount)
   const slippage = useSwapStore(({ slippage }) => slippage)
-  const bestSenRoute = _useSwapStore(({ bestSenRoute }) => bestSenRoute)
+
+  const minReturn = useMemo(() => {
+    if (!Number(askAmount) || !slippage) return 0
+    return Number(askAmount) * (1 - slippage)
+  }, [askAmount, slippage])
+
+  return minReturn
+}
+
+/**
+ * Compute swap price
+ * @returns The swap price
+ */
+export function useSenswapSwap() {
+  const { sendTransaction } = useWallet()
+  const pools = useActivePools()
+  const senswap = useSenswap()
+  const lamports = useLamports()
+  const wrap = useWrap()
+  const unwrap = useUnwrap()
+  const { amount: wsol = ZERO } =
+    useTokenAccountByMintAddress(WRAPPED_SOL) || {}
+
+  // Bid
+  const bidAmount = useSwapStore(({ bidAmount }) => bidAmount)
   const bidMintAddress = useSwapStore(({ bidMintAddress }) => bidMintAddress)
+  const { decimals: bidDecimals = 0 } = useMintByAddress(bidMintAddress) || {}
+  // Ask
   const askMintAddress = useSwapStore(({ askMintAddress }) => askMintAddress)
   const { decimals: askDecimals = 0 } = useMintByAddress(askMintAddress) || {}
-  const { decimals: bidDecimals = 0 } = useMintByAddress(bidMintAddress) || {}
-  const { createWrapSolTxIfNeed, createTxUnwrapSol } = useWrapSol()
-  const senswap = useSenswap()
+  const slippage = useSwapStore(({ slippage }) => slippage)
 
+  // Route
+  const inAmount = useMemo(
+    () => decimalize(bidAmount, bidDecimals),
+    [bidAmount, bidDecimals],
+  )
+  const availableRoutes = useMemo(() => {
+    if (!isAddress(bidMintAddress) || !isAddress(askMintAddress)) return []
+    return findAvailableRoutes({
+      bidMint: new web3.PublicKey(bidMintAddress),
+      askMint: new web3.PublicKey(askMintAddress),
+      pools: Object.values(pools),
+    })
+  }, [bidMintAddress, askMintAddress, pools])
+  const {
+    bestAmount: outAmount,
+    bestRoute,
+    bestFees,
+  } = useMemo(
+    () =>
+      findTheBestRoute({
+        inAmount,
+        availableRoutes,
+        pools: Object.values(pools),
+      }),
+    [inAmount, availableRoutes, pools],
+  )
+
+  // Feedback
+  const askAmount = useMemo(
+    () => undecimalize(outAmount, askDecimals),
+    [outAmount, askDecimals],
+  )
+  const swapPrice = useMemo(() => {
+    if (!Number(bidAmount)) return 0
+    return Number(askAmount) / Number(bidAmount)
+  }, [bidAmount, askAmount])
+  const priceImpact = usePriceImpact(swapPrice, bestRoute)
+  const minimumReturn = useMemo(() => {
+    if (!slippage) return ZERO
+    return outAmount.mul(new BN(slippage * 100)).div(new BN(100))
+  }, [slippage, outAmount])
+
+  // Pre-instruction if any. (i.e. wrap SOL)
+  const addPreTx = useCallback(
+    async (tx: web3.Transaction) => {
+      if (bidMintAddress !== WRAPPED_SOL) return tx
+      const balance = wsol.add(new BN(lamports))
+      if (inAmount.gte(balance)) throw new Error('Insufficient SOL.')
+      const delta = inAmount.sub(wsol)
+      const { tx: wrapTx } = await wrap(delta, false)
+      return wrapTx.add(tx)
+    },
+    [inAmount, wsol, lamports, wrap, bidMintAddress],
+  )
+  // Post-instruction if any. (i.e. unwrap SOL)
+  const addPostTx = useCallback(
+    async (tx: web3.Transaction) => {
+      if (askMintAddress !== WRAPPED_SOL) return tx
+      const { tx: unwrapTx } = await unwrap(false)
+      return tx.add(unwrapTx)
+    },
+    [askMintAddress, unwrap],
+  )
+  // Swap instruction
   const swap = useCallback(async () => {
-    if (!bestSenRoute || !senswap.program.provider.sendAndConfirm) return ''
-    const { askAmount, route } = bestSenRoute
+    if (!sendTransaction) throw new Error('Wallet is not connected yet.')
+    if (!isAddress(bidMintAddress)) throw new Error('Invalid bid mint address.')
+    if (!isAddress(askMintAddress)) throw new Error('Invalid ask mint address.')
+    if (inAmount.lte(ZERO)) throw new Error('Invalid bid amount.')
 
-    const bidAmountBN = decimalize(bidAmount, bidDecimals)
-    const rawAskAmount = undecimalize(new BN(askAmount), askDecimals)
-    const limit = Number(rawAskAmount) * (1 - slippage)
-    const limitBN = decimalize(limit.toString(), askDecimals)
-    const transaction = new web3.Transaction()
-    const wrapSolTx = await createWrapSolTxIfNeed(
-      new web3.PublicKey(bidMintAddress),
-      bidAmountBN,
-    )
-    if (wrapSolTx) transaction.add(wrapSolTx)
-    const { tx } = await senswap.route({
-      bidAmount: bidAmountBN,
-      limit: limitBN,
-      routes: route,
+    let { tx } = await senswap.route({
+      bidAmount: inAmount,
+      routes: bestRoute.map(
+        ({ poolAddress, bidMintAddress, askMintAddress }) => ({
+          pool: new web3.PublicKey(poolAddress),
+          bidMint: new web3.PublicKey(bidMintAddress),
+          askMint: new web3.PublicKey(askMintAddress),
+        }),
+      ),
+      limit: minimumReturn,
       sendAndConfirm: false,
     })
-    transaction.add(tx)
-
-    const askMint = new web3.PublicKey(askMintAddress)
-    if (askMint.equals(WRAPPED_SOL_MINT)) {
-      const unwrapSolTx = await createTxUnwrapSol(askMint)
-      transaction.add(unwrapSolTx)
-    }
-
-    const txId = await senswap.program.provider.sendAndConfirm(transaction)
+    tx = await addPreTx(tx)
+    tx = await addPostTx(tx)
+    const txId = await sendTransaction(tx, senswap.program.provider.connection)
+    await confirmTransaction(txId, senswap.program.provider.connection)
     return txId
   }, [
-    askDecimals,
-    askMintAddress,
-    bestSenRoute,
-    bidAmount,
-    bidDecimals,
+    sendTransaction,
     bidMintAddress,
-    createTxUnwrapSol,
-    createWrapSolTxIfNeed,
+    askMintAddress,
+    inAmount,
     senswap,
-    slippage,
+    bestRoute,
+    minimumReturn,
+    addPreTx,
+    addPostTx,
   ])
 
-  return { swap }
+  // Swap Info
+  const info: GeneralSwapInfo | undefined = useMemo(() => {
+    if (!Number(bidAmount) || !bestRoute.length) return undefined
+    return {
+      bidAmount,
+      bidMintAddress,
+      askAmount,
+      askMintAddress,
+      priceImpact,
+      route: bestRoute
+        .map(({ bidMintAddress }) => bidMintAddress)
+        .concat([askMintAddress]),
+      fees: bestFees.map(({ mint, amount }) => ({
+        amount,
+        mintAddress: mint.toBase58(),
+      })),
+      platform: 'Senswap',
+      swap,
+    }
+  }, [
+    bidAmount,
+    bestRoute,
+    bidMintAddress,
+    askAmount,
+    askMintAddress,
+    priceImpact,
+    bestFees,
+    swap,
+  ])
+
+  return { value: info, loading: false }
 }
 
-export const useSwap = () => {
-  const { swap: jupSwap } = useJupSwap()
-  const { bestSenSwapRoute } = useBestSenRoutes()
-  const { bestJupRoute, fetching } = useUnsafeSwap()
-  const { swap: senSwap } = useSenSwap()
-  const setAskAmount = useSwapStore(({ setAskAmount }) => setAskAmount)
-  const setBestJubRoute = _useSwapStore(
-    ({ setBestJubRoute }) => setBestJubRoute,
-  )
-  const setBestSenRoute = _useSwapStore(
-    ({ setBestSenRoute }) => setBestSenRoute,
-  )
+/**
+ * The general hook for swap on Jupiter Aggregator
+ * @returns The GeneralSwapInfo
+ */
+export function useJupAgSwap(): AsyncState<GeneralSwapInfo | undefined> {
+  const { publicKey, sendTransaction } = useWallet()
+  const { connection } = useConnection()
+
+  // Bid
+  const bidMintAddress = useSwapStore(({ bidMintAddress }) => bidMintAddress)
+  const bidAmount = useSwapStore(({ bidAmount }) => bidAmount)
+  const { decimals: bidDecimals = 0 } = useMintByAddress(bidMintAddress) || {}
+  // Ask
   const askMintAddress = useSwapStore(({ askMintAddress }) => askMintAddress)
   const { decimals: askDecimals = 0 } = useMintByAddress(askMintAddress) || {}
-  const platform = useMemo(() => {
-    if (!bestJupRoute || !bestSenSwapRoute) return
+  const slippage = useSwapStore(({ slippage }) => slippage)
 
-    const { outAmount: jupOut } = bestJupRoute
-    const { askAmount: senswapOut } = bestSenSwapRoute
-    const maxDiff = 0.05
-    const difference = Math.abs(Number(jupOut) - Number(senswapOut))
-    const isJup = difference > maxDiff * Number(jupOut)
+  // Route
+  const amount = useMemo(
+    () => decimalize(bidAmount, bidDecimals),
+    [bidAmount, bidDecimals],
+  )
+  const info = useAsync(async () => {
+    if (!isAddress(bidMintAddress) || !isAddress(askMintAddress))
+      return undefined
+    if (amount.lte(ZERO)) return undefined
+    if (slippage < 0 || slippage > 1) return undefined
 
-    if (isJup) return Platform.Jup
-    return Platform.SenSwap
-  }, [bestJupRoute, bestSenSwapRoute])
+    const { data: quote } = await axios.get<JupAgQuoteMetadata>(
+      'https://quote-api.jup.ag/v6/quote',
+      {
+        params: {
+          inputMint: bidMintAddress,
+          outputMint: askMintAddress,
+          amount: amount.toString(),
+          slippageBps: slippage * 10000,
+        },
+      },
+    )
+    if (!quote) return undefined
 
-  const routes = useMemo(() => {
-    if (!platform) return
-    if (platform === Platform.Jup) return bestJupRoute
-    return bestSenSwapRoute
-  }, [bestJupRoute, bestSenSwapRoute, platform])
-
-  const hops = useMemo(() => {
-    if (!platform || !bestJupRoute || !bestSenSwapRoute) return []
-    const hops: string[] = []
-    if (platform === Platform.Jup) {
-      bestJupRoute.routePlan.forEach(
-        ({ swapInfo: { inputMint, outputMint } }) => {
-          hops.pop()
-          hops.push(inputMint)
-          hops.push(outputMint)
+    // Swap function
+    const swap = async () => {
+      if (!publicKey || !sendTransaction)
+        throw new Error('Not connect wallet yet.')
+      const { data } = await axios.post<JupAgSwapMetadata>(
+        'https://quote-api.jup.ag/v6/swap',
+        {
+          quoteResponse: quote,
+          userPublicKey: publicKey.toBase58(),
+          wrapAndUnwrapSol: true,
         },
       )
+      if (!data) throw new Error('Unexpected error.')
+      const buf = Buffer.from(data.swapTransaction, 'base64')
+      const tx = web3.VersionedTransaction.deserialize(buf)
+      const txId = await sendTransaction(tx, connection)
+      return txId
     }
 
-    if (platform === Platform.SenSwap) {
-      bestSenSwapRoute.route.forEach(({ askMint, bidMint }) => {
-        hops.pop()
-        hops.push(bidMint)
-        hops.push(askMint)
-      })
+    // Swap Info
+    const result: GeneralSwapInfo = {
+      bidAmount: undecimalize(new BN(quote.inAmount), bidDecimals),
+      bidMintAddress: quote.inputMint,
+      askAmount: undecimalize(new BN(quote.outAmount), askDecimals),
+      askMintAddress: quote.outputMint,
+      priceImpact: Number(quote.priceImpactPct),
+      route: [bidMintAddress, askMintAddress],
+      fees: quote.routePlan.map(({ swapInfo }) => ({
+        amount: new BN(swapInfo.feeAmount),
+        mintAddress: swapInfo.feeMint,
+      })),
+      platform: 'Jupiter Aggregator',
+      swap,
     }
-    return hops
-  }, [bestJupRoute, bestSenSwapRoute, platform])
-
-  const swap = useCallback(async () => {
-    if (!platform) return ''
-    if (platform === Platform.Jup) return jupSwap()
-    return senSwap()
-  }, [jupSwap, platform, senSwap])
-
-  useEffect(() => {
-    const { outAmount } = bestJupRoute || {}
-    const { askAmount } = bestSenSwapRoute || {}
-
-    if (!outAmount || !askAmount || !platform) setAskAmount('')
-    else {
-      const amount = platform === Platform.Jup ? outAmount : askAmount
-      setAskAmount(undecimalize(new BN(amount), askDecimals))
-    }
-    setBestJubRoute(bestJupRoute)
-    setBestSenRoute(bestSenSwapRoute)
+    return result
   }, [
-    setBestJubRoute,
-    setAskAmount,
-    setBestSenRoute,
-    bestJupRoute,
+    bidMintAddress,
+    bidDecimals,
+    askMintAddress,
     askDecimals,
-    bestSenSwapRoute,
-    platform,
+    amount,
+    slippage,
+    publicKey,
+    sendTransaction,
+    connection,
   ])
 
-  return { platform, swap, routes, hops, fetching }
+  return info
 }

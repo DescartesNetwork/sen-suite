@@ -1,16 +1,14 @@
 'use client'
-import { Fragment, useMemo } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 import clsx from 'clsx'
 
 import Image from 'next/image'
-import { ChevronRight, Diamond } from 'lucide-react'
-import { MintSymbol } from '@/components/mint'
+import { ArrowLeftRight, ChevronRight, Diamond } from 'lucide-react'
+import { useMintSymbol } from '@/components/mint'
 import Island from '@/components/island'
 
 import { numeric } from '@/helpers/utils'
-import { Platform, useSwap } from '@/hooks/swap.hook'
 import { useMintByAddress } from '@/providers/mint.provider'
-
 import {
   jupiterLightSvg,
   jupiterDarkSvg,
@@ -18,34 +16,61 @@ import {
 import { useTheme } from '@/providers/ui.provider'
 import { useSwapStore } from '@/providers/swap.provider'
 
-function PriceImpact() {
-  const { routes } = useSwap()
+export type SwapInfoProps = {
+  route?: Partial<GeneralSwapInfo>
+}
+
+function Price({
+  route: {
+    bidAmount,
+    bidMintAddress = '',
+    askAmount,
+    askMintAddress = '',
+  } = {},
+}: SwapInfoProps) {
+  const [reversed, setReversed] = useState(false)
+  const bidMintSymbol = useMintSymbol(bidMintAddress)
+  const askMintSymbol = useMintSymbol(askMintAddress)
+
+  const price = useMemo(() => {
+    if (!Number(bidAmount) || !Number(askAmount)) return 0
+    if (reversed) return Number(askAmount) / Number(bidAmount)
+    return Number(bidAmount) / Number(askAmount)
+  }, [bidAmount, askAmount, reversed])
+
+  const ticket = useMemo(() => {
+    if (!bidMintSymbol || !askMintSymbol) return '-'
+    if (reversed) return `${askMintSymbol}/${bidMintSymbol}`
+    return `${bidMintSymbol}/${askMintSymbol}`
+  }, [bidMintSymbol, askMintSymbol, reversed])
 
   return (
     <div className="flex flex-row gap-2 items-baseline">
-      <p className="flex-auto text-sm opacity-60">Price Impact</p>
-      <p className="text-sm font-bold">
-        {numeric(routes?.priceImpactPct || 0).format('0.[000000]')}%
+      <p className="flex-auto text-sm opacity-60">Price</p>
+      <p
+        className="text-sm font-bold flex flex-row gap-2 items-center cursor-pointer"
+        onClick={() => setReversed(!reversed)}
+      >
+        <ArrowLeftRight
+          className={clsx('h-3 w-3', {
+            hidden: !price,
+          })}
+        />
+        <span className={clsx({ hidden: !price })}>
+          {numeric(price).format('0,0.[000000]')}
+        </span>
+        <span className="opacity-60">{ticket}</span>
       </p>
     </div>
   )
 }
 
-function Price() {
-  const { bidMintAddress, askMintAddress, bidAmount, askAmount } =
-    useSwapStore()
+function PriceImpact({ route: { priceImpact = 0 } = {} }: SwapInfoProps) {
   return (
     <div className="flex flex-row gap-2 items-baseline">
-      <p className="flex-auto text-sm opacity-60">Price</p>
+      <p className="flex-auto text-sm opacity-60">Price Impact</p>
       <p className="text-sm font-bold">
-        {numeric(Number(bidAmount || 0) / Number(askAmount || 1)).format(
-          '0,0.[000000]',
-        )}
-      </p>
-      <p className="text-sm font-bold opacity-60">
-        <MintSymbol mintAddress={bidMintAddress} />
-        <span>/</span>
-        <MintSymbol mintAddress={askMintAddress} />
+        {numeric(priceImpact).format('0.[0000]%')}
       </p>
     </div>
   )
@@ -53,7 +78,6 @@ function Price() {
 
 function SlippageTolerance() {
   const slippage = useSwapStore(({ slippage }) => slippage)
-  const value = slippage === 1 ? 'Free' : `${slippage * 100}%`
   return (
     <div className="flex flex-row gap-2 items-baseline">
       <p className="flex-auto text-sm opacity-60">Slippage Tolerance</p>
@@ -64,9 +88,27 @@ function SlippageTolerance() {
           'badge-success': slippage < 0.05,
         })}
       >
-        <p className="text-sm font-bold">{value}</p>
+        <p className="text-sm font-bold">
+          {slippage === 1 ? 'Free' : `${slippage * 100}%`}
+        </p>
       </div>
     </div>
+  )
+}
+
+function PoweredByJupAf() {
+  const { theme } = useTheme()
+
+  const jup = useMemo(() => {
+    if (theme === 'light') return jupiterLightSvg
+    return jupiterDarkSvg
+  }, [theme])
+
+  return (
+    <span className="flex flex-row gap-2 justify-end items-center">
+      <p className="text-[9px] opacity-60">Powered by</p>
+      <Image className="w-12" src={jup} alt="jupiter" />
+    </span>
   )
 }
 
@@ -89,67 +131,48 @@ function Hop({ mintAddress }: { mintAddress: string }) {
   )
 }
 
-function PoweredByJupAf() {
-  const { theme } = useTheme()
-
-  const jup = useMemo(() => {
-    if (theme === 'light') return jupiterLightSvg
-    return jupiterDarkSvg
-  }, [theme])
-
-  return (
-    <span className="flex flex-row gap-2 justify-end items-center">
-      <p className="text-[9px] opacity-60">Powered by</p>
-      <Image className="w-12" src={jup} alt="jupiter" />
-    </span>
-  )
-}
-
-function Routes() {
-  const { hops, platform, fetching } = useSwap()
-
+function Routes({ route: { route = [], platform } = {} }: SwapInfoProps) {
   return (
     <div className="flex flex-row gap-1">
       <p className="text-sm opacity-60">Routes</p>
       <div className="flex-auto flex flex-col gap-2">
         <span className="flex flex-row gap-1 justify-end items-center">
-          {hops.map((mintAddress, i) => (
+          {route.map((mintAddress, i) => (
             <Fragment key={i}>
               {i !== 0 && <ChevronRight className="w-4 h-4" />}
               <Hop mintAddress={mintAddress} />
             </Fragment>
           ))}
+          <p className={clsx({ hidden: route.length })}>-</p>
         </span>
-        {platform === Platform.Jup && !fetching && (
-          <span
-            className={clsx('flex flex-row gap-2 justify-end', {
-              hidden: !hops.length,
-            })}
-          >
-            <Island>
-              <PoweredByJupAf />
-            </Island>
-          </span>
-        )}
+        <span
+          className={clsx('flex flex-row gap-2 justify-end', {
+            hidden: platform !== 'Jupiter Aggregator',
+          })}
+        >
+          <Island>
+            <PoweredByJupAf />
+          </Island>
+        </span>
       </div>
     </div>
   )
 }
 
-export default function SwapInfo() {
+export default function SwapInfo({ route }: SwapInfoProps) {
   return (
     <div className="card bg-base-100 p-4 rounded-3xl grid grid-cols-12 gap-x-2 gap-y-4">
       <div className="col-span-12">
-        <Price />
+        <Price route={route} />
       </div>
       <div className="col-span-12">
-        <PriceImpact />
+        <PriceImpact route={route} />
       </div>
       <div className="col-span-12">
         <SlippageTolerance />
       </div>
       <div className="col-span-12">
-        <Routes />
+        <Routes route={route} />
       </div>
     </div>
   )

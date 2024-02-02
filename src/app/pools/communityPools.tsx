@@ -5,8 +5,8 @@ import clsx from 'clsx'
 import PoolRow from './poolRow'
 import Empty from '@/components/empty'
 
-import { ExtendedPoolData } from '@/hooks/pool.hook'
 import solConfig from '@/configs/sol.config'
+import { ExtendedPoolData } from '@/providers/pools.provider'
 
 export type CommunityPoolsProps = {
   pools: ExtendedPoolData[]

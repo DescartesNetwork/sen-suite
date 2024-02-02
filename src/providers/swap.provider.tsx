@@ -1,7 +1,7 @@
 'use client'
-import { Fragment, ReactNode } from 'react'
+import { Fragment, ReactNode, useEffect } from 'react'
 import { create } from 'zustand'
-import { devtools } from 'zustand/middleware'
+import { devtools, persist } from 'zustand/middleware'
 
 import { env } from '@/configs/env'
 import swapConfig from '@/configs/swap.config'
@@ -19,6 +19,7 @@ export type SwapStore = {
   setSlippage: (slippage: number) => void
   overBudget: boolean
   setOverBudget: (slippage: boolean) => void
+  unmount: () => void
 }
 
 /**
@@ -27,26 +28,36 @@ export type SwapStore = {
 
 export const useSwapStore = create<SwapStore>()(
   devtools(
-    (set) => ({
-      bidMintAddress: swapConfig.usdcAddress,
-      setBidMintAddress: (bidMintAddress: string) =>
-        set({ bidMintAddress }, false, 'setBidMintAddress'),
-      bidAmount: '',
-      setBidAmount: (bidAmount: string) =>
-        set({ bidAmount }, false, 'setBidAmount'),
-      askMintAddress: swapConfig.sntrAddress,
-      setAskMintAddress: (askMintAddress: string) =>
-        set({ askMintAddress }, false, 'setAskMintAddress'),
-      askAmount: '',
-      setAskAmount: (askAmount: string) =>
-        set({ askAmount }, false, 'setAskAmount'),
-      slippage: 0.01,
-      setSlippage: (slippage: number) =>
-        set({ slippage }, false, 'setSlippage'),
-      overBudget: false,
-      setOverBudget: (overBudget) =>
-        set({ overBudget }, false, 'setOverBudget'),
-    }),
+    persist(
+      (set) => ({
+        bidMintAddress: swapConfig.usdcAddress,
+        setBidMintAddress: (bidMintAddress: string) =>
+          set({ bidMintAddress }, false, 'setBidMintAddress'),
+        bidAmount: '',
+        setBidAmount: (bidAmount: string) =>
+          set({ bidAmount }, false, 'setBidAmount'),
+        askMintAddress: swapConfig.sntrAddress,
+        setAskMintAddress: (askMintAddress: string) =>
+          set({ askMintAddress }, false, 'setAskMintAddress'),
+        askAmount: '',
+        setAskAmount: (askAmount: string) =>
+          set({ askAmount }, false, 'setAskAmount'),
+        slippage: 0.01,
+        setSlippage: (slippage: number) =>
+          set({ slippage }, false, 'setSlippage'),
+        overBudget: false,
+        setOverBudget: (overBudget) =>
+          set({ overBudget }, false, 'setOverBudget'),
+        unmount: () => set({ bidAmount: '', askAmount: '' }, false, 'unmount'),
+      }),
+      {
+        name: 'swap-storage',
+        partialize: (state) =>
+          Object.fromEntries(
+            Object.entries(state).filter(([key]) => key === 'slippage'),
+          ),
+      },
+    ),
     {
       name: 'swap',
       enabled: env === 'development',
@@ -58,5 +69,10 @@ export const useSwapStore = create<SwapStore>()(
  * Provider
  */
 export default function SwapProvider({ children }: { children: ReactNode }) {
+  const unmount = useSwapStore(({ unmount }) => unmount)
+
+  // Reset the provider
+  useEffect(() => unmount)
+
   return <Fragment>{children}</Fragment>
 }
