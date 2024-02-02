@@ -14,7 +14,7 @@ export const TOKEN_20202_PROGRAM_ID = new web3.PublicKey(
  * Create an SPL instance
  * @returns SPL instance
  */
-export const useSpl = () => {
+export function useSpl() {
   const provider = useAnchorProvider()
   const spl = useMemo(() => splTokenProgram({ provider }), [provider])
   return spl
@@ -24,7 +24,7 @@ export const useSpl = () => {
  * Create an Token2022 instance
  * @returns Token2022 instance
  */
-export const useToken2022 = () => {
+export function useToken2022() {
   const provider = useAnchorProvider()
   const token2022 = useMemo(
     () => splTokenProgram({ provider, programId: TOKEN_20202_PROGRAM_ID }),
@@ -38,7 +38,7 @@ export const useToken2022 = () => {
  * @param mintAddresses Mint addresses
  * @returns Mint data
  */
-export const useMints = (mintAddresses: string[]) => {
+export function useSplMints(mintAddresses: string[]) {
   const spl = useSpl()
   const fetcher = useCallback(
     async (mintAddresses: string[]) => {
@@ -62,7 +62,7 @@ export const useMints = (mintAddresses: string[]) => {
  * @param tokenAccountAddresses Token account addresses
  * @returns Token account data
  */
-export const useTokenAccounts = (tokenAccountAddresses: Address[]) => {
+export function useSplTokenAccounts(tokenAccountAddresses: Address[]) {
   const spl = useSpl()
   const fetcher = useCallback(
     async ([tokenAccountAddresses]: [Address[]]) => {
@@ -92,13 +92,13 @@ export const useTokenAccounts = (tokenAccountAddresses: Address[]) => {
  * @param owner Owner
  * @returns Invoker
  */
-export const initializeTokenAccount = ({
+export function initializeTokenAccount({
   mint,
   owner,
 }: {
   mint: web3.PublicKey
   owner: web3.PublicKey
-}) => {
+}) {
   if (!owner) throw new Error('Invalid owner address')
   if (!mint) throw new Error('Invalid mint address')
   const ix = new web3.TransactionInstruction({

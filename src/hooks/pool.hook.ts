@@ -17,14 +17,14 @@ import {
   usePools,
 } from '@/providers/pools.provider'
 import {
-  useAllTokenAccounts,
+  useTokenAccounts,
   useTokenAccountByMintAddress,
 } from '@/providers/tokenAccount.provider'
 import {
   usePoolStatStore,
   usePoolVolumesIn7Days,
 } from '@/providers/stat.provider'
-import { initializeTokenAccount, useMints, useSpl } from './spl.hook'
+import { initializeTokenAccount, useSplMints, useSpl } from './spl.hook'
 import solConfig from '@/configs/sol.config'
 import { DateHelper } from '@/helpers/date'
 import { useTvl } from './tvl.hook'
@@ -77,7 +77,7 @@ export const useSenswap = () => {
  */
 export const useFilteredPools = (filter = PoolFilter.AllPools) => {
   const pools = usePools()
-  const accounts = useAllTokenAccounts()
+  const accounts = useTokenAccounts()
   const { publicKey } = useWallet()
 
   const accountAddresses = useMemo(() => Object.keys(accounts), [accounts])
@@ -115,7 +115,7 @@ export const useFilteredPools = (filter = PoolFilter.AllPools) => {
  */
 export const useWrapSol = () => {
   const spl = useSpl()
-  const accounts = useAllTokenAccounts()
+  const accounts = useTokenAccounts()
   const { publicKey } = useWallet()
 
   const { amount: wrapSolAmount } = useTokenAccountByMintAddress(
@@ -194,9 +194,9 @@ export const useWrapSol = () => {
 export const useDeposit = (poolAddress: string, amounts: string[]) => {
   const senswap = useSenswap()
   const { publicKey } = useWallet()
-  const accounts = useAllTokenAccounts()
+  const accounts = useTokenAccounts()
   const pool = usePoolByAddress(poolAddress)
-  const mints = useMints(
+  const mints = useSplMints(
     pool.mints.map((mint: web3.PublicKey) => mint.toBase58()),
   )
   const decimals = mints.map((mint) => mint?.decimals || 0)
@@ -331,9 +331,9 @@ export const useInitAndDeletePool = () => {
 export const useInitializeJoin = (poolAddress: string, amountIns: string[]) => {
   const senswap = useSenswap()
   const { publicKey } = useWallet()
-  const accounts = useAllTokenAccounts()
+  const accounts = useTokenAccounts()
   const pool = usePoolByAddress(poolAddress)
-  const mints = useMints(
+  const mints = useSplMints(
     pool.mints.map((mint: web3.PublicKey) => mint.toBase58()),
   )
   const decimals = mints.map((mint) => mint?.decimals || 0)

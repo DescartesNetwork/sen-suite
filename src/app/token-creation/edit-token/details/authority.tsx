@@ -7,7 +7,7 @@ import { web3 } from '@coral-xyz/anchor'
 import Modal from '@/components/modal'
 import { Settings2 } from 'lucide-react'
 
-import { useMints, useSpl } from '@/hooks/spl.hook'
+import { useSplMints, useSpl } from '@/hooks/spl.hook'
 import { usePushMessage } from '@/components/message/store'
 
 export type UpdateAuthorityProps = {
@@ -20,7 +20,7 @@ export default function UpdateAuthority({ mintAddress }: UpdateAuthorityProps) {
   const { publicKey } = useWallet()
   const spl = useSpl()
   const pushMessage = usePushMessage()
-  const [mint] = useMints([mintAddress])
+  const [mint] = useSplMints([mintAddress])
   const [open, setOpen] = useState(false)
 
   const isOwner =

@@ -32,7 +32,7 @@ export const TAGS = [
   },
 ]
 
-export const useAcademyPaging = (pageIds: string[], metadata: PageMap) => {
+export function useAcademyPaging(pageIds: string[], metadata: PageMap) {
   const params = useSearchParams()
   const tag = params.get('tag') || ''
   const page = Number(params.get('page')) || 1
@@ -81,16 +81,14 @@ export const useAcademyPaging = (pageIds: string[], metadata: PageMap) => {
   }
 }
 
-export const useAcademyPage = (
-  pageId: string,
-): {
+export function useAcademyPage(pageId: string): {
   data: Partial<{
     map: ExtendedRecordMap
     recommends: string[]
     metadata: PageMetadata
   }>
   error: Error | undefined
-} => {
+} {
   const { data, error } = useSWR<
     { map: ExtendedRecordMap; recommends: string[] },
     Error

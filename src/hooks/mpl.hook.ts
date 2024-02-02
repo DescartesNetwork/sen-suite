@@ -18,7 +18,7 @@ import solConfig from '@/configs/sol.config'
  * Create an MPL instance
  * @returns MPL instance
  */
-export const useMpl = () => {
+export function useMpl() {
   const { connection } = useConnection()
   const { wallet } = useWallet()
   const mpl = useMemo(() => {
@@ -40,7 +40,7 @@ export const useMpl = () => {
  * Create an Umi instance
  * @returns Umi instance
  */
-export const useUmi = () => {
+export function useUmi() {
   const { wallet } = useWallet()
   const umi = useMemo(() => {
     if (!wallet) return createUmi(solConfig.rpc).use(mplTokenMetadata())
@@ -56,7 +56,7 @@ export const useUmi = () => {
  * @param mintAddresses Mint addresses
  * @returns NFT data
  */
-export const useNfts = (mintAddresses: string[]) => {
+export function useNfts(mintAddresses: string[]) {
   const mpl = useMpl()
   const fetcher = useCallback(
     async ([mintAddresses]: [string[]]) => {
@@ -71,8 +71,8 @@ export const useNfts = (mintAddresses: string[]) => {
     },
     [mpl],
   )
-  const { data } = useSWR([mintAddresses, 'mpl'], fetcher)
-  return data || []
+  const { data = [] } = useSWR([mintAddresses, 'mpl::nfts::mint'], fetcher)
+  return data
 }
 
 /**
@@ -80,10 +80,10 @@ export const useNfts = (mintAddresses: string[]) => {
  * @param walletAddress Wallet addresses
  * @returns List nfts by owner
  */
-export const useNftsByOwner = (walletAddress: string) => {
+export function useNftsByOwner(walletAddress: string) {
   const mpl = useMpl()
   const fetcher = useCallback(
-    async (walletAddress: string) => {
+    async ([walletAddress]: [string]) => {
       if (!isAddress(walletAddress)) return []
       const nfts = await mpl.nfts().findAllByOwner({
         owner: new PublicKey(walletAddress),
@@ -92,7 +92,6 @@ export const useNftsByOwner = (walletAddress: string) => {
     },
     [mpl],
   )
-
-  const { data } = useSWR(walletAddress, fetcher)
-  return data || []
+  const { data = [] } = useSWR([walletAddress, 'mpl::nfts::owner'], fetcher)
+  return data
 }

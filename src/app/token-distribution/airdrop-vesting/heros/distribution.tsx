@@ -10,7 +10,7 @@ import { useDistributors } from '@/providers/airdrop.provider'
 import { usePrices } from '@/providers/mint.provider'
 import { undecimalize } from '@/helpers/decimals'
 import { numeric } from '@/helpers/utils'
-import { useMints } from '@/hooks/spl.hook'
+import { useSplMints } from '@/hooks/spl.hook'
 
 export default function TotalDistribution() {
   const { publicKey } = useWallet()
@@ -28,7 +28,7 @@ export default function TotalDistribution() {
     [myDistributors],
   )
 
-  const mints = useMints(mintAddresses)
+  const mints = useSplMints(mintAddresses)
   const prices = usePrices(mintAddresses)
   const decimals = mints.map((mint) => mint?.decimals || 0)
 

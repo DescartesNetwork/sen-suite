@@ -6,16 +6,16 @@ settings:
 
 dependencies:
   '@coral-xyz/anchor':
-    specifier: 0.28.1-beta.2
-    version: 0.28.1-beta.2
+    specifier: ^0.29.0
+    version: 0.29.0
   '@coral-xyz/spl-token':
-    specifier: 0.28.1-beta.2
-    version: 0.28.1-beta.2
+    specifier: ^0.29.0
+    version: 0.29.0
   '@floating-ui/react':
-    specifier: ^0.25.0
+    specifier: ^0.25.4
     version: 0.25.4(react-dom@18.2.0)(react@18.2.0)
   '@headlessui/react':
-    specifier: ^1.7.17
+    specifier: ^1.7.18
     version: 1.7.18(react-dom@18.2.0)(react@18.2.0)
   '@mdx-js/react':
     specifier: ^2.3.0
@@ -60,7 +60,7 @@ dependencies:
     specifier: ^0.19.24
     version: 0.19.26(@babel/runtime@7.23.9)(@solana/web3.js@1.89.1)(bs58@5.0.0)(react-dom@18.2.0)(react-native@0.73.3)(react@18.2.0)(tslib@2.6.2)
   axios:
-    specifier: ^1.4.0
+    specifier: ^1.6.7
     version: 1.6.7
   bn.js:
     specifier: ^5.2.1
@@ -102,7 +102,7 @@ dependencies:
     specifier: ^6.16.0
     version: 6.16.0
   numbro:
-    specifier: ^2.3.6
+    specifier: ^2.4.0
     version: 2.4.0
   papaparse:
     specifier: ^5.4.1
@@ -130,7 +130,7 @@ dependencies:
     version: 4.0.1(react-dom@18.2.0)(react@18.2.0)
   react-notion-x:
     specifier: ^6.16.0
-    version: 6.16.0(@babel/runtime@7.23.9)(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)(webpack@5.90.0)
+    version: 6.16.0(@babel/runtime@7.23.9)(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)(webpack@5.90.1)
   react-syntax-highlighter:
     specifier: ^15.5.0
     version: 15.5.0(react@18.2.0)
@@ -138,10 +138,10 @@ dependencies:
     specifier: ^3.0.3
     version: 3.2.0(react-dom@18.2.0)(react@18.2.0)
   react-use:
-    specifier: ^17.4.0
+    specifier: ^17.5.0
     version: 17.5.0(react-dom@18.2.0)(react@18.2.0)
   recharts:
-    specifier: ^2.10.3
+    specifier: ^2.11.0
     version: 2.11.0(prop-types@15.8.1)(react-dom@18.2.0)(react@18.2.0)
   swr:
     specifier: 2.2.2
@@ -150,13 +150,13 @@ dependencies:
     specifier: ^9.0.0
     version: 9.0.1
   zustand:
-    specifier: ^4.3.9
+    specifier: ^4.5.0
     version: 4.5.0(@types/react@18.2.48)(immer@10.0.3)(react@18.2.0)
 
 devDependencies:
   '@mdx-js/loader':
     specifier: ^2.3.0
-    version: 2.3.0(webpack@5.90.0)
+    version: 2.3.0(webpack@5.90.1)
   '@next/mdx':
     specifier: ^13.4.9
     version: 13.5.6(@mdx-js/loader@2.3.0)(@mdx-js/react@2.3.0)
@@ -332,8 +332,8 @@ packages:
       semver: 6.3.1
     dev: false
 
-  /@babel/helper-create-class-features-plugin@7.23.9(@babel/core@7.23.9):
-    resolution: {integrity: sha512-B2L9neXTIyPQoXDm+NtovPvG6VOLWnaXu3BIeVDWwdKFgG30oNa6CqVGiJPDWQwIAK49t9gnQI9c6K6RzabiKw==}
+  /@babel/helper-create-class-features-plugin@7.23.10(@babel/core@7.23.9):
+    resolution: {integrity: sha512-2XpP2XhkXzgxecPNEEK8Vz8Asj9aRxt08oKOqtiZoqV2UGZ5T+EkyP9sXQ9nwMxBIG34a7jmasVqoMop7VdPUw==}
     engines: {node: '>=6.9.0'}
     peerDependencies:
       '@babel/core': ^7.0.0
@@ -589,7 +589,7 @@ packages:
       '@babel/core': ^7.0.0-0
     dependencies:
       '@babel/core': 7.23.9
-      '@babel/helper-create-class-features-plugin': 7.23.9(@babel/core@7.23.9)
+      '@babel/helper-create-class-features-plugin': 7.23.10(@babel/core@7.23.9)
       '@babel/helper-plugin-utils': 7.22.5
     dev: false
 
@@ -948,7 +948,7 @@ packages:
       '@babel/core': ^7.0.0-0
     dependencies:
       '@babel/core': 7.23.9
-      '@babel/helper-create-class-features-plugin': 7.23.9(@babel/core@7.23.9)
+      '@babel/helper-create-class-features-plugin': 7.23.10(@babel/core@7.23.9)
       '@babel/helper-plugin-utils': 7.22.5
     dev: false
 
@@ -959,7 +959,7 @@ packages:
       '@babel/core': ^7.12.0
     dependencies:
       '@babel/core': 7.23.9
-      '@babel/helper-create-class-features-plugin': 7.23.9(@babel/core@7.23.9)
+      '@babel/helper-create-class-features-plugin': 7.23.10(@babel/core@7.23.9)
       '@babel/helper-plugin-utils': 7.22.5
       '@babel/plugin-syntax-class-static-block': 7.14.5(@babel/core@7.23.9)
     dev: false
@@ -1287,7 +1287,7 @@ packages:
       '@babel/core': ^7.0.0-0
     dependencies:
       '@babel/core': 7.23.9
-      '@babel/helper-create-class-features-plugin': 7.23.9(@babel/core@7.23.9)
+      '@babel/helper-create-class-features-plugin': 7.23.10(@babel/core@7.23.9)
       '@babel/helper-plugin-utils': 7.22.5
     dev: false
 
@@ -1299,7 +1299,7 @@ packages:
     dependencies:
       '@babel/core': 7.23.9
       '@babel/helper-annotate-as-pure': 7.22.5
-      '@babel/helper-create-class-features-plugin': 7.23.9(@babel/core@7.23.9)
+      '@babel/helper-create-class-features-plugin': 7.23.10(@babel/core@7.23.9)
       '@babel/helper-plugin-utils': 7.22.5
       '@babel/plugin-syntax-private-property-in-object': 7.14.5(@babel/core@7.23.9)
     dev: false
@@ -1455,7 +1455,7 @@ packages:
     dependencies:
       '@babel/core': 7.23.9
       '@babel/helper-annotate-as-pure': 7.22.5
-      '@babel/helper-create-class-features-plugin': 7.23.9(@babel/core@7.23.9)
+      '@babel/helper-create-class-features-plugin': 7.23.10(@babel/core@7.23.9)
       '@babel/helper-plugin-utils': 7.22.5
       '@babel/plugin-syntax-typescript': 7.23.3(@babel/core@7.23.9)
     dev: false
@@ -1722,31 +1722,6 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@coral-xyz/anchor@0.28.1-beta.2:
-    resolution: {integrity: sha512-xreUcOFF8+IQKWOBUrDKJbIw2ftpRVybFlEPVrbSlOBCbreCWrQ5754Gt9cHIcuBDAzearCDiBqzsGQdNgPJiw==}
-    engines: {node: '>=11'}
-    dependencies:
-      '@coral-xyz/borsh': 0.28.0(@solana/web3.js@1.89.1)
-      '@noble/hashes': 1.3.3
-      '@solana/web3.js': 1.89.1
-      base64-js: 1.5.1
-      bn.js: 5.2.1
-      bs58: 4.0.1
-      buffer-layout: 1.2.2
-      camelcase: 6.3.0
-      cross-fetch: 3.1.8
-      crypto-hash: 1.3.0
-      eventemitter3: 4.0.7
-      pako: 2.1.0
-      snake-case: 3.0.4
-      superstruct: 0.15.5
-      toml: 3.0.0
-    transitivePeerDependencies:
-      - bufferutil
-      - encoding
-      - utf-8-validate
-    dev: false
-
   /@coral-xyz/anchor@0.29.0:
     resolution: {integrity: sha512-eny6QNG0WOwqV0zQ7cs/b1tIuzZGmP7U7EcH+ogt4Gdbl8HDmIYVMh/9aTmYZPaFWjtUaI8qSn73uYEXWfATdA==}
     engines: {node: '>=11'}
@@ -1771,17 +1746,6 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@coral-xyz/borsh@0.28.0(@solana/web3.js@1.89.1):
-    resolution: {integrity: sha512-/u1VTzw7XooK7rqeD7JLUSwOyRSesPUk0U37BV9zK0axJc1q0nRbKFGFLYCQ16OtdOJTTwGfGp11Lx9B45bRCQ==}
-    engines: {node: '>=10'}
-    peerDependencies:
-      '@solana/web3.js': ^1.68.0
-    dependencies:
-      '@solana/web3.js': 1.89.1
-      bn.js: 5.2.1
-      buffer-layout: 1.2.2
-    dev: false
-
   /@coral-xyz/borsh@0.29.0(@solana/web3.js@1.89.1):
     resolution: {integrity: sha512-s7VFVa3a0oqpkuRloWVPdCK7hMbAMY270geZOGfCnaqexrP5dTIpbEHL33req6IYPPJ0hYa71cdvJ1h6V55/oQ==}
     engines: {node: '>=10'}
@@ -1791,17 +1755,6 @@ packages:
       '@solana/web3.js': 1.89.1
       bn.js: 5.2.1
       buffer-layout: 1.2.2
-    dev: false
-
-  /@coral-xyz/spl-token@0.28.1-beta.2:
-    resolution: {integrity: sha512-q7mBgurs3J3e/LKzIR54ttEb/MnSnA1K9W930QjQVYGGbM7OH1JIR4XCsRCimu/XHC1+p4WdbRd8cq08MX4DEg==}
-    dependencies:
-      '@coral-xyz/anchor': 0.28.1-beta.2
-      '@native-to-anchor/buffer-layout': 0.1.0
-    transitivePeerDependencies:
-      - bufferutil
-      - encoding
-      - utf-8-validate
     dev: false
 
   /@coral-xyz/spl-token@0.29.0:
@@ -2631,14 +2584,14 @@ packages:
       react: 18.2.0
     dev: false
 
-  /@mdx-js/loader@2.3.0(webpack@5.90.0):
+  /@mdx-js/loader@2.3.0(webpack@5.90.1):
     resolution: {integrity: sha512-IqsscXh7Q3Rzb+f5DXYk0HU71PK+WuFsEhf+mSV3fOhpLcEpgsHvTQ2h0T6TlZ5gHOaBeFjkXwB52by7ypMyNg==}
     peerDependencies:
       webpack: '>=4'
     dependencies:
       '@mdx-js/mdx': 2.3.0
       source-map: 0.7.4
-      webpack: 5.90.0
+      webpack: 5.90.1
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -3099,7 +3052,7 @@ packages:
       '@mdx-js/react':
         optional: true
     dependencies:
-      '@mdx-js/loader': 2.3.0(webpack@5.90.0)
+      '@mdx-js/loader': 2.3.0(webpack@5.90.1)
       '@mdx-js/react': 2.3.0(react@18.2.0)
       source-map: 0.7.4
     dev: true
@@ -3603,7 +3556,7 @@ packages:
       chalk: 4.1.2
       command-exists: 1.2.9
       deepmerge: 4.3.1
-      envinfo: 7.11.0
+      envinfo: 7.11.1
       execa: 5.1.1
       hermes-profile-transformer: 0.0.6
       ip: 1.1.8
@@ -8473,8 +8426,8 @@ packages:
       graceful-fs: 4.2.11
       tapable: 2.2.1
 
-  /envinfo@7.11.0:
-    resolution: {integrity: sha512-G9/6xF1FPbIw0TtalAMaVPpiq2aDEuKLXM314jPVAO9r2fo2a4BLqMNkmRS7O/xPPZ+COAhGIz3ETvHEV3eUcg==}
+  /envinfo@7.11.1:
+    resolution: {integrity: sha512-8PiZgZNIB4q/Lw4AhOvAfB/ityHAd2bli3lESSWmWSzSsl5dKpy5N1d1Rfkd2teq/g9xN90lc6o98DOjMeYHpg==}
     engines: {node: '>=4'}
     hasBin: true
     dev: false
@@ -9262,7 +9215,7 @@ packages:
       flat-cache: 3.2.0
     dev: true
 
-  /file-loader@6.2.0(webpack@5.90.0):
+  /file-loader@6.2.0(webpack@5.90.1):
     resolution: {integrity: sha512-qo3glqyTa61Ytg4u73GultjHGjdRyig3tG6lPtyX/jOEJvHif9uB0/OCI2Kif6ctF3caQTW2G5gym21oAsI4pw==}
     engines: {node: '>= 10.13.0'}
     peerDependencies:
@@ -9270,7 +9223,7 @@ packages:
     dependencies:
       loader-utils: 2.0.4
       schema-utils: 3.3.0
-      webpack: 5.90.0
+      webpack: 5.90.1
     dev: false
 
   /file-selector@0.6.0:
@@ -13833,7 +13786,7 @@ packages:
       - utf-8-validate
     dev: false
 
-  /react-notion-x@6.16.0(@babel/runtime@7.23.9)(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)(webpack@5.90.0):
+  /react-notion-x@6.16.0(@babel/runtime@7.23.9)(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)(webpack@5.90.1):
     resolution: {integrity: sha512-YdJikX38YNX5eIKAO9diw/tEhsc0ypnaqOqcdXEr7zFf0h/+eoppEzlLdzYJktnZy4n2q0z5ooXWAQi4QLi8Zw==}
     engines: {node: '>=12'}
     peerDependencies:
@@ -13853,7 +13806,7 @@ packages:
       react-image: 4.1.0(@babel/runtime@7.23.9)(react-dom@18.2.0)(react@18.2.0)
       react-lazy-images: 1.1.0(react-dom@18.2.0)(react@18.2.0)
       react-modal: 3.16.1(react-dom@18.2.0)(react@18.2.0)
-      react-pdf: 5.7.2(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)(webpack@5.90.0)
+      react-pdf: 5.7.2(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)(webpack@5.90.1)
       react-use: 17.5.0(react-dom@18.2.0)(react@18.2.0)
     transitivePeerDependencies:
       - '@babel/runtime'
@@ -13872,14 +13825,14 @@ packages:
       react-dom: 18.2.0(react@18.2.0)
     dev: false
 
-  /react-pdf@5.7.2(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)(webpack@5.90.0):
+  /react-pdf@5.7.2(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)(webpack@5.90.1):
     resolution: {integrity: sha512-hdDwvf007V0i2rPCqQVS1fa70CXut17SN3laJYlRHzuqcu8sLLjEoeXihty6c0Ev5g1mw31b8OT8EwRw1s8C4g==}
     peerDependencies:
       react: ^16.3.0 || ^17.0.0 || ^18.0.0
       react-dom: ^16.3.0 || ^17.0.0 || ^18.0.0
     dependencies:
       '@babel/runtime': 7.23.9
-      file-loader: 6.2.0(webpack@5.90.0)
+      file-loader: 6.2.0(webpack@5.90.1)
       make-cancellable-promise: 1.3.2
       make-event-props: 1.6.2
       merge-class-names: 1.4.2
@@ -15305,7 +15258,7 @@ packages:
       rimraf: 2.6.3
     dev: false
 
-  /terser-webpack-plugin@5.3.10(webpack@5.90.0):
+  /terser-webpack-plugin@5.3.10(webpack@5.90.1):
     resolution: {integrity: sha512-BKFPWlPDndPs+NGGCr1U59t0XScL5317Y0UReNrHaw9/FwhPENlq6bfgs+4yPfyP51vqC1bQ4rp1EfXW5ZSH9w==}
     engines: {node: '>= 10.13.0'}
     peerDependencies:
@@ -15326,7 +15279,7 @@ packages:
       schema-utils: 3.3.0
       serialize-javascript: 6.0.2
       terser: 5.27.0
-      webpack: 5.90.0
+      webpack: 5.90.1
 
   /terser@5.27.0:
     resolution: {integrity: sha512-bi1HRwVRskAjheeYl291n3JC4GgO/Ty4z1nVs5AAsmonJulGxpSektecnNedrwK9C7vpvVtcX3cw00VSLt7U2A==}
@@ -16132,8 +16085,8 @@ packages:
     resolution: {integrity: sha512-/DyMEOrDgLKKIG0fmvtz+4dUX/3Ghozwgm6iPp8KRhvn+eQf9+Q7GWxVNMk3+uCPWfdXYC4ExGBckIXdFEfH1w==}
     engines: {node: '>=10.13.0'}
 
-  /webpack@5.90.0:
-    resolution: {integrity: sha512-bdmyXRCXeeNIePv6R6tGPyy20aUobw4Zy8r0LUS2EWO+U+Ke/gYDgsCh7bl5rB6jPpr4r0SZa6dPxBxLooDT3w==}
+  /webpack@5.90.1:
+    resolution: {integrity: sha512-SstPdlAC5IvgFnhiRok8hqJo/+ArAbNv7rhU4fnWGHNVfN59HSQFaxZDSAL3IFG2YmqxuRs+IU33milSxbPlog==}
     engines: {node: '>=10.13.0'}
     hasBin: true
     peerDependencies:
@@ -16163,7 +16116,7 @@ packages:
       neo-async: 2.6.2
       schema-utils: 3.3.0
       tapable: 2.2.1
-      terser-webpack-plugin: 5.3.10(webpack@5.90.0)
+      terser-webpack-plugin: 5.3.10(webpack@5.90.1)
       watchpack: 2.4.0
       webpack-sources: 3.2.3
     transitivePeerDependencies:

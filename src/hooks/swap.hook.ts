@@ -6,7 +6,7 @@ import { isAddress } from '@sentre/senswap'
 import { useAsync, useDebounce } from 'react-use'
 import { type AsyncState } from 'react-use/lib/useAsyncFn'
 
-import { useAllMintMetadata, useMintByAddress } from '@/providers/mint.provider'
+import { useMints, useMintByAddress } from '@/providers/mint.provider'
 import { ZERO, decimalize, undecimalize } from '@/helpers/decimals'
 import { ExtendedPoolData, useActivePools } from '@/providers/pools.provider'
 import { useSenswap } from './pool.hook'
@@ -91,7 +91,7 @@ export function useSwapPrice() {
  */
 export function usePriceImpact(swapPrice: number, route: Hop[]) {
   const pools = useActivePools()
-  const mints = useAllMintMetadata()
+  const mints = useMints()
 
   const originalPrice = useMemo(
     () =>

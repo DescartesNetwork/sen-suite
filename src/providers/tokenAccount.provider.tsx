@@ -25,7 +25,6 @@ export type TokenAccount = Awaited<
 
 export type TokenAccountStore = {
   tokenAccounts: Record<string, TokenAccount>
-  setTokenAccounts: (tokenAccounts: Record<string, TokenAccount>) => void
   upsertTokenAccount: (payload: Record<string, TokenAccount>) => void
 }
 
@@ -33,8 +32,6 @@ export const useTokenAccountStore = create<TokenAccountStore>()(
   devtools(
     (set) => ({
       tokenAccounts: {},
-      setTokenAccounts: (tokenAccounts: Record<string, TokenAccount>) =>
-        set({ tokenAccounts }, false, 'setTokenAccounts'),
       upsertTokenAccount: (payload: Record<string, TokenAccount>) =>
         set(
           produce<TokenAccountStore>(({ tokenAccounts }) => {
@@ -60,9 +57,6 @@ export default function TokenAccountProvider({
 }: {
   children: ReactNode
 }) {
-  const setTokenAccounts = useTokenAccountStore(
-    ({ setTokenAccounts }) => setTokenAccounts,
-  )
   const upsertTokenAccount = useTokenAccountStore(
     ({ upsertTokenAccount }) => upsertTokenAccount,
   )
@@ -76,13 +70,11 @@ export default function TokenAccountProvider({
         memcmp: { offset: 32, bytes: publicKey.toBase58() },
       },
     ])
-    const tokenAccounts: Record<string, TokenAccount> = {}
-    data.forEach(
-      ({ publicKey, account }) =>
-        (tokenAccounts[publicKey.toBase58()] = account),
+    const tokenAccounts: Record<string, TokenAccount> = Object.fromEntries(
+      data.map(({ publicKey, account }) => [publicKey.toBase58(), account]),
     )
-    return setTokenAccounts(tokenAccounts)
-  }, [publicKey, spl, setTokenAccounts])
+    return upsertTokenAccount(tokenAccounts)
+  }, [publicKey, spl, upsertTokenAccount])
 
   const watch = useCallback(() => {
     if (!publicKey) return () => {}
@@ -110,7 +102,7 @@ export default function TokenAccountProvider({
  * Get all my token accounts
  * @returns Token account list
  */
-export const useAllTokenAccounts = () => {
+export function useTokenAccounts() {
   const tokenAccounts = useTokenAccountStore(
     ({ tokenAccounts }) => tokenAccounts,
   )
@@ -122,7 +114,7 @@ export const useAllTokenAccounts = () => {
  * @param mintAddress Mint address
  * @returns Token account
  */
-export const useTokenAccountByMintAddress = (mintAddress: string) => {
+export function useTokenAccountByMintAddress(mintAddress: string) {
   const tokenAccount = useTokenAccountStore(({ tokenAccounts }) => {
     const tokenAccountAddress = Object.keys(tokenAccounts).find(
       (tokenAccountAddress) => {

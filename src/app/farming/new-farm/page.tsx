@@ -15,8 +15,8 @@ import BoostNFT from './boostNFT'
 import { BoostData, Reward, useInitializeFarm } from '@/hooks/farming.hook'
 import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
-import { useMints } from '@/hooks/spl.hook'
-import { useAllTokenAccounts } from '@/providers/tokenAccount.provider'
+import { useSplMints } from '@/hooks/spl.hook'
+import { useTokenAccounts } from '@/providers/tokenAccount.provider'
 import { decimalize } from '@/helpers/decimals'
 
 export default function NewFarm() {
@@ -29,9 +29,9 @@ export default function NewFarm() {
   const { publicKey } = useWallet()
   const pushMessage = usePushMessage()
 
-  const mints = useMints(tokenRewards.map(({ mintAddress }) => mintAddress))
+  const mints = useSplMints(tokenRewards.map(({ mintAddress }) => mintAddress))
   const decimals = mints.map((mint) => mint?.decimals || 0)
-  const accounts = useAllTokenAccounts()
+  const accounts = useTokenAccounts()
 
   const initializeFarm = useInitializeFarm(
     mintFarm,

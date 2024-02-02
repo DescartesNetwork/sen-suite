@@ -15,7 +15,7 @@ import Modal from '@/components/modal'
 
 import { usePushMessage } from '@/components/message/store'
 import { decimalize } from '@/helpers/decimals'
-import { initializeTokenAccount, useMints, useSpl } from '@/hooks/spl.hook'
+import { initializeTokenAccount, useSplMints, useSpl } from '@/hooks/spl.hook'
 import { useAnchorProvider } from '@/providers/wallet.provider'
 
 type MintTokenProps = {
@@ -31,7 +31,7 @@ export default function MintToken({ mintAddress }: MintTokenProps) {
   const { publicKey } = useWallet()
   const spl = useSpl()
   const pushMessage = usePushMessage()
-  const [mint] = useMints([mintAddress])
+  const [mint] = useSplMints([mintAddress])
   const provider = useAnchorProvider()
 
   const ok = useMemo(() => {

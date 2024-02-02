@@ -3,7 +3,7 @@ import { useMemo } from 'react'
 
 import { usePrices } from '@/providers/mint.provider'
 import { undecimalize } from '@/helpers/decimals'
-import { useMints } from './spl.hook'
+import { useSplMints } from './spl.hook'
 
 /**
  * Compute TVL for a list of mints
@@ -25,7 +25,7 @@ export const useTvl = (
     [mintAddressToAmount],
   )
   const prices = usePrices(mintAddresses)
-  const mints = useMints(mintAddresses)
+  const mints = useSplMints(mintAddresses)
   const decimals = useMemo(() => mints.map((mint) => mint?.decimals), [mints])
 
   const tvl = useMemo(() => {

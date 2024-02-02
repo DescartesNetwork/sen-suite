@@ -8,7 +8,7 @@ import HeroCard from '../heroCard'
 import { undecimalize } from '@/helpers/decimals'
 import { numeric } from '@/helpers/utils'
 import { usePrices } from '@/providers/mint.provider'
-import { useMints } from '@/hooks/spl.hook'
+import { useSplMints } from '@/hooks/spl.hook'
 import { useDistributors, useMyReceipts } from '@/providers/airdrop.provider'
 
 export default function TotalReceived() {
@@ -26,7 +26,7 @@ export default function TotalReceived() {
     return result
   }, [distributors, myReceipts])
 
-  const mints = useMints(mintAddresses)
+  const mints = useSplMints(mintAddresses)
   const prices = usePrices(mintAddresses)
   const decimals = mints.map((mint) => mint?.decimals || 0)
 

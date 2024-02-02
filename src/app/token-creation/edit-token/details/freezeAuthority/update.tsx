@@ -5,7 +5,7 @@ import { isAddress } from '@sentre/senswap'
 import { web3 } from '@coral-xyz/anchor'
 
 import { usePushMessage } from '@/components/message/store'
-import { useMints, useSpl } from '@/hooks/spl.hook'
+import { useSplMints, useSpl } from '@/hooks/spl.hook'
 
 type UpdateAuthorityProps = {
   mintAddress: string
@@ -14,7 +14,7 @@ type UpdateAuthorityProps = {
 export default function UpdateAuthority({ mintAddress }: UpdateAuthorityProps) {
   const [loading, setLoading] = useState(false)
   const [freezeAuthority, setFreezeAuthority] = useState<string>()
-  const [mint] = useMints([mintAddress])
+  const [mint] = useSplMints([mintAddress])
   const spl = useSpl()
   const { publicKey } = useWallet()
   const pushMessage = usePushMessage()

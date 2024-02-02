@@ -11,9 +11,9 @@ import ListMintInfo from './mintInfo'
 import { usePushMessage } from '@/components/message/store'
 import { usePoolByAddress } from '@/providers/pools.provider'
 import { usePrices } from '@/providers/mint.provider'
-import { useAllTokenAccounts } from '@/providers/tokenAccount.provider'
+import { useTokenAccounts } from '@/providers/tokenAccount.provider'
 import { useLamports } from '@/providers/wallet.provider'
-import { useMints } from '@/hooks/spl.hook'
+import { useSplMints } from '@/hooks/spl.hook'
 import {
   useInitializeJoin,
   useInitAndDeletePool,
@@ -38,13 +38,13 @@ export default function SetLiquidity({
   const [funding, setFunding] = useState(false)
 
   const { mints, weights } = usePoolByAddress(poolAddress)
-  const mintInfos = useMints(mints.map((mint) => mint.toBase58()))
+  const mintInfos = useSplMints(mints.map((mint) => mint.toBase58()))
   const decimals = mintInfos.map((mint) => mint?.decimals || 0)
   const { calcNormalizedWeight } = useOracles()
   const mintAddresses = mints.map((mint) => mint.toBase58())
   const prices = usePrices(mintAddresses)
   const { publicKey } = useWallet()
-  const accounts = useAllTokenAccounts()
+  const accounts = useTokenAccounts()
   const lamports = useLamports()
   const pushMessage = usePushMessage()
 

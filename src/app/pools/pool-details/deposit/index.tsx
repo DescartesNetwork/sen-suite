@@ -16,11 +16,11 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import Modal from '@/components/modal'
 import MintInput from '../../mintInput'
 
-import { useAllTokenAccounts } from '@/providers/tokenAccount.provider'
+import { useTokenAccounts } from '@/providers/tokenAccount.provider'
 import { usePoolByAddress } from '@/providers/pools.provider'
 import { useDeposit, useOracles } from '@/hooks/pool.hook'
 import { numeric } from '@/helpers/utils'
-import { useMints } from '@/hooks/spl.hook'
+import { useSplMints } from '@/hooks/spl.hook'
 import { decimalize, undecimalize } from '@/helpers/decimals'
 import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
@@ -35,11 +35,11 @@ export default function Deposit({ poolAddress }: { poolAddress: string }) {
   const [activeIndx, setActiveIndx] = useState<number>()
 
   const { calcLptOut, calcLpForTokensZeroPriceImpact } = useOracles()
-  const accounts = useAllTokenAccounts()
+  const accounts = useTokenAccounts()
   const { publicKey } = useWallet()
-  const mints = useMints(pool.mints.map((mint) => mint.toBase58()))
+  const mints = useSplMints(pool.mints.map((mint) => mint.toBase58()))
   const decimals = mints.map((mint) => mint?.decimals || 0)
-  const [mintLpt] = useMints([pool.mintLpt.toBase58()])
+  const [mintLpt] = useSplMints([pool.mintLpt.toBase58()])
   const lamports = useLamports()
   const pushMessage = usePushMessage()
 

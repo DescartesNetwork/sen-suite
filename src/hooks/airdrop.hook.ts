@@ -15,7 +15,7 @@ import { isAddress } from '@sentre/senswap'
 
 import solConfig from '@/configs/sol.config'
 import { decimalize } from '@/helpers/decimals'
-import { useMints } from './spl.hook'
+import { useSplMints } from './spl.hook'
 import {
   RecipientData,
   useDistributeConfigs,
@@ -33,7 +33,7 @@ import { ReceiptState } from '@/app/token-distribution/airdrop-vesting/statusTag
  * Instantiate a utility
  * @returns Utility instance
  */
-export const useUtility = () => {
+export function useUtility() {
   const wallet = useAnchorWallet()
   const utility = useMemo(
     () =>
@@ -50,12 +50,12 @@ export const useUtility = () => {
  * @param mintAddress Mint address
  * @returns Bulk sender function
  */
-export const useSendBulk = (mintAddress: string) => {
+export function useSendBulk(mintAddress: string) {
   const utility = useUtility()
   const { publicKey, sendTransaction } = useWallet()
   const { connection: conn } = useConnection()
   const { wallet } = useAnchorProvider()
-  const [mint] = useMints([mintAddress])
+  const [mint] = useSplMints([mintAddress])
 
   const decimals = useMemo(() => mint?.decimals, [mint?.decimals])
 
@@ -159,7 +159,7 @@ export enum Distribute {
  * @param merkle MerkleDistributor
  * @returns Vesting or Airdrop type
  */
-export const useParseMerkleType = () => {
+export function useParseMerkleType() {
   const parseMerkleType = useCallback((merkle: MerkleDistributor) => {
     try {
       const types = [Distribute.Airdrop, Distribute.Vesting]
@@ -189,7 +189,7 @@ export const useParseMerkleType = () => {
  * @param distributor distributor address
  * @returns  Function get
  */
-export const useGetMerkleMetadata = () => {
+export function useGetMerkleMetadata() {
   const distributors = useDistributors()
   const getMetadata = useCallback(
     async (distributor: string) => {
@@ -217,7 +217,7 @@ export const useGetMerkleMetadata = () => {
  * @param address distributor address
  * @returns  merkle distributor bytes and createdAt
  */
-export const useMerkleMetadata = (address: string) => {
+export function useMerkleMetadata(address: string) {
   const getMetadata = useGetMerkleMetadata()
   const { data } = useSWR([address, 'metadata'], ([address]) =>
     getMetadata(address),
@@ -232,7 +232,7 @@ export const useMerkleMetadata = (address: string) => {
  * @param startedAt Time to claim reward
  * @returns  receipt status
  */
-export const useReceiptStatus = () => {
+export function useReceiptStatus() {
   const distributors = useDistributors()
   const myReceipts = useMyReceipts()
 
@@ -260,7 +260,7 @@ export const useReceiptStatus = () => {
  * Get total value distribute and quantity of recipients
  * @returns quantity of recipients & total distribute
  */
-export const useTotalDistribute = () => {
+export function useTotalDistribute() {
   const { recipients } = useRecipients()
   const { mintAddress } = useAirdropMintAddress()
 
@@ -290,7 +290,7 @@ export const useTotalDistribute = () => {
  * @param recipientData recipient's information
  * @returns Claim reward function
  */
-export const useClaim = (address: string, recipientData: Leaf) => {
+export function useClaim(address: string, recipientData: Leaf) {
   const getMetadata = useGetMerkleMetadata()
   const utility = useUtility()
 
@@ -317,12 +317,11 @@ export const useClaim = (address: string, recipientData: Leaf) => {
 }
 
 /**
- *
  * Init new airdrop or vesting by merkle tree
  * @param type Vesting or Airdrop type
  * @returns Init new merkle tree function
  */
-export const useInitMerkleTree = (type: Distribute) => {
+export function useInitMerkleTree(type: Distribute) {
   const { recipients } = useRecipients()
   const {
     configs: { expiration },
@@ -386,12 +385,11 @@ export const useInitMerkleTree = (type: Distribute) => {
 }
 
 /**
- *
  * Revoke reward
  * @param address distributor's address
  * @returns revoke function
  */
-export const useRevoke = (address: string) => {
+export function useRevoke(address: string) {
   const utility = useUtility()
 
   const onRevoke = useCallback(async () => {
@@ -414,7 +412,7 @@ export const useRevoke = (address: string) => {
  * @param address distributor address
  * @returns Receipts list
  */
-export const useReceiptByDistributorAddress = (address: string) => {
+export function useReceiptByDistributorAddress(address: string) {
   const utility = useUtility()
 
   const { value: receipts } = useAsync(async () => {
@@ -435,12 +433,11 @@ export const useReceiptByDistributorAddress = (address: string) => {
 }
 
 /**
- *
  * Balance on merkle tree
  * @param address distributor's address
  * @returns remaining balance
  */
-export const useRemainingBalance = (address: string) => {
+export function useRemainingBalance(address: string) {
   const { connection } = useConnection()
   const distributors = useDistributors()
   const { mint } = distributors[address]

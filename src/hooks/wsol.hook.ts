@@ -13,7 +13,7 @@ export const WRAPPED_SOL = 'So11111111111111111111111111111111111111112'
 /**
  * Wrap SOL
  */
-export const useWrap = () => {
+export function useWrap() {
   const { publicKey, sendTransaction } = useWallet()
   const spl = useSpl()
   const lamports = useLamports()
@@ -70,7 +70,7 @@ export const useWrap = () => {
 /**
  * Unwrap SOL
  */
-export const useUnwrap = () => {
+export function useUnwrap() {
   const { publicKey, sendTransaction } = useWallet()
   const spl = useSpl()
 

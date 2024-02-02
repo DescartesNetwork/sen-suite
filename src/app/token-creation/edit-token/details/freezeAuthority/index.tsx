@@ -10,7 +10,7 @@ import UpdateAuthority from './update'
 import Freeze from './freeze'
 import Thaw from './thaw'
 
-import { useMints } from '@/hooks/spl.hook'
+import { useSplMints } from '@/hooks/spl.hook'
 
 enum FreezeAction {
   UpdateAuthority = 'Update Authority',
@@ -26,7 +26,7 @@ export default function FreezeAuthority({ mintAddress }: FreezeAuthorityProps) {
   const [open, setOpen] = useState(false)
   const [tab, setTab] = useState(FreezeAction.UpdateAuthority)
   const { publicKey } = useWallet()
-  const [mint] = useMints([mintAddress])
+  const [mint] = useSplMints([mintAddress])
 
   const isOwner =
     !!publicKey &&

@@ -9,8 +9,8 @@ import { Dices, History, SearchCheck } from 'lucide-react'
 import Empty from '@/components/empty'
 import TokenCard from './tokenCard'
 
-import { useAllMintMetadata } from '@/providers/mint.provider'
-import { useAllTokenAccounts } from '@/providers/tokenAccount.provider'
+import { useMints } from '@/providers/mint.provider'
+import { useTokenAccounts } from '@/providers/tokenAccount.provider'
 import { WRAPPED_SOL } from '@/hooks/wsol.hook'
 
 /**
@@ -26,7 +26,7 @@ export const useRandomMintMetadata = ({
   seed?: string
   limit?: number
 } = {}): MintMetadata[] => {
-  const metadata = useAllMintMetadata()
+  const metadata = useMints()
   const _seed = useMemo(
     () => keccak_256(new TextEncoder().encode(seed || uuid())),
     [seed],
@@ -53,8 +53,8 @@ export default function TokenList({
   onChange = () => {},
 }: TokenListProps) {
   const [hidden, setHidden] = useState(true)
-  const all = useAllMintMetadata()
-  const myAccounts = useAllTokenAccounts()
+  const all = useMints()
+  const myAccounts = useTokenAccounts()
   const randMints = useRandomMintMetadata()
 
   const mintAddresses = useMemo(() => all.map(({ address }) => address), [all])

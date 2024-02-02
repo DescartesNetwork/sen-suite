@@ -89,7 +89,7 @@ export default function MintProvider({ children }: { children: ReactNode }) {
  * Get all mints
  * @returns Mint list
  */
-export const useAllMintMetadata = () => {
+export function useMints() {
   const metadata = useMintStore(({ metadata }) => Object.values(metadata))
   return metadata
 }
@@ -99,7 +99,7 @@ export const useAllMintMetadata = () => {
  * @param mintAddress Mint address
  * @returns Mint
  */
-export const useMintByAddress = (mintAddress: string) => {
+export function useMintByAddress(mintAddress: string) {
   const metadata = useMintStore(({ metadata }) => metadata)
   const upsertMetadata = useMintStore(({ upsertMetadata }) => upsertMetadata)
 
@@ -128,7 +128,7 @@ export const useMintByAddress = (mintAddress: string) => {
  * Semantic search mint
  * @returns Mint list
  */
-export const useSearchMint = () => {
+export function useSearchMint() {
   const engine = useMintStore(({ engine }) => engine)
   const search = useCallback(
     (text: string) => {
@@ -145,7 +145,7 @@ export const useSearchMint = () => {
  * @param mintAddresses Mint addresses
  * @returns Prices
  */
-export const usePrices = (mintAddresses: string[]) => {
+export function usePrices(mintAddresses: string[]) {
   const prices = useMintStore(({ prices }) => prices)
   const upsertPrices = useMintStore(({ upsertPrices }) => upsertPrices)
 

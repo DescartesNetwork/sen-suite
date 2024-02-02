@@ -18,7 +18,7 @@ import MintLogoUpload from '../imgUpload'
 
 import { numeric } from '@/helpers/utils'
 import { useMpl, useNfts, useUmi } from '@/hooks/mpl.hook'
-import { useMints } from '@/hooks/spl.hook'
+import { useSplMints } from '@/hooks/spl.hook'
 import { undecimalize } from '@/helpers/decimals'
 import { usePushMessage } from '@/components/message/store'
 import { solscan } from '@/helpers/explorers'
@@ -38,7 +38,7 @@ export default function UploadMetadata({ mintAddress }: UploadMetadataProp) {
   const umi = useUmi()
   const { publicKey } = useWallet()
   const [nft] = useNfts([mintAddress])
-  const [mint] = useMints([mintAddress])
+  const [mint] = useSplMints([mintAddress])
 
   const isOwner =
     !!publicKey &&

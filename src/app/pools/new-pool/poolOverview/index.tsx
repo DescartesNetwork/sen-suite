@@ -9,7 +9,7 @@ import { MintAmount, MintLogo, MintSymbol } from '@/components/mint'
 import { undecimalize } from '@/helpers/decimals'
 import { numeric } from '@/helpers/utils'
 import { useOracles } from '@/hooks/pool.hook'
-import { useMints } from '@/hooks/spl.hook'
+import { useSplMints } from '@/hooks/spl.hook'
 import { usePrices } from '@/providers/mint.provider'
 import { usePoolByAddress } from '@/providers/pools.provider'
 import { useSenswap } from '@/hooks/pool.hook'
@@ -23,7 +23,7 @@ export default function PoolOverview({ poolAddress }: PoolOverviewProps) {
   const pool = usePoolByAddress(poolAddress)
   const mintAddresses = pool.mints.map((mint) => mint.toBase58())
   const prices = usePrices(mintAddresses)
-  const mints = useMints(mintAddresses)
+  const mints = useSplMints(mintAddresses)
   const decimals = mints.map((mint) => mint?.decimals || 0)
   const { getMintInfo } = useOracles()
   const senswap = useSenswap()

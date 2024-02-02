@@ -5,7 +5,7 @@ import BN from 'bn.js'
 import { usePoolByAddress } from '@/providers/pools.provider'
 import { MintAmount, MintLogo, MintSymbol } from '@/components/mint'
 
-import { useMints } from '@/hooks/spl.hook'
+import { useSplMints } from '@/hooks/spl.hook'
 import { decimalize } from '@/helpers/decimals'
 import { LPT_DECIMALS } from '@/hooks/pool.hook'
 
@@ -18,7 +18,7 @@ export default function TokenReceive({
   lptAmount,
 }: TokenReceiveProps) {
   const pool = usePoolByAddress(poolAddress)
-  const [mintLpt] = useMints([pool.mintLpt.toBase58()])
+  const [mintLpt] = useSplMints([pool.mintLpt.toBase58()])
 
   const amountsReceive = useMemo(() => {
     let amounts: BN[] = new Array(pool.reserves.length).fill(new BN(0))

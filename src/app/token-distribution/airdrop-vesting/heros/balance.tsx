@@ -7,15 +7,15 @@ import BN from 'bn.js'
 import { Wallet2 } from 'lucide-react'
 import HeroCard from '../heroCard'
 
-import { useAllTokenAccounts } from '@/providers/tokenAccount.provider'
+import { useTokenAccounts } from '@/providers/tokenAccount.provider'
 import { usePrices } from '@/providers/mint.provider'
 import { undecimalize } from '@/helpers/decimals'
 import { numeric } from '@/helpers/utils'
 import { useLamports } from '@/providers/wallet.provider'
-import { useMints } from '@/hooks/spl.hook'
+import { useSplMints } from '@/hooks/spl.hook'
 
 export default function TotalBalance() {
-  const myAccounts = useAllTokenAccounts()
+  const myAccounts = useTokenAccounts()
   const lamports = useLamports()
 
   const mintAddresses = useMemo(() => {
@@ -24,7 +24,7 @@ export default function TotalBalance() {
     return [solAddress, ...myMints]
   }, [myAccounts])
 
-  const mints = useMints(mintAddresses)
+  const mints = useSplMints(mintAddresses)
   const prices = usePrices(mintAddresses)
   const decimals = mints.map((mint) => mint?.decimals || 0)
 

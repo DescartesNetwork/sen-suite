@@ -16,7 +16,7 @@ import {
 import { numeric } from '@/helpers/utils'
 import { usePushMessage } from '@/components/message/store'
 import { useTvl } from '@/hooks/tvl.hook'
-import { useMints } from '@/hooks/spl.hook'
+import { useSplMints } from '@/hooks/spl.hook'
 import { decimalize, undecimalize } from '@/helpers/decimals'
 import { useSendBulk } from '@/hooks/airdrop.hook'
 import { solscan } from '@/helpers/explorers'
@@ -48,7 +48,7 @@ export default function SummaryBulkSender() {
   const { data, setData } = useBulkSenderData()
   const { decimalized, setDecimalized } = useBulkSenderDecimalized()
   const pushMessage = usePushMessage()
-  const [mint] = useMints([mintAddress])
+  const [mint] = useSplMints([mintAddress])
   const sendBulk = useSendBulk(mintAddress)
 
   const decimals = useMemo(() => mint?.decimals, [mint?.decimals])

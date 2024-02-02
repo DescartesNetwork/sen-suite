@@ -15,7 +15,7 @@ import {
   useFarmByAddress,
 } from '@/providers/farming.provider'
 import { useMpl } from './mpl.hook'
-import { useMints } from './spl.hook'
+import { useSplMints } from './spl.hook'
 import { decimalize } from '@/helpers/decimals'
 
 export type Reward = {
@@ -37,7 +37,7 @@ export const precision = new BN(10 ** 9)
  * Instantiate a farming
  * @returns Farming instance
  */
-export const useFarming = () => {
+export function useFarming() {
   const provider = useAnchorProvider()
   const farming = useMemo(
     () => new SenFarmingProgram(provider, solConfig.senFarmingProgram),
@@ -51,7 +51,7 @@ export const useFarming = () => {
  * @param farmAddress Farm address
  * @returns Lifetime
  */
-export const useFarmLifetime = (farmAddress: string) => {
+export function useFarmLifetime(farmAddress: string) {
   const { startDate, endDate } = useFarmByAddress(farmAddress)
   const lifetime = useMemo(() => endDate.sub(startDate), [startDate, endDate])
   return lifetime
@@ -62,10 +62,10 @@ export const useFarmLifetime = (farmAddress: string) => {
  * @param farmAddress Farm address
  * @returns Time passed
  */
-export const useFarmTimePassed = (
+export function useFarmTimePassed(
   farmAddress: string,
   delay: number | null = null,
-) => {
+) {
   const [currentDate, setCurrentDate] = useState(Math.round(Date.now() / 1000))
   const { startDate } = useFarmByAddress(farmAddress)
   const lifetime = useFarmLifetime(farmAddress)
@@ -86,7 +86,7 @@ export const useFarmTimePassed = (
  * @param farmAddress Farm address
  * @returns Velocity (out_tokens/seconds) with precision
  */
-export const useFarmVelocity = (farmAddress: string) => {
+export function useFarmVelocity(farmAddress: string) {
   const { totalRewards } = useFarmByAddress(farmAddress)
   const lifetime = useFarmLifetime(farmAddress)
   const velocity = useMemo(
@@ -101,7 +101,7 @@ export const useFarmVelocity = (farmAddress: string) => {
  * @param farmAddress Farm address
  * @returns Emission rate (out_tokens/seconds/in_tokens) with precision
  */
-export const useFarmEmissionRate = (farmAddress: string) => {
+export function useFarmEmissionRate(farmAddress: string) {
   const { totalShares } = useFarmByAddress(farmAddress)
   const velocity = useFarmVelocity(farmAddress)
   const emissionRate = useMemo(
@@ -117,10 +117,10 @@ export const useFarmEmissionRate = (farmAddress: string) => {
  * @param active Manually turn on/off the hook
  * @returns Sorted farm addresses
  */
-export const useSortedFarmsByStartDate = (
+export function useSortedFarmsByStartDate(
   farmAddresses: string[],
   active = true,
-) => {
+) {
   const farms = useAllFarms()
 
   const sortedFarmAddresses = useMemo(() => {
@@ -143,10 +143,10 @@ export const useSortedFarmsByStartDate = (
  * @param active Manually turn on/off the hook
  * @returns Filtered farm addresses
  */
-export const useFilterFarmsByNFTBoosted = (
+export function useFilterFarmsByNFTBoosted(
   farmAddresses: string[],
   active = true,
-) => {
+) {
   const rewards = useAllBoostings()
 
   const filteredFarmAddresses = useMemo(() => {
@@ -167,7 +167,7 @@ export const useFilterFarmsByNFTBoosted = (
  * @param farmAddress Farm address
  * @returns Harvest function
  */
-export const useHarvest = (farmAddress: string) => {
+export function useHarvest(farmAddress: string) {
   const { publicKey, sendTransaction, signTransaction } = useWallet()
   const { connection } = useConnection()
   const farming = useFarming()
@@ -222,11 +222,7 @@ export const useHarvest = (farmAddress: string) => {
  * @param amount Stake amount
  * @returns Stake function
  */
-export const useStake = (
-  farmAddress: string,
-  amount: BN,
-  nfts: string[] = [],
-) => {
+export function useStake(farmAddress: string, amount: BN, nfts: string[] = []) {
   const { publicKey, sendTransaction, signTransaction } = useWallet()
   const { connection } = useConnection()
   const farming = useFarming()
@@ -312,7 +308,7 @@ export const useStake = (
  * @param amount Unstake amount
  * @returns Unstake function
  */
-export const useUnstake = (farmAddress: string, shares: BN) => {
+export function useUnstake(farmAddress: string, shares: BN) {
   const { publicKey, sendTransaction } = useWallet()
   const { connection } = useConnection()
   const farming = useFarming()
@@ -360,7 +356,7 @@ export const useUnstake = (farmAddress: string, shares: BN) => {
  * @param nft Unstake nft address
  * @returns Unstake nft function
  */
-export const useUnstakeNft = (farmAddress: string, nft: string) => {
+export function useUnstakeNft(farmAddress: string, nft: string) {
   const farming = useFarming()
   const debtData = useDebtByFarmAddress(farmAddress)
   const mpl = useMpl()
@@ -450,10 +446,10 @@ export const useUnstakeNft = (farmAddress: string, nft: string) => {
  * @param farmAddress Farm address
  * @returns Transfer ownership function
  */
-export const useTransferOwnership = (
+export function useTransferOwnership(
   farmAddress: string,
   ownerAddress: string,
-) => {
+) {
   const farming = useFarming()
 
   const transferOwnership = useCallback(async () => {
@@ -474,15 +470,15 @@ export const useTransferOwnership = (
  * @param farmAddress Farm address
  * @returns Transfer ownership function
  */
-export const useInitializeFarm = (
+export function useInitializeFarm(
   inputMint: string,
   startAt: number,
   endAt: number,
   boostsData: BoostData[],
   tokenRewards: Reward[],
-) => {
+) {
   const farming = useFarming()
-  const mints = useMints(tokenRewards.map(({ mintAddress }) => mintAddress))
+  const mints = useSplMints(tokenRewards.map(({ mintAddress }) => mintAddress))
   const decimals = mints.map((mint) => mint?.decimals || 0)
 
   const onInitializeFarm = useCallback(async () => {
@@ -553,7 +549,7 @@ export const useInitializeFarm = (
  * @param farmAddress Farm address
  * @returns List nfts boosted by farm address
  */
-export const useNftsBoosted = (farmAddress: string) => {
+export function useNftsBoosted(farmAddress: string) {
   const debt = useDebtByFarmAddress(farmAddress)
   const farming = useFarming()
   const mpl = useMpl()

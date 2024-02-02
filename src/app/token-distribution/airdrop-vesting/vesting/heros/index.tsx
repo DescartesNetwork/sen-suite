@@ -12,7 +12,7 @@ import { numeric } from '@/helpers/utils'
 import { useGetMerkleMetadata } from '@/hooks/airdrop.hook'
 import { useDistributors, useMyDistributes } from '@/providers/airdrop.provider'
 import { usePrices } from '@/providers/mint.provider'
-import { useMints } from '@/hooks/spl.hook'
+import { useSplMints } from '@/hooks/spl.hook'
 
 export default function Heros() {
   return (
@@ -48,7 +48,7 @@ const TotalVesting = () => {
     return result
   }, [distributors, vesting])
 
-  const mints = useMints(mintAddresses)
+  const mints = useSplMints(mintAddresses)
   const prices = usePrices(mintAddresses)
   const decimals = mints.map((mint) => mint?.decimals || 0)
 

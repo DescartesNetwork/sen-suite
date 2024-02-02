@@ -13,17 +13,19 @@ import { ZERO } from '@/helpers/decimals'
 
 export type ExtendedPoolData = { address: string } & PoolData
 
-const DUMMY_POOL: Partial<ExtendedPoolData> = {
+const DUMMY_POOL: ExtendedPoolData = {
   address: web3.SystemProgram.programId.toBase58(),
   authority: web3.SystemProgram.programId,
   mintLpt: web3.SystemProgram.programId,
-  reserves: [ZERO],
-  mints: [web3.SystemProgram.programId],
-  weights: [ZERO],
-  treasuries: [web3.SystemProgram.programId],
+  state: PoolStates.Uninitialized,
+  reserves: [],
+  mints: [],
+  weights: [],
+  treasuries: [],
+  actions: [],
   fee: ZERO,
   tax: ZERO,
-  state: PoolStates.Uninitialized,
+  taxman: web3.SystemProgram.programId,
 }
 
 export type PoolStore = {
@@ -75,9 +77,13 @@ export default function PoolProvider({ children }: { children: ReactNode }) {
   }, [senswap, upsertPool])
 
   const watch = useCallback(() => {
-    const { connection } = senswap.program.provider
+    const {
+      provider: { connection },
+      programId,
+      coder,
+    } = senswap.program
     const id = connection.onProgramAccountChange(
-      senswap.program.account.pool.programId,
+      programId,
       ({
         accountId,
         accountInfo: { data },
@@ -85,10 +91,7 @@ export default function PoolProvider({ children }: { children: ReactNode }) {
         accountId: web3.PublicKey
         accountInfo: { data: Buffer }
       }) => {
-        const accountData: PoolData = senswap.program.coder.accounts.decode(
-          'pool',
-          data,
-        )
+        const accountData: PoolData = coder.accounts.decode('pool', data)
         return upsertPool({
           [accountId.toBase58()]: {
             address: accountId.toBase58(),
@@ -144,6 +147,6 @@ export const useActivePools = () => {
  * @returns PoolData
  */
 export const usePoolByAddress = (poolAddress: string) => {
-  const pool = usePoolStore(({ pools }) => pools[poolAddress]) || DUMMY_POOL
+  const pool = usePoolStore(({ pools }) => pools[poolAddress] || DUMMY_POOL)
   return pool
 }
