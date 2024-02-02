@@ -9,7 +9,7 @@ import {
 import isEqual from 'react-fast-compare'
 
 import { ZERO, undecimalize } from './decimals'
-import { ExtendedPoolData } from '@/providers/pools.provider'
+import { type ExtendedPoolData } from '@/providers/pools.provider'
 
 export type Hop = {
   poolAddress: string

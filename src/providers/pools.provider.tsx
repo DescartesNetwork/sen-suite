@@ -3,7 +3,7 @@ import { Fragment, ReactNode, useCallback, useEffect } from 'react'
 import { produce } from 'immer'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
-import { PoolData, PoolStates } from '@sentre/senswap'
+import { type PoolData, PoolStates } from '@sentre/senswap'
 import isEqual from 'react-fast-compare'
 import { web3 } from '@coral-xyz/anchor'
 
@@ -85,8 +85,16 @@ export default function PoolProvider({ children }: { children: ReactNode }) {
         accountId: web3.PublicKey
         accountInfo: { data: Buffer }
       }) => {
-        const accountData = senswap.program.coder.accounts.decode('pool', data)
-        return upsertPool({ [accountId.toBase58()]: accountData })
+        const accountData: PoolData = senswap.program.coder.accounts.decode(
+          'pool',
+          data,
+        )
+        return upsertPool({
+          [accountId.toBase58()]: {
+            address: accountId.toBase58(),
+            ...accountData,
+          },
+        })
       },
       'confirmed',
     )
