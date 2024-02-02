@@ -1,7 +1,8 @@
 'use client'
-import { Fragment, ReactNode, useEffect } from 'react'
+import { Fragment, ReactNode } from 'react'
 import { create } from 'zustand'
 import { devtools, persist } from 'zustand/middleware'
+import { useUnmount } from 'react-use'
 
 import { env } from '@/configs/env'
 import swapConfig from '@/configs/swap.config'
@@ -71,8 +72,7 @@ export const useSwapStore = create<SwapStore>()(
 export default function SwapProvider({ children }: { children: ReactNode }) {
   const unmount = useSwapStore(({ unmount }) => unmount)
 
-  // Reset the provider
-  useEffect(() => unmount)
+  useUnmount(unmount)
 
   return <Fragment>{children}</Fragment>
 }

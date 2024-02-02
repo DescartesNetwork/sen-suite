@@ -1,7 +1,7 @@
 'use client'
 import { Fragment, ReactNode, useEffect } from 'react'
 import { create } from 'zustand'
-import { persist, createJSONStorage, devtools } from 'zustand/middleware'
+import { persist, devtools } from 'zustand/middleware'
 
 import { env } from '@/configs/env'
 
@@ -21,10 +21,7 @@ export const useUiStore = create<UiStore>()(
         theme: 'light',
         setTheme: (theme: Theme) => set({ theme }, false, 'setTheme'),
       }),
-      {
-        name: 'ui',
-        storage: createJSONStorage(() => localStorage),
-      },
+      { name: 'ui-storage' },
     ),
     {
       name: 'ui',
@@ -32,14 +29,6 @@ export const useUiStore = create<UiStore>()(
     },
   ),
 )
-
-/**
- * Hook
- */
-
-export const useTheme = () => {
-  return useUiStore(({ theme, setTheme }) => ({ theme, setTheme }))
-}
 
 /**
  * Provider
@@ -54,4 +43,12 @@ export default function UiProvider({ children }: { children: ReactNode }) {
   }, [theme])
 
   return <Fragment>{children}</Fragment>
+}
+
+/**
+ * Hook
+ */
+
+export function useTheme() {
+  return useUiStore(({ theme, setTheme }) => ({ theme, setTheme }))
 }

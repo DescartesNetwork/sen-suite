@@ -130,7 +130,7 @@ export default function FarmingProvider({ children }: { children: ReactNode }) {
     ({ upsertBoostings }) => upsertBoostings,
   )
   const unmount = useFarmingStore(({ unmount }) => unmount)
-  const watchFarming = useCallback(
+  const watch = useCallback(
     (
       key: 'farm' | 'debt' | 'farmRewardMint' | 'farmBoostingCollection',
       upsertCallback: (data: Record<string, any>) => void,
@@ -170,9 +170,8 @@ export default function FarmingProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     fetchFarms()
-    const unwatch = watchFarming('farm', upsertFarms)
-    return unwatch
-  }, [fetchFarms, upsertFarms, watchFarming])
+    return watch('farm', upsertFarms)
+  }, [fetchFarms, upsertFarms, watch])
 
   const fetchDebts = useCallback(async () => {
     if (!filter) return upsertDebts({})
@@ -187,9 +186,8 @@ export default function FarmingProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     fetchDebts()
-    const unwatch = watchFarming('debt', upsertDebts, filter)
-    return unwatch
-  }, [fetchDebts, filter, upsertDebts, watchFarming])
+    return watch('debt', upsertDebts, filter)
+  }, [fetchDebts, filter, upsertDebts, watch])
 
   const fetchRewards = useCallback(async () => {
     const data: Array<{ publicKey: web3.PublicKey; account: RewardData }> =
@@ -203,9 +201,8 @@ export default function FarmingProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     fetchRewards()
-    const unwatch = watchFarming('farmRewardMint', upsertRewards)
-    return unwatch
-  }, [fetchRewards, upsertRewards, watchFarming])
+    return watch('farmRewardMint', upsertRewards)
+  }, [fetchRewards, upsertRewards, watch])
 
   const fetchBoostings = useCallback(async () => {
     const data: Array<{ publicKey: web3.PublicKey; account: BoostingData }> =
@@ -219,9 +216,8 @@ export default function FarmingProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     fetchBoostings()
-    const unwatch = watchFarming('farmBoostingCollection', upsertBoostings)
-    return unwatch
-  }, [fetchBoostings, upsertBoostings, watchFarming])
+    return watch('farmBoostingCollection', upsertBoostings)
+  }, [fetchBoostings, upsertBoostings, watch])
 
   useUnmount(unmount)
 
