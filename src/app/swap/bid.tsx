@@ -1,6 +1,5 @@
 'use client'
 import { ChangeEvent, useCallback, useEffect, useState } from 'react'
-import { useDebounce } from 'react-use'
 import clsx from 'clsx'
 
 import TokenSelection from '@/components/tokenSelection'
@@ -19,6 +18,7 @@ import { decimalize } from '@/helpers/decimals'
 
 export default function Bid() {
   const [open, setOpen] = useState(false)
+  const [range, setRange] = useState('0')
   const bidMintAddress = useSwapStore(({ bidMintAddress }) => bidMintAddress)
   const setBidMintAddress = useSwapStore(
     ({ setBidMintAddress }) => setBidMintAddress,
@@ -27,8 +27,6 @@ export default function Bid() {
   const setBidAmount = useSwapStore(({ setBidAmount }) => setBidAmount)
   const overBudget = useSwapStore(({ overBudget }) => overBudget)
   const setOverBudget = useSwapStore(({ setOverBudget }) => setOverBudget)
-  const [amount, setAmount] = useState(bidAmount)
-  const [range, setRange] = useState('0')
   const balance = useTokenAccountAmount(bidMintAddress)
   const readbleBalance = useMintAmount(bidMintAddress, balance)
   const { decimals = 0 } = useMintByAddress(bidMintAddress) || {}
@@ -43,22 +41,29 @@ export default function Bid() {
     [bidMintAddress, setBidMintAddress, setOpen],
   )
 
+  const onAmount = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setBidAmount(e.target.value)
+      setRange('0')
+    },
+    [setBidAmount],
+  )
+
   const onRange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       const percentage = Number(e.target.value) / 100
-      if (percentage > 0) setAmount(String(percentage * Number(readbleBalance)))
-      else setAmount('')
+      if (percentage > 0)
+        setBidAmount(String(percentage * Number(readbleBalance)))
+      else setBidAmount('')
       setRange(e.target.value)
     },
-    [readbleBalance],
+    [readbleBalance, setBidAmount],
   )
 
   useEffect(() => {
     const inAmount = decimalize(bidAmount, decimals)
     setOverBudget(balance.lt(inAmount))
   }, [setOverBudget, bidAmount, decimals, balance])
-
-  useDebounce(() => setBidAmount(amount), 300, [setBidAmount, amount])
 
   return (
     <div className="card bg-base-200 p-4 rounded-3xl grid grid-cols-12 gap-x-2 gap-y-4">
@@ -85,11 +90,8 @@ export default function Bid() {
               'input-error': overBudget,
             },
           )}
-          value={amount}
-          onChange={(e) => {
-            setAmount(e.target.value)
-            setRange('0')
-          }}
+          value={bidAmount}
+          onChange={onAmount}
         />
       </div>
       <div className="col-span-12 flex flex-row gap-2 items-start justify-between">

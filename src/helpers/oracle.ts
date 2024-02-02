@@ -208,6 +208,11 @@ export function findAvailableRoutes({
  * @param opts.pools All pools
  * @returns
  */
+export type SenswapBestRoute = {
+  bestAmount: BN
+  bestRoute: Hop[]
+  bestFees: Array<{ amount: BN; mint: web3.PublicKey }>
+}
 export function findTheBestRoute({
   inAmount,
   availableRoutes,
@@ -216,7 +221,7 @@ export function findTheBestRoute({
   inAmount: BN
   availableRoutes: Hop[][]
   pools: ExtendedPoolData[]
-}) {
+}): SenswapBestRoute {
   let bestAmount: BN = ZERO
   let bestRoute: Hop[] = []
   let bestFees: Array<{ amount: BN; mint: web3.PublicKey }> = []

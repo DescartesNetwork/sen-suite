@@ -1,9 +1,9 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import axios from 'axios'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { BN, web3 } from '@coral-xyz/anchor'
 import { isAddress } from '@sentre/senswap'
-import { useAsync } from 'react-use'
+import { useAsync, useDebounce } from 'react-use'
 import { type AsyncState } from 'react-use/lib/useAsyncFn'
 
 import { useAllMintMetadata, useMintByAddress } from '@/providers/mint.provider'
@@ -12,7 +12,8 @@ import { ExtendedPoolData, useActivePools } from '@/providers/pools.provider'
 import { useSenswap } from './pool.hook'
 import { useSwapStore } from '@/providers/swap.provider'
 import {
-  Hop,
+  type Hop,
+  type SenswapBestRoute,
   findAvailableRoutes,
   findSideByMintAddress,
   findTheBestRoute,
@@ -155,9 +156,15 @@ export function useMinimumReturn() {
 
 /**
  * Compute swap price
+ * @param debounce The delay time in miliseconds. It will help to improve the performance of routing.
  * @returns The swap price
  */
-export function useSenswapSwap() {
+export function useSenswapSwap(debounce: number = 300) {
+  const [route, setRoute] = useState<SenswapBestRoute>({
+    bestAmount: ZERO,
+    bestRoute: [],
+    bestFees: [],
+  })
   const { sendTransaction } = useWallet()
   const pools = useActivePools()
   const senswap = useSenswap()
@@ -181,29 +188,31 @@ export function useSenswapSwap() {
     () => decimalize(bidAmount, bidDecimals),
     [bidAmount, bidDecimals],
   )
-  const availableRoutes = useMemo(() => {
-    if (!isAddress(bidMintAddress) || !isAddress(askMintAddress)) return []
-    return findAvailableRoutes({
-      bidMint: new web3.PublicKey(bidMintAddress),
-      askMint: new web3.PublicKey(askMintAddress),
-      pools: Object.values(pools),
-    })
-  }, [bidMintAddress, askMintAddress, pools])
+  useDebounce(
+    () => {
+      if (!isAddress(bidMintAddress) || !isAddress(askMintAddress)) return []
+      const availableRoutes = findAvailableRoutes({
+        bidMint: new web3.PublicKey(bidMintAddress),
+        askMint: new web3.PublicKey(askMintAddress),
+        pools: Object.values(pools),
+      })
+      const bestRoute = findTheBestRoute({
+        inAmount,
+        availableRoutes,
+        pools: Object.values(pools),
+      })
+      return setRoute(bestRoute)
+    },
+    debounce,
+    [bidMintAddress, askMintAddress, pools],
+  )
+
+  // Feedback
   const {
     bestAmount: outAmount,
     bestRoute,
     bestFees,
-  } = useMemo(
-    () =>
-      findTheBestRoute({
-        inAmount,
-        availableRoutes,
-        pools: Object.values(pools),
-      }),
-    [inAmount, availableRoutes, pools],
-  )
-
-  // Feedback
+  } = useMemo(() => route, [route])
   const askAmount = useMemo(
     () => undecimalize(outAmount, askDecimals),
     [outAmount, askDecimals],

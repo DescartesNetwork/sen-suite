@@ -18,6 +18,7 @@ export default function Swap() {
   const [swapping, setSwapping] = useState(false)
   const overBudget = useSwapStore(({ overBudget }) => overBudget)
   const bidMintAddress = useSwapStore(({ bidMintAddress }) => bidMintAddress)
+  const setBidAmount = useSwapStore(({ setBidAmount }) => setBidAmount)
   const setAskAmount = useSwapStore(({ setAskAmount }) => setAskAmount)
   const pushMessage = usePushMessage()
 
@@ -50,6 +51,7 @@ export default function Swap() {
       setSwapping(true)
       if (!route) throw new Error('Unexpected error.')
       const txId = await route.swap()
+      setBidAmount('')
       pushMessage(
         'alert-success',
         'Successfully swap your tokens. Click here to view the transaction details.',
@@ -60,7 +62,7 @@ export default function Swap() {
     } finally {
       setSwapping(false)
     }
-  }, [route, pushMessage])
+  }, [route, setBidAmount, pushMessage])
 
   useEffect(() => {
     setAskAmount(route?.askAmount || '')
