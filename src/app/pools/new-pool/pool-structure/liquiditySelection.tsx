@@ -66,7 +66,7 @@ export default function LiquiditySelection({
         <div
           tabIndex={0}
           className={clsx(
-            'dropdown-content z-[1] card w-[256px] bg-base-100 border-2 border-base-300 p-4 grid grid-cols-12 gap-2',
+            'dropdown-content z-[1] card w-[256px] bg-base-100 border-2 border-base-300 shadow-xl p-4 grid grid-cols-12 gap-2',
             {
               hidden: !confirm,
             },
