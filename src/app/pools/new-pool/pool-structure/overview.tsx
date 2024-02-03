@@ -7,14 +7,47 @@ import { MintSymbol } from '@/components/mint'
 import chartConfig from '@/configs/chart.config'
 import { useNewPoolStore } from '@/providers/newPool.provider'
 import { numeric } from '@/helpers/utils'
+import { ArrowUpRightSquare, Info } from 'lucide-react'
 
 export default function Overview() {
   const structure = useNewPoolStore(({ structure }) => structure)
 
   return (
     <div className="grid grid-cols-12 gap-4">
-      <div className="col-span-full flex flex-row justify-center">
+      <div className="col-span-full flex flex-row gap-1 justify-center items-center">
         <h5>The Pool Structure</h5>
+        <div className="dropdown dropdown-end">
+          <div
+            role="button"
+            tabIndex={0}
+            className="btn btn-circle btn-xs btn-ghost"
+          >
+            <Info className="h-4 w-4" />
+          </div>
+          <div
+            tabIndex={0}
+            className="dropdown-content z-[1] card rounded-box bg-base-100 p-4 border-2 border-base-300 w-[256px] grid grid-cols-12 gap-2"
+          >
+            <p className="col-span-full text-xs">
+              Senswap allows you to create a pool with multiple tokens.
+              Furthermore, you can adjust the weighted pool.
+            </p>
+            <p className="col-span-full text-xs">
+              For example, if you would like to run your tokens with a limit
+              budget of USDC, you can create a pool of 90% YOUR-TOKEN and 10% of
+              USDC.
+            </p>
+            <a
+              className="col-span-full btn btn-primary btn-sm"
+              href="https://docs.senswap.sentre.io/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Read More
+              <ArrowUpRightSquare className="w-4 h-4" />
+            </a>
+          </div>
+        </div>
       </div>
       <div className="col-span-full">
         <ResponsiveContainer className="min-h-[12rem]">
