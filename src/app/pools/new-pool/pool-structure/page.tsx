@@ -13,6 +13,16 @@ import { usePushMessage } from '@/components/message/store'
 import { useInitializePool } from '@/hooks/pool.hook'
 import { solscan } from '@/helpers/explorers'
 
+export enum PoolInitializationError {
+  NoError = '',
+  MinimumTwoTokens = 'The pool MUST include at least 2 tokens.',
+  MaximumEightTokens = 'The pool MUST NOT exceed 8 tokens.',
+  TooLowWeight = 'The weight MUST be greater than or equal to 10%.',
+  InvalidMintAddress = 'There is an invalid token. Please review your token list and try again.',
+  DuplicatedMintAddress = 'Duplicated tokens. Please delete one of them and try again.',
+  InvalidTotalWeights = 'The pool weights MUST be equal to 100% in total.',
+}
+
 export default function PoolStructure() {
   const [loading, setLoading] = useState(false)
   const structure = useNewPoolStore(({ structure }) => structure)
@@ -58,15 +68,15 @@ export default function PoolStructure() {
   }, [structure, setStructure])
 
   const error = useMemo(() => {
-    if (structure.length < 2) return 'The pool MUST include at least 2 tokens.'
-    if (structure.length > 8) return 'The pool MUST NOT exceed 8 tokens.'
+    if (structure.length < 2) return PoolInitializationError.MinimumTwoTokens
+    if (structure.length > 8) return PoolInitializationError.MaximumEightTokens
     if (
       structure.reduce(
         (duplicated, { mintAddress }) => duplicated || !isAddress(mintAddress),
         false,
       )
     )
-      return 'There is an invalid token. Please review your token list and try again.'
+      return PoolInitializationError.InvalidMintAddress
     if (
       structure.reduce(
         (duplicated, { mintAddress: addr }, i, all) =>
@@ -75,10 +85,12 @@ export default function PoolStructure() {
         false,
       )
     )
-      return 'Duplicated tokens. Please delete one of them and try again.'
+      return PoolInitializationError.DuplicatedMintAddress
+    if (structure.reduce((low, { weight }) => low || weight < 10, false))
+      return PoolInitializationError.TooLowWeight
     if (structure.reduce((sum, { weight }) => sum + weight, 0) !== 100)
-      return 'The pool weights MUST be eual to 100% in total.'
-    return ''
+      return PoolInitializationError.InvalidTotalWeights
+    return PoolInitializationError.NoError
   }, [structure])
 
   const onNext = useCallback(async () => {
@@ -141,14 +153,13 @@ export default function PoolStructure() {
         </div>
       </div>
       <div
-        className={clsx('col-span-full flex flex-row gap-2 items-center', {
+        role="alert"
+        className={clsx('col-span-full alert alert-error', {
           hidden: !error,
         })}
       >
-        <p className="text-error">
-          <AlertTriangle className="h-4 w-4" />
-        </p>
-        <p className="text-error">{error}</p>
+        <AlertTriangle className="h-4 w-4" />
+        <span>{error}</span>
       </div>
       <button
         className="col-span-6 btn"
