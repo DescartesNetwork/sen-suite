@@ -45,32 +45,44 @@ export function MintLogo({
 /**
  * Mint Name
  */
-export const useMintName = (mintAddress: string) => {
-  const { name = shortenAddress(mintAddress, 6) } =
-    useMintByAddress(mintAddress) || {}
+export const useMintName = (
+  mintAddress: string,
+  defaultValue = shortenAddress(mintAddress, 3),
+) => {
+  const { name = defaultValue } = useMintByAddress(mintAddress) || {}
   return name
 }
 export type MintNameProps = {
   mintAddress: string
+  defaultValue?: string
 }
-export function MintName({ mintAddress }: MintNameProps) {
-  const name = useMintName(mintAddress)
+export function MintName({
+  mintAddress,
+  defaultValue = shortenAddress(mintAddress, 3),
+}: MintNameProps) {
+  const name = useMintName(mintAddress, defaultValue)
   return <Fragment>{name}</Fragment>
 }
 
 /**
  * Mint Symbol
  */
-export const useMintSymbol = (mintAddress: string) => {
-  const { symbol = mintAddress.substring(0, 6) } =
-    useMintByAddress(mintAddress) || {}
+export const useMintSymbol = (
+  mintAddress: string,
+  defaultValue = mintAddress.substring(0, 6),
+) => {
+  const { symbol = defaultValue } = useMintByAddress(mintAddress) || {}
   return symbol
 }
 export type MintSymbolProps = {
   mintAddress: string
+  defaultValue?: string
 }
-export function MintSymbol({ mintAddress }: MintSymbolProps) {
-  const symbol = useMintSymbol(mintAddress)
+export function MintSymbol({
+  mintAddress,
+  defaultValue = mintAddress.substring(0, 6),
+}: MintSymbolProps) {
+  const symbol = useMintSymbol(mintAddress, defaultValue)
   return <Fragment>{symbol}</Fragment>
 }
 

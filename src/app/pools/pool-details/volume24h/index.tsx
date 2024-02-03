@@ -1,12 +1,13 @@
 'use client'
 import { Fragment, useMemo } from 'react'
+import clsx from 'clsx'
 
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer } from 'recharts'
+import Empty from '@/components/empty'
 
+import chartConfig from '@/configs/chart.config'
 import { numeric } from '@/helpers/utils'
 import { VolumeData, useVol24h } from '@/hooks/pool.hook'
-import clsx from 'clsx'
-import Empty from '@/components/empty'
 
 export default function Volume24h({ poolAddress }: { poolAddress: string }) {
   const { vols, vol24h } = useVol24h(poolAddress)
@@ -52,7 +53,7 @@ export default function Volume24h({ poolAddress }: { poolAddress: string }) {
                 )
               }}
             />
-            <Bar dataKey="data" fill="#63E0B3" />
+            <Bar dataKey="data" fill={chartConfig.bar.color} />
           </BarChart>
         </ResponsiveContainer>
         <div

@@ -3,22 +3,12 @@ import { Fragment, useMemo } from 'react'
 
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
 
+import chartConfig from '@/configs/chart.config'
 import { usePoolByAddress } from '@/providers/pools.provider'
 import { undecimalize } from '@/helpers/decimals'
 import { useOracles } from '@/hooks/pool.hook'
 import { useMintStore } from '@/providers/mint.provider'
 import { numeric } from '@/helpers/utils'
-
-const COLORS = [
-  '#ff6961',
-  '#ffb480',
-  '#f8f38d',
-  '#42d6a4',
-  '#08cad1',
-  '#59adf6',
-  '#9d94ff',
-  '#c780e8',
-]
 
 export default function PoolWeights({ poolAddress }: { poolAddress: string }) {
   const poolData = usePoolByAddress(poolAddress)
@@ -53,11 +43,10 @@ export default function PoolWeights({ poolAddress }: { poolAddress: string }) {
               className="cursor-pointer"
               dataKey="weight"
               nameKey="symbol"
-              fill="#8884d8"
               label={({ name }) => name}
             >
               {poolWeights.map(({ symbol }, i) => (
-                <Cell key={symbol} fill={COLORS[i]} />
+                <Cell key={symbol} fill={chartConfig.pie.colors[i]} />
               ))}
             </Pie>
             <Tooltip

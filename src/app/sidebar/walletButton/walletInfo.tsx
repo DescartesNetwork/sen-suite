@@ -3,7 +3,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { Wallet } from '@solana/wallet-adapter-react'
 import copy from 'copy-to-clipboard'
 import { BN } from 'bn.js'
-import { useFloating, offset, flip, shift } from '@floating-ui/react'
+import { useFloating, flip, shift } from '@floating-ui/react'
 import clsx from 'clsx'
 
 import { ArrowUpRightSquare, Copy, LogOut } from 'lucide-react'
@@ -29,7 +29,7 @@ export default function WalletInfo({
     refs: { setReference, setFloating },
     floatingStyles,
   } = useFloating({
-    middleware: [offset(5), flip(), shift()],
+    middleware: [flip(), shift()],
   })
   const lamports = useLamports()
 
@@ -53,12 +53,12 @@ export default function WalletInfo({
       </label>
       <ul
         tabIndex={0}
-        className="dropdown-content menu menu-md p-2 shadow-xl bg-base-100 rounded-box !w-64 z-10 m-0"
+        className="dropdown-content menu menu-md p-2 shadow-xl bg-base-100 rounded-box !w-64 z-10 m-0 border-2 border-base-200"
         style={floatingStyles}
         ref={setFloating}
       >
-        <li>
-          <div className="active flex flex-col gap-1">
+        <li className="mb-1">
+          <div className="focus flex flex-col gap-1">
             <div className="flex flex-row gap-1 w-full items-center">
               <p className="flex-auto text-xs font-bold opacity-60">
                 {shortenAddress(address)}

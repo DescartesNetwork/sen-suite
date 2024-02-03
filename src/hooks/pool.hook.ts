@@ -5,6 +5,7 @@ import Senswap, {
   MintActionState,
   MintActionStates,
   PoolData,
+  isAddress,
 } from '@sentre/senswap'
 import { WRAPPED_SOL_MINT } from '@metaplex-foundation/js'
 import BN from 'bn.js'
@@ -28,13 +29,13 @@ import { initializeTokenAccount, useSplMints, useSpl } from './spl.hook'
 import solConfig from '@/configs/sol.config'
 import { DateHelper } from '@/helpers/date'
 import { useTvl } from './tvl.hook'
+import { useNewPoolStore } from '@/providers/newPool.provider'
+import swapConfig from '@/configs/swap.config'
 
 export const LPT_DECIMALS = 9
 export const GENERAL_DECIMALS = 9
 export const PRECISION = 1_000_000_000
 export const GENERAL_NORMALIZED_NUMBER = 10 ** 9
-const DEFAULT_FEE = new BN(2_500_000) // 0.25%
-const DEFAULT_TAX = new BN(500_000) // 0.05%
 
 export enum PoolFilter {
   AllPools = 'All Pools',
@@ -54,7 +55,6 @@ export type PoolPairLpData = {
 export type MintSetup = {
   mintAddress: string
   weight: string
-  isLocked: boolean
 }
 
 /**
@@ -285,41 +285,44 @@ export const useWithdraw = (poolAddress: string, amount: string) => {
  * Init and delete pool
  * @returns Init and delete pool functions
  */
-export const useInitAndDeletePool = () => {
+export const useInitializePool = () => {
   const senswap = useSenswap()
+  const structure = useNewPoolStore(({ structure }) => structure)
 
-  const initializePool = useCallback(
-    async (mints: MintSetup[]) => {
-      const mintsConfigs = mints.map(({ mintAddress, weight }) => {
-        const dWeight = decimalize(weight, GENERAL_DECIMALS)
-        return {
-          publicKey: new web3.PublicKey(mintAddress),
-          action: MintActionStates.Active,
-          amountIn: new BN(0),
-          weight: dWeight,
-        }
-      })
-      const { txId, poolAddress } = await senswap.initializePool({
-        fee: DEFAULT_FEE,
-        tax: DEFAULT_TAX,
-        mintsConfigs,
-        taxman: solConfig.taxman,
-        sendAndConfirm: true,
-      })
-      return { txId, poolAddress }
-    },
-    [senswap],
-  )
+  const initializePool = useCallback(async () => {
+    const { txId, poolAddress } = await senswap.initializePool({
+      fee: swapConfig.fee,
+      tax: swapConfig.tax,
+      mintsConfigs: structure.map(({ mintAddress, weight }) => ({
+        publicKey: new web3.PublicKey(mintAddress),
+        action: MintActionStates.Active,
+        weight: new BN(weight),
+      })),
+      taxman: swapConfig.taxmanAddress,
+      sendAndConfirm: true,
+    })
+    return { txId, poolAddress }
+  }, [senswap, structure])
+
+  return initializePool
+}
+
+/**
+ *
+ */
+export function useCancelPool() {
+  const senswap = useSenswap()
 
   const cancelPool = useCallback(
     async (poolAddress: string) => {
+      if (!isAddress(poolAddress)) throw new Error('Invalid pool address.')
       const { txId } = await senswap.closePool({ poolAddress })
       return txId
     },
     [senswap],
   )
 
-  return { initializePool, cancelPool }
+  return cancelPool
 }
 
 /**

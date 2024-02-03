@@ -14,11 +14,7 @@ import { usePrices } from '@/providers/mint.provider'
 import { useTokenAccounts } from '@/providers/tokenAccount.provider'
 import { useLamports } from '@/providers/wallet.provider'
 import { useSplMints } from '@/hooks/spl.hook'
-import {
-  useInitializeJoin,
-  useInitAndDeletePool,
-  useOracles,
-} from '@/hooks/pool.hook'
+import { useInitializeJoin, useOracles, useCancelPool } from '@/hooks/pool.hook'
 import { decimalize } from '@/helpers/decimals'
 import { solscan } from '@/helpers/explorers'
 import { Step } from '../step'
@@ -48,14 +44,14 @@ export default function SetLiquidity({
   const lamports = useLamports()
   const pushMessage = usePushMessage()
 
-  const { cancelPool } = useInitAndDeletePool()
+  const cancelPool = useCancelPool()
   const onCancelPool = useCallback(async () => {
     try {
       setClosing(true)
       const txId = await cancelPool(poolAddress)
       pushMessage(
         'alert-success',
-        'Successfully canceled the pool. Click here to view on explorer.',
+        'Successfully canceled the pool. Click here to view the transaction details.',
         {
           onClick: () => window.open(solscan(txId || ''), '_blank'),
         },

@@ -42,12 +42,12 @@ export default function TokenSelection({
           <h5>Search your token</h5>
         </div>
         <div className="col-span-12 relative flex flex-row items-center">
-          <Search className="pointer-events-none w-4 h-4 absolute left-3" />
+          <Search className="pointer-events-none w-4 h-4 absolute left-4" />
           <input
             type="search"
             name="search"
             placeholder="Search"
-            className="input rounded-xl w-full pl-10 bg-base-200"
+            className="input rounded-xl w-full pl-11 bg-base-200"
             value={text}
             onChange={(e) => setText(e.target.value)}
           />
