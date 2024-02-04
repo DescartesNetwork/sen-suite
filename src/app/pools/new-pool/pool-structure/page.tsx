@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import clsx from 'clsx'
 
 import { AlertTriangle, Plus } from 'lucide-react'
+import ConnectWallet from '@/components/connectWallet'
 import LiquiditySelection from './liquiditySelection'
 import Overview from './overview'
 
@@ -12,7 +13,6 @@ import { useNewPoolStore } from '@/providers/newPool.provider'
 import { usePushMessage } from '@/components/message/store'
 import { useInitializePool } from '@/hooks/pool.hook'
 import { solscan } from '@/helpers/explorers'
-import ConnectWallet from '@/components/connectWallet'
 
 export enum PoolInitializationError {
   NoError = '',
@@ -60,28 +60,9 @@ export default function PoolStructure() {
   )
 
   const onAdd = useCallback(() => {
-    if (!structure.length)
-      return setStructure([
-        {
-          mintAddress: '',
-          weight: 100,
-        },
-      ])
-    else {
-      const share = Math.floor(10 / structure.length)
-      const newStructure = structure
-        .map(({ mintAddress, weight }) => ({
-          mintAddress,
-          weight: weight - share,
-        }))
-        .concat([
-          {
-            mintAddress: '',
-            weight: share * structure.length,
-          },
-        ])
-      return setStructure(newStructure)
-    }
+    const newStructure = [...structure]
+    newStructure.push({ mintAddress: '', weight: 10 })
+    return setStructure(newStructure)
   }, [structure, setStructure])
 
   const error = useMemo(() => {
