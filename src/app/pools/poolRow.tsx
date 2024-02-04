@@ -1,11 +1,12 @@
 'use client'
 import { useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { PRECISION, PoolData } from '@sentre/senswap'
+import { PRECISION, type PoolData, PoolStates } from '@sentre/senswap'
 import BN from 'bn.js'
 import { useWallet } from '@solana/wallet-adapter-react'
+import isEqual from 'react-fast-compare'
 
-import { Eye } from 'lucide-react'
+import { Eye, Snowflake } from 'lucide-react'
 import { MintAmount, MintLogo, MintSymbol } from '@/components/mint'
 import LazyLoad from 'react-lazy-load'
 
@@ -13,6 +14,7 @@ import { numeric } from '@/helpers/utils'
 import { useOracles, useVol24h } from '@/hooks/pool.hook'
 import { useTokenAccountByMintAddress } from '@/providers/tokenAccount.provider'
 import { usePoolTvl } from '@/providers/stat.provider'
+import clsx from 'clsx'
 
 export type PoolRowProps = {
   index: number
@@ -21,7 +23,7 @@ export type PoolRowProps = {
 
 export default function PoolRow({
   index,
-  pool: { address, mintLpt, fee, mints, weights, authority },
+  pool: { address, mintLpt, fee, mints, weights, authority, state },
 }: PoolRowProps) {
   const { push } = useRouter()
   const { publicKey } = useWallet()
@@ -41,21 +43,28 @@ export default function PoolRow({
     return weights.map((weight) => calcNormalizedWeight(weights, weight))
   }, [calcNormalizedWeight, weights])
 
+  const Icon = useMemo(() => {
+    if (isEqual(state, PoolStates.Frozen)) return Snowflake
+    return Eye
+  }, [state])
+
   return (
     <tr
-      className="cursor-pointer hover:!bg-base-300 group"
+      className={clsx('cursor-pointer hover:!bg-base-300 group', {
+        grayscale: isEqual(state, PoolStates.Frozen),
+      })}
       key={address}
       onClick={() => push(`/pools/pool-details?poolAddress=${address}`)}
     >
       <th>
-        <button className="btn btn-sm btn-circle">
-          <Eye className="hidden group-hover:block w-4 h-4" />
+        <button className="btn btn-xs btn-circle">
+          <Icon className="hidden group-hover:block w-4 h-4" />
           <p className="block group-hover:hidden opacity-60">{index}</p>
         </button>
       </th>
       <td className="avatar-group -space-x-4 rtl:space-x-reverse">
         {mints.map((mint) => (
-          <LazyLoad key={mint.toBase58()} height={32}>
+          <LazyLoad key={mint.toBase58()}>
             <MintLogo
               className="w-8 h-8 rounded-full bg-base-300"
               mintAddress={mint.toBase58()}
@@ -80,7 +89,7 @@ export default function PoolRow({
       <td>
         <input
           type="checkbox"
-          className="checkbox checkbox-accent"
+          className="checkbox checkbox-sm checkbox-accent"
           checked={isOwner}
           readOnly
         />

@@ -12,6 +12,7 @@ import { useNewPoolStore } from '@/providers/newPool.provider'
 import { usePushMessage } from '@/components/message/store'
 import { useInitializePool } from '@/hooks/pool.hook'
 import { solscan } from '@/helpers/explorers'
+import ConnectWallet from '@/components/connectWallet'
 
 export enum PoolInitializationError {
   NoError = '',
@@ -59,12 +60,28 @@ export default function PoolStructure() {
   )
 
   const onAdd = useCallback(() => {
-    const newStructure = [...structure]
-    newStructure.push({
-      mintAddress: '',
-      weight: 10,
-    })
-    return setStructure(newStructure)
+    if (!structure.length)
+      return setStructure([
+        {
+          mintAddress: '',
+          weight: 100,
+        },
+      ])
+    else {
+      const share = Math.floor(10 / structure.length)
+      const newStructure = structure
+        .map(({ mintAddress, weight }) => ({
+          mintAddress,
+          weight: weight - share,
+        }))
+        .concat([
+          {
+            mintAddress: '',
+            weight: share * structure.length,
+          },
+        ])
+      return setStructure(newStructure)
+    }
   }, [structure, setStructure])
 
   const error = useMemo(() => {
@@ -168,16 +185,18 @@ export default function PoolStructure() {
       >
         Cancel
       </button>
-      <button
-        className="col-span-6 btn btn-primary"
-        onClick={onNext}
-        disabled={!!error || loading}
-      >
-        <span
-          className={clsx('loading loading-spinner', { hidden: !loading })}
-        />
-        Next
-      </button>
+      <ConnectWallet className="col-span-6 btn btn-primary">
+        <button
+          className="col-span-6 btn btn-primary"
+          onClick={onNext}
+          disabled={!!error || loading}
+        >
+          <span
+            className={clsx('loading loading-spinner', { hidden: !loading })}
+          />
+          Next
+        </button>
+      </ConnectWallet>
     </div>
   )
 }

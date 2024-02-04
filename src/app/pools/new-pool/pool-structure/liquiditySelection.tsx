@@ -44,7 +44,7 @@ export default function LiquiditySelection({
       />
       <div className="flex-auto flex flex-row items-center relative">
         <input
-          value={weight}
+          value={weight || ''}
           type="number"
           placeholder="0"
           min={10}

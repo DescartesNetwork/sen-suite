@@ -784,3 +784,16 @@ export const usePoolManagement = (poolAddress: string) => {
     transferOwnership,
   }
 }
+
+export function useFreezePool() {
+  const senswap = useSenswap()
+  const freezePool = useCallback(
+    async (poolAddress: string) => {
+      if (!isAddress(poolAddress)) throw new Error('Invalid pool address.')
+      const { txId } = await senswap.freezePool({ poolAddress })
+      return txId
+    },
+    [senswap],
+  )
+  return freezePool
+}

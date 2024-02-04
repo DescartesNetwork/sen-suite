@@ -28,6 +28,7 @@ export default function Overview() {
             tabIndex={0}
             className="dropdown-content z-[1] card rounded-box bg-base-100 p-4 border-2 border-base-300 shadow-xl w-[256px] grid grid-cols-12 gap-2"
           >
+            <p className="col-span-full text-xs font-black">Why is Senswap?</p>
             <p className="col-span-full text-xs">
               Senswap allows you to create a pool with multiple tokens.
               Furthermore, you can adjust the weighted pool.

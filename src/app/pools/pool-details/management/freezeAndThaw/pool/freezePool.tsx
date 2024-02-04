@@ -6,33 +6,33 @@ import { Snowflake } from 'lucide-react'
 import CardDescription from './cardDescription'
 
 import { solscan } from '@/helpers/explorers'
-import { usePoolManagement } from '@/hooks/pool.hook'
+import { useFreezePool } from '@/hooks/pool.hook'
 import { usePushMessage } from '@/components/message/store'
 
 export type FreezePoolProps = { poolAddress: string }
 
 export default function FreezePool({ poolAddress }: FreezePoolProps) {
   const [loading, setLoading] = useState(false)
-  const { freezePool } = usePoolManagement(poolAddress)
+  const freezePool = useFreezePool()
   const pushMessage = usePushMessage()
 
   const onFreezePool = useCallback(async () => {
     setLoading(true)
     try {
-      const txId = await freezePool()
+      const txId = await freezePool(poolAddress)
       return pushMessage(
         'alert-success',
-        'Successfully pause the pool. Click here to view details.',
+        'Successfully pause the pool. Click here to view the transaction details.',
         {
-          onClick: () => window.open(solscan(txId || ''), '_blank'),
+          onClick: () => window.open(solscan(txId), '_blank'),
         },
       )
-    } catch (err: any) {
-      pushMessage('alert-error', err.message)
+    } catch (er: any) {
+      pushMessage('alert-error', er.message)
     } finally {
       setLoading(false)
     }
-  }, [freezePool, pushMessage])
+  }, [freezePool, pushMessage, poolAddress])
 
   return (
     <div className="flex flex-col gap-4">
