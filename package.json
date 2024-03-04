@@ -15,7 +15,8 @@
     "lint:watch": "nodemon --watch src --ext ts,tsx --exec 'next lint' --signal SIGTERM"
   },
   "resolutions": {
-    "@solana/buffer-layout": "^4.0.1"
+    "@solana/buffer-layout": "^4.0.1",
+    "@solana/web3.js": "^1.90.1"
   },
   "dependencies": {
     "@coral-xyz/anchor": "0.28.1-beta.2",
@@ -30,13 +31,12 @@
     "@metaplex-foundation/umi-signer-wallet-adapters": "^0.8.9",
     "@noble/hashes": "^1.3.3",
     "@sentre/farming": "^2.0.2",
-    "@sentre/senswap": "^1.0.7",
+    "@sentre/senswap": "^1.0.9",
     "@sentre/utility": "^1.0.3",
     "@solana/wallet-adapter-base": "^0.9.23",
     "@solana/wallet-adapter-react": "^0.15.35",
     "@solana/wallet-adapter-react-ui": "^0.9.34",
     "@solana/wallet-adapter-wallets": "^0.19.24",
-    "@solana/web3.js": "^1.87.6",
     "axios": "^1.4.0",
     "bn.js": "^5.2.1",
     "bs58": "^5.0.0",
