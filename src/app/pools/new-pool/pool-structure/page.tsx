@@ -14,7 +14,7 @@ import { usePushMessage } from '@/components/message/store'
 import { useInitializePool } from '@/hooks/pool.hook'
 import { solscan } from '@/helpers/explorers'
 
-export enum PoolInitializationError {
+enum PoolInitializationError {
   NoError = '',
   MinimumTwoTokens = 'The pool MUST include at least 2 tokens.',
   MaximumEightTokens = 'The pool MUST NOT exceed 8 tokens.',
