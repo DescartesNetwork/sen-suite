@@ -87,7 +87,7 @@ export const useSendBulk = (mintAddress: string) => {
               sendAndConfirm: false,
               feeOptions: {
                 fee: new BN(solConfig.fee),
-                feeCollectorAddress: solConfig.taxman,
+                feeCollectorAddress: solConfig.airdrop,
               },
             })
             return tx
@@ -308,7 +308,7 @@ export const useClaim = (address: string, recipientData: Leaf) => {
       data: recipientData,
       feeOptions: {
         fee: new BN(solConfig.fee),
-        feeCollectorAddress: solConfig.taxman,
+        feeCollectorAddress: solConfig.airdrop,
       },
     })
     return txId
@@ -377,7 +377,7 @@ export const useInitMerkleTree = (type: Distribute) => {
       endedAt: expiration / 1000,
       feeOptions: {
         fee: new BN(solConfig.fee),
-        feeCollectorAddress: solConfig.taxman,
+        feeCollectorAddress: solConfig.airdrop,
       },
     })
     return txId || ''
@@ -401,7 +401,7 @@ export const useRevoke = (address: string) => {
       distributorAddress: address,
       feeOptions: {
         fee: new BN(solConfig.fee),
-        feeCollectorAddress: solConfig.taxman,
+        feeCollectorAddress: solConfig.airdrop,
       },
     })
     return txId

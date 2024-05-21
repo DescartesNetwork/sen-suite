@@ -15,6 +15,7 @@ type Conf = {
   senFarmingProgram: string
   utilityProgram: string
   taxman: string
+  airdrop: string
   fee: number
   operatorAddresses: string[]
 }
@@ -36,6 +37,7 @@ const conf: Record<Env, Conf> = {
     senFarmingProgram: 'E6Vc9wipgm8fMXHEYwgN7gYdDbyvpPBUiTNy67zPKuF4',
     utilityProgram: DEFAULT_SEN_UTILITY_PROGRAM_ID,
     taxman: '9doo2HZQEmh2NgfT3Yx12M89aoBheycYqH1eaR5gKb3e',
+    airdrop: '5hoGstgd4FKaBxvBMbZwPNb2vo41VXWhwxt86X4KHL43',
     fee: 10 ** 6, // lamports
     statRpc: 'https://stat.sentre.io/',
     bundlStorage: 'https://node1.bundlr.network',
@@ -52,6 +54,7 @@ const conf: Record<Env, Conf> = {
     senFarmingProgram: 'E6Vc9wipgm8fMXHEYwgN7gYdDbyvpPBUiTNy67zPKuF4',
     utilityProgram: DEFAULT_SEN_UTILITY_PROGRAM_ID,
     taxman: '9doo2HZQEmh2NgfT3Yx12M89aoBheycYqH1eaR5gKb3e',
+    airdrop: '5hoGstgd4FKaBxvBMbZwPNb2vo41VXWhwxt86X4KHL43',
     fee: 10 ** 5, // lamports
     statRpc: 'https://stat.sentre.io/',
     bundlStorage: 'https://node1.bundlr.network',
