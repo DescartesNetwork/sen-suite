@@ -25,7 +25,7 @@ export const uploadFileToAws = async (file: File) => {
   formData.append('file', file)
 
   const { data } = await axios.post(
-    'https://api.sentre.io/storage/upload',
+    'https://sage.sentre.io/storage/upload',
     formData,
     {
       headers: {
