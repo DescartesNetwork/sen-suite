@@ -53,20 +53,18 @@ export function PoolStatProvider({ children }: { children: ReactNode }) {
   const fetchPoolsTvl = useCallback(async () => {
     try {
       // Fetch all pool tvl
-      const { data: poolsTvl } = await axios.get(
-        solConfig.statRpc + `stat/balansol/all-tvl`,
-      )
+      const {
+        data: { poolsTvl, totalBalansolTvl },
+      } = await axios.get<{
+        poolsTvl: Record<string, number>
+        totalBalansolTvl: number
+      }>(solConfig.statRpc + `stat/all-tvl`)
       upsertPoolTvl(poolsTvl)
-
-      // Fetch total balansol tvl
-      const { data } = await axios.get(
-        solConfig.statRpc + `stat/total-tvl/${solConfig.senswapAddress}`,
-      )
-      setTotalTvl(data.totalTvl)
+      setTotalTvl(totalBalansolTvl)
 
       // Fetch all pool vol24h
-      const { data: volumes } = await axios.get(
-        solConfig.statRpc + `stat/balansol/all-volume`,
+      const { data: volumes } = await axios.get<Record<string, VolumeData>>(
+        solConfig.statRpc + `stat/all-volume`,
       )
       upsertVolumes(volumes)
     } catch (error) {
